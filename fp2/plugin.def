@@ -1,0 +1,7 @@
+LIBRARY      "cpp_fp2"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

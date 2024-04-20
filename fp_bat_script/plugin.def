@@ -1,0 +1,7 @@
+LIBRARY      "cpp_bat_script"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

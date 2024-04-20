@@ -1,0 +1,180 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "Comments", "Sample function plugin for cPicture"
+            VALUE "CompanyName", "cPicture"
+            VALUE "FileDescription", "cPicture function plugin"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "cPicture function plugin"
+            VALUE "LegalCopyright", "Copyright (C)"
+            VALUE "OriginalFilename", "cpp_fp3.dll"
+            VALUE "ProductName", "cPicture function plugin"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SAMPLE3 DIALOGEX 0, 0, 369, 257
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Order form"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PICTURE_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,206,243
+    DEFPUSHBUTTON   "OK",IDOK,312,236,50,14
+    GROUPBOX        "Total",IDC_STATIC,241,161,121,65
+    GROUPBOX        "Details",IDC_STATIC,241,7,121,107
+    COMBOBOX        IDC_COMBO_FORMAT,250,30,48,55,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_NUMBER_OF_PRINTS,250,64,40,14,ES_AUTOHSCROLL
+    LTEXT           "Number of prints:",IDC_STATIC,250,51,104,8
+    LTEXT           "Format:",IDC_STATIC,250,17,105,8
+    PUSHBUTTON      "Cancel",IDCANCEL,250,236,50,14
+    PUSHBUTTON      "Set",IDC_BUTTON_SET,250,92,50,14
+    LTEXT           "No. of pictures:",IDC_STATIC,250,176,51,8
+    LTEXT           "",IDC_STATIC_NUMBER_OF_PICTURES,307,176,47,8
+    LTEXT           "Price:",IDC_STATIC,250,200,19,8
+    LTEXT           "",IDC_STATIC_TOTAL_PRICE,307,200,47,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SAMPLE3, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 362
+        VERTGUIDE, 241
+        VERTGUIDE, 250
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 250
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_COLUMNHEADER_NAME   "Order info"
+    IDS_PICTURE_FORMAT_9    "9x13cm"
+    IDS_PICTURE_FORMAT_10   "10x15cm"
+    IDS_DISPLAY_FORMAT      "%1, %2!d!x%3!d! pixel\n%4!d! print(s) in %5"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TOTAL_PRICE_FORMAT  "$%.2f"
+    IDS_ORDER_CONFIRMATION  "Thank you for your Order!\nOrder summary: %1!d! print(s) for %2"
+    IDS_MAX_PRINTS          "Only 100 prints can be ordered."
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
