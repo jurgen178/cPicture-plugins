@@ -15,6 +15,7 @@ bool CheckFile(const WCHAR* pFile)
 	{
 		FILE* infile = NULL;
 		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
+		
 		if (err == 0)
 		{
 			fclose(infile);
@@ -65,7 +66,7 @@ static vector<CString> Scripts;
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.1";
+	return L"1.0";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()

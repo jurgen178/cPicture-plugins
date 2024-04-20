@@ -14,6 +14,7 @@ bool CheckFile(const WCHAR* pFile)
 	{
 		FILE* infile = NULL;
 		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
+
 		if (err == 0)
 		{
 			fclose(infile);
