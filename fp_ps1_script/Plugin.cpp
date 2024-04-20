@@ -11,14 +11,16 @@ using namespace std;
 
 bool CheckFile(const WCHAR* pFile)
 {
-	FILE* infile = NULL;
-
-	if(wcslen(pFile))
-		if(infile = _wfopen(pFile, L"r"))
+	if (wcslen(pFile))
+	{
+		FILE* infile = NULL;
+		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
+		if (err == 0)
 		{
 			fclose(infile);
 			return true;
 		}
+	}
 
 	return false;
 }
@@ -156,7 +158,7 @@ struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vect
 		WCHAR abs_path[MAX_PATH];
 		memset(abs_path, 0, sizeof(abs_path));
 		if(_wfullpath(abs_path, path, MAX_PATH-1) == NULL)
-			wcsncpy(abs_path, path, MAX_PATH-1);
+			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH-1);
 
 		CString msg, fmt;
 		fmt.LoadString(IDS_ERROR_SCRIPT_MISSING);
@@ -207,15 +209,18 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& _pictu
 	WCHAR* trueTxtUnicode = L"true]";
 	
 	unsigned char Text[512];
-	FILE* infile = _wfopen(m_script, L"rb");
-	if(infile)
+
+	FILE* infile = NULL;
+	const errno_t err(_wfopen_s(&infile, m_script, L"rb"));
+
+	if (err == 0)
 	{
 		const int size(min(512, _filelength(_fileno(infile))));
 		fread((char*)Text, sizeof(char), size, infile);
 
 		console = scanVar((char*)Text, consoleTxtANSI, trueTxtANSI, consoleTxtUnicode, trueTxtUnicode, true);
 		noexit = scanVar((char*)Text, noexitTxtANSI, trueTxtANSI, noexitTxtUnicode, trueTxtUnicode, false);
-
+		
 		fclose(infile);
 	}
 

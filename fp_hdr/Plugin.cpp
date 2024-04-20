@@ -272,7 +272,7 @@ const vector<update_info>& __stdcall CFunctionPluginHDR::end()
 		const CString path(L".");
 		WCHAR abs_path[MAX_PATH] = { 0 };
 		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
-			wcsncpy(abs_path, path, MAX_PATH - 1);
+			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
 
 		parameterDlg.m_Enfuse = CString(abs_path) + L"\\enfuse.exe";
 

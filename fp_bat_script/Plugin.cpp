@@ -10,14 +10,16 @@ using namespace std;
 
 bool CheckFile(const WCHAR* pFile)
 {
-	FILE* infile = NULL;
-
-	if(wcslen(pFile))
-		if(infile = _wfopen(pFile, L"r"))
+	if (wcslen(pFile))
+	{
+		FILE* infile = NULL;
+		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
+		if (err == 0)
 		{
 			fclose(infile);
 			return true;
 		}
+	}
 
 	return false;
 }
@@ -129,7 +131,7 @@ struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vect
 		const CString path(L".");
 		WCHAR abs_path[MAX_PATH] = { 0 };
 		if(_wfullpath(abs_path, path, MAX_PATH-1) == NULL)
-			wcsncpy(abs_path, path, MAX_PATH-1);
+			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH-1);
 
 		CString msg, fmt;
 		fmt.LoadString(IDS_ERROR_SCRIPT_MISSING);

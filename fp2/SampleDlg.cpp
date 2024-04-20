@@ -12,7 +12,9 @@ unsigned int GetFileSize(const WCHAR* pFile)
 	unsigned int file_size = 0;
 
 	FILE* infile = NULL;
-	if((infile = _wfopen(pFile, L"rb"))) 
+	const errno_t err(_wfopen_s(&infile, pFile, L"rb"));
+
+	if (err == 0)
 	{
 		struct _stat fbuf;
 		_fstat(_fileno(infile), &fbuf);

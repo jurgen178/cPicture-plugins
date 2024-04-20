@@ -140,8 +140,9 @@ HANDLE ParameterDlg::SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputRea
 	si.hStdError  = hStdError;
 	si.wShowWindow = SW_HIDE;						// IMPORTANT: hide subprocess console window
 	
-	WCHAR commandLineCopy[1024];					// CreateProcess requires a modifiable buffer
-	wcscpy(commandLineCopy, commandLine);
+	const int commandLineCopySize(1024);
+	WCHAR commandLineCopy[commandLineCopySize];		// CreateProcess requires a modifiable buffer
+	wcscpy_s(commandLineCopy, commandLineCopySize, commandLine);
 	if (!CreateProcess(	NULL, commandLineCopy, NULL, NULL, TRUE,
 						CREATE_NEW_CONSOLE, NULL, lpCurrentDirectory, &si, &pi))
 	{
@@ -253,14 +254,16 @@ void ParameterDlg::RemoveCtrl(const DWORD id)
 
 bool ParameterDlg::CheckFile(const WCHAR* pFile)
 {
-	FILE* infile = NULL;
-
 	if (wcslen(pFile))
-		if (infile = _wfopen(pFile, L"r"))
+	{
+		FILE* infile = NULL;
+		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
+		if (err == 0)
 		{
 			fclose(infile);
 			return true;
 		}
+	}
 
 	return false;
 }
