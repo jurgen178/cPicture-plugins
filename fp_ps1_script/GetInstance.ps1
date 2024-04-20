@@ -1,7 +1,7 @@
 ﻿
 $max = 255
 
-$h_file = "C:\Projects\cPicture_plugins\fp_ps1_script\GetInstance.h"
+$h_file = "GetInstance.h"
 0..$max | % { "static CFunctionPlugin* __stdcall GetInstance$_() { return new CFunctionPluginScript(Scripts[$_]); };" } | Out-File -FilePath $h_file
 
 "" | Out-File -FilePath $h_file -Append
