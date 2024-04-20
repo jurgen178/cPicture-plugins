@@ -15,12 +15,6 @@ protected:
 public:
 	virtual __stdcall ~CFunctionPluginScript() { };
 
-//public:
-//	static CFunctionPlugin* __stdcall GetInstance()
-//	{
-//		return new CFunctionPluginScript();
-//	};
-
 public:
 	virtual struct PluginData __stdcall get_plugin_data();
 

@@ -47,11 +47,9 @@ CFunctionPluginSample1::CFunctionPluginSample1()
 
 struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 {
-	// pluginData.file_name_dll will be set when loaded into cPicture
-	// pluginData.file_name will be set to pluginData.file_name_dll when pluginData.file_name is empty
-
 	struct PluginData pluginData;
 
+	// Set plugin info.
 	pluginData.name = L"Sample1";
 	pluginData.desc = L"Sample function plugin 1";
 	pluginData.info = L"Additional Info plugin 1";

@@ -206,20 +206,12 @@ CFunctionPluginHDR::CFunctionPluginHDR()
 
 struct PluginData __stdcall CFunctionPluginHDR::get_plugin_data()
 {
-	// pluginData.file_name_dll will be set when loaded into cPicture
-	// pluginData.file_name will be set to pluginData.file_name_dll when pluginData.file_name is empty
-
 	struct PluginData pluginData;
-	CString text;
 
-	text.LoadString(IDS_PLUGIN_SHORT_DESC);
-	pluginData.name = text;
-
-	text.LoadString(IDS_PLUGIN_LONG_DESC);
-	pluginData.desc = text;
-
-	text.LoadString(IDS_PLUGIN_INFO);
-	pluginData.info = text;
+	// Set plugin info.
+	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
+	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
+	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
 }
@@ -228,6 +220,7 @@ struct request_info __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<
 {
 	m_hwnd = hwnd;
 
+	// Requires at least 2 pictures.
 	if (file_list.size() < 2)
 	{
 		AfxMessageBox(IDS_MIN_SELECTION, MB_ICONINFORMATION);
@@ -246,6 +239,7 @@ bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& _picture_
 
 const vector<update_info>& __stdcall CFunctionPluginHDR::end()
 {
+	// Run enfuse with the selected pictures.
 	if (picture_list.size() >= 2)
 	{
 		CWnd parent;

@@ -4,7 +4,7 @@
 #include "vector"
 using namespace std;
 
-
+// Request-info used in the 'start' event.
 enum PICTURE_LAYOUT
 {
 	PICTURE_LAYOUT_CANCEL_REQUEST = 0,
@@ -12,7 +12,6 @@ enum PICTURE_LAYOUT
 	PICTURE_LAYOUT_RGB,
 	PICTURE_LAYOUT_BGR_DWORD_ALIGNED,
 };
-
 
 struct request_info
 {
@@ -31,6 +30,7 @@ struct request_info
 };
 
 
+// Update-info used in the 'end' event.
 enum UPDATE_TYPE
 {
 	UPDATE_TYPE_UNCHANGED = 0,
@@ -38,7 +38,6 @@ enum UPDATE_TYPE
 	UPDATE_TYPE_UPDATED,
 	UPDATE_TYPE_DELETED,
 };
-
 
 struct update_info
 {
@@ -51,6 +50,7 @@ struct update_info
 	CString m_list_obj;
 	UPDATE_TYPE m_update_type;
 };
+
 
 struct picture_data
 {

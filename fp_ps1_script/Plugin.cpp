@@ -139,6 +139,7 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 {
 	struct PluginData pluginData;
 
+	// Set plugin info.
 	pluginData.file_name = m_script;
 	pluginData.name.FormatMessage(IDS_SCRIPT_SHORT, m_script);
 	pluginData.desc.FormatMessage(IDS_SCRIPT_LONG, m_script.Left(m_script.ReverseFind(L'.')));
@@ -194,9 +195,11 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& _pictu
 
 //# plugin variables
 //# displays a console, use this option for scripts with text output
+//# Do not remove the # on the following line:
 //#[console=false]
 // 
 //# noexit keeps the powershell console open, remove this option to have the console closed when processing is done
+//# Do not remove the # on the following line :
 //#[noexit=false]
 
 	bool console(true);
@@ -261,6 +264,8 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& _pictu
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
+	// Signal that the picture could be updated.
+	// This info will be submitted in the 'end' event.
 	m_update_info.push_back(update_info(_picture_data.m_name, UPDATE_TYPE_UPDATED));
 
 	m_i++;

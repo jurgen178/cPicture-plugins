@@ -27,7 +27,6 @@ protected:
 };
 
 
-
 // ParameterDlg dialog
 
 class ParameterDlg : public CDialog
@@ -61,7 +60,6 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	afx_msg void OnBnClickedButtonBrowse();
 	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedCancel();
 	virtual void OnOK();
 
 	DECLARE_MESSAGE_MAP()
