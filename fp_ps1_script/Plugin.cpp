@@ -15,7 +15,7 @@ bool CheckFile(const WCHAR* pFile)
 	{
 		FILE* infile = NULL;
 		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
-		
+
 		if (err == 0)
 		{
 			fclose(infile);
@@ -30,7 +30,7 @@ bool CheckFile(const WCHAR* pFile)
 bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WCHAR* trueTxtUnicode, bool def)
 {
 	char* p = strstr((char*)Text, TxtANSI);
-	if(p)
+	if (p)
 	{
 		p += strlen(TxtANSI);
 		return strstr(p, trueTxtANSI) != NULL;
@@ -38,7 +38,7 @@ bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WC
 	else
 	{
 		WCHAR* pw = wcsstr((WCHAR*)Text, TxtUnicode);
-		if(pw)
+		if (pw)
 		{
 			pw += wcslen(TxtUnicode);
 			return wcsstr(pw, trueTxtUnicode) != NULL;
@@ -86,7 +86,7 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 #include "GetInstance.h"
 
-const int maxscripts(sizeof(GetInstanceList)/sizeof(lpfnFunctionGetInstanceProc));
+const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
 
 // Each .ps1 file will be set as a plugin.
 const int __stdcall GetPluginInit()
@@ -98,19 +98,18 @@ const int __stdcall GetPluginInit()
 	WIN32_FIND_DATA c_file;
 	HANDLE hFile;
 
-	if((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
+	if ((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
 		do
 		{
-			if(!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L"..")) 
+			if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
 			{
 				const CString script(c_file.cFileName);
 				Scripts.push_back(script);
 				PluginProcArray.push_back(GetInstanceList[i++]);
 			}
-		}
-		while(i < maxscripts && FindNextFile(hFile, &c_file) != 0);
+		} while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
 
 		FindClose(hFile);
 	}
@@ -121,21 +120,20 @@ const int __stdcall GetPluginInit()
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
-	if(k < PluginProcArray.size())
+	if (k < PluginProcArray.size())
 		return PluginProcArray[k];
 	else
 		return NULL;
 }
 
-CFunctionPluginScript::CFunctionPluginScript(const CString& script)
-  :	m_script(script),
-	m_i(0),
-	m_n(0)
+CFunctionPluginPs1Script::CFunctionPluginPs1Script(const CString& script)
+	: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
+	m_script(script)
 {
-	_wsetlocale(LC_ALL, L".ACP"); 
+	_wsetlocale(LC_ALL, L".ACP");
 }
 
-struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
+struct PluginData __stdcall CFunctionPluginPs1Script::get_plugin_data()
 {
 	struct PluginData pluginData;
 
@@ -148,19 +146,16 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 }
 
 
-struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list)
+struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const vector<const WCHAR*>& file_list)
 {
-	m_i = 0;
-	m_n = (int)file_list.size();
-
 	const bool bScript(CheckFile(m_script));
-	if(!bScript)
+	if (!bScript)
 	{
 		const CString path(L".");
 		WCHAR abs_path[MAX_PATH];
 		memset(abs_path, 0, sizeof(abs_path));
-		if(_wfullpath(abs_path, path, MAX_PATH-1) == NULL)
-			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH-1);
+		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
+			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
 
 		CString msg, fmt;
 		fmt.LoadString(IDS_ERROR_SCRIPT_MISSING);
@@ -169,38 +164,30 @@ struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vect
 		AfxMessageBox(msg);
 	}
 
-	return request_info(bScript?PICTURE_LAYOUT_FILE_NAME_ONLY:PICTURE_LAYOUT_CANCEL_REQUEST);
+	return request_info(bScript ? PICTURE_LAYOUT_FILE_NAME_ONLY : PICTURE_LAYOUT_CANCEL_REQUEST);
 }
 
-bool __stdcall CFunctionPluginScript::process_picture(const picture_data& _picture_data) 
-{ 
-	// -name name
-	// -file file
-	// -dir dir
-	// -width PictureWidth
-	// -height PictureHeight
-	// -i sequence number
-	// -n size of files
+bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& _picture_data)
+{
+	picture_data_list.push_back(_picture_data);
 
-	// Example:
-	// -name c:\picture_folder\picture.jpg
-	// -file picture.jpg
-	// -dir c:\picture_folder\
-	// -width 1024
-	// -height 768
-	// -i 1
-	// -n 4
+	// Signal that the picture could be updated.
+	// This info will be submitted in the 'end' event.
+	m_update_info.push_back(update_info(_picture_data.m_name, UPDATE_TYPE_UPDATED));
 
-	const CString PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe ");
+	return true;
+}
 
-//# plugin variables
-//# displays a console, use this option for scripts with text output
-//# Do not remove the # on the following line:
-//#[console=false]
-// 
-//# noexit keeps the powershell console open, remove this option to have the console closed when processing is done
-//# Do not remove the # on the following line :
-//#[noexit=false]
+const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
+{
+	//# plugin variables
+	//# displays a console, use this option for scripts with text output
+	//# Do not remove the # on the following line:
+	//#[console=false]
+	// 
+	//# noexit keeps the powershell console open, remove this option to have the console closed when processing is done
+	//# Do not remove the # on the following line :
+	//#[noexit=false]
 
 	bool console(true);
 	bool noexit(false);
@@ -211,52 +198,92 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& _pictu
 	WCHAR* consoleTxtUnicode = L"#[console=";
 	WCHAR* noexitTxtUnicode = L"#[noexit=";
 	WCHAR* trueTxtUnicode = L"true]";
-	
-	unsigned char Text[512];
+
+	// Read the first 1024 chars to get the console and noexit flags.
+	const int textSize(1024);
+	unsigned char Text[textSize];
 
 	FILE* infile = NULL;
 	const errno_t err(_wfopen_s(&infile, m_script, L"rb"));
 
 	if (err == 0)
 	{
-		const int size(min(512, _filelength(_fileno(infile))));
+		const int size(min(textSize, _filelength(_fileno(infile))));
 		fread((char*)Text, sizeof(char), size, infile);
 
 		console = scanVar((char*)Text, consoleTxtANSI, trueTxtANSI, consoleTxtUnicode, trueTxtUnicode, true);
 		noexit = scanVar((char*)Text, noexitTxtANSI, trueTxtANSI, noexitTxtUnicode, trueTxtUnicode, false);
-		
+
 		fclose(infile);
 	}
 
 	CString script(L"-ExecutionPolicy Unrestricted ");
 
-	if(noexit)
-		script += L"-noexit ";	// -noexit keeps the powershell console open, remove this option to have the console closed when processing is done
-	
-	script += L"\".\\" + m_script + L"\" ";
+	if (noexit)
+		script += L"-noexit ";	// -noexit keeps the powershell console open
 
-	const int f(_picture_data.m_name.ReverseFind(L'\\')+1);
-	const CString file(_picture_data.m_name.Mid(f));
-	const CString dir(_picture_data.m_name.Left(f));
+	script += L"\".\\" + m_script + L" ";
 
-	const CString cmd_format(L"-name '%1' -file '%2' -dir '%3' -width %4!d! -height %5!d! -i %6!d! -n %7!d!");
-	CString cmd;
-	cmd.FormatMessage(cmd_format, 
-		_picture_data.m_name, 
-		file,
-		dir, 
-		_picture_data.m_OriginalPictureWidth,
-		_picture_data.m_OriginalPictureHeight,
-		m_i, m_n
+	// Add picture data as json.
+
+	//[
+	//	{
+	//		"name": "c:\\Bilder\bild1.jpg",
+	//		"file": "bild1.jpg",
+	//		"dir": "c:\\Bilder\\",
+	//		"width": 1200,
+	//		"height": 800
+	//	},
+	//	{
+	//		"name": "c:\\Bilder\bild2.jpg",
+	//		"file": "bild2.jpg",
+	//		"dir": "c:\\Bilder\\",
+	//		"width": 1024,
+	//		"height": 768
+	//	}
+	//]
+
+	CString json(L"[");
+	for (vector<picture_data>::iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
+	{
+		CString name(it->m_name);
+		name.Replace(L"\\", L"\\\\");
+		const int f(it->m_name.ReverseFind(L'\\') + 1);
+		const CString file(it->m_name.Mid(f));
+		CString dir(it->m_name.Left(f));
+		dir.Replace(L"\\", L"\\\\");
+		dir += L"\\\\";	// Escape the trailing \ of the dir.
+
+		const CString cmd_format(L"{\"\"\"name\"\"\":\"\"\"%1\"\"\",\"\"\"file\"\"\":\"\"\"%2\"\"\",\"\"\"dir\"\"\":\"\"\"%3\"\"\",\"\"\"width\"\"\":%4!d!,\"\"\"height\"\"\":%5!d!}");
+		CString cmd;
+		cmd.FormatMessage(cmd_format,
+			name,
+			file,
+			dir,
+			it->m_OriginalPictureWidth,
+			it->m_OriginalPictureHeight
 		);
 
-	script += cmd;
+		// No trailing separator for the last element.
+		if (it != picture_data_list.end() - 1)
+		{
+			cmd += L",";
+		}
+
+		json += cmd;
+	}
+
+	json += L"]";
+
+	script += L"-picture_data_json '";
+	script += json;
+	script += L"'\"";
 
 	SHELLEXECUTEINFO shInfo;
 	memset(&shInfo, 0, sizeof(shInfo));
 	shInfo.cbSize = sizeof(shInfo);
 
-	shInfo.lpFile = PowerShellExe;
+	shInfo.lpFile = m_PowerShellExe;
 	shInfo.lpParameters = script;
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
 	shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -264,11 +291,5 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& _pictu
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
-	// Signal that the picture could be updated.
-	// This info will be submitted in the 'end' event.
-	m_update_info.push_back(update_info(_picture_data.m_name, UPDATE_TYPE_UPDATED));
-
-	m_i++;
-
-	return true;
+	return m_update_info;
 }

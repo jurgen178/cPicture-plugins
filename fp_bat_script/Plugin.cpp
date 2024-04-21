@@ -102,7 +102,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 		return NULL;
 }
 
-CFunctionPluginScript::CFunctionPluginScript(const CString& script)
+CFunctionPluginBatScript::CFunctionPluginBatScript(const CString& script)
   :	m_script(script),
 	m_i(0),
 	m_n(0)
@@ -110,7 +110,7 @@ CFunctionPluginScript::CFunctionPluginScript(const CString& script)
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
 
-struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
+struct PluginData __stdcall CFunctionPluginBatScript::get_plugin_data()
 {
 	struct PluginData pluginData;
 
@@ -123,7 +123,7 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 }
 
 
-struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
+struct request_info __stdcall CFunctionPluginBatScript::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
 {
 	m_i = 0;
 	m_n = (int)file_list.size();
@@ -146,7 +146,7 @@ struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vect
 	return request_info(bScript?PICTURE_LAYOUT_FILE_NAME_ONLY:PICTURE_LAYOUT_CANCEL_REQUEST);
 }
 
-bool __stdcall CFunctionPluginScript::process_picture(const picture_data& _picture_data) 
+bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& _picture_data) 
 { 
 	// %1 name
 	// %2 file
