@@ -126,7 +126,8 @@ CFunctionPluginPs1Script::CFunctionPluginPs1Script(const CString& script)
 	: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	m_script(script)
 {
-	_wsetlocale(LC_ALL, L".ACP");
+	// Do not set locale to keep decimal point (LC_NUMERIC) for PowerShell.
+	//_wsetlocale(LC_ALL, L".ACP");
 }
 
 struct PluginData __stdcall CFunctionPluginPs1Script::get_plugin_data()
@@ -254,8 +255,18 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		dir.Replace(L"\\", L"\\\\");
 		dir += L"\\\\";	// Escape the trailing \ of the dir.
 
-		CString cmd_format(L"{\"name\":\"%1\",\"file\":\"%2\",\"dir\":\"%3\",\"width\":%4!d!,\"height\":%5!d!,\"errormsg\":\"%6\",\"audio\":%7,\"video\":%8,\"colorprofile\":%9,\"gps\":\"%10\",\"aperture\":%11!f!,\"shutterspeed\":%12!d!,\"iso\":%13!d!,\"exifdate\":%14!u!,\"exifdate_str\":\"%15\",\"model\":\"%16\",\"lens\":\"%17\"}");
-		cmd_format.Replace(L"\"", L"\"\"\""); // Escape the quotes in a quoted string.
+		CString gps(it->m_GPSdata);
+		gps.Replace(L"'", L"''");
+
+		CString aperture;
+		if(it->m_fAperture)
+			aperture.Format(L"%.1f", it->m_fAperture);
+
+		CString exiftime;
+		exiftime.Format(L"%llu", it->m_exiftime);
+
+		// L"\"\"\"", Escape the quotes in a quoted string.
+		CString cmd_format(L"{\"\"\"name\"\"\":\"\"\"%1\"\"\",\"\"\"file\"\"\":\"\"\"%2\"\"\",\"\"\"dir\"\"\":\"\"\"%3\"\"\",\"\"\"width\"\"\":%4!d!,\"\"\"height\"\"\":%5!d!,\"\"\"errormsg\"\"\":\"\"\"%6\"\"\",\"\"\"audio\"\"\":%7,\"\"\"video\"\"\":%8,\"\"\"colorprofile\"\"\":%9,\"\"\"gps\"\"\":\"\"\"%10\"\"\",\"\"\"aperture\"\"\":%11,\"\"\"shutterspeed\"\"\":%12!d!,\"\"\"iso\"\"\":%13!d!,\"\"\"exifdate\"\"\":%14,\"\"\"exifdate_str\"\"\":\"\"\"%15\"\"\",\"\"\"model\"\"\":\"\"\"%16\"\"\",\"\"\"lens\"\"\":\"\"\"%17\"\"\"}");
 
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
@@ -265,14 +276,14 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 			it->m_OriginalPictureWidth,
 			it->m_OriginalPictureHeight,
 			it->m_ErrorMsg,
-			it->m_bAudio,
-			it->m_bVideo,
-			it->m_bColorProfile,
-			it->m_GPSdata,
-			it->m_fAperture,
+			it->m_bAudio ? L"true" : L"false",
+			it->m_bVideo ? L"true" : L"false",
+			it->m_bColorProfile ? L"true" : L"false",
+			gps,
+			aperture,
 			it->m_Shutterspeed,
 			it->m_ISO,
-			it->m_exiftime,
+			exiftime,
 			it->m_ExifDateTime_display,
 			it->m_Model,
 			it->m_Lens

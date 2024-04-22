@@ -34,14 +34,14 @@ foreach($picture_data in $picture_data_set)
     # $picture_data.name   : c:\Bilder\bild1.jpg
     # $picture_data.file   : bild1.jpg
     # $picture_data.dir    : c:\Bilder\
-    # $picture_data.width  : 1200
-    # $picture_data.height : 800
+    # $picture_data.width  : 3712
+    # $picture_data.height : 5568
 
     # $picture_data.audio        : false
     # $picture_data.video        : false
     # $picture_data.colorprofile : false
     # $picture_data.gps          : N 47° 37' 0,872498" W 122° 19' 32,021484"
-    # $picture_data.aperture     : 6.00000000 , f/6
+    # $picture_data.aperture     : 6.0 , f/6
     # $picture_data.shutterspeed : 1250 , 1/1250s
     # $picture_data.iso          : 100
     # $picture_data.exifdate     : 133553225690000000
