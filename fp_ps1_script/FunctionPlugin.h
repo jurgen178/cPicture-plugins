@@ -59,14 +59,40 @@ struct picture_data
 		const int _OriginalPictureWidth = 0,
 		const int _OriginalPictureHeight = 0,
 		BYTE* _buf = NULL,
-		const int _len = 0)
+		const int _len = 0,
+
+		const CString ErrorMsg = L"",
+		const bool bAudio = false,
+		const bool bVideo = false,
+		const bool bColorProfile = false,
+		const CString GPSdata = L"",
+		const __int64 exiftime = 0,
+		const float fAperture = 0.0,
+		const int Shutterspeed = 0,
+		const int ISO = 0,
+		const CString ExifDateTime_display = L"",
+		const CString Model = L"",
+		const CString Lens = L"")
 		: m_name(_name),
 		m_PictureWidth(_PictureWidth),
 		m_PictureHeight(_PictureHeight),
 		m_OriginalPictureWidth(_OriginalPictureWidth),
 		m_OriginalPictureHeight(_OriginalPictureHeight),
 		m_buf(_buf),
-		m_len(_len)
+		m_len(_len),
+
+		m_ErrorMsg(ErrorMsg),
+		m_bAudio(bAudio),
+		m_bVideo(bVideo),
+		m_bColorProfile(bColorProfile),
+		m_GPSdata(GPSdata),
+		m_exiftime(exiftime),
+		m_fAperture(fAperture),
+		m_Shutterspeed(Shutterspeed),
+		m_ISO(ISO),
+		m_ExifDateTime_display(ExifDateTime_display),
+		m_Model(Model),
+		m_Lens(Lens)
 	{
 	};
 
@@ -77,6 +103,19 @@ struct picture_data
 	int m_OriginalPictureHeight;
 	BYTE* m_buf;
 	int m_len;
+
+	CString m_ErrorMsg;
+	bool m_bAudio;
+	bool m_bVideo;
+	bool m_bColorProfile;
+	CString m_GPSdata;
+	__int64 m_exiftime;
+	float m_fAperture;
+	int m_Shutterspeed;
+	int m_ISO;
+	CString m_ExifDateTime_display;
+	CString m_Model;
+	CString m_Lens;
 };
 
 

@@ -254,7 +254,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		dir.Replace(L"\\", L"\\\\");
 		dir += L"\\\\";	// Escape the trailing \ of the dir.
 
-		CString cmd_format(L"{\"name\":\"%1\",\"file\":\"%2\",\"dir\":\"%3\",\"width\":%4!d!,\"height\":%5!d!}");
+		CString cmd_format(L"{\"name\":\"%1\",\"file\":\"%2\",\"dir\":\"%3\",\"width\":%4!d!,\"height\":%5!d!,\"errormsg\":\"%6\",\"audio\":%7,\"video\":%8,\"colorprofile\":%9,\"gps\":\"%10\",\"aperture\":%11!f!,\"shutterspeed\":%12!d!,\"iso\":%13!d!,\"exifdate\":%14!u!,\"exifdate_str\":\"%15\",\"model\":\"%16\",\"lens\":\"%17\"}");
 		cmd_format.Replace(L"\"", L"\"\"\""); // Escape the quotes in a quoted string.
 
 		CString cmd;
@@ -263,7 +263,19 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 			file,
 			dir,
 			it->m_OriginalPictureWidth,
-			it->m_OriginalPictureHeight
+			it->m_OriginalPictureHeight,
+			it->m_ErrorMsg,
+			it->m_bAudio,
+			it->m_bVideo,
+			it->m_bColorProfile,
+			it->m_GPSdata,
+			it->m_fAperture,
+			it->m_Shutterspeed,
+			it->m_ISO,
+			it->m_exiftime,
+			it->m_ExifDateTime_display,
+			it->m_Model,
+			it->m_Lens
 		);
 
 		// No trailing separator for the last array element.
