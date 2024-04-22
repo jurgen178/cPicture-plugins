@@ -258,15 +258,21 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		CString gps(it->m_GPSdata);
 		gps.Replace(L"'", L"''");
 
+		CString cdata(it->m_cdata);
+		cdata.Replace(L"'", L"''");
+		cdata.Replace(L"\\", L"\\\\");
+
 		CString aperture;
-		if(it->m_fAperture)
+		if (it->m_fAperture)
 			aperture.Format(L"%.1f", it->m_fAperture);
+		else
+			aperture = L"0";
 
 		CString exiftime;
 		exiftime.Format(L"%llu", it->m_exiftime);
 
 		// L"\"\"\"", Escape the quotes in a quoted string.
-		CString cmd_format(L"{\"\"\"name\"\"\":\"\"\"%1\"\"\",\"\"\"file\"\"\":\"\"\"%2\"\"\",\"\"\"dir\"\"\":\"\"\"%3\"\"\",\"\"\"width\"\"\":%4!d!,\"\"\"height\"\"\":%5!d!,\"\"\"errormsg\"\"\":\"\"\"%6\"\"\",\"\"\"audio\"\"\":%7,\"\"\"video\"\"\":%8,\"\"\"colorprofile\"\"\":%9,\"\"\"gps\"\"\":\"\"\"%10\"\"\",\"\"\"aperture\"\"\":%11,\"\"\"shutterspeed\"\"\":%12!d!,\"\"\"iso\"\"\":%13!d!,\"\"\"exifdate\"\"\":%14,\"\"\"exifdate_str\"\"\":\"\"\"%15\"\"\",\"\"\"model\"\"\":\"\"\"%16\"\"\",\"\"\"lens\"\"\":\"\"\"%17\"\"\"}");
+		CString cmd_format(L"{\"\"\"name\"\"\":\"\"\"%1\"\"\",\"\"\"file\"\"\":\"\"\"%2\"\"\",\"\"\"dir\"\"\":\"\"\"%3\"\"\",\"\"\"width\"\"\":%4!d!,\"\"\"height\"\"\":%5!d!,\"\"\"errormsg\"\"\":\"\"\"%6\"\"\",\"\"\"audio\"\"\":%7,\"\"\"video\"\"\":%8,\"\"\"colorprofile\"\"\":%9,\"\"\"gps\"\"\":\"\"\"%10\"\"\",\"\"\"aperture\"\"\":%11,\"\"\"shutterspeed\"\"\":%12!d!,\"\"\"iso\"\"\":%13!d!,\"\"\"exifdate\"\"\":%14,\"\"\"exifdate_str\"\"\":\"\"\"%15\"\"\",\"\"\"model\"\"\":\"\"\"%16\"\"\",\"\"\"lens\"\"\":\"\"\"%17\"\"\",\"\"\"cdata\"\"\":\"\"\"%18\"\"\"}");
 
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
@@ -286,7 +292,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 			exiftime,
 			it->m_ExifDateTime_display,
 			it->m_Model,
-			it->m_Lens
+			it->m_Lens,
+			cdata
 		);
 
 		// No trailing separator for the last array element.

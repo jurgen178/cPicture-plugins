@@ -72,7 +72,8 @@ struct picture_data
 		const int ISO = 0,
 		const CString ExifDateTime_display = L"",
 		const CString Model = L"",
-		const CString Lens = L"")
+		const CString Lens = L"",
+		const CString cdata = L"")
 		: m_name(_name),
 		m_PictureWidth(_PictureWidth),
 		m_PictureHeight(_PictureHeight),
@@ -92,7 +93,8 @@ struct picture_data
 		m_ISO(ISO),
 		m_ExifDateTime_display(ExifDateTime_display),
 		m_Model(Model),
-		m_Lens(Lens)
+		m_Lens(Lens),
+		m_cdata(cdata)
 	{
 	};
 
@@ -116,6 +118,7 @@ struct picture_data
 	CString m_ExifDateTime_display;
 	CString m_Model;
 	CString m_Lens;
+	CString m_cdata;
 };
 
 
