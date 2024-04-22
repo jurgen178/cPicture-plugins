@@ -257,10 +257,12 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 
 		CString gps(it->m_GPSdata);
 		gps.Replace(L"'", L"''");
+		gps.Replace(L"\"", L"\\\\\"\"\"");	// " -> \\"""
 
 		CString cdata(it->m_cdata);
 		cdata.Replace(L"'", L"''");
 		cdata.Replace(L"\\", L"\\\\");
+		cdata.Replace(L"\"", L"\\\\\"\"\"");	// " -> \\"""
 
 		CString aperture;
 		if (it->m_fAperture)
