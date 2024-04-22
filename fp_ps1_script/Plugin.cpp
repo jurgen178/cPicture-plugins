@@ -48,6 +48,14 @@ bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WC
 	return def;
 }
 
+CString escapeJsonData(CString text)
+{
+	text.Replace(L"'", L"''");
+	text.Replace(L"\\", L"\\\\");
+	text.Replace(L"\"", L"\\\\\"\"\"");	// " -> \\"""
+
+	return text;
+}
 
 enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
 {
@@ -251,18 +259,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 
 		const int f(it->m_name.ReverseFind(L'\\') + 1);
 		const CString file(it->m_name.Mid(f));
-		CString dir(it->m_name.Left(f));
-		dir.Replace(L"\\", L"\\\\");
+		CString dir(escapeJsonData(it->m_name.Left(f)));
 		dir += L"\\\\";	// Escape the trailing \ of the dir.
-
-		CString gps(it->m_GPSdata);
-		gps.Replace(L"'", L"''");
-		gps.Replace(L"\"", L"\\\\\"\"\"");	// " -> \\"""
-
-		CString cdata(it->m_cdata);
-		cdata.Replace(L"'", L"''");
-		cdata.Replace(L"\\", L"\\\\");
-		cdata.Replace(L"\"", L"\\\\\"\"\"");	// " -> \\"""
 
 		CString aperture;
 		if (it->m_fAperture)
@@ -287,15 +285,15 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 			it->m_bAudio ? L"true" : L"false",
 			it->m_bVideo ? L"true" : L"false",
 			it->m_bColorProfile ? L"true" : L"false",
-			gps,
+			escapeJsonData(it->m_GPSdata),
 			aperture,
 			it->m_Shutterspeed,
 			it->m_ISO,
 			exiftime,
 			it->m_ExifDateTime_display,
-			it->m_Model,
-			it->m_Lens,
-			cdata
+			escapeJsonData(it->m_Model),
+			escapeJsonData(it->m_Lens),
+			escapeJsonData(it->m_cdata)
 		);
 
 		// No trailing separator for the last array element.
