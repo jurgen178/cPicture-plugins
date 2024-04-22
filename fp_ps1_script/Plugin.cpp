@@ -80,10 +80,6 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 }
 
 
-//#define GetInstance(n) static CFunctionPlugin* __stdcall GetInstance##n() { return new CFunctionPluginScript(Scripts[n]); };
-//GetInstance(0)
-//static CFunctionPlugin* __stdcall GetInstance0() { return new CFunctionPluginScript(Scripts[0]); };
-
 #include "GetInstance.h"
 
 const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
@@ -175,6 +171,7 @@ bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& _pi
 	// This info will be submitted in the 'end' event.
 	m_update_info.push_back(update_info(_picture_data.m_name, UPDATE_TYPE_UPDATED));
 
+	// Return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
@@ -243,18 +240,23 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	//	}
 	//]
 
+	// Begin of array.
 	CString json(L"[");
-	for (vector<picture_data>::iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
+
+	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
 		CString name(it->m_name);
 		name.Replace(L"\\", L"\\\\");
+
 		const int f(it->m_name.ReverseFind(L'\\') + 1);
 		const CString file(it->m_name.Mid(f));
 		CString dir(it->m_name.Left(f));
 		dir.Replace(L"\\", L"\\\\");
 		dir += L"\\\\";	// Escape the trailing \ of the dir.
 
-		const CString cmd_format(L"{\"\"\"name\"\"\":\"\"\"%1\"\"\",\"\"\"file\"\"\":\"\"\"%2\"\"\",\"\"\"dir\"\"\":\"\"\"%3\"\"\",\"\"\"width\"\"\":%4!d!,\"\"\"height\"\"\":%5!d!}");
+		CString cmd_format(L"{\"name\":\"%1\",\"file\":\"%2\",\"dir\":\"%3\",\"width\":%4!d!,\"height\":%5!d!}");
+		cmd_format.Replace(L"\"", L"\"\"\""); // Escape the quotes in a quoted string.
+
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
 			name,
@@ -264,7 +266,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 			it->m_OriginalPictureHeight
 		);
 
-		// No trailing separator for the last element.
+		// No trailing separator for the last array element.
 		if (it != picture_data_list.end() - 1)
 		{
 			cmd += L",";
@@ -273,6 +275,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		json += cmd;
 	}
 
+	// End of array.
 	json += L"]";
 
 	script += L"-picture_data_json '";

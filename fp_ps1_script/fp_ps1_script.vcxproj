@@ -144,6 +144,7 @@
       </ImportLibrary>
       <EntryPointSymbol>
       </EntryPointSymbol>
+      <OutputFile>C:\Projects\cPicture\x64\Debug\cpp_ps1_script.dll</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
