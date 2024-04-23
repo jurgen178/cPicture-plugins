@@ -260,7 +260,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		const int f(it->m_name.ReverseFind(L'\\') + 1);
 		const CString file(it->m_name.Mid(f));
 		CString dir(escapeJsonData(it->m_name.Left(f)));
-		dir += L"\\\\";	// Escape the trailing \ of the dir.
+		dir += L"\\\\";	// Add double \ to avoid escaping the following quote with the single trailing \.
 
 		CString aperture;
 		if (it->m_fAperture)
