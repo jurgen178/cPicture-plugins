@@ -24,7 +24,9 @@ $picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
 
 # Number of pictures.
 [int]$size = $picture_data_set.length
-Write-Host "$size pictures:`n" -ForegroundColor White
+Write-Host "$size picture(s):" -ForegroundColor White
+Write-Host ("-" * 15)
+Write-Host
 
 # Print the picture data.
 [int]$i = 1
@@ -64,7 +66,9 @@ foreach($picture_data in $picture_data_set)
     [int]$MP = $picture_data.width * $picture_data.height / 1000000
     Write-Host ("Image '{0}' ({4} of {5}) with {1}x{2} pixel ({3}MP)" -f $picture_data.file, $picture_data.width, $picture_data.height, $MP, $i, $size)
     Write-Host "  name='$($picture_data.name)', dir='$($picture_data.dir)'`n"
-    Write-Host $picture_data.cdata
+    Write-Host "picture_data:"
+    Write-Host $picture_data
+    Write-Host ("-" * 70)
 
     $i++
 }
