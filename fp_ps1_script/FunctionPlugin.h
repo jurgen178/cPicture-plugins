@@ -51,6 +51,7 @@ struct update_info
 	UPDATE_TYPE m_update_type;
 };
 
+
 struct picture_data
 {
 	picture_data(const CString _name,

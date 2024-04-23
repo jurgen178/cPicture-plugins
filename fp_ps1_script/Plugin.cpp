@@ -9,54 +9,6 @@ using namespace std;
 
 // PowerShell script plugin cpp_ps1_script.
 
-bool CheckFile(const WCHAR* pFile)
-{
-	if (wcslen(pFile))
-	{
-		FILE* infile = NULL;
-		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
-
-		if (err == 0)
-		{
-			fclose(infile);
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WCHAR* trueTxtUnicode, bool def)
-{
-	char* p = strstr((char*)Text, TxtANSI);
-	if (p)
-	{
-		p += strlen(TxtANSI);
-		return strstr(p, trueTxtANSI) != NULL;
-	}
-	else
-	{
-		WCHAR* pw = wcsstr((WCHAR*)Text, TxtUnicode);
-		if (pw)
-		{
-			pw += wcslen(TxtUnicode);
-			return wcsstr(pw, trueTxtUnicode) != NULL;
-		}
-	}
-
-	return def;
-}
-
-CString escapeJsonData(CString text)
-{
-	text.Replace(L"'", L"''");
-	text.Replace(L"\\", L"\\\\");
-	text.Replace(L"\"", L"\\\\\"\"\"");	// " -> \\"""
-
-	return text;
-}
-
 enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
 {
 	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
@@ -124,11 +76,88 @@ const int __stdcall GetPluginInit()
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
-	if (k < PluginProcArray.size())
+	if (k >= 0 && k < PluginProcArray.size())
 		return PluginProcArray[k];
 	else
 		return NULL;
 }
+
+bool CheckFile(const WCHAR* pFile)
+{
+	if (wcslen(pFile))
+	{
+		FILE* infile = NULL;
+		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
+
+		if (err == 0)
+		{
+			fclose(infile);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
+bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WCHAR* trueTxtUnicode, bool def)
+{
+	char* p = strstr((char*)Text, TxtANSI);
+	if (p)
+	{
+		p += strlen(TxtANSI);
+		return strstr(p, trueTxtANSI) != NULL;
+	}
+	else
+	{
+		WCHAR* pw = wcsstr((WCHAR*)Text, TxtUnicode);
+		if (pw)
+		{
+			pw += wcslen(TxtUnicode);
+			return wcsstr(pw, trueTxtUnicode) != NULL;
+		}
+	}
+
+	return def;
+}
+
+CString escapeJsonData(CString text)
+{
+	text.Replace(L"'", L"''");
+	text.Replace(L"\\", L"\\\\");
+	text.Replace(L"\"", L"\\\\\"\"\"");	// " -> \\"""
+
+	// Add double \ to avoid escaping the following quote when text ends with a \.
+	if (text.Right(1) == L"\\")
+		text += L"\\\\";
+
+	return text;
+}
+
+CString escapeJsonData(bool expr)
+{
+	return expr ? L"true" : L"false";
+}
+
+CString escapeJsonData(float value)
+{
+	CString data;
+	if (value)
+		data.Format(L"%.1f", value);
+	else
+		data = L"0";
+
+	return data;
+}
+
+CString escapeJsonData(__int64 value)
+{
+	CString data;
+	data.Format(L"%llu", value);
+
+	return data;
+}
+
 
 CFunctionPluginPs1Script::CFunctionPluginPs1Script(const CString& script)
 	: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
@@ -254,42 +283,26 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
-		CString name(it->m_name);
-		name.Replace(L"\\", L"\\\\");
-
-		const int f(it->m_name.ReverseFind(L'\\') + 1);
-		const CString file(it->m_name.Mid(f));
-		CString dir(escapeJsonData(it->m_name.Left(f)));
-		dir += L"\\\\";	// Add double \ to avoid escaping the following quote with the single trailing \.
-
-		CString aperture;
-		if (it->m_fAperture)
-			aperture.Format(L"%.1f", it->m_fAperture);
-		else
-			aperture = L"0";
-
-		CString exiftime;
-		exiftime.Format(L"%llu", it->m_exiftime);
-
-		// L"\"\"\"", Escape the quotes in a quoted string.
+		// L"\"\"\"", Escapes the quotes in a quoted string.
 		CString cmd_format(L"{\"\"\"name\"\"\":\"\"\"%1\"\"\",\"\"\"file\"\"\":\"\"\"%2\"\"\",\"\"\"dir\"\"\":\"\"\"%3\"\"\",\"\"\"width\"\"\":%4!d!,\"\"\"height\"\"\":%5!d!,\"\"\"errormsg\"\"\":\"\"\"%6\"\"\",\"\"\"audio\"\"\":%7,\"\"\"video\"\"\":%8,\"\"\"colorprofile\"\"\":%9,\"\"\"gps\"\"\":\"\"\"%10\"\"\",\"\"\"aperture\"\"\":%11,\"\"\"shutterspeed\"\"\":%12!d!,\"\"\"iso\"\"\":%13!d!,\"\"\"exifdate\"\"\":%14,\"\"\"exifdate_str\"\"\":\"\"\"%15\"\"\",\"\"\"model\"\"\":\"\"\"%16\"\"\",\"\"\"lens\"\"\":\"\"\"%17\"\"\",\"\"\"cdata\"\"\":\"\"\"%18\"\"\"}");
 
+		const int f(it->m_name.ReverseFind(L'\\') + 1);
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			name,
-			file,
-			dir,
+			escapeJsonData(it->m_name),
+			it->m_name.Mid(f),
+			escapeJsonData(it->m_name.Left(f)),
 			it->m_OriginalPictureWidth,
 			it->m_OriginalPictureHeight,
-			it->m_ErrorMsg,
-			it->m_bAudio ? L"true" : L"false",
-			it->m_bVideo ? L"true" : L"false",
-			it->m_bColorProfile ? L"true" : L"false",
+			escapeJsonData(it->m_ErrorMsg),
+			escapeJsonData(it->m_bAudio),
+			escapeJsonData(it->m_bVideo),
+			escapeJsonData(it->m_bColorProfile),
 			escapeJsonData(it->m_GPSdata),
-			aperture,
+			escapeJsonData(it->m_fAperture),
 			it->m_Shutterspeed,
 			it->m_ISO,
-			exiftime,
+			escapeJsonData(it->m_exiftime),
 			it->m_ExifDateTime_display,
 			escapeJsonData(it->m_Model),
 			escapeJsonData(it->m_Lens),

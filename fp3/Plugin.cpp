@@ -3,7 +3,7 @@
 #include "locale.h"
 #include "SampleDlg.h"
 
-// Plugin cpp_fp3
+// Example Plugin cpp_fp3.
 
 enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
 {

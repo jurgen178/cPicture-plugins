@@ -2,6 +2,7 @@
 #include "plugin.h"
 #include "locale.h"
 
+// Example Plugin cpp_fp1.
 
 enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
 {

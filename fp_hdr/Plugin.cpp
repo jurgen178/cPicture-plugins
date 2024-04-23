@@ -198,6 +198,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 	return CFunctionPluginHDR::GetInstance;
 }
 
+
 CFunctionPluginHDR::CFunctionPluginHDR()
 	: m_hwnd(NULL)
 {

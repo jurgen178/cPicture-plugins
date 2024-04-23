@@ -8,24 +8,6 @@ using namespace std;
 
 // Plugin cpp_bat_script
 
-bool CheckFile(const WCHAR* pFile)
-{
-	if (wcslen(pFile))
-	{
-		FILE* infile = NULL;
-		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
-
-		if (err == 0)
-		{
-			fclose(infile);
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
 enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
 {
 	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
@@ -56,10 +38,6 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 	return PLUGIN_TYPE_FUNCTION;
 }
 
-
-//#define GetInstance(n) static CFunctionPlugin* __stdcall GetInstance##n() { return new CFunctionPluginScript(Scripts[n]); };
-//GetInstance(0)
-//static CFunctionPlugin* __stdcall GetInstance0() { return new CFunctionPluginScript(Scripts[0]); };
 
 #include "GetInstance.h"
 
@@ -96,11 +74,30 @@ const int __stdcall GetPluginInit()
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
-	if(k < PluginProcArray.size())
+	if(k >= 0 && k < PluginProcArray.size())
 		return PluginProcArray[k];
 	else
 		return NULL;
 }
+
+
+bool CheckFile(const WCHAR* pFile)
+{
+	if (wcslen(pFile))
+	{
+		FILE* infile = NULL;
+		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
+
+		if (err == 0)
+		{
+			fclose(infile);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 
 CFunctionPluginBatScript::CFunctionPluginBatScript(const CString& script)
   :	m_script(script),
