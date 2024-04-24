@@ -1,4 +1,4 @@
-#include "resource.h"		// main symbols
+﻿#include "resource.h"		// main symbols
 #include "stdafx.h"
 #include "plugin.h"
 #include "locale.h"
@@ -123,20 +123,54 @@ bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WC
 
 CString escapeJsonData(CString text)
 {
+	// [{"key'1","value"a","key2","value\b\"}]
+
 	text.Replace(L"'", L"''");
+
+	// [{"key''1","value"a","key2","value\b\"}]
 
 	// embedded json data?
 	if (text.Left(2) == L"[{" && text.Right(2) == L"}]")
 	{
+		// No regex replace available in MFC. Use double group replacement to replace delimiting quotes and inside quotes.
+
+		// [{"key''1","value"a","key2","value\b\"}]
 		text.Replace(L"\\", L"\\\\\\\\");	// \ -> \\\\ 
-		text.Replace(L"\"", L"\\\\\"\"");	// " -> \\""
 
-		// " inside quoted string -> \\\\\\""
-
-		// ,""cdata"":""[{\\""name\\"":\\""Pike-Place-Market-Kreuzung-360x180.jpg\\"",\\""dir\\"":\\""C:\\\\Bilder\\\\\\\\\\"",\\""model\\"":\\""[NIKON Z 30] \\"",\\""settings\\"":\\""1/1250s ISO 100/21� \\"",\\""contains\\"":\\""Kommentar, XMP, Farbprofil, \\"",\\""gps\\"":\\""N 47� 37'' 0,872498\\\\\\"" W 122� 19'' 32,021484\\"",\\""file_size\\"":\\""835 KB (855189 Bytes)\\"",\\""file_create_date\\"":\\""Dienstag, 19. M�rz 2024 um 11:49:29 Uhr\\"",\\""file_modified_date\\"":\\""Dienstag, 19. M�rz 2024 um 11:49:29 Uhr\\"",\\""exif_date\\"":\\""Dienstag, 19. M�rz 2024 um 11:49:29 Uhr\\""}]""
+		// [{"key''1","value"a","key2","value\\\\b\\\\"}]
 		
-		// Add double \ to avoid escaping the following quote when text ends with a \ and followed by a ".
-		text.Replace(L"\\\\\\\\\\\\\"\"", L"\\\\\\\\\\\\\\\\\\\\\"\"");	// \\\\ \\""  -  \\\\ \\\\ \\""
+		// Escape delimiter quotes using a uncommon letter ⱦ.
+		text.Replace(L"{\"", L"{\\\\ⱦⱦ");	// " -> \\""
+		text.Replace(L":\"", L":\\\\ⱦⱦ");
+		text.Replace(L"\":", L"\\\\ⱦⱦ:");
+		text.Replace(L",\"", L",\\\\ⱦⱦ");
+		text.Replace(L"\",", L"\\\\ⱦⱦ,");
+		text.Replace(L"\"}", L"\\\\ⱦⱦ}");
+
+		// [{\\ⱦⱦkey''1\\ⱦⱦ,\\ⱦⱦvalue"a\\ⱦⱦ,\\ⱦⱦkey2\\ⱦⱦ,\\ⱦⱦvalue\\\\b\\\\\\ⱦⱦ}]
+
+		// All remaining quotes are now quotes inside of a quoted string.
+		// Now escape " inside quoted string -> \\\\\\""
+		text.Replace(L"\"", L"\\\\\\\\\\\\\"\"");	// " -> \\\\\\""
+
+		// [{\\ⱦⱦkey''1\\ⱦⱦ,\\ⱦⱦvalue\\\\\\""a\\ⱦⱦ,\\ⱦⱦkey2\\ⱦⱦ,\\ⱦⱦvalue\\\\b\\\\\\ⱦⱦ}]
+
+		// Replace uncommon letter back to escaped quotes.
+		text.Replace(L"{\\\\ⱦⱦ", L"{\\\\\"\"");
+		text.Replace(L":\\\\ⱦⱦ", L":\\\\\"\"");
+		text.Replace(L"\\\\ⱦⱦ:", L"\\\\\"\":");
+		text.Replace(L",\\\\ⱦⱦ", L",\\\\\"\"");
+		text.Replace(L"\\\\ⱦⱦ,", L"\\\\\"\",");
+		text.Replace(L"\\\\ⱦⱦ}", L"\\\\\"\"}");
+
+		// [{\\""key''1\\"",\\""value\\\\\\""a\\"",\\""key2\\"",\\""value\\\\b\\\\\\""}]
+
+		// trailing \ : "text\"
+		// Add double \ escaped \\ to avoid escaping the following quote when text ends with a \ and followed by a ".
+		text.Replace(L"\\\\\\\\\\\\\"\",", L"\\\\\\\\\\\\\\\\\\\\\"\",");	// \\\\ \\""  -  \\\\ \\\\ \\"" 
+		text.Replace(L"\\\\\\\\\\\\\"\"}", L"\\\\\\\\\\\\\\\\\\\\\"\"}");
+
+		// [{\\""key''1\\"",\\""value\\\\\\""a\\"",\\""key2\\"",\\""value\\\\b\\\\\\\\\\""}]
 	}
 	else
 	{
@@ -283,14 +317,14 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	//	{
 	//		"name": "C:\\Bilder\\Pike-Place-Market-Kreuzung-360x180.jpg",
 	//		"file" : "Pike-Place-Market-Kreuzung-360x180.jpg",
-	//		"dir" : "C:\\Bilder\\\\",
+	//		"dir" : "C:\\Bilder\\",
 	//		"width" : 1624,
 	//		"height" : 812,
 	//		"errormsg" : "",
 	//		"audio" : false,
 	//		"video" : false,
 	//		"colorprofile" : true,
-	//		"gps" : "N 47� 37'' 0,872498\" W 122� 19'' 32,021484\"",
+	//		"gps" : "N 47° 37' 0,872498\" W 122° 19' 32,021484\"",
 	//		"aperture" : 0,
 	//		"shutterspeed" : 1250,
 	//		"iso" : 100,
@@ -302,7 +336,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	//	{
 	//		"name": "C:\\Bilder\\DSC_4409.JPG",
 	//		"file" : "DSC_4409.JPG",
-	//		"dir" : "C:\\Bilder\\\\",
+	//		"dir" : "C:\\Bilder\\",
 	//		"width" : 5568,
 	//		"height" : 3712,
 	//		"errormsg" : "",
@@ -317,7 +351,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	//		"exifdate_str" : "31.03.2024 14:30:24",
 	//		"model" : "NIKON Z 30 ",
 	//		"lens" : "16-50mm f/3,5-6,3 VR f=30mm/45mm",
-	//		"cdata" : "[{\"name\":\"DSC_4409.JPG\",\"dir\":\"C:\\\\Bilder\\\\\",\"model\":\"NIKON Z 30 \",\"settings\":\"f/4,8 ISO 100/21� 16-50mm f/3,5-6,3 VR f=30mm/45mm\",\"contains\":\"XMP, Farbprofil, \",\"gps\":\",\"file_size\":\"9,3 MB (9755433 Bytes)\",\"file_create_date\":\"Sonntag, 31. M�rz 2024 um 14:30:24 Uhr\",\"file_modified_date\":\"Sonntag, 31. M�rz 2024 um 14:56:16 Uhr\",\"exif_date\":\"Sonntag, 31. M�rz 2024 um 14:30:24 Uhr\"}]"
+	//		"cdata" : "[{\"name\":\"DSC_4409.JPG\",\"dir\":\"C:\\\\Bilder\\\\\",\"model\":\"NIKON Z 30 \",\"settings\":\"f/4,8 ISO 100/21° 16-50mm f/3,5-6,3 VR f=30mm/45mm\",\"contains\":\"XMP, Farbprofil, \",\"gps\":\",\"file_size\":\"9,3 MB (9755433 Bytes)\",\"file_create_date\":\"Sonntag, 31. März 2024 um 14:30:24 Uhr\",\"file_modified_date\":\"Sonntag, 31. März 2024 um 14:56:16 Uhr\",\"exif_date\":\"Sonntag, 31. März 2024 um 14:30:24 Uhr\"}]"
 	//	}
 	//]
 
@@ -327,7 +361,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
-		// L"\"\"\"", Escapes the quotes in a quoted string.
+		// L"\"\"", Escapes the quotes in a quoted string.
 		CString cmd_format(L"{\"\"name\"\":\"\"%1\"\",\"\"file\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"errormsg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
 
 		const int f(it->m_name.ReverseFind(L'\\') + 1);
