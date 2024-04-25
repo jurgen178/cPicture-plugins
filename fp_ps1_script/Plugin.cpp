@@ -121,7 +121,7 @@ bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WC
 	return def;
 }
 
-CString escapeJsonData(CString text)
+CString escapeCmdLineJsonData(CString text)
 {
 	// [{"key'1","value"a","key2","value\b\"}]
 
@@ -188,12 +188,12 @@ CString escapeJsonData(CString text)
 	return text;
 }
 
-CString escapeJsonData(bool expr)
+CString escapeCmdLineJsonData(bool expr)
 {
 	return expr ? L"true" : L"false";
 }
 
-CString escapeJsonData(float value)
+CString escapeCmdLineJsonData(float value)
 {
 	CString data;
 	if (value)
@@ -204,7 +204,7 @@ CString escapeJsonData(float value)
 	return data;
 }
 
-CString escapeJsonData(__int64 value)
+CString escapeCmdLineJsonData(__int64 value)
 {
 	CString data;
 	data.Format(L"%llu", value);
@@ -241,8 +241,8 @@ struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const v
 	if (!bScript)
 	{
 		const CString path(L".");
-		WCHAR abs_path[MAX_PATH];
-		memset(abs_path, 0, sizeof(abs_path));
+		WCHAR abs_path[MAX_PATH] = { 0 };
+
 		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
 
@@ -291,7 +291,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 
 	// Read the first 1024 chars to get the console and noexit flags.
 	const int textSize(1024);
-	unsigned char Text[textSize];
+	unsigned char Text[textSize] = { 0 };
 
 	FILE* infile = NULL;
 	const errno_t err(_wfopen_s(&infile, m_script, L"rb"));
@@ -370,24 +370,24 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		const int f(it->m_name.ReverseFind(L'\\') + 1);
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			escapeJsonData(it->m_name),
+			escapeCmdLineJsonData(it->m_name),
 			it->m_name.Mid(f),
-			escapeJsonData(it->m_name.Left(f)),
+			escapeCmdLineJsonData(it->m_name.Left(f)),
 			it->m_OriginalPictureWidth,
 			it->m_OriginalPictureHeight,
-			escapeJsonData(it->m_ErrorMsg),
-			escapeJsonData(it->m_bAudio),
-			escapeJsonData(it->m_bVideo),
-			escapeJsonData(it->m_bColorProfile),
-			escapeJsonData(it->m_GPSdata),
-			escapeJsonData(it->m_fAperture),
+			escapeCmdLineJsonData(it->m_ErrorMsg),
+			escapeCmdLineJsonData(it->m_bAudio),
+			escapeCmdLineJsonData(it->m_bVideo),
+			escapeCmdLineJsonData(it->m_bColorProfile),
+			escapeCmdLineJsonData(it->m_GPSdata),
+			escapeCmdLineJsonData(it->m_fAperture),
 			it->m_Shutterspeed,
 			it->m_ISO,
-			escapeJsonData(it->m_exiftime),
+			escapeCmdLineJsonData(it->m_exiftime),
 			it->m_ExifDateTime_display,
-			escapeJsonData(it->m_Model),
-			escapeJsonData(it->m_Lens),
-			escapeJsonData(it->m_cdata)
+			escapeCmdLineJsonData(it->m_Model),
+			escapeCmdLineJsonData(it->m_Lens),
+			escapeCmdLineJsonData(it->m_cdata)
 		);
 
 		// No trailing separator for the last array element.
