@@ -4,6 +4,8 @@
 #include "locale.h"
 #include <io.h>
 
+// https://learn.microsoft.com/en-us/visualstudio/test/how-to-use-microsoft-test-framework-for-cpp?view=vs-2022
+
 #include <vector>
 using namespace std;
 
@@ -105,16 +107,15 @@ bool scanVar(char* Text, char* TxtANSI, WCHAR* TxtUnicode, bool def)
 	char* p = strstr((char*)Text, TxtANSI);
 	if (p)
 	{
-		p += strlen(TxtANSI);
-		return strstr(p, trueTxtANSI) != NULL;
+		// Text in ANSI 8bit found.
+		return true;
 	}
 	else
 	{
 		WCHAR* pw = wcsstr((WCHAR*)Text, TxtUnicode);
 		if (pw)
 		{
-			pw += wcslen(TxtUnicode);
-			return wcsstr(pw, trueTxtUnicode) != NULL;
+			return true;
 		}
 	}
 
