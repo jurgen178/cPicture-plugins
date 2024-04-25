@@ -100,7 +100,7 @@ bool CheckFile(const WCHAR* pFile)
 }
 
 
-bool scanVar(char* Text, char* TxtANSI, char* trueTxtANSI, WCHAR* TxtUnicode, WCHAR* trueTxtUnicode, bool def)
+bool scanVar(char* Text, char* TxtANSI, WCHAR* TxtUnicode, bool def)
 {
 	char* p = strstr((char*)Text, TxtANSI);
 	if (p)
@@ -271,23 +271,23 @@ bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& _pi
 const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 {
 	//# plugin variables
-	//# displays a console, use this option for scripts with text output
+	//
+	//# console=true displays a console, use this option for scripts with text output.
 	//# Do not remove the # on the following line:
-	//#[console=false]
-	// 
-	//# noexit keeps the powershell console open, remove this option to have the console closed when processing is done
-	//# Do not remove the # on the following line :
+	//#[console=true]
+	//
+	//# noexit=true keeps the console open, set to 'false' to have the console closed when processing is done.
+	//# Do not remove the # on the following line:
 	//#[noexit=false]
+
 
 	bool console(true);
 	bool noexit(false);
 
-	char* consoleTxtANSI = "#[console=";
-	char* noexitTxtANSI = "#[noexit=";
-	char* trueTxtANSI = "true]";
-	WCHAR* consoleTxtUnicode = L"#[console=";
-	WCHAR* noexitTxtUnicode = L"#[noexit=";
-	WCHAR* trueTxtUnicode = L"true]";
+	char* consoleTxtANSI = "#[console=true]";
+	char* noexitTxtANSI = "#[noexit=true]";
+	WCHAR* consoleTxtUnicode = L"#[console=true]";
+	WCHAR* noexitTxtUnicode = L"#[noexit=true]";
 
 	// Read the first 1024 chars to get the console and noexit flags.
 	const int textSize(1024);
@@ -301,8 +301,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		const int size(min(textSize, _filelength(_fileno(infile))));
 		fread((char*)Text, sizeof(char), size, infile);
 
-		console = scanVar((char*)Text, consoleTxtANSI, trueTxtANSI, consoleTxtUnicode, trueTxtUnicode, true);
-		noexit = scanVar((char*)Text, noexitTxtANSI, trueTxtANSI, noexitTxtUnicode, trueTxtUnicode, false);
+		console = scanVar((char*)Text, consoleTxtANSI, consoleTxtUnicode, true);
+		noexit = scanVar((char*)Text, noexitTxtANSI, noexitTxtUnicode, false);
 
 		fclose(infile);
 	}
