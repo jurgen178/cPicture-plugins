@@ -130,7 +130,10 @@ CString escapeJsonData(CString text)
 	// [{"key''1","value"a","key2","value\b\"}]
 
 	// embedded json data?
-	if (text.Left(2) == L"[{" && text.Right(2) == L"}]")
+	CString textNoSpaces(text);
+	textNoSpaces.Replace(L" ", L"");
+
+	if (textNoSpaces.Left(2) == L"[{" && textNoSpaces.Right(2) == L"}]")
 	{
 		// No regex replace available in MFC. Use double group replacement to replace delimiting quotes and inside quotes.
 
