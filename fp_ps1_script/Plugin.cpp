@@ -4,6 +4,8 @@
 #include "locale.h"
 #include <io.h>
 
+// https://learn.microsoft.com/en-us/visualstudio/test/how-to-use-microsoft-test-framework-for-cpp?view=vs-2022
+
 #include <vector>
 using namespace std;
 
@@ -100,22 +102,31 @@ bool CheckFile(const WCHAR* pFile)
 }
 
 
-bool scanVar(char* Text, char* TxtANSI, WCHAR* TxtUnicode, bool def)
+bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 {
-	char* p = strstr((char*)Text, TxtANSI);
-	if (p)
+	CString ScanText(Text);
+
+	// Check if it is Unicode file (only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00)
+	if (ScanText.GetLength() <= 3)
 	{
-		p += strlen(TxtANSI);
-		return strstr(p, trueTxtANSI) != NULL;
+		// Reload text as Unicode (UCS-2).
+		ScanText = (WCHAR*)Text;
 	}
-	else
+
+	ScanText.Replace(L" ", L"");
+
+	CString SearchText;
+
+	SearchText.Format(SearchTextTemplate, L"true");
+	if (ScanText.Find(SearchText) != -1)
 	{
-		WCHAR* pw = wcsstr((WCHAR*)Text, TxtUnicode);
-		if (pw)
-		{
-			pw += wcslen(TxtUnicode);
-			return wcsstr(pw, trueTxtUnicode) != NULL;
-		}
+		return true;
+	}
+
+	SearchText.Format(SearchTextTemplate, L"false");
+	if (ScanText.Find(SearchText) != -1)
+	{
+		return false;
 	}
 
 	return def;
@@ -177,12 +188,16 @@ CString escapeCmdLineJsonData(CString text)
 	}
 	else
 	{
+		// ab"c'1\ 
+
 		text.Replace(L"\\", L"\\\\");	// \ -> \\ 
 		text.Replace(L"\"", L"\\\\\"\"");	// " -> ""
 
 		// Add double \ to avoid escaping the following quote when text ends with a \.
 		if (text.Right(1) == L"\\")
 			text += L"\\\\";
+
+		// ab\\""c''\\1\\\\ 
 	}
 
 	return text;
@@ -284,14 +299,12 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	bool console(true);
 	bool noexit(false);
 
-	char* consoleTxtANSI = "#[console=true]";
-	char* noexitTxtANSI = "#[noexit=true]";
-	WCHAR* consoleTxtUnicode = L"#[console=true]";
-	WCHAR* noexitTxtUnicode = L"#[noexit=true]";
+	const CString consoleSearchTextTemplate("#[console=%s]");
+	const CString noexitSearchTextTemplate("#[noexit=%s]");
 
 	// Read the first 1024 chars to get the console and noexit flags.
 	const int textSize(1024);
-	unsigned char Text[textSize] = { 0 };
+	char Text[textSize] = { 0 };
 
 	FILE* infile = NULL;
 	const errno_t err(_wfopen_s(&infile, m_script, L"rb"));
@@ -299,10 +312,10 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	if (err == 0)
 	{
 		const int size(min(textSize, _filelength(_fileno(infile))));
-		fread((char*)Text, sizeof(char), size, infile);
+		fread(Text, sizeof(char), size, infile);
 
-		console = scanVar((char*)Text, consoleTxtANSI, consoleTxtUnicode, true);
-		noexit = scanVar((char*)Text, noexitTxtANSI, noexitTxtUnicode, false);
+		console = scanBoolVar(Text, consoleSearchTextTemplate, true);
+		noexit = scanBoolVar(Text, noexitSearchTextTemplate, false);
 
 		fclose(infile);
 	}
