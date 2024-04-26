@@ -102,21 +102,22 @@ bool CheckFile(const WCHAR* pFile)
 }
 
 
-bool scanVar(char* Text, char* TxtANSI, WCHAR* TxtUnicode, bool def)
+bool scanBoolVar(CString Text, const CString SearchTextTemplate, bool def)
 {
-	char* p = strstr((char*)Text, TxtANSI);
-	if (p)
+	Text.Replace(L" ", L"");
+
+	CString SearchText;
+
+	SearchText.Format(SearchTextTemplate, L"true");
+	if (Text.Find(SearchText) != -1)
 	{
-		// Text in ANSI 8bit found.
 		return true;
 	}
-	else
+
+	SearchText.Format(SearchTextTemplate, L"false");
+	if (Text.Find(SearchText) != -1)
 	{
-		WCHAR* pw = wcsstr((WCHAR*)Text, TxtUnicode);
-		if (pw)
-		{
-			return true;
-		}
+		return false;
 	}
 
 	return def;
@@ -285,10 +286,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	bool console(true);
 	bool noexit(false);
 
-	char* consoleTxtANSI = "#[console=true]";
-	char* noexitTxtANSI = "#[noexit=true]";
-	WCHAR* consoleTxtUnicode = L"#[console=true]";
-	WCHAR* noexitTxtUnicode = L"#[noexit=true]";
+	const CString consoleSearchTextTemplate("#[console=%s]");
+	const CString noexitSearchTextTemplate("#[noexit=%s]");
 
 	// Read the first 1024 chars to get the console and noexit flags.
 	const int textSize(1024);
@@ -302,8 +301,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		const int size(min(textSize, _filelength(_fileno(infile))));
 		fread((char*)Text, sizeof(char), size, infile);
 
-		console = scanVar((char*)Text, consoleTxtANSI, consoleTxtUnicode, true);
-		noexit = scanVar((char*)Text, noexitTxtANSI, noexitTxtUnicode, false);
+		console = scanBoolVar(Text, consoleSearchTextTemplate, true);
+		noexit = scanBoolVar(Text, noexitSearchTextTemplate, false);
 
 		fclose(infile);
 	}

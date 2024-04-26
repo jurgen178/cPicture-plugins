@@ -4,7 +4,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-extern bool scanVar(char* Text, char* TxtANSI, WCHAR* TxtUnicode, bool def);
+extern bool scanBoolVar(CString Text, const CString SearchTextTemplate, bool def);
 
 
 namespace cppps1scripttest
@@ -13,20 +13,38 @@ namespace cppps1scripttest
 	{
 	public:
 
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(TestScanBoolVar)
 		{
-			char* consoleTxtANSI = "#[console=true]";
-			char* noexitTxtANSI = "#[noexit=true]";
-			WCHAR* consoleTxtUnicode = L"#[console=true]";
-			WCHAR* noexitTxtUnicode = L"#[noexit=true]";
+			const CString consoleSearchTextTemplate("#[console=%s]");
+			const CString noexitSearchTextTemplate("#[noexit=%s]");
 
-			// Read the first 1024 chars to get the console and noexit flags.
 			const int textSize(1024);
-			unsigned char Text[textSize] = { 0 };
+			char TextA[textSize] = { 0 };
+			WCHAR TextW[textSize] = { 0 };
 
-			bool console = scanVar((char*)Text, consoleTxtANSI, consoleTxtUnicode, true);
+			// console=true
+			strcpy(TextA, "abc # [ console=true] def");
+			Assert::IsTrue(scanBoolVar(TextA, consoleSearchTextTemplate, true));
 
-			Assert::IsTrue(console);
+			// console=false
+			strcpy(TextA, "abc #[console = false] def");
+			Assert::IsFalse(scanBoolVar(TextA, consoleSearchTextTemplate, true));
+
+			// console default
+			strcpy(TextA, "abc no variable defined def");
+			Assert::IsTrue(scanBoolVar(TextA, consoleSearchTextTemplate, true));
+
+			// noexit=true
+			wcscpy(TextW, L"abc #[noexit=true ] def");
+			Assert::IsTrue(scanBoolVar(TextW, noexitSearchTextTemplate, false));
+
+			// noexit=false
+			wcscpy(TextW, L"abc #[noexit=false] def");
+			Assert::IsFalse(scanBoolVar(TextW, noexitSearchTextTemplate, false));
+
+			// noexit default
+			wcscpy(TextW, L"abc no variable defined def");
+			Assert::IsFalse(scanBoolVar(TextW, noexitSearchTextTemplate, false));
 		}
 	};
 }
