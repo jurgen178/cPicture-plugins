@@ -301,6 +301,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	bool console(true);
 	bool noexit(false);
 
+	// Variable needs to be at the beginning of the line.
 	const CString consoleSearchTextTemplate("\n#[console=%s]");
 	const CString noexitSearchTextTemplate("\n#[noexit=%s]");
 

@@ -70,7 +70,7 @@ foreach ($picture_data in $picture_data_set) {
 
     <# 
         Use ConvertFrom-Json when cdata is a json array to access the data elements.
-        Otherwise the cdata is arbitrary text and use $picture_data.cdata as plain string, for example: Write-Host $picture_data.cdata
+        Otherwise cdata is arbitrary text and use $picture_data.cdata as a string, for example: Write-Host $picture_data.cdata
     #>
 
     # The default setting for the data is a JSON array matching the tooltip data in cPicture.
@@ -78,8 +78,10 @@ foreach ($picture_data in $picture_data_set) {
     $cdata
 
     # Example usage:
-    # Select which data to use.
+
+    # Use specific data field.
     Write-Host $cdata.model -ForegroundColor Yellow
+
     # Enumerate all data.
     Write-Host "$($cdata.psobject.properties.Value.Count) elements:"
     foreach ($p in $cdata.psobject.properties) {
