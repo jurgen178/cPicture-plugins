@@ -106,10 +106,11 @@ bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 {
 	CString ScanText(Text);
 
-	// Check if it is Unicode file (only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00)
+	// Check if it is from a Unicode file (UCS-2, not UTF-8).
+	// Only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00
 	if (ScanText.GetLength() <= 3)
 	{
-		// Reload text as Unicode (UCS-2).
+		// Reload text as Unicode Text (UCS-2).
 		ScanText = (WCHAR*)Text;
 	}
 
