@@ -82,7 +82,7 @@ foreach ($picture_data in $picture_data_set) {
     # Use specific data field.
     Write-Host $cdata.model -ForegroundColor Yellow
 
-    # Enumerate all data.
+    # Enumerate all data fields.
     Write-Host "$($cdata.psobject.properties.Value.Count) elements:"
     foreach ($p in $cdata.psobject.properties) {
         Write-Host "  $($p.Name):$($p.Value)" -ForegroundColor Blue
