@@ -102,20 +102,29 @@ bool CheckFile(const WCHAR* pFile)
 }
 
 
-bool scanBoolVar(CString Text, const CString SearchTextTemplate, bool def)
+bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 {
-	Text.Replace(L" ", L"");
+	CString ScanText(Text);
+
+	// Check if it is Unicode file (only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00)
+	if (ScanText.GetLength() <= 3)
+	{
+		// Reload text as Unicode (UCS-2).
+		ScanText = (WCHAR*)Text;
+	}
+
+	ScanText.Replace(L" ", L"");
 
 	CString SearchText;
 
 	SearchText.Format(SearchTextTemplate, L"true");
-	if (Text.Find(SearchText) != -1)
+	if (ScanText.Find(SearchText) != -1)
 	{
 		return true;
 	}
 
 	SearchText.Format(SearchTextTemplate, L"false");
-	if (Text.Find(SearchText) != -1)
+	if (ScanText.Find(SearchText) != -1)
 	{
 		return false;
 	}
@@ -291,7 +300,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 
 	// Read the first 1024 chars to get the console and noexit flags.
 	const int textSize(1024);
-	unsigned char Text[textSize] = { 0 };
+	char Text[textSize] = { 0 };
 
 	FILE* infile = NULL;
 	const errno_t err(_wfopen_s(&infile, m_script, L"rb"));
@@ -299,7 +308,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	if (err == 0)
 	{
 		const int size(min(textSize, _filelength(_fileno(infile))));
-		fread((char*)Text, sizeof(char), size, infile);
+		fread(Text, sizeof(char), size, infile);
 
 		console = scanBoolVar(Text, consoleSearchTextTemplate, true);
 		noexit = scanBoolVar(Text, noexitSearchTextTemplate, false);
