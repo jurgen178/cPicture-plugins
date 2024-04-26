@@ -72,7 +72,7 @@ namespace unittest
 
 		TEST_METHOD(TestEscapeCmdLineJsonData2)
 		{
-			// abc'1\ 
+			// ab"c'1\ 
 			CString text(L"ab\"c'\\1\\");
 
 			CString escapedText = escapeCmdLineJsonData(text);

@@ -188,12 +188,16 @@ CString escapeCmdLineJsonData(CString text)
 	}
 	else
 	{
+		// ab"c'1\ 
+
 		text.Replace(L"\\", L"\\\\");	// \ -> \\ 
 		text.Replace(L"\"", L"\\\\\"\"");	// " -> ""
 
 		// Add double \ to avoid escaping the following quote when text ends with a \.
 		if (text.Right(1) == L"\\")
 			text += L"\\\\";
+
+		// ab\\""c''\\1\\\\ 
 	}
 
 	return text;
