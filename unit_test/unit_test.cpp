@@ -19,33 +19,41 @@ namespace unittest
 #pragma warning (push)
 #pragma warning(disable : 4996)
 
-			const CString consoleSearchTextTemplate("#[console=%s]");
-			const CString noexitSearchTextTemplate("#[noexit=%s]");
+			const CString consoleSearchTextTemplate("\n#[console=%s]");
+			const CString noexitSearchTextTemplate("\n#[noexit=%s]");
 
 			const int textSize(1024);
 			char TextA[textSize] = { 0 };
 			WCHAR TextW[textSize] = { 0 };
 
 			// console=true
-			strcpy(TextA, "abc # [ console=true] def");
+			strcpy(TextA, "abc \n# [ console=true] def");
+			Assert::IsTrue(scanBoolVar(TextA, consoleSearchTextTemplate, true));
+
+			// console=true, var is not at the beginning of the line.
+			strcpy(TextA, "abc #[console = false] def");
 			Assert::IsTrue(scanBoolVar(TextA, consoleSearchTextTemplate, true));
 
 			// console=false
-			strcpy(TextA, "abc #[console = false] def");
+			strcpy(TextA, "abc \n\r#[console = false] def");
 			Assert::IsFalse(scanBoolVar(TextA, consoleSearchTextTemplate, true));
+
+			// console=false, \t added
+			strcpy(TextA, "abc \n\r\t#[console = false] def");
+			Assert::IsTrue(scanBoolVar(TextA, consoleSearchTextTemplate, true));
 
 			// console default
 			strcpy(TextA, "abc no variable defined def");
 			Assert::IsTrue(scanBoolVar(TextA, consoleSearchTextTemplate, true));
 
 			// noexit=true
-			wcscpy(TextW, L"!abc #[noexit=true ] def");
+			wcscpy(TextW, L"!abc \n#[noexit=true ] def");
 			// Add Unicode byte order mark.
 			TextW[0] = 0xfeff;
 			Assert::IsTrue(scanBoolVar((char*)TextW, noexitSearchTextTemplate, false));
 
 			// noexit=false
-			wcscpy(TextW, L"!abc #[noexit=false] def");
+			wcscpy(TextW, L"!abc \n\r#[noexit=false] def");
 			// Add Unicode byte order mark.
 			TextW[0] = 0xfeff;
 			Assert::IsFalse(scanBoolVar((char*)TextW, noexitSearchTextTemplate, false));

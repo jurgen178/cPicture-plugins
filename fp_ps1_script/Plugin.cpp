@@ -115,6 +115,7 @@ bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 	}
 
 	ScanText.Replace(L" ", L"");
+	ScanText.Replace(L"\r", L"");
 
 	CString SearchText;
 
@@ -300,8 +301,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	bool console(true);
 	bool noexit(false);
 
-	const CString consoleSearchTextTemplate("#[console=%s]");
-	const CString noexitSearchTextTemplate("#[noexit=%s]");
+	const CString consoleSearchTextTemplate("\n#[console=%s]");
+	const CString noexitSearchTextTemplate("\n#[noexit=%s]");
 
 	// Read the first 1024 chars to get the console and noexit flags.
 	const int textSize(1024);
@@ -316,7 +317,10 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 		fread(Text, sizeof(char), size, infile);
 
 		console = scanBoolVar(Text, consoleSearchTextTemplate, true);
-		noexit = scanBoolVar(Text, noexitSearchTextTemplate, false);
+
+		// Allow noexit option only when console is displayed.
+		if (console)
+			noexit = scanBoolVar(Text, noexitSearchTextTemplate, false);
 
 		fclose(infile);
 	}
