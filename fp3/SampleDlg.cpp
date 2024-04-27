@@ -202,9 +202,8 @@ void CSampleDlg::OnNMCustomdrawPictureList(NMHDR *pNMHDR, LRESULT *pResult)
 			CString format;
 			m_Format.GetLBText(m_picture_orders[iItem].m_picture_format, format);
 
-			CString text, fmt;
-			fmt.LoadString(IDS_DISPLAY_FORMAT);
-			text.FormatMessage(fmt, 
+			CString text;
+			text.FormatMessage(IDS_DISPLAY_FORMAT,
 				m_picture_data_list[iItem].m_FileName.Mid(m_picture_data_list[iItem].m_FileName.ReverseFind('\\')+1),
 				m_picture_data_list[iItem].m_OriginalPictureWidth,
 				m_picture_data_list[iItem].m_OriginalPictureWidth,

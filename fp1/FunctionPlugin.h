@@ -143,15 +143,15 @@ public:
 	CString name;
 	CString desc;
 	CString file_name;
-	CString file_name_dll;
+	CString file_name2;
 	CString info;
 	CString version;
 	enum PLUGIN_TYPE type;
 
-	// Zum Sortieren der Einträge
+	// Zum Sortieren der Einträge.
 	bool operator < (PluginData& rhs)
 	{
-		return file_name_dll < rhs.file_name_dll;
+		return file_name2 < rhs.file_name2;
 	}
 };
 

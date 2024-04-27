@@ -133,9 +133,8 @@ struct request_info __stdcall CFunctionPluginBatScript::start(HWND hwnd, const v
 		if(_wfullpath(abs_path, path, MAX_PATH-1) == NULL)
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH-1);
 
-		CString msg, fmt;
-		fmt.LoadString(IDS_ERROR_SCRIPT_MISSING);
-		msg.FormatMessage(fmt, m_script, abs_path);
+		CString msg;
+		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, m_script, abs_path);
 
 		AfxMessageBox(msg);
 	}

@@ -4,8 +4,6 @@
 #include "locale.h"
 #include <io.h>
 
-// https://learn.microsoft.com/en-us/visualstudio/test/how-to-use-microsoft-test-framework-for-cpp?view=vs-2022
-
 #include <vector>
 using namespace std;
 
@@ -263,9 +261,8 @@ struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const v
 		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
 
-		CString msg, fmt;
-		fmt.LoadString(IDS_ERROR_SCRIPT_MISSING);
-		msg.FormatMessage(fmt, m_script, abs_path);
+		CString msg;
+		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, m_script, abs_path);
 
 		AfxMessageBox(msg);
 	}
@@ -383,15 +380,17 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
-		// L"\"\"", Escapes the quotes in a quoted string.
+		// \"\" escapes the quotes in a quoted string.
 		CString cmd_format(L"{\"\"file\"\":\"\"%1\"\",\"\"name\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"errormsg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
-
 		const int f(it->m_FileName.ReverseFind(L'\\') + 1);
+		const CString name(it->m_FileName.Mid(f));
+		const CString dir(it->m_FileName.Left(f));
+
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
 			escapeCmdLineJsonData(it->m_FileName),
-			it->m_FileName.Mid(f),
-			escapeCmdLineJsonData(it->m_FileName.Left(f)),
+			escapeCmdLineJsonData(name),
+			escapeCmdLineJsonData(dir),
 			it->m_OriginalPictureWidth,
 			it->m_OriginalPictureHeight,
 			escapeCmdLineJsonData(it->m_ErrorMsg),
