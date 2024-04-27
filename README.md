@@ -88,6 +88,14 @@ foreach ($picture_data in $picture_data_set) {
 ![](doc/fp-ps1.png)   
 
 
+<br>HDR enfuse
+---------------------
+
+This plugin uses the [enfuse tool](https://wiki.panotools.org/Enfuse) to create a HDR picture from at least 2 pictures.  
+
+![](doc/fp-hdr.png)   
+
+
 <br>Structure and details
 ---------------------
 
