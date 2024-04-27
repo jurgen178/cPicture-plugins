@@ -145,8 +145,8 @@ struct request_info __stdcall CFunctionPluginBatScript::start(HWND hwnd, const v
 
 bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& picture_data) 
 { 
-	// %1 name
-	// %2 file
+	// %1 file
+	// %2 name
 	// %3 dir
 	// %4 PictureWidth
 	// %5 PictureHeight
@@ -154,8 +154,8 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 	// %7 number of files
 
 	// Example:
-	// name = "c:\picture_folder\picture.jpg"
-	// file = "picture.jpg"
+	// file = "c:\picture_folder\picture.jpg"
+	// name = "picture.jpg"
 	// dir = "c:\picture_folder\"
 	// width = 1200
 	// height = 900
@@ -164,17 +164,18 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 
 	const CString cmd_format(L" \"%1\" \"%2\" \"%3\" %4!d! %5!d! %6!d! %7!d!");
 	const int f(picture_data.m_FileName.ReverseFind(L'\\')+1);
-	const CString file(picture_data.m_FileName.Mid(f));
+	const CString name(picture_data.m_FileName.Mid(f));
 	const CString dir(picture_data.m_FileName.Left(f));
 
 	CString cmd;
 	cmd.FormatMessage(cmd_format, 
 		picture_data.m_FileName,
-		file, 
+		name,
 		dir,
 		picture_data.m_OriginalPictureWidth,
 		picture_data.m_OriginalPictureHeight,
-		m_i, m_n
+		m_i, 
+		m_n
 		);
 
 	CString script;
