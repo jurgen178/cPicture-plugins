@@ -1,7 +1,7 @@
 # cPicture-plugins
 Plugins for the cPicture App
 
-cPicture supports function plug-ins to process/display selected pictures.  
+[cPicture](http://cpicture.thecloudsite.net/) supports function plug-ins to process/display selected pictures.  
 The Plug-In is a DLL-File located in the same folder as cPicture and starts with 'cpp_'. For example 'cpp_fp1.dll'.  
 Click the function plug-ins button in the menu ribbon to display all installed plug-ins.
 
@@ -36,7 +36,7 @@ Click the function plug-ins button in the menu ribbon to display all installed p
 
 The script files need to be in the same folder. You can use max 255 scripts.  
 
-cPicture.bat example file:
+example.bat file:
 
 
     @echo OFF
