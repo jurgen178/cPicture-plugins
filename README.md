@@ -41,8 +41,8 @@ cPicture.bat example file:
 
     @echo OFF
 
-    echo name  =%1
-    echo file  =%2
+    echo file  =%1
+    echo name  =%2
     echo path  =%3
     echo width =%4
     echo height=%5
