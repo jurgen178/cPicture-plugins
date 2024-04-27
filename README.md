@@ -34,7 +34,7 @@ Click the function plug-ins button in the menu ribbon to display all installed p
 <br>.bat Script
 -----------
 
-The script files need to be in the same folder. You can use max 10 scripts.  
+The script files need to be in the same folder. You can use max 255 scripts.  
 
 cPicture.bat example file:
 
