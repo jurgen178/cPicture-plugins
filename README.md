@@ -107,7 +107,7 @@ A function plug-ins will be executed in 3 steps.
 The function start(...) will be called with a list of all selected pictures.
  In this first sample, all picture names will displayed in the message box:
 
-![](doc/fp-code2.png)   
+![](doc/fp-code1.png)   
 
 
 ### Step 2
