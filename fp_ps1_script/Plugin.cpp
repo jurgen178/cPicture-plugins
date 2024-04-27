@@ -82,6 +82,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 		return NULL;
 }
 
+
 bool CheckFile(const WCHAR* pFile)
 {
 	if (wcslen(pFile))
@@ -98,7 +99,6 @@ bool CheckFile(const WCHAR* pFile)
 
 	return false;
 }
-
 
 bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 {

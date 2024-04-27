@@ -69,7 +69,7 @@ BEGIN
     IDS_ERROR_SCRIPT_MISSING 
                             "Das Skript ""%1"" ist nicht im\nOrdner ""%2"" vorhanden."
     IDS_SCRIPT_SHORT        "Skript '%1'"
-    IDS_SCRIPT_LONG         "Funktionszusatzmodul: Skript '%1'"
+    IDS_SCRIPT_LONG         "Batch-Skript '%1'"
 END
 
 #endif    // German (Germany) resources
