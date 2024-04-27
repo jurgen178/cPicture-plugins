@@ -1,41 +1,38 @@
+<#
+.DESCRIPTION
+    Conversion script from Raw to Tiff via DNG.
+
+    Requires
+    Adobe DNG converter 
+      https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html
+    ImageMagick
+      https://imagemagick.org/script/download.php#windows
+#>
+
 # plugin variables
 
-# console=true displays a console, use this option for scripts with text output
+# console=true (default) displays a console, use this option for scripts with text output.
 # Do not remove the # on the following line:
 #[console=true]
 
-# noexit=true keeps the console open, set to 'false' to have the console closed when processing is done
+# noexit=true keeps the console open, set to 'false' (default) to have the console closed when processing is done.
+# Only used when #[console=true].
 # Do not remove the # on the following line:
 #[noexit=false]
 
-param (
-    [string]$name,
-    [string]$dir,
-    [string]$file,
-    [int]$width,
-    [int]$height,
-    [int]$i,
-    [int]$n
-     )
+param
+(
+    [Parameter(Mandatory = $true)]
+    [string]$picture_data_json
+)
 
-<#
-    -name name
-    -file file
-    -dir dir
-    -width PictureWidth
-    -height PictureHeight
-    -i sequence number
-    -n number of files
+# Get the picture data.
+$picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
 
-    Example:
-    -name c:\picture_folder\picture.jpg
-    -file picture.jpg
-    -dir c:\picture_folder\
-    -width 1024
-    -height 768
-    -i 1
-    -n 4
-#>
+# Print the number of pictures.
+[int]$size = $picture_data_set.length
+Write-Host "Converting $size Raw picture(s):" -ForegroundColor White
+Write-Host ("-" * 30)
 
 <#
 Command Line Options
@@ -57,23 +54,27 @@ The Adobe DNG Converter supports the following command line options:
 Default is the same directory as the input file.
 -o <filename> Specify the name of the output DNG file.
 Default is the name of the input file with the extension
-changed to “.dng”.
+changed to .dng.
 #>
 
-# DNG
-$dng = Join-Path $dir (([io.fileinfo]$file).basename + ".dng")
-"Konvertieren von '{0}' nach '{1}'" -f $name, $dng
-& "C:\Program Files (x86)\Adobe\Adobe DNG Converter.exe" -c -p2 $name | Out-Null # | Out-Null  is to wait until finished
+# Convert the pictures.
+foreach ($picture_data in $picture_data_set) {
 
-# TIFF
-$tiff = Join-Path $dir (([io.fileinfo]$file).basename + ".tiff")
-"Konvertieren von '{0}' nach '{1}'" -f $dng, $tiff
-& "C:\Users\jurgen\Programme\ImageMagick-6.8.8-Q16\convert" ("dng:"+$dng) $tiff | Out-Null
+    # DNG
+    [string]$dng = Join-Path $picture_data.dir (([io.fileinfo]$picture_data.file).basename + ".dng")
+    "Konvertieren von '$($picture_data.file)' nach '$dng'"
+    & "C:\Program Files\Adobe\Adobe DNG Converter\Adobe DNG Converter.exe" -c -p2 $picture_data.file | Out-Null # | Out-Null  is to wait until finished
 
-# 
-Remove-Item $dng
+    # TIFF
+    [string]$tiff = Join-Path $picture_data.dir (([io.fileinfo]$picture_data.file).basename + ".tiff")
+    "Konvertieren von '$dng' nach '$tiff'"
+    & "C:\Program Files\ImageMagick-7.1.1-Q16\magick " $dng $tiff | Out-Null
 
-<#
+    # Remove-Item $dng
+}
+
+
+# Use this to pause the console when using the #[console=true] option.
+# Do not use when #[console=false] as the console is not displayed.
 Write-Host "Press any key to continue ..."
 [void]$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-#>

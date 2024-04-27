@@ -97,7 +97,7 @@ BOOL CSampleDlg::OnInitDialog()
 	int i = 0;
 	for(vector<picture_data>::const_iterator it = m_picture_data_list.begin(); it != m_picture_data_list.end(); ++it, i++)
 	{
-		m_picture_orders.push_back(picture_order(it->m_name));
+		m_picture_orders.push_back(picture_order(it->m_FileName));
 
 		m_PictureListCtrl.InsertItem(i, L"");
 
@@ -205,7 +205,7 @@ void CSampleDlg::OnNMCustomdrawPictureList(NMHDR *pNMHDR, LRESULT *pResult)
 			CString text, fmt;
 			fmt.LoadString(IDS_DISPLAY_FORMAT);
 			text.FormatMessage(fmt, 
-				m_picture_data_list[iItem].m_name.Mid(m_picture_data_list[iItem].m_name.ReverseFind('\\')+1),
+				m_picture_data_list[iItem].m_FileName.Mid(m_picture_data_list[iItem].m_FileName.ReverseFind('\\')+1),
 				m_picture_data_list[iItem].m_OriginalPictureWidth,
 				m_picture_data_list[iItem].m_OriginalPictureWidth,
 				m_picture_orders[iItem].m_number_of_prints,

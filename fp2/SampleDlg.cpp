@@ -96,13 +96,13 @@ void CSampleDlg::OnPaint()
 	{
 		vector<picture_data>::const_iterator it = m_picture_data_list.begin() + m_index;
 
-		m_Info.SetWindowText(it->m_name);
+		m_Info.SetWindowText(it->m_FileName);
 
 		CString str;
 		str.Format(L"%d/%d", m_index+1, size);
 		m_Counter.SetWindowText(str);
 
-		const unsigned int fsize = ::GetFileSize(it->m_name);
+		const unsigned int fsize = ::GetFileSize(it->m_FileName);
 		str.Format(L"%dx%d, %dKB", it->m_OriginalPictureWidth, it->m_OriginalPictureHeight, fsize >> 10);
 		m_Info2.SetWindowText(str);
 

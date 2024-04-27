@@ -1,41 +1,31 @@
+<#
+.DESCRIPTION
+    Conversion script from Raw to DNG.
+
+    Requires
+    Adobe DNG converter 
+      https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html
+#>
+
 # plugin variables
 
-# console=true displays a console, use this option for scripts with text output
+# console=true (default) displays a console, use this option for scripts with text output.
 # Do not remove the # on the following line:
 #[console=true]
 
-# noexit=true keeps the console open, set to 'false' to have the console closed when processing is done
+# noexit=true keeps the console open, set to 'false' (default) to have the console closed when processing is done.
+# Only used when #[console=true].
 # Do not remove the # on the following line:
 #[noexit=false]
 
-param (
-    [string]$name,
-    [string]$dir,
-    [string]$file,
-    [int]$width,
-    [int]$height,
-    [int]$i,
-    [int]$n
-     )
+param
+(
+    [Parameter(Mandatory = $true)]
+    [string]$picture_data_json
+)
 
-<#
-    -name name
-    -file file
-    -dir dir
-    -width PictureWidth
-    -height PictureHeight
-    -i sequence number
-    -n number of files
-
-    Example:
-    -name c:\picture_folder\picture.jpg
-    -file picture.jpg
-    -dir c:\picture_folder\
-    -width 1024
-    -height 768
-    -i 1
-    -n 4
-#>
+# Get the picture data.
+$picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
 
 <#
 Command Line Options
@@ -57,13 +47,21 @@ The Adobe DNG Converter supports the following command line options:
 Default is the same directory as the input file.
 -o <filename> Specify the name of the output DNG file.
 Default is the name of the input file with the extension
-changed to “.dng”.
+changed to .dng.
 #>
 
-"Konvertieren von {0}" -f $name
+# Convert the pictures.
+foreach ($picture_data in $picture_data_set) {
 
-& "C:\Program Files (x86)\Adobe\Adobe DNG Converter.exe" -p2 $name | Out-Null
+    # DNG
+    [string]$dng = Join-Path $picture_data.dir (([io.fileinfo]$picture_data.file).basename + ".dng")
+    "Convert from '$($picture_data.file)' to '$dng'"
+
+    & "C:\Program Files\Adobe\Adobe DNG Converter\Adobe DNG Converter.exe" -c -p2 $picture_data.file | Out-Null # | Out-Null  is to wait until finished
+}
 
 
+# Use this to pause the console when using the #[console=true] option.
+# Do not use when #[console=false] as the console is not displayed.
 Write-Host "Press any key to continue ..."
 [void]$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

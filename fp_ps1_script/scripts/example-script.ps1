@@ -16,14 +16,14 @@
 
 param
 (
-    #[Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$true)]
     [string]$picture_data_json
 )
 
 # Get the picture data.
 $picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
 
-# Number of pictures.
+# Print the number of pictures.
 [int]$size = $picture_data_set.length
 Write-Host "$size picture(s):" -ForegroundColor White
 Write-Host ("-" * 15)
@@ -33,8 +33,8 @@ Write-Host
 [int]$i = 1
 foreach ($picture_data in $picture_data_set) {
     # Example:
-    # $picture_data.name   : c:\Bilder\bild1.jpg
-    # $picture_data.file   : bild1.jpg
+    # $picture_data.file   : c:\Bilder\bild1.jpg
+    # $picture_data.name   : bild1.jpg
     # $picture_data.dir    : c:\Bilder\
     # $picture_data.width  : 3712
     # $picture_data.height : 5568

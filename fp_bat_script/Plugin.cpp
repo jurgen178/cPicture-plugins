@@ -143,7 +143,7 @@ struct request_info __stdcall CFunctionPluginBatScript::start(HWND hwnd, const v
 	return request_info(bScript?PICTURE_LAYOUT_FILE_NAME_ONLY:PICTURE_LAYOUT_CANCEL_REQUEST);
 }
 
-bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& _picture_data) 
+bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& picture_data) 
 { 
 	// %1 name
 	// %2 file
@@ -154,26 +154,26 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& _pi
 	// %7 number of files
 
 	// Example:
-	// %1 c:\picture_folder\picture.jpg
-	// %2 picture.jpg
-	// %3 c:\picture_folder\
-	// %4 1024
-	// %5 768
-	// %6 1
-	// %7 4
+	// name = "c:\picture_folder\picture.jpg"
+	// file = "picture.jpg"
+	// dir = "c:\picture_folder\"
+	// width = 1200
+	// height = 900
+	// sequence number = 0
+	// number of files = 1
 
 	const CString cmd_format(L" \"%1\" \"%2\" \"%3\" %4!d! %5!d! %6!d! %7!d!");
-	const int f(_picture_data.m_name.ReverseFind(L'\\')+1);
-	const CString file(_picture_data.m_name.Mid(f));
-	const CString dir(_picture_data.m_name.Left(f));
+	const int f(picture_data.m_FileName.ReverseFind(L'\\')+1);
+	const CString file(picture_data.m_FileName.Mid(f));
+	const CString dir(picture_data.m_FileName.Left(f));
 
 	CString cmd;
 	cmd.FormatMessage(cmd_format, 
-		_picture_data.m_name, 
+		picture_data.m_FileName,
 		file, 
 		dir,
-		_picture_data.m_OriginalPictureWidth,
-		_picture_data.m_OriginalPictureHeight,
+		picture_data.m_OriginalPictureWidth,
+		picture_data.m_OriginalPictureHeight,
 		m_i, m_n
 		);
 
@@ -195,10 +195,11 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& _pi
 
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
-	m_update_info.push_back(update_info(_picture_data.m_name, UPDATE_TYPE_UPDATED));
+	m_update_info.push_back(update_info(picture_data.m_FileName, UPDATE_TYPE_UPDATED));
 
 	m_i++;
 
+	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 

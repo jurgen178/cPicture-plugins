@@ -1,47 +1,28 @@
-﻿
-# Encrypt the picture
-# Note: change the password and the secret phrases
-
+﻿<#
+.DESCRIPTION
+    Encrypt the pictures.
+    Note: change the password and the secret phrases
+#>
 
 # plugin variables
 
-# console=true displays a console, use this option for scripts with text output
+# console=true (default) displays a console, use this option for scripts with text output.
 # Do not remove the # on the following line:
-#[console=false]
+#[console=true]
 
-# noexit=true keeps the console open, set to 'false' to have the console closed when processing is done
+# noexit=true keeps the console open, set to 'false' (default) to have the console closed when processing is done.
+# Only used when #[console=true].
 # Do not remove the # on the following line:
 #[noexit=false]
 
-param (
-    [string]$name,
-    [string]$dir,
-    [string]$file,
-    [int]$width,
-    [int]$height,
-    [int]$i,
-    [int]$n
-     )
+param
+(
+    [Parameter(Mandatory = $true)]
+    [string]$picture_data_json
+)
 
-<#
-    -name name
-    -file file
-    -dir dir
-    -width PictureWidth
-    -height PictureHeight
-    -i sequence number
-    -n number of files
-
-    Example:
-    -name c:\picture_folder\picture.jpg
-    -file picture.jpg
-    -dir c:\picture_folder\
-    -width 1024
-    -height 768
-    -i 1
-    -n 4
-#>
-
+# Get the picture data.
+$picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
 
 
 # needs to match with 'decrypt.ps1':
@@ -86,6 +67,14 @@ function Encrypt-File($fileName, $encryptedFile)
 	$rijndaelCSP.Clear()
 }
 
-#"Encrypt picture '{0}'" -f $name
 
-Encrypt-File $name
+foreach ($picture_data in $picture_data_set) {
+    "Encrypt '$($picture_data.file)'"
+    Encrypt-File $picture_data.file
+}
+
+
+# Use this to pause the console when using the #[console=true] option.
+# Do not use when #[console=false] as the console is not displayed.
+Write-Host "Press any key to continue ..."
+[void]$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

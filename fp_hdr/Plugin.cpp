@@ -235,6 +235,7 @@ struct request_info __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<
 
 bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& _picture_data)
 {
+	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 

@@ -75,8 +75,9 @@ struct request_info __stdcall CFunctionPluginSample1::start(HWND hwnd, const vec
 bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& _picture_data) 
 { 
 	const CString msg(L"process picture:\n");
-	AfxMessageBox(msg + _picture_data.m_name, MB_ICONINFORMATION);
+	AfxMessageBox(msg + _picture_data.m_FileName, MB_ICONINFORMATION);
 
+	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 

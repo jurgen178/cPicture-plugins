@@ -89,6 +89,7 @@ bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _pict
 		}
 	}
 
+	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 

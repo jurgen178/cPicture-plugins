@@ -54,7 +54,7 @@ struct update_info
 
 struct picture_data
 {
-	picture_data(const CString _name,
+	picture_data(const CString _file,
 		const int _PictureWidth = 0,
 		const int _PictureHeight = 0,
 		const int _OriginalPictureWidth = 0,
@@ -75,7 +75,7 @@ struct picture_data
 		const CString Model = L"",
 		const CString Lens = L"",
 		const CString cdata = L"")
-		: m_name(_name),
+		: m_FileName(_file),
 		m_PictureWidth(_PictureWidth),
 		m_PictureHeight(_PictureHeight),
 		m_OriginalPictureWidth(_OriginalPictureWidth),
@@ -99,7 +99,7 @@ struct picture_data
 	{
 	};
 
-	CString m_name;
+	CString m_FileName;
 	int m_PictureWidth;
 	int m_PictureHeight;
 	int m_OriginalPictureWidth;

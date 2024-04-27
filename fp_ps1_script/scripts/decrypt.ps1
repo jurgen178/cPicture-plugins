@@ -1,46 +1,28 @@
-﻿
-# Decrypt the picture
-# Note: change the password and the secret phrases
-
+﻿<#
+.DESCRIPTION
+    Decrypt the pictures.
+    Note: change the password and the secret phrases
+#>
 
 # plugin variables
 
-# console=true displays a console, use this option for scripts with text output
+# console=true (default) displays a console, use this option for scripts with text output.
 # Do not remove the # on the following line:
-#[console=false]
+#[console=true]
 
-# noexit=true keeps the console open, set to 'false' to have the console closed when processing is done
+# noexit=true keeps the console open, set to 'false' (default) to have the console closed when processing is done.
+# Only used when #[console=true].
 # Do not remove the # on the following line:
 #[noexit=false]
 
-param (
-    [string]$name,
-    [string]$dir,
-    [string]$file,
-    [int]$width,
-    [int]$height,
-    [int]$i,
-    [int]$n
-     )
+param
+(
+    [Parameter(Mandatory = $true)]
+    [string]$picture_data_json
+)
 
-<#
-    -name name
-    -file file
-    -dir dir
-    -width PictureWidth
-    -height PictureHeight
-    -i sequence number
-    -n number of files
-
-    Example:
-    -name c:\picture_folder\picture.jpg
-    -file picture.jpg
-    -dir c:\picture_folder\
-    -width 1024
-    -height 768
-    -i 1
-    -n 4
-#>
+# Get the picture data.
+$picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
 
 
 # needs to match with 'encrypt.ps1':
@@ -53,31 +35,28 @@ $init = "anotherSecretSentence"
 $password = "mySecretPassword!"
 
 
-function Decrypt-File($encryptedFile, $decryptedFile)
-{
-    if($decryptedFile -eq $null)
-    {
+function Decrypt-File($encryptedFile, $decryptedFile) {
+    if ($decryptedFile -eq $null) {
         $decryptedFile = $encryptedFile
     }
 
-	$rijndaelCSP = New-Object System.Security.Cryptography.RijndaelManaged
-	$pass = [System.Text.Encoding]::UTF8.GetBytes($password)
-	$salt = [System.Text.Encoding]::UTF8.GetBytes($salt)
+    $rijndaelCSP = New-Object System.Security.Cryptography.RijndaelManaged
+    $pass = [System.Text.Encoding]::UTF8.GetBytes($password)
+    $salt = [System.Text.Encoding]::UTF8.GetBytes($salt)
 	 
-	$rijndaelCSP.Key = (New-Object Security.Cryptography.PasswordDeriveBytes $pass, $salt, "SHA1", 5).GetBytes(32) #256/8
-	$rijndaelCSP.IV = (New-Object Security.Cryptography.SHA1Managed).ComputeHash( [Text.Encoding]::UTF8.GetBytes($init) )[0..15]
+    $rijndaelCSP.Key = (New-Object Security.Cryptography.PasswordDeriveBytes $pass, $salt, "SHA1", 5).GetBytes(32) #256/8
+    $rijndaelCSP.IV = (New-Object Security.Cryptography.SHA1Managed).ComputeHash( [Text.Encoding]::UTF8.GetBytes($init) )[0..15]
 	 
-	$decryptor = $rijndaelCSP.CreateDecryptor()
+    $decryptor = $rijndaelCSP.CreateDecryptor()
 
     $inputFileStream = New-Object System.IO.FileStream($encryptedFile, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read)
-	$decryptStream = New-Object Security.Cryptography.CryptoStream $inputFileStream, $decryptor, "Read"
+    $decryptStream = New-Object Security.Cryptography.CryptoStream $inputFileStream, $decryptor, "Read"
     
     [int]$dataLen = $inputFileStream.Length
     [byte[]]$inputFileData = New-Object byte[] $dataLen
 
     [int]$decryptLength = 0
-    try
-    {
+    try {
         $decryptLength = $decryptStream.Read($inputFileData, 0, $dataLen)
         $decryptStream.Close()
         $inputFileStream.Close()
@@ -86,16 +65,22 @@ function Decrypt-File($encryptedFile, $decryptedFile)
         $outputFileStream.Write($inputFileData, 0, $decryptLength)
         $outputFileStream.Close()
 
-	    $rijndaelCSP.Clear()
+        $rijndaelCSP.Clear()
     }
-    catch [System.Exception]
-    {
+    catch [System.Exception] {
     }
-    finally
-    {
+    finally {
     }
 }
 
-#"Decrypt picture '{0}'" -f $name
+# Decrypt the pictures.
+foreach ($picture_data in $picture_data_set) {
+    "Decrypt '$($picture_data.file)'"
+    Decrypt-File $picture_data.file
+}
 
-Decrypt-File $name
+
+# Use this to pause the console when using the #[console=true] option.
+# Do not use when #[console=false] as the console is not displayed.
+Write-Host "Press any key to continue ..."
+[void]$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

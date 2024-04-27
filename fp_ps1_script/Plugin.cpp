@@ -273,15 +273,15 @@ struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const v
 	return request_info(bScript ? PICTURE_LAYOUT_FILE_NAME_ONLY : PICTURE_LAYOUT_CANCEL_REQUEST);
 }
 
-bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& _picture_data)
+bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& picture_data)
 {
-	picture_data_list.push_back(_picture_data);
+	picture_data_list.push_back(picture_data);
 
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
-	m_update_info.push_back(update_info(_picture_data.m_name, UPDATE_TYPE_UPDATED));
+	m_update_info.push_back(update_info(picture_data.m_FileName, UPDATE_TYPE_UPDATED));
 
-	// Return false to stop with this picture and continue to the 'end' event.
+	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
@@ -384,14 +384,14 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
 		// L"\"\"", Escapes the quotes in a quoted string.
-		CString cmd_format(L"{\"\"name\"\":\"\"%1\"\",\"\"file\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"errormsg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
+		CString cmd_format(L"{\"\"file\"\":\"\"%1\"\",\"\"name\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"errormsg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
 
-		const int f(it->m_name.ReverseFind(L'\\') + 1);
+		const int f(it->m_FileName.ReverseFind(L'\\') + 1);
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			escapeCmdLineJsonData(it->m_name),
-			it->m_name.Mid(f),
-			escapeCmdLineJsonData(it->m_name.Left(f)),
+			escapeCmdLineJsonData(it->m_FileName),
+			it->m_FileName.Mid(f),
+			escapeCmdLineJsonData(it->m_FileName.Left(f)),
 			it->m_OriginalPictureWidth,
 			it->m_OriginalPictureHeight,
 			escapeCmdLineJsonData(it->m_ErrorMsg),
