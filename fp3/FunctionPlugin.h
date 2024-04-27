@@ -5,26 +5,27 @@
 using namespace std;
 
 // Request-info used in the 'start' event.
-enum PICTURE_LAYOUT
+enum PICTURE_REQUEST_INFO
 {
-	PICTURE_LAYOUT_CANCEL_REQUEST = 0,
-	PICTURE_LAYOUT_FILE_NAME_ONLY,
-	PICTURE_LAYOUT_RGB,
-	PICTURE_LAYOUT_BGR_DWORD_ALIGNED,
+	PICTURE_REQUEST_INFO_CANCEL_REQUEST = 0,
+	PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
+	PICTURE_REQUEST_INFO_RGB_DATA,
+	PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA,
 };
+
 
 struct request_info
 {
-	request_info(const PICTURE_LAYOUT _picture_layout = PICTURE_LAYOUT_FILE_NAME_ONLY,
-		const int _PictureWidth = 0,
-		const int _PictureHeight = 0)
-		: m_picture_layout(_picture_layout),
-		m_PictureWidth(_PictureWidth),
-		m_PictureHeight(_PictureHeight)
+	request_info(const PICTURE_REQUEST_INFO picture_request_info = PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
+		const int PictureWidth = 0,
+		const int PictureHeight = 0)
+		: m_picture_request_info(picture_request_info),
+		m_PictureWidth(PictureWidth),
+		m_PictureHeight(PictureHeight)
 	{
 	};
 
-	PICTURE_LAYOUT m_picture_layout;
+	PICTURE_REQUEST_INFO m_picture_request_info;
 	int m_PictureWidth;
 	int m_PictureHeight;
 };

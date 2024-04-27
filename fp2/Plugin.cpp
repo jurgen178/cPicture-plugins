@@ -73,7 +73,7 @@ struct request_info __stdcall CFunctionPluginSample2::start(HWND hwnd, const vec
 	
 	parent.Detach();
 
-	return request_info(PICTURE_LAYOUT_BGR_DWORD_ALIGNED, SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height());
+	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height());
 }
 
 bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _picture_data) 
@@ -89,7 +89,7 @@ bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _pict
 		}
 	}
 
-	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
+	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 

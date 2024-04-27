@@ -270,7 +270,7 @@ struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const v
 		AfxMessageBox(msg);
 	}
 
-	return request_info(bScript ? PICTURE_LAYOUT_FILE_NAME_ONLY : PICTURE_LAYOUT_CANCEL_REQUEST);
+	return request_info(bScript ? PICTURE_REQUEST_INFO_FILE_NAME_ONLY : PICTURE_REQUEST_INFO_CANCEL_REQUEST);
 }
 
 bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& picture_data)
@@ -281,7 +281,7 @@ bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& pic
 	// This info will be submitted in the 'end' event.
 	m_update_info.push_back(update_info(picture_data.m_FileName, UPDATE_TYPE_UPDATED));
 
-	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
+	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 

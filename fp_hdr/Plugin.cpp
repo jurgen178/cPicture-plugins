@@ -225,7 +225,7 @@ struct request_info __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<
 	if (file_list.size() < 2)
 	{
 		AfxMessageBox(IDS_MIN_SELECTION, MB_ICONINFORMATION);
-		return request_info(PICTURE_LAYOUT_CANCEL_REQUEST);
+		return request_info(PICTURE_REQUEST_INFO_CANCEL_REQUEST);
 	}
 
 	picture_list = file_list;
@@ -235,7 +235,7 @@ struct request_info __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<
 
 bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& _picture_data)
 {
-	// Return true to continue, return false to stop with this picture and continue to the 'end' event.
+	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
