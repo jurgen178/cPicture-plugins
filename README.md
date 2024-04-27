@@ -60,28 +60,40 @@ cPicture.bat example file:
 -----------------
   
 
-cPicture.ps1 example file  
+[example-script.ps1](fp_ps1_script/scripts/example-script.ps1)  
 
+```
+$picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
 
-         param (
-            [string]$name,
-            [string]$file,
-            [string]$path,
-            [int]$width,
-            [int]$height
-            [int]$i,
-            [int]$n
-             )
+# Print the number of pictures.
+[int]$size = $picture_data_set.length
+Write-Host "$size picture(s):" -ForegroundColor White
+Write-Host ("-" * 15)
+Write-Host
 
-        [int]$MP = $width * $height / 1000000
-        "`nImage '{0}' ({4} of {5}) with {1}x{2} pixel ({3}MP)`n" -f $name, $width, $height, $MP, ($i+1), $n
+# Print the picture data.
+[int]$i = 1
+foreach ($picture_data in $picture_data_set) {
 
+    [int]$MP = $picture_data.width * $picture_data.height / 1000000
+    "Image '{0}' ({4} of {5}) with {1}x{2} pixel ({3}MP)" -f $picture_data.file, $picture_data.width, $picture_data.height, $MP, $i, $size
+    "  name='$($picture_data.name)', dir='$($picture_data.dir)'`n"
 
-        Write-Host "Press any key to continue ..."
-        [void]$host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    "-" * 70
 
+    $i++
+}
+```
 
 ![](doc/fp-ps1.png)   
+
+
+<br>HDR enfuse
+---------------------
+
+This plugin uses the [enfuse tool](https://wiki.panotools.org/Enfuse) to create a HDR picture from at least 2 pictures.  
+
+![](doc/fp-hdr.png)   
 
 
 <br>Structure and details
