@@ -54,13 +54,13 @@ struct update_info
 
 struct picture_data
 {
-	picture_data(const CString _file,
-		const int _PictureWidth = 0,
-		const int _PictureHeight = 0,
-		const int _OriginalPictureWidth = 0,
-		const int _OriginalPictureHeight = 0,
-		BYTE* _buf = NULL,
-		const int _len = 0,
+	picture_data(const CString FileName,
+		const int PictureWidth = 0,
+		const int PictureHeight = 0,
+		const int OriginalPictureWidth = 0,
+		const int OriginalPictureHeight = 0,
+		BYTE* buf = NULL,
+		const int len = 0,
 
 		const CString ErrorMsg = L"",
 		const bool bAudio = false,
@@ -75,13 +75,13 @@ struct picture_data
 		const CString Model = L"",
 		const CString Lens = L"",
 		const CString cdata = L"")
-		: m_FileName(_file),
-		m_PictureWidth(_PictureWidth),
-		m_PictureHeight(_PictureHeight),
-		m_OriginalPictureWidth(_OriginalPictureWidth),
-		m_OriginalPictureHeight(_OriginalPictureHeight),
-		m_buf(_buf),
-		m_len(_len),
+		: m_FileName(FileName),
+		m_PictureWidth(PictureWidth),
+		m_PictureHeight(PictureHeight),
+		m_OriginalPictureWidth(OriginalPictureWidth),
+		m_OriginalPictureHeight(OriginalPictureHeight),
+		m_buf(buf),
+		m_len(len),
 
 		m_ErrorMsg(ErrorMsg),
 		m_bAudio(bAudio),
