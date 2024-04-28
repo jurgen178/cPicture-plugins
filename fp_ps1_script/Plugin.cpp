@@ -21,7 +21,7 @@ enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
 
 
 static vector<lpfnFunctionGetInstanceProc> PluginProcArray;
-static vector<CString> Scripts;
+static vector<script_info> Scripts;
 
 
 const CString __stdcall GetPluginVersion()
@@ -41,6 +41,7 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 
 #include "GetInstance.h"
+CString scanDescVar(char* Text);
 
 const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
 
@@ -62,10 +63,29 @@ const int __stdcall GetPluginInit()
 			if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
 			{
 				const CString script(c_file.cFileName);
-				Scripts.push_back(script);
+				CString desc;
+
+				const int textSize(1024);
+				char Text[textSize] = { 0 };
+
+				FILE* infile = NULL;
+				const errno_t err(_wfopen_s(&infile, script, L"rb"));
+
+				if (err == 0)
+				{
+					const int size(min(textSize, _filelength(_fileno(infile))));
+					fread(Text, sizeof(char), size, infile);
+
+					desc = scanDescVar(Text);
+
+					fclose(infile);
+				}
+
+				Scripts.push_back(script_info(script, desc));
 				PluginProcArray.push_back(GetInstanceList[i++]);
 			}
-		} while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
+		} 
+		while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
 
 		FindClose(hFile);
 	}
@@ -130,6 +150,37 @@ bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 	}
 
 	return def;
+}
+
+CString scanDescVar(char* Text)
+{
+	CString ScanText(Text);
+
+	// Check if it is from a Unicode file (UCS-2, not UTF-8).
+	// Only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00
+	if (ScanText.GetLength() <= 3)
+	{
+		// Reload text as Unicode Text (UCS-2).
+		ScanText = (WCHAR*)Text;
+	}
+
+	const CString SearchText(L"\n#[desc=");
+	const int start(ScanText.Find(SearchText));
+	if (start != -1)
+	{
+		const int len(SearchText.GetLength());
+		const int end(ScanText.Find(L"]", start + len));
+		if (end != -1)
+		{
+			CString text(ScanText.Mid(start + len, end - start - len));
+			// Remove beginning comment if multiple lines are used.
+			text.Replace(L"\n#", L"\n");
+
+			return text;
+		}
+	}
+
+	return L"";
 }
 
 CString escapeCmdLineJsonData(CString text)
@@ -228,10 +279,10 @@ CString escapeCmdLineJsonData(__int64 value)
 }
 
 
-CFunctionPluginPs1Script::CFunctionPluginPs1Script(const CString& script)
+CFunctionPluginPs1Script::CFunctionPluginPs1Script(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	: m_PowerShellExe(L"pwsh.exe "),
-	m_script(script)
+	m_script_info(script_info)
 {
 	// Do not set locale to keep decimal point (LC_NUMERIC) for PowerShell.
 	//_wsetlocale(LC_ALL, L".ACP");
@@ -242,9 +293,9 @@ struct PluginData __stdcall CFunctionPluginPs1Script::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.file_name = m_script;
-	pluginData.name.FormatMessage(IDS_SCRIPT_SHORT, m_script);
-	pluginData.desc.FormatMessage(IDS_SCRIPT_LONG, m_script.Left(m_script.ReverseFind(L'.')));
+	pluginData.file_name = m_script_info.script;
+	pluginData.name.FormatMessage(IDS_SCRIPT_NAME, m_script_info.script.Left(m_script_info.script.ReverseFind(L'.')));
+	pluginData.desc = m_script_info.desc.IsEmpty() ? pluginData.name : m_script_info.desc;
 
 	return pluginData;
 }
@@ -252,7 +303,7 @@ struct PluginData __stdcall CFunctionPluginPs1Script::get_plugin_data()
 
 struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const vector<const WCHAR*>& file_list)
 {
-	const bool bScript(CheckFile(m_script));
+	const bool bScript(CheckFile(m_script_info.script));
 	if (!bScript)
 	{
 		const CString path(L".");
@@ -262,7 +313,7 @@ struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const v
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
 
 		CString msg;
-		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, m_script, abs_path);
+		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, m_script_info.script, abs_path);
 
 		AfxMessageBox(msg);
 	}
@@ -307,7 +358,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	char Text[textSize] = { 0 };
 
 	FILE* infile = NULL;
-	const errno_t err(_wfopen_s(&infile, m_script, L"rb"));
+	const errno_t err(_wfopen_s(&infile, m_script_info.script, L"rb"));
 
 	if (err == 0)
 	{
@@ -328,7 +379,7 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	if (noexit)
 		script += L"-noexit ";	// -noexit keeps the powershell console open
 
-	script += L"-Command \".\\" + m_script + L" ";
+	script += L"-Command \".\\" + m_script_info.script + L" ";
 
 	// Add picture data as json.
 

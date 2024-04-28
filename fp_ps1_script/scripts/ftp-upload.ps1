@@ -1,17 +1,19 @@
 <#
 .DESCRIPTION
-    Example script upload pictures to FTP server.
+    Example script to upload pictures to a FTP server.
 #>
 
 # plugin variables
+# Do not remove the leading # of the variable #[...]:
+
+# Optional description.
+#[desc=Example script to upload pictures to a FTP server]
 
 # console=true (default) displays a console, use this option for scripts with text output.
-# Do not remove the # on the following line:
 #[console=true]
 
 # noexit=true keeps the console open, set to 'false' (default) to have the console closed when processing is done.
 # Only used when #[console=true].
-# Do not remove the # on the following line:
 #[noexit=false]
 
 param

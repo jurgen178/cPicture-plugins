@@ -40,6 +40,18 @@ enum UPDATE_TYPE
 	UPDATE_TYPE_DELETED,
 };
 
+struct script_info
+{
+	script_info(const CString& script, const CString& desc)
+		: script(script),
+		desc(desc)
+	{
+	};
+
+	CString script;
+	CString desc;
+};
+
 struct update_info
 {
 	update_info(const CString& _list_obj = L"", const UPDATE_TYPE _update_type = UPDATE_TYPE_UNCHANGED)

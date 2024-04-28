@@ -5,11 +5,11 @@
 class CFunctionPluginPs1Script : public CFunctionPlugin
 {
 public:
-	CFunctionPluginPs1Script(const CString& script);
+	CFunctionPluginPs1Script(const script_info script_info);
 
 protected:
 	const CString m_PowerShellExe;
-	CString m_script;
+	script_info m_script_info;
 	vector<picture_data> picture_data_list;
 
 public:

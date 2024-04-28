@@ -4,8 +4,7 @@
 //
 #define VS_VERSION_INFO                 1
 #define IDS_ERROR_SCRIPT_MISSING        104
-#define IDS_SCRIPT_SHORT                105
-#define IDS_SCRIPT_LONG                 106
+#define IDS_SCRIPT_NAME                 105
 
 // Next default values for new objects
 // 

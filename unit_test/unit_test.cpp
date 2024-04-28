@@ -47,6 +47,10 @@ namespace unittest
 			Assert::IsTrue(scanBoolVar(TextA, consoleSearchTextTemplate, true));
 
 			// noexit=true
+			wcscpy(TextW, L"abc \n#[noexit=true ] def");
+			Assert::IsTrue(scanBoolVar((char*)TextW, noexitSearchTextTemplate, false));
+
+			// noexit=true
 			wcscpy(TextW, L"!abc \n#[noexit=true ] def");
 			// Add Unicode byte order mark.
 			TextW[0] = 0xfeff;
@@ -63,6 +67,36 @@ namespace unittest
 			// Add Unicode byte order mark.
 			TextW[0] = 0xfeff;
 			Assert::IsFalse(scanBoolVar((char*)TextW, noexitSearchTextTemplate, false));
+
+#pragma warning (pop)
+		}
+
+		TEST_METHOD(TestScanDescVar)
+		{
+#pragma warning (push)
+#pragma warning(disable : 4996)
+
+			const int textSize(1024);
+			char TextA[textSize] = { 0 };
+			WCHAR TextW[textSize] = { 0 };
+
+			strcpy(TextA, "abc \n#[desc=This is a test description] def");
+			Assert::AreEqual(L"This is a test description", scanDescVar(TextA));
+
+			//var is not at the beginning of the line.
+			strcpy(TextA, "abc #[desc=This is a test description] def");
+			Assert::AreEqual(L"", scanDescVar(TextA));
+
+			strcpy(TextA, "abc no variable defined def");
+			Assert::AreEqual(L"", scanDescVar(TextA));
+
+			wcscpy(TextW, L"abc \n#[desc=This is a test description] def");
+			Assert::AreEqual(L"This is a test description", scanDescVar((char*)TextW));
+
+			wcscpy(TextW, L"!abc \n#[desc=This is a test description] def");
+			// Add Unicode byte order mark.
+			TextW[0] = 0xfeff;
+			Assert::AreEqual(L"This is a test description", scanDescVar((char*)TextW));
 
 #pragma warning (pop)
 		}
