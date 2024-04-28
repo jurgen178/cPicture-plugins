@@ -12,8 +12,7 @@
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]
 
-# noexit=true keeps the console open, set to 'false' (default) to have the console closed when processing is done.
-# Only used when #[console=true].
+# noexit=true keeps the console open, set to 'false' (default) to have the console closed when processing is done. This variable is only used when #[console=true].
 #[noexit=false]
 
 param
