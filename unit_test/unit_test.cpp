@@ -99,7 +99,7 @@ namespace unittest
 			wcscpy(TextW, L"<#\n    .Description\n    This is a test description\n.NOTES notes#>");
 			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
 
-			wcscpy(TextW, L"!<#\n    .DESCRIPTION\n    This is a test description\n#>");
+			wcscpy(TextW, L"!<#\n    .DESCRIPTION\n    This is a test description\n.NOTES notes\n    .PARAMETER\n    parameter#>");
 			// Add Unicode byte order mark.
 			TextW[0] = 0xfeff;
 			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
