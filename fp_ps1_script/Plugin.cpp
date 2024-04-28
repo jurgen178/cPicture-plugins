@@ -65,7 +65,8 @@ const int __stdcall GetPluginInit()
 				const CString script(c_file.cFileName);
 				CString desc;
 
-				const int textSize(1024);
+				// Read the first 2048 chars to get the description variable.
+				const int textSize(2048);
 				char Text[textSize] = { 0 };
 
 				FILE* infile = NULL;
@@ -164,6 +165,7 @@ CString scanDescVar(char* Text)
 		ScanText = (WCHAR*)Text;
 	}
 
+	// Variable needs to be at the beginning of the line.
 	const CString SearchText(L"\n#[desc=");
 	const int start(ScanText.Find(SearchText));
 	if (start != -1)
@@ -353,8 +355,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	const CString consoleSearchTextTemplate("\n#[console=%s]");
 	const CString noexitSearchTextTemplate("\n#[noexit=%s]");
 
-	// Read the first 1024 chars to get the console and noexit flags.
-	const int textSize(1024);
+	// Read the first 2048 chars to get the console and noexit variables.
+	const int textSize(2048);
 	char Text[textSize] = { 0 };
 
 	FILE* infile = NULL;
