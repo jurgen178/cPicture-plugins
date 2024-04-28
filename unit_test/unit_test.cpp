@@ -71,7 +71,7 @@ namespace unittest
 #pragma warning (pop)
 		}
 
-		TEST_METHOD(TestScanDescVar)
+		TEST_METHOD(TestScanDescription)
 		{
 #pragma warning (push)
 #pragma warning(disable : 4996)
@@ -80,23 +80,32 @@ namespace unittest
 			char TextA[textSize] = { 0 };
 			WCHAR TextW[textSize] = { 0 };
 
-			strcpy(TextA, "abc \n#[desc=This is a test description] def");
-			Assert::AreEqual(L"This is a test description", scanDescVar(TextA));
+			//strcpy(TextA, "<#\n    .description\n    This is a test description\n#>");
+			strcpy(TextA, "<#\n    .description\n    This is a\ntest description\n#>");
+			Assert::AreEqual(L"This is a\ntest description", scanDescription(TextA));
 
-			//var is not at the beginning of the line.
-			strcpy(TextA, "abc #[desc=This is a test description] def");
-			Assert::AreEqual(L"", scanDescVar(TextA));
+			strcpy(TextA, "<#\r\n    .description\r\n    This is a test description\r\n#>");
+			Assert::AreEqual(L"This is a test description", scanDescription(TextA));
 
-			strcpy(TextA, "abc no variable defined def");
-			Assert::AreEqual(L"", scanDescVar(TextA));
+			strcpy(TextA, "abc no DESCRIPTION defined def");
+			Assert::AreEqual(L"", scanDescription(TextA));
 
-			wcscpy(TextW, L"abc \n#[desc=This is a test description] def");
-			Assert::AreEqual(L"This is a test description", scanDescVar((char*)TextW));
+			strcpy(TextA, "<# .DESCRIPTION This is a test description #>");
+			Assert::AreEqual(L"", scanDescription((char*)TextW));
 
-			wcscpy(TextW, L"!abc \n#[desc=This is a test description] def");
+			wcscpy(TextW, L"<#\n    .Description\n    This is a test description\n#>");
+			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
+
+			wcscpy(TextW, L"<#\n    .Description\n    This is a test description\n.NOTES notes#>");
+			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
+
+			wcscpy(TextW, L"!<#\n    .DESCRIPTION\n    This is a test description\n#>");
 			// Add Unicode byte order mark.
 			TextW[0] = 0xfeff;
-			Assert::AreEqual(L"This is a test description", scanDescVar((char*)TextW));
+			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
+
+			wcscpy(TextW, L"abc no DESCRIPTION defined def");
+			Assert::AreEqual(L"", scanDescription((char*)TextW));
 
 #pragma warning (pop)
 		}

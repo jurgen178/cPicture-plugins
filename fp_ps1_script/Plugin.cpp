@@ -4,6 +4,7 @@
 #include "locale.h"
 #include <io.h>
 
+#include <regex>
 #include <vector>
 using namespace std;
 
@@ -41,7 +42,7 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 
 #include "GetInstance.h"
-CString scanDescVar(char* Text);
+CString scanDescription(char* Text);
 
 const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
 
@@ -77,7 +78,7 @@ const int __stdcall GetPluginInit()
 					const int size(min(textSize, _filelength(_fileno(infile))));
 					fread(Text, sizeof(char), size, infile);
 
-					desc = scanDescVar(Text);
+					desc = scanDescription(Text);
 
 					fclose(infile);
 				}
@@ -153,7 +154,7 @@ bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 	return def;
 }
 
-CString scanDescVar(char* Text)
+CString scanDescription(char* Text)
 {
 	CString ScanText(Text);
 
@@ -165,21 +166,29 @@ CString scanDescVar(char* Text)
 		ScanText = (WCHAR*)Text;
 	}
 
-	// Variable needs to be at the beginning of the line.
-	const CString SearchText(L"\n#[desc=");
-	const int start(ScanText.Find(SearchText));
-	if (start != -1)
-	{
-		const int len(SearchText.GetLength());
-		const int end(ScanText.Find(L"]", start + len));
-		if (end != -1)
-		{
-			CString text(ScanText.Mid(start + len, end - start - len));
-			// Remove beginning comment if multiple lines are used.
-			text.Replace(L"\n#", L"\n");
+	ScanText.Replace(L"\r", L"");
 
-			return text;
-		}
+	// std:regex multiline
+	ScanText.Replace(L"\n", L"\\n");
+
+	//<#
+	//.DESCRIPTION
+	//    Example script to print the picture data.
+	//.NOTES
+	//    notes
+	//#>
+
+	std::wstring input(ScanText);
+	std::wregex regex(L"<#.+[.]DESCRIPTION(?: |\\\\n)*(.+?)(?: |\\\\n)*(?:.NOTES|#>)", std::regex::icase);
+	std::wsmatch match;
+
+	if (std::regex_search(input, match, regex))
+	{
+		std::wstring r = match[1];
+		CString m(r.c_str());
+		m.Replace(L"\\n", L"\n");
+
+		return m;
 	}
 
 	return L"";
@@ -199,7 +208,7 @@ CString escapeCmdLineJsonData(CString text)
 
 	if (textNoSpaces.Left(2) == L"[{" && textNoSpaces.Right(2) == L"}]")
 	{
-		// No regex replace available in MFC. Use double group replacement to replace delimiting quotes and inside quotes.
+		// Use double group replacement to replace delimiting quotes and inside quotes.
 
 		// [{"key''1","value"a","key2","value\b\"}]
 		text.Replace(L"\\", L"\\\\\\\\");	// \ -> \\\\ 
