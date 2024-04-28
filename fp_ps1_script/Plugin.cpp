@@ -179,7 +179,7 @@ CString scanDescription(char* Text)
 	//#>
 
 	std::wstring input(ScanText);
-	std::wregex regex(L"<#.+[.]DESCRIPTION(?: |\\\\n)*(.+?)(?: |\\\\n)*(?:.NOTES|#>)", std::regex::icase);
+	std::wregex regex(L"<#.+[.]DESCRIPTION(?: |\\\\n)+(.+?)(?: |\\\\n)+(?:[.][a-z]+(?: |\\\\n)*|#>)", std::regex::icase);
 	std::wsmatch match;
 
 	if (std::regex_search(input, match, regex))
