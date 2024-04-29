@@ -166,6 +166,7 @@ CString scanDescription(char* Text)
 		ScanText = (WCHAR*)Text;
 	}
 
+	// Simplify the line break.
 	ScanText.Replace(L"\r", L"");
 
 	// std:regex multiline
@@ -179,7 +180,7 @@ CString scanDescription(char* Text)
 	//#>
 
 	std::wstring input(ScanText);
-	std::wregex regex(L"<#.+[.]DESCRIPTION(?: |\\\\n)+(.+?)(?: |\\\\n)+(?:[.][a-z]+(?: |\\\\n)*|#>)", std::regex::icase);
+	std::wregex regex(L"<#.+?[.]DESCRIPTION(?: |\\\\n|\\t)+(.+?)(?: |\\\\n|\\t)+(?:[.][a-z]+(?: |\\\\n|\\t)*|#>)", std::regex::icase);
 	std::wsmatch match;
 
 	if (std::regex_search(input, match, regex))
@@ -187,6 +188,7 @@ CString scanDescription(char* Text)
 		std::wstring r = match[1];
 		CString m(r.c_str());
 		m.Replace(L"\\n", L"\n");
+		m.Trim(L" \n\t");
 
 		return m;
 	}

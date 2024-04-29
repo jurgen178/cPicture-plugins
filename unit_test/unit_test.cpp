@@ -81,7 +81,7 @@ namespace unittest
 			WCHAR TextW[textSize] = { 0 };
 
 			//strcpy(TextA, "<#\n    .description\n    This is a test description\n#>");
-			strcpy(TextA, "<#\n    .description\n    This is a\ntest description\n#>");
+			strcpy(TextA, "<#\n    .description\n\t    This is a\ntest description\n#>");
 			Assert::AreEqual(L"This is a\ntest description", scanDescription(TextA));
 
 			strcpy(TextA, "<#\r\n    .description\r\n    This is a test description\r\n#>");
@@ -98,6 +98,9 @@ namespace unittest
 
 			wcscpy(TextW, L"<#\n    .Description\n    This is a test description\n.NOTES notes#>");
 			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
+
+			wcscpy(TextW, L"<#\n.DESCRIPTION\n    Example script to print the picture data\n	\n.NOTES\n    This example is using the default cPicture custom data template\n    for the $picture_data.cdata value.\n    This value can be changed in the Settings (F9).\n    The .DESCRIPTION text is used for the menu tooltip.\n#>");
+			Assert::AreEqual(L"Example script to print the picture data", scanDescription((char*)TextW));
 
 			wcscpy(TextW, L"!<#\n    .DESCRIPTION\n    This is a test description\n.NOTES notes\n    .PARAMETER\n    parameter#>");
 			// Add Unicode byte order mark.
