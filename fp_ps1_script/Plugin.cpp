@@ -61,6 +61,14 @@ const int __stdcall GetPluginInit()
 	if ((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
+
+		//<#
+		//.DESCRIPTION
+		//    Example script to print the picture data.
+		//.NOTES
+		//    notes
+		//#>
+
 		descriptionRegex = std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]+(?:\\s|\\\\n)*|#>)", std::regex::icase);
 
 		do
