@@ -80,35 +80,37 @@ namespace unittest
 			char TextA[textSize] = { 0 };
 			WCHAR TextW[textSize] = { 0 };
 
+			std::wregex descriptionRegex(GetDescriptionRegex());
+
 			//strcpy(TextA, "<#\n    .description\n    This is a test description\n#>");
 			strcpy(TextA, "<#\n    .description\n\t    This is a\ntest\tdescription\n#>");
-			Assert::AreEqual(L"This is a\ntest\tdescription", scanDescription(TextA));
+			Assert::AreEqual(L"This is a\ntest\tdescription", scanDescription(TextA, descriptionRegex));
 
 			strcpy(TextA, "<#\r\n    .description\r\n    This is a test description\r\n#>");
-			Assert::AreEqual(L"This is a test description", scanDescription(TextA));
+			Assert::AreEqual(L"This is a test description", scanDescription(TextA, descriptionRegex));
 
 			strcpy(TextA, "abc no DESCRIPTION defined def");
-			Assert::AreEqual(L"", scanDescription(TextA));
+			Assert::AreEqual(L"", scanDescription(TextA, descriptionRegex));
 
 			strcpy(TextA, "<# .DESCRIPTION This is a test description #>");
-			Assert::AreEqual(L"", scanDescription((char*)TextW));
+			Assert::AreEqual(L"", scanDescription((char*)TextW, descriptionRegex));
 
 			wcscpy(TextW, L"<#\n    .Description\n    This is a test description\n#>");
-			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
+			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW, descriptionRegex));
 
 			wcscpy(TextW, L"<#\n    .Description\n    This is a test description\n.NOTES notes#>");
-			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
+			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW, descriptionRegex));
 
 			wcscpy(TextW, L"<#\n.DESCRIPTION\n    Example script to print the picture data\n	\n.NOTES\n    This example is using the default cPicture custom data template\n    for the $picture_data.cdata value.\n    This value can be changed in the Settings (F9).\n    The .DESCRIPTION text is used for the menu tooltip.\n#>");
-			Assert::AreEqual(L"Example script to print the picture data", scanDescription((char*)TextW));
+			Assert::AreEqual(L"Example script to print the picture data", scanDescription((char*)TextW, descriptionRegex));
 
 			wcscpy(TextW, L"!<#\n    .DESCRIPTION\n    This is a test description\n.NOTES notes\n    .PARAMETER\n    parameter#>");
 			// Add Unicode byte order mark.
 			TextW[0] = 0xfeff;
-			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW));
+			Assert::AreEqual(L"This is a test description", scanDescription((char*)TextW, descriptionRegex));
 
 			wcscpy(TextW, L"abc no DESCRIPTION defined def");
-			Assert::AreEqual(L"", scanDescription((char*)TextW));
+			Assert::AreEqual(L"", scanDescription((char*)TextW, descriptionRegex));
 
 #pragma warning (pop)
 		}

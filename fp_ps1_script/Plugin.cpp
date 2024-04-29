@@ -43,8 +43,8 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 #include "GetInstance.h"
 
-std::wregex descriptionRegex;
-CString scanDescription(char* Text);
+std::wregex GetDescriptionRegex();
+CString scanDescription(char* Text, std::wregex&);
 
 const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
 
@@ -61,15 +61,7 @@ const int __stdcall GetPluginInit()
 	if ((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
-
-		//<#
-		//.DESCRIPTION
-		//    Example script to print the picture data.
-		//.NOTES
-		//    notes
-		//#>
-
-		descriptionRegex = std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]+(?:\\s|\\\\n)*|#>)", std::regex::icase);
+		std::wregex descriptionRegex(GetDescriptionRegex());
 
 		do
 		{
@@ -90,7 +82,7 @@ const int __stdcall GetPluginInit()
 					const int size(min(textSize, _filelength(_fileno(infile))));
 					fread(Text, sizeof(char), size, infile);
 
-					desc = scanDescription(Text);
+					desc = scanDescription(Text, descriptionRegex);
 
 					fclose(infile);
 				}
@@ -166,7 +158,19 @@ bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
 	return def;
 }
 
-CString scanDescription(char* Text)
+std::wregex GetDescriptionRegex()
+{
+	//<#
+	//.DESCRIPTION
+	//    Example script to print the picture data.
+	//.NOTES
+	//    notes
+	//#>
+
+	return std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
+}
+
+CString scanDescription(char* Text, std::wregex& descriptionRegex)
 {
 	CString ScanText(Text);
 
