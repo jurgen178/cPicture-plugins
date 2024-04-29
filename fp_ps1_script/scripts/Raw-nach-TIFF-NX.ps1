@@ -3,7 +3,8 @@
     Conversion script from Raw to Tiff via DNG.
     The selected Raw picture gets converted and opened in NXStudio.
 
-    Requires
+.NOTES
+    Requires:
     Adobe DNG converter 
       https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html
     ImageMagick
@@ -12,10 +13,6 @@
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Conversion script from Raw to Tiff via DNG.
-#The selected Raw picture gets converted and opened in NXStudio.]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]

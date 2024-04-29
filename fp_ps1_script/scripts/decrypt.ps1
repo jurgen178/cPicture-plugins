@@ -1,14 +1,13 @@
 ﻿<#
 .DESCRIPTION
-    Decrypt the pictures.
-    Note: change the password and the secret phrases
+    Decrypt the pictures
+
+.NOTES
+    Change the password and the secret phrases.
 #>
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Decrypt the pictures]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]

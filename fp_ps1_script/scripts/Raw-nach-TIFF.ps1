@@ -1,8 +1,9 @@
 <#
 .DESCRIPTION
-    Conversion script from Raw to Tiff via DNG.
+    Conversion script from Raw to Tiff via DNG
 
-    Requires
+.NOTES
+    Requires:
     Adobe DNG converter 
       https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html
     ImageMagick
@@ -11,9 +12,6 @@
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Conversion script from Raw to Tiff via DNG]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]

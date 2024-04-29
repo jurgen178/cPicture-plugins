@@ -1,13 +1,10 @@
 ﻿<#
 .DESCRIPTION
-    Update Exif data using the exiftool.
+    Update Exif data using the exiftool
 #>
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Update Exif data using the exiftool]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]

@@ -1,15 +1,16 @@
 ﻿<#
 .DESCRIPTION
-    Example script to print the picture data.
+    Example script to print the picture data
+
+.NOTES
+    This example is using the default cPicture custom data template
+    for the $picture_data.cdata value.
+    This value can be changed in the Settings (F9).
+    The .DESCRIPTION text is used for the menu tooltip.
 #>
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Example script to print the picture data.
-#This example is using the default cPicture cdata template
-#which can be changed in the Settings (F9).]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]

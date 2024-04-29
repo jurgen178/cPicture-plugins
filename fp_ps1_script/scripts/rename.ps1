@@ -1,13 +1,10 @@
 <#
 .DESCRIPTION
-    Rename pictures using a custom logic.
+    Rename pictures using a custom logic
 #>
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Rename pictures using a custom logic]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]

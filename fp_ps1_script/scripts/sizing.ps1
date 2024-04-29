@@ -1,13 +1,10 @@
 ﻿<#
 .DESCRIPTION
-    Resize and crop pictures to different sizes using ImageMagick.
+    Resize and crop pictures to different sizes using ImageMagick
 #>
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Resize and crop pictures to different sizes using ImageMagick]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]

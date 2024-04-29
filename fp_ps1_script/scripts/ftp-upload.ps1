@@ -1,13 +1,10 @@
 <#
 .DESCRIPTION
-    Example script to upload pictures to a FTP server.
+    Example script to upload pictures to a FTP server
 #>
 
 # plugin variables
 # Do not remove the leading # of the variable #[...]:
-
-# Optional description.
-#[desc=Example script to upload pictures to a FTP server]
 
 # console=true (default) displays a console, use this option for scripts with text output.
 #[console=true]
