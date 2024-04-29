@@ -81,8 +81,8 @@ namespace unittest
 			WCHAR TextW[textSize] = { 0 };
 
 			//strcpy(TextA, "<#\n    .description\n    This is a test description\n#>");
-			strcpy(TextA, "<#\n    .description\n\t    This is a\ntest description\n#>");
-			Assert::AreEqual(L"This is a\ntest description", scanDescription(TextA));
+			strcpy(TextA, "<#\n    .description\n\t    This is a\ntest\tdescription\n#>");
+			Assert::AreEqual(L"This is a\ntest\tdescription", scanDescription(TextA));
 
 			strcpy(TextA, "<#\r\n    .description\r\n    This is a test description\r\n#>");
 			Assert::AreEqual(L"This is a test description", scanDescription(TextA));

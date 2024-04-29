@@ -42,6 +42,8 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 
 #include "GetInstance.h"
+
+std::wregex descriptionRegex;
 CString scanDescription(char* Text);
 
 const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
@@ -59,6 +61,8 @@ const int __stdcall GetPluginInit()
 	if ((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
+		descriptionRegex = std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]+(?:\\s|\\\\n)*|#>)", std::regex::icase);
+
 		do
 		{
 			if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
@@ -180,10 +184,9 @@ CString scanDescription(char* Text)
 	//#>
 
 	std::wstring input(ScanText);
-	std::wregex regex(L"<#.+?[.]DESCRIPTION(?: |\\\\n|\\t)+(.+?)(?: |\\\\n|\\t)+(?:[.][a-z]+(?: |\\\\n|\\t)*|#>)", std::regex::icase);
 	std::wsmatch match;
 
-	if (std::regex_search(input, match, regex))
+	if (std::regex_search(input, match, descriptionRegex))
 	{
 		std::wstring r = match[1];
 		CString m(r.c_str());
