@@ -70,8 +70,8 @@ const int __stdcall GetPluginInit()
 				const CString script(c_file.cFileName);
 				CString desc;
 
-				// Read the first 2048 chars to get the description variable.
-				const int textSize(2048);
+				// Read the first 4096 chars to get the description text.
+				const int textSize(4096);
 				char Text[textSize] = { 0 };
 
 				FILE* infile = NULL;
@@ -381,8 +381,8 @@ const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
 	const CString consoleSearchTextTemplate("\n#[console=%s]");
 	const CString noexitSearchTextTemplate("\n#[noexit=%s]");
 
-	// Read the first 2048 chars to get the console and noexit variables.
-	const int textSize(2048);
+	// Read the first 4096 chars to get the console and noexit variables.
+	const int textSize(4096);
 	char Text[textSize] = { 0 };
 
 	FILE* infile = NULL;
