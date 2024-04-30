@@ -307,7 +307,7 @@ CString escapeCmdLineJsonData(__int64 value)
 }
 
 
-CFunctionPluginPs1Script::CFunctionPluginPs1Script(const script_info script_info)
+CFunctionPluginScript::CFunctionPluginScript(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	: m_PowerShellExe(L"pwsh.exe "),
 	m_script_info(script_info)
@@ -316,7 +316,7 @@ CFunctionPluginPs1Script::CFunctionPluginPs1Script(const script_info script_info
 	//_wsetlocale(LC_ALL, L".ACP");
 }
 
-struct PluginData __stdcall CFunctionPluginPs1Script::get_plugin_data()
+struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 {
 	struct PluginData pluginData;
 
@@ -329,7 +329,7 @@ struct PluginData __stdcall CFunctionPluginPs1Script::get_plugin_data()
 }
 
 
-struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const vector<const WCHAR*>& file_list)
+struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list)
 {
 	const bool bScript(CheckFile(m_script_info.script));
 	if (!bScript)
@@ -349,7 +349,7 @@ struct request_info __stdcall CFunctionPluginPs1Script::start(HWND hwnd, const v
 	return request_info(bScript ? PICTURE_REQUEST_INFO_FILE_NAME_ONLY : PICTURE_REQUEST_INFO_CANCEL_REQUEST);
 }
 
-bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& picture_data)
+bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data)
 {
 	picture_data_list.push_back(picture_data);
 
@@ -361,7 +361,7 @@ bool __stdcall CFunctionPluginPs1Script::process_picture(const picture_data& pic
 	return true;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginPs1Script::end()
+const vector<update_info>& __stdcall CFunctionPluginScript::end()
 {
 	//# plugin variables
 	//

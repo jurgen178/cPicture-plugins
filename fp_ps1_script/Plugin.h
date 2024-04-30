@@ -2,10 +2,10 @@
 #include "FunctionPlugin.h"
 
 
-class CFunctionPluginPs1Script : public CFunctionPlugin
+class CFunctionPluginScript : public CFunctionPlugin
 {
 public:
-	CFunctionPluginPs1Script(const script_info script_info);
+	CFunctionPluginScript(const script_info script_info);
 
 protected:
 	const CString m_PowerShellExe;
@@ -13,7 +13,7 @@ protected:
 	vector<picture_data> picture_data_list;
 
 public:
-	virtual __stdcall ~CFunctionPluginPs1Script() { };
+	virtual __stdcall ~CFunctionPluginScript() { };
 
 public:
 	virtual struct PluginData __stdcall get_plugin_data();

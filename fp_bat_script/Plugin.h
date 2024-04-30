@@ -2,11 +2,11 @@
 #include "FunctionPlugin.h"
 
 
-class CFunctionPluginBatScript : public CFunctionPlugin
+class CFunctionPluginScript : public CFunctionPlugin
 {
 protected:
 public:
-	CFunctionPluginBatScript(const CString& script);
+	CFunctionPluginScript(const CString& script);
 
 protected:
 	CString m_script;
@@ -14,7 +14,7 @@ protected:
 	int m_n;
 
 public:
-	virtual __stdcall ~CFunctionPluginBatScript() { };
+	virtual __stdcall ~CFunctionPluginScript() { };
 
 public:
 	virtual struct PluginData __stdcall get_plugin_data();

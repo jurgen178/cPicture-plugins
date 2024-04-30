@@ -99,7 +99,7 @@ bool CheckFile(const WCHAR* pFile)
 }
 
 
-CFunctionPluginBatScript::CFunctionPluginBatScript(const CString& script)
+CFunctionPluginScript::CFunctionPluginScript(const CString& script)
   :	m_script(script),
 	m_i(0),
 	m_n(0)
@@ -107,7 +107,7 @@ CFunctionPluginBatScript::CFunctionPluginBatScript(const CString& script)
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
 
-struct PluginData __stdcall CFunctionPluginBatScript::get_plugin_data()
+struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 {
 	struct PluginData pluginData;
 
@@ -120,7 +120,7 @@ struct PluginData __stdcall CFunctionPluginBatScript::get_plugin_data()
 }
 
 
-struct request_info __stdcall CFunctionPluginBatScript::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
+struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
 {
 	m_i = 0;
 	m_n = (int)file_list.size();
@@ -142,7 +142,7 @@ struct request_info __stdcall CFunctionPluginBatScript::start(HWND hwnd, const v
 	return request_info(bScript?PICTURE_REQUEST_INFO_FILE_NAME_ONLY:PICTURE_REQUEST_INFO_CANCEL_REQUEST);
 }
 
-bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& picture_data) 
+bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data) 
 { 
 	// %1 file
 	// %2 name
