@@ -8,7 +8,7 @@
 
 cd $PSScriptRoot
 
-# Limit to 255 entries.
+# Limit to 256 entries 0..255.
 [int]$max = 255
 
 [string]$h_file = "GetInstance.h"
