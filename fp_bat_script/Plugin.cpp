@@ -43,17 +43,21 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
 
-
+// Each .bat file will be set as a plugin.
 const int __stdcall GetPluginInit()
 {
-	const CString ScriptMask(L"*.bat");
+	Scripts.clear();
+	PluginProcArray.clear();
+
 	WIN32_FIND_DATA c_file;
 	HANDLE hFile;
 
 	// Register all *.bat scripts.
+	const CString ScriptMask(L"*.bat");
 	if((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
+
 		do
 		{
 			if(!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L"..")) 

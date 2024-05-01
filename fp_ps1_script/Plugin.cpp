@@ -54,10 +54,11 @@ const int __stdcall GetPluginInit()
 	Scripts.clear();
 	PluginProcArray.clear();
 
-	const CString ScriptMask(L"*.ps1");
 	WIN32_FIND_DATA c_file;
 	HANDLE hFile;
 
+	// Register all *.ps1 scripts.
+	const CString ScriptMask(L"*.ps1");
 	if ((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
@@ -67,16 +68,14 @@ const int __stdcall GetPluginInit()
 		{
 			if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
 			{
-				const CString script(c_file.cFileName);
-				CString desc;
-
 				// Read the first 4096 chars to get the description text.
 				const int textSize(4096);
 				char Text[textSize] = { 0 };
 
 				FILE* infile = NULL;
-				const errno_t err(_wfopen_s(&infile, script, L"rb"));
+				const errno_t err(_wfopen_s(&infile, c_file.cFileName, L"rb"));
 
+				CString desc;
 				if (err == 0)
 				{
 					const int size(min(textSize, _filelength(_fileno(infile))));
@@ -87,6 +86,7 @@ const int __stdcall GetPluginInit()
 					fclose(infile);
 				}
 
+				const CString script(c_file.cFileName);
 				Scripts.push_back(script_info(script, desc));
 				PluginProcArray.push_back(GetInstanceList[i++]);
 			}
@@ -395,7 +395,7 @@ const vector<update_info>& __stdcall CFunctionPluginScript::end()
 
 		console = scanBoolVar(Text, consoleSearchTextTemplate, true);
 
-		// Allow noexit option only when console is displayed.
+		// console needs to be set to use noexit option.
 		if (console)
 			noexit = scanBoolVar(Text, noexitSearchTextTemplate, false);
 
