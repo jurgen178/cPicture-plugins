@@ -11,9 +11,9 @@ public:
 	virtual __stdcall ~CFunctionPluginSample2() { };
 
 protected:
-	HWND m_hwnd;
-	CWnd m_parent;
-	vector<picture_data> m_picture_data_list;
+	HWND hwnd;
+	CWnd parent_wnd;
+	vector<picture_data> picture_data_list;
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
@@ -25,7 +25,7 @@ public:
 	virtual struct PluginData __stdcall get_plugin_data();
 
 public:
-	virtual request_info __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list);
+	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes);
 	virtual bool __stdcall process_picture(const picture_data& _picture_data);
-	virtual const vector<update_info>& __stdcall end();
+	virtual const vector<update_data>& __stdcall end();
 };

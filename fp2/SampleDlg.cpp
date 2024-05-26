@@ -32,7 +32,7 @@ unsigned int GetFileSize(const WCHAR* pFile)
 
 CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
   : CDialog(CSampleDlg::IDD, pParent),
-	m_picture_data_list(picture_data_list),
+	picture_data_list(picture_data_list),
 	m_index(0)
 {
 	memset(&m_bmiHeader, 0, sizeof(BITMAPINFOHEADER));
@@ -71,7 +71,7 @@ BOOL CSampleDlg::OnInitDialog()
 	m_PreviewPosition.GetClientRect(&m_PreviewPositionRect);
 	m_PreviewPosition.MapWindowPoints(this, &m_PreviewPositionRect);
 
-	const size_t size(m_picture_data_list.size());
+	const size_t size(picture_data_list.size());
 	CString str;
 
 	if(size == 0)
@@ -80,7 +80,7 @@ BOOL CSampleDlg::OnInitDialog()
 	if(size == 1)
 		str.LoadString(IDS_ONE_ITEM_IN_LIST);
 	else
-		str.Format(IDS_N_ITEMS_IN_LIST, m_picture_data_list.size());
+		str.Format(IDS_N_ITEMS_IN_LIST, picture_data_list.size());
 	
 	SetWindowText(str);
 
@@ -91,22 +91,22 @@ void CSampleDlg::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 
-	const int size(static_cast<int>(m_picture_data_list.size()));
+	const int size(static_cast<int>(picture_data_list.size()));
 	if(m_index >= 0 && m_index < size)
 	{
-		vector<picture_data>::const_iterator it = m_picture_data_list.begin() + m_index;
+		vector<picture_data>::const_iterator it = picture_data_list.begin() + m_index;
 
 		vector<requested_data> requested_data_set = it->requested_data_set;
 		requested_data requested_data1 = requested_data_set.back();
 
-		m_Info.SetWindowText(it->m_FileName);
+		m_Info.SetWindowText(it->file_name);
 
 		CString str;
 		str.Format(L"%d/%d", m_index+1, size);
 		m_Counter.SetWindowText(str);
 
 		// Set Description text.
-		const unsigned int fsize = ::GetFileSize(it->m_FileName);
+		const unsigned int fsize = ::GetFileSize(it->file_name);
 		str.Format(L"%dx%d, %dKB", it->picture_width, it->picture_height, fsize >> 10);
 		m_Info2.SetWindowText(str);
 
@@ -139,7 +139,7 @@ void CSampleDlg::OnPaint()
 
 void CSampleDlg::OnBnClickedButtonNext()
 {
-	if(m_index < (int)m_picture_data_list.size() - 1)
+	if(m_index < (int)picture_data_list.size() - 1)
 	{
 		m_index++;
 		RedrawWindow();
@@ -160,5 +160,5 @@ void CSampleDlg::OnBnClickedButtonPrev()
 void CSampleDlg::update_button_state()
 {
 	GetDlgItem(IDC_BUTTON_PREV)->EnableWindow(m_index > 0);
-	GetDlgItem(IDC_BUTTON_NEXT)->EnableWindow(m_index < (int)m_picture_data_list.size() - 1);
+	GetDlgItem(IDC_BUTTON_NEXT)->EnableWindow(m_index < (int)picture_data_list.size() - 1);
 }

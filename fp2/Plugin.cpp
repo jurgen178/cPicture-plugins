@@ -5,16 +5,6 @@
 
 // Example Plugin cpp_fp2.
 
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
-}
-
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 & (const unsigned int)t2);
-}
-
 
 const CString __stdcall GetPluginVersion()
 {
@@ -43,7 +33,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginSample2::CFunctionPluginSample2()
-  : m_hwnd(NULL)
+  : hwnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
@@ -60,44 +50,44 @@ struct PluginData __stdcall CFunctionPluginSample2::get_plugin_data()
 	return pluginData;
 }
 
-struct request_info __stdcall CFunctionPluginSample2::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
+enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
-	m_hwnd = hwnd;
+	hwnd = hwnd;
+
+	// Get preview rect sizes.
+	CWnd parent;
+	parent.Attach(hwnd);
 
 	vector<picture_data> picture_data_list;
-
-	CWnd parent;
-	parent.Attach(m_hwnd);
 	CSampleDlg SampleDlg(picture_data_list, &parent);
-	SampleDlg.Create(IDD_DIALOG_SAMPLE2, &parent);
 	
+	SampleDlg.Create(IDD_DIALOG_SAMPLE2, &parent);
 	parent.Detach();
 
 	// Request one picture data set for the preview size.
-	vector<request_info_size> request_info_sizes;
-	request_info_sizes.push_back(request_info_size(SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height()));
+	request_data_sizes.push_back(request_data_size(SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height()));
 
-	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, request_info_sizes);
+	return REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA;
 }
 
-bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _picture_data) 
+bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& picture_data) 
 { 
-	m_picture_data_list.push_back(_picture_data);
+	picture_data_list.push_back(picture_data);
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginSample2::end() 
+const vector<update_data>& __stdcall CFunctionPluginSample2::end() 
 { 
 	CWnd parent;
-	parent.Attach(m_hwnd);
+	parent.Attach(hwnd);
 
-	CSampleDlg SampleDlg(m_picture_data_list, &parent);
+	CSampleDlg SampleDlg(picture_data_list, &parent);
 	SampleDlg.DoModal();
 
 	parent.Detach();
 
-	return m_update_info;
+	return update_data_set;
 }
 

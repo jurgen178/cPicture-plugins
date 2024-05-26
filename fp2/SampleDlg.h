@@ -23,7 +23,7 @@ protected:
 	CStatic	m_Info;
 	CStatic	m_Info2;
 	CStatic	m_Counter;
-	const vector<picture_data>& m_picture_data_list;
+	const vector<picture_data>& picture_data_list;
 	BITMAPINFOHEADER m_bmiHeader;
 	int m_index;
 
