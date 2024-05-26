@@ -73,6 +73,8 @@ struct request_info __stdcall CFunctionPluginSample2::start(HWND hwnd, const vec
 	
 	parent.Detach();
 
+	// Request up to two picture data sets.
+	// In this example, request one picture data set for the preview size. 
 	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height());
 }
 

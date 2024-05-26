@@ -65,6 +65,7 @@ struct request_info __stdcall CFunctionPluginSample3::start(HWND hwnd, const vec
 {
 	m_hwnd = hwnd;
 
+	// Request data for one picture set with the size 80x80 pixel.
 	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, 80, 80);
 }
 
