@@ -104,21 +104,21 @@ BOOL CSampleDlg::OnInitDialog()
 		// reset the background of the bitmap bits
 		memcpy(draw_buf, bufBk, size3);
 
-		if(it->m_buf)
+		if(it->m_buf1)
 		{
 			// copy and center the bitmap
-			const int XDest = (it->m_PictureWidth < size_x) ? (size_x - it->m_PictureWidth) / 2 : 0;
-			const int XDest2 = 3 * it->m_PictureWidth;
-			const int YDest = (it->m_PictureHeight < size_y) ? (size_y - it->m_PictureHeight) / 2 : 0;
+			const int XDest = (it->m_PictureWidth1 < size_x) ? (size_x - it->m_PictureWidth1) / 2 : 0;
+			const int XDest2 = 3 * it->m_PictureWidth1;
+			const int YDest = (it->m_PictureHeight1 < size_y) ? (size_y - it->m_PictureHeight1) / 2 : 0;
 
 			int index = 0;
 			int index2 = 3*(XDest+YDest*size_x);
 			#define WIDTH_DWORD_ALIGNED(pixel)    ((((pixel * 24) + 31) >> 3) & ~0x03)
-			const UINT WidthBytes = WIDTH_DWORD_ALIGNED(it->m_PictureWidth);
+			const UINT WidthBytes = WIDTH_DWORD_ALIGNED(it->m_PictureWidth1);
 
-			for(int y = YDest; y < YDest+it->m_PictureHeight; y++)
+			for(int y = YDest; y < YDest+it->m_PictureHeight1; y++)
 			{ 
-				memcpy(draw_buf + index2, it->m_buf + index, XDest2);
+				memcpy(draw_buf + index2, it->m_buf1 + index, XDest2);
 				index += WidthBytes;
 				index2 += 3*size_x;
 			}
@@ -205,8 +205,8 @@ void CSampleDlg::OnNMCustomdrawPictureList(NMHDR *pNMHDR, LRESULT *pResult)
 			CString text;
 			text.FormatMessage(IDS_DISPLAY_FORMAT,
 				m_picture_data_list[iItem].m_FileName.Mid(m_picture_data_list[iItem].m_FileName.ReverseFind('\\')+1),
-				m_picture_data_list[iItem].m_OriginalPictureWidth,
-				m_picture_data_list[iItem].m_OriginalPictureWidth,
+				m_picture_data_list[iItem].m_OriginalPictureWidth1,
+				m_picture_data_list[iItem].m_OriginalPictureWidth1,
 				m_picture_orders[iItem].m_number_of_prints,
 				format
 				);			

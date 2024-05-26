@@ -103,14 +103,14 @@ void CSampleDlg::OnPaint()
 		m_Counter.SetWindowText(str);
 
 		const unsigned int fsize = ::GetFileSize(it->m_FileName);
-		str.Format(L"%dx%d, %dKB", it->m_OriginalPictureWidth, it->m_OriginalPictureHeight, fsize >> 10);
+		str.Format(L"%dx%d, %dKB", it->m_OriginalPictureWidth1, it->m_OriginalPictureHeight1, fsize >> 10);
 		m_Info2.SetWindowText(str);
 
 
-		m_bmiHeader.biWidth = it->m_PictureWidth;
-		m_bmiHeader.biHeight = it->m_PictureHeight;
-		const int left(m_PreviewPositionRect.left + (m_PreviewPositionRect.Width() - (int)it->m_PictureWidth) / 2);
-		const int top(m_PreviewPositionRect.top + (m_PreviewPositionRect.Height() - (int)it->m_PictureHeight) / 2);
+		m_bmiHeader.biWidth = it->m_PictureWidth1;
+		m_bmiHeader.biHeight = it->m_PictureHeight1;
+		const int left(m_PreviewPositionRect.left + (m_PreviewPositionRect.Width() - (int)it->m_PictureWidth1) / 2);
+		const int top(m_PreviewPositionRect.top + (m_PreviewPositionRect.Height() - (int)it->m_PictureHeight1) / 2);
 
 		HDRAWDIB hdd = DrawDibOpen();
 
@@ -118,14 +118,14 @@ void CSampleDlg::OnPaint()
 					dc.m_hDC,                  
 					left,                 
 					top,                 
-					it->m_PictureWidth,                
-					it->m_PictureHeight, 
+					it->m_PictureWidth1,                
+					it->m_PictureHeight1, 
 					&m_bmiHeader,  
-					it->m_buf,            
+					it->m_buf1,            
 					0,                 
 					0,                 
-					it->m_PictureWidth,                
-					it->m_PictureHeight, 
+					it->m_PictureWidth1,                
+					it->m_PictureHeight1, 
 					0
 					);
 

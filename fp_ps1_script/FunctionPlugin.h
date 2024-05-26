@@ -17,17 +17,23 @@ enum PICTURE_REQUEST_INFO
 struct request_info
 {
 	request_info(const PICTURE_REQUEST_INFO picture_request_info = PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
-		const int PictureWidth = 0,
-		const int PictureHeight = 0)
+		const int PictureWidth1 = 0,
+		const int PictureHeight1 = 0,
+		const int PictureWidth2 = 0,
+		const int PictureHeight2 = 0)
 		: m_picture_request_info(picture_request_info),
-		m_PictureWidth(PictureWidth),
-		m_PictureHeight(PictureHeight)
+		m_PictureWidth1(PictureWidth1),
+		m_PictureHeight1(PictureHeight1),
+		m_PictureWidth2(PictureWidth2),
+		m_PictureHeight2(PictureHeight2)
 	{
 	};
 
 	PICTURE_REQUEST_INFO m_picture_request_info;
-	int m_PictureWidth;
-	int m_PictureHeight;
+	int m_PictureWidth1;
+	int m_PictureHeight1;
+	int m_PictureWidth2;
+	int m_PictureHeight2;
 };
 
 
@@ -68,12 +74,18 @@ struct update_info
 struct picture_data
 {
 	picture_data(const CString FileName,
-		const int PictureWidth = 0,
-		const int PictureHeight = 0,
-		const int OriginalPictureWidth = 0,
-		const int OriginalPictureHeight = 0,
-		BYTE* buf = NULL,
-		const int len = 0,
+		const int PictureWidth1 = 0,
+		const int PictureHeight1 = 0,
+		const int OriginalPictureWidth1 = 0,
+		const int OriginalPictureHeight1 = 0,
+		BYTE* buf1 = NULL,
+		const int len1 = 0,
+		const int PictureWidth2 = 0,
+		const int PictureHeight2 = 0,
+		const int OriginalPictureWidth2 = 0,
+		const int OriginalPictureHeight2 = 0,
+		BYTE* buf2 = NULL,
+		const int len2 = 0,
 
 		const CString ErrorMsg = L"",
 		const bool bAudio = false,
@@ -89,12 +101,18 @@ struct picture_data
 		const CString Lens = L"",
 		const CString cdata = L"")
 		: m_FileName(FileName),
-		m_PictureWidth(PictureWidth),
-		m_PictureHeight(PictureHeight),
-		m_OriginalPictureWidth(OriginalPictureWidth),
-		m_OriginalPictureHeight(OriginalPictureHeight),
-		m_buf(buf),
-		m_len(len),
+		m_PictureWidth1(PictureWidth1),
+		m_PictureHeight1(PictureHeight1),
+		m_OriginalPictureWidth1(OriginalPictureWidth1),
+		m_OriginalPictureHeight1(OriginalPictureHeight1),
+		m_buf1(buf1),
+		m_len1(len1),
+		m_PictureWidth2(PictureWidth2),
+		m_PictureHeight2(PictureHeight2),
+		m_OriginalPictureWidth2(OriginalPictureWidth2),
+		m_OriginalPictureHeight2(OriginalPictureHeight2),
+		m_buf2(buf2),
+		m_len2(len2),
 
 		m_ErrorMsg(ErrorMsg),
 		m_bAudio(bAudio),
@@ -113,12 +131,19 @@ struct picture_data
 	};
 
 	CString m_FileName;
-	int m_PictureWidth;
-	int m_PictureHeight;
-	int m_OriginalPictureWidth;
-	int m_OriginalPictureHeight;
-	BYTE* m_buf;
-	int m_len;
+	int m_PictureWidth1;
+	int m_PictureHeight1;
+	int m_OriginalPictureWidth1;
+	int m_OriginalPictureHeight1;
+	BYTE* m_buf1;
+	int m_len1;
+
+	int m_PictureWidth2;
+	int m_PictureHeight2;
+	int m_OriginalPictureWidth2;
+	int m_OriginalPictureHeight2;
+	BYTE* m_buf2;
+	int m_len2;
 
 	CString m_ErrorMsg;
 	bool m_bAudio;

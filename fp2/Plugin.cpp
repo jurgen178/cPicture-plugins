@@ -78,13 +78,13 @@ struct request_info __stdcall CFunctionPluginSample2::start(HWND hwnd, const vec
 
 bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _picture_data) 
 { 
-	if(_picture_data.m_len)
+	if(_picture_data.m_len1)
 	{
 		picture_data picture_data_cpy(_picture_data);
-		picture_data_cpy.m_buf = new BYTE[_picture_data.m_len];
-		if(picture_data_cpy.m_buf)
+		picture_data_cpy.m_buf1 = new BYTE[_picture_data.m_len1];
+		if(picture_data_cpy.m_buf1)
 		{
-			memcpy(picture_data_cpy.m_buf, _picture_data.m_buf, _picture_data.m_len);
+			memcpy(picture_data_cpy.m_buf1, _picture_data.m_buf1, _picture_data.m_len1);
 			picture_data_list.push_back(picture_data_cpy);
 		}
 	}
@@ -105,7 +105,7 @@ const vector<update_info>& __stdcall CFunctionPluginSample2::end()
 
 	for(vector<picture_data>::iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
-		delete it->m_buf;
+		delete it->m_buf1;
 	}
 
 	return m_update_info;

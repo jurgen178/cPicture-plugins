@@ -175,8 +175,8 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& pictur
 		picture_data.m_FileName,
 		name,
 		dir,
-		picture_data.m_OriginalPictureWidth,
-		picture_data.m_OriginalPictureHeight,
+		picture_data.m_OriginalPictureWidth1,
+		picture_data.m_OriginalPictureHeight1,
 		m_i, 
 		m_n
 		);
