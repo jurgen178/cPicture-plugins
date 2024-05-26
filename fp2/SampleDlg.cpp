@@ -105,11 +105,12 @@ void CSampleDlg::OnPaint()
 		str.Format(L"%d/%d", m_index+1, size);
 		m_Counter.SetWindowText(str);
 
+		// Set Description text.
 		const unsigned int fsize = ::GetFileSize(it->m_FileName);
 		str.Format(L"%dx%d, %dKB", it->picture_width, it->picture_height, fsize >> 10);
 		m_Info2.SetWindowText(str);
 
-
+		// Draw the selected picture.
 		m_bmiHeader.biWidth = requested_data1.picture_width;
 		m_bmiHeader.biHeight = requested_data1.picture_height;
 		const int left(m_PreviewPositionRect.left + (m_PreviewPositionRect.Width() - (int)requested_data1.picture_width) / 2);

@@ -74,37 +74,15 @@ struct request_info __stdcall CFunctionPluginSample2::start(HWND hwnd, const vec
 	parent.Detach();
 
 	// Request one picture data set for the preview size.
-	vector<request_info_size> request_info_sizes = vector<request_info_size>();
+	vector<request_info_size> request_info_sizes;
 	request_info_sizes.push_back(request_info_size(SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height()));
-	
+
 	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, request_info_sizes);
 }
 
 bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _picture_data) 
 { 
-	picture_data_list.push_back(_picture_data);
-
-	if(_picture_data.requested_data_set.size() > 0)
-	{
-		//picture_data picture_data_copy(_picture_data);
-		//picture_data_list.push_back(picture_data_copy);
-
-
-		//picture_data_copy.m_buf1 = new BYTE[_picture_data.m_len1];
-		//if (picture_data_cpy.m_buf1)
-		//{
-		//	memcpy(picture_data_cpy.m_buf1, _picture_data.m_buf1, _picture_data.m_len1);
-		//	picture_data_list.push_back(picture_data_cpy);
-		//}
-
-		//requested_data requested_data_copy(picture_data.requested_data_set[0]);
-		//requested_data_copy.buf = new BYTE[requested_data_copy.len];
-		//if(requested_data_copy.buf)
-		//{
-		//	memcpy(requested_data_copy.buf, picture_data.requested_data_set[0].buf, picture_data.requested_data_set[0].len);
-		//	picture_data_list.push_back(requested_data_copy);
-		//}
-	}
+	m_picture_data_list.push_back(_picture_data);
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
@@ -115,7 +93,7 @@ const vector<update_info>& __stdcall CFunctionPluginSample2::end()
 	CWnd parent;
 	parent.Attach(m_hwnd);
 
-	CSampleDlg SampleDlg(picture_data_list, &parent);
+	CSampleDlg SampleDlg(m_picture_data_list, &parent);
 	SampleDlg.DoModal();
 
 	parent.Detach();

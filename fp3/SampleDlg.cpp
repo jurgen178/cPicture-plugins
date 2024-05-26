@@ -9,10 +9,10 @@
 
 // CSampleDlg dialog
 
-CSampleDlg::CSampleDlg(const vector<picture_data>& _picture_data_list, CWnd* pParent /*=NULL*/)
+CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
   : CDialog(CSampleDlg::IDD, pParent),
 	m_hImageList(NULL),
-	m_picture_data_list(_picture_data_list)
+	m_picture_data_list(picture_data_list)
 {
 	// Setup the price for the prints in cents.
 	picture_price[PICTURE_FORMAT_9] = 10;
@@ -97,6 +97,9 @@ BOOL CSampleDlg::OnInitDialog()
 	int i = 0;
 	for(vector<picture_data>::const_iterator it = m_picture_data_list.begin(); it != m_picture_data_list.end(); ++it, i++)
 	{
+		vector<requested_data> requested_data_set = it->requested_data_set;
+		requested_data requested_data1 = requested_data_set.back();
+
 		m_picture_orders.push_back(picture_order(it->m_FileName));
 
 		m_PictureListCtrl.InsertItem(i, L"");
@@ -104,21 +107,21 @@ BOOL CSampleDlg::OnInitDialog()
 		// reset the background of the bitmap bits
 		memcpy(draw_buf, bufBk, size3);
 
-		if(it->m_buf1)
+		if(requested_data1.buf)
 		{
 			// copy and center the bitmap
-			const int XDest = (it->m_PictureWidth1 < size_x) ? (size_x - it->m_PictureWidth1) / 2 : 0;
-			const int XDest2 = 3 * it->m_PictureWidth1;
-			const int YDest = (it->m_PictureHeight1 < size_y) ? (size_y - it->m_PictureHeight1) / 2 : 0;
+			const int XDest = (requested_data1.picture_width < size_x) ? (size_x - requested_data1.picture_width) / 2 : 0;
+			const int XDest2 = 3 * requested_data1.picture_width;
+			const int YDest = (requested_data1.picture_height < size_y) ? (size_y - requested_data1.picture_height) / 2 : 0;
 
 			int index = 0;
 			int index2 = 3*(XDest+YDest*size_x);
 			#define WIDTH_DWORD_ALIGNED(pixel)    ((((pixel * 24) + 31) >> 3) & ~0x03)
-			const UINT WidthBytes = WIDTH_DWORD_ALIGNED(it->m_PictureWidth1);
+			const UINT WidthBytes = WIDTH_DWORD_ALIGNED(requested_data1.picture_width);
 
-			for(int y = YDest; y < YDest+it->m_PictureHeight1; y++)
+			for(int y = YDest; y < YDest + requested_data1.picture_height; y++)
 			{ 
-				memcpy(draw_buf + index2, it->m_buf1 + index, XDest2);
+				memcpy(draw_buf + index2, requested_data1.buf + index, XDest2);
 				index += WidthBytes;
 				index2 += 3*size_x;
 			}
@@ -205,8 +208,8 @@ void CSampleDlg::OnNMCustomdrawPictureList(NMHDR *pNMHDR, LRESULT *pResult)
 			CString text;
 			text.FormatMessage(IDS_DISPLAY_FORMAT,
 				m_picture_data_list[iItem].m_FileName.Mid(m_picture_data_list[iItem].m_FileName.ReverseFind('\\')+1),
-				m_picture_data_list[iItem].m_OriginalPictureWidth1,
-				m_picture_data_list[iItem].m_OriginalPictureWidth1,
+				m_picture_data_list[iItem].picture_width,
+				m_picture_data_list[iItem].picture_height,
 				m_picture_orders[iItem].m_number_of_prints,
 				format
 				);			

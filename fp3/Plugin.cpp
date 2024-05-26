@@ -65,22 +65,16 @@ struct request_info __stdcall CFunctionPluginSample3::start(HWND hwnd, const vec
 {
 	m_hwnd = hwnd;
 
-	// Request data for one picture set with the size 80x80 pixel.
-	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, 80, 80);
+	// Request one picture data set for 80x80 pixel.
+	vector<request_info_size> request_info_sizes;
+	request_info_sizes.push_back(request_info_size(80, 80));
+
+	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, request_info_sizes);
 }
 
 bool __stdcall CFunctionPluginSample3::process_picture(const picture_data& _picture_data) 
 { 
-	if(_picture_data.m_len1)
-	{
-		picture_data picture_data_cpy(_picture_data);
-		picture_data_cpy.m_buf1 = new BYTE[_picture_data.m_len1];
-		if(picture_data_cpy.m_buf1)
-		{
-			memcpy(picture_data_cpy.m_buf1, _picture_data.m_buf1, _picture_data.m_len1);
-			picture_data_list.push_back(picture_data_cpy);
-		}
-	}
+	m_picture_data_list.push_back(_picture_data);
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
@@ -91,7 +85,7 @@ const vector<update_info>& __stdcall CFunctionPluginSample3::end()
 	CWnd parent;
 	parent.Attach(m_hwnd);
 
-	CSampleDlg SampleDlg(picture_data_list, &parent);
+	CSampleDlg SampleDlg(m_picture_data_list, &parent);
 	if (SampleDlg.DoModal() == IDOK)
 	{
 		int numberOfPictures = 0;
@@ -113,11 +107,6 @@ const vector<update_info>& __stdcall CFunctionPluginSample3::end()
 	}
 
 	parent.Detach();
-
-	for(vector<picture_data>::iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
-	{
-		delete it->m_buf1;
-	}
 
 	return m_update_info;
 }

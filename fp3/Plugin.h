@@ -15,7 +15,7 @@ public:
 protected:
 	HWND m_hwnd;
 	CWnd m_parent;
-	vector<picture_data> picture_data_list;
+	vector<picture_data> m_picture_data_list;
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()

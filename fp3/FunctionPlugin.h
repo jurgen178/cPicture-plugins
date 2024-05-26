@@ -14,26 +14,32 @@ enum PICTURE_REQUEST_INFO
 };
 
 
-struct request_info
+struct request_info_size
 {
-	request_info(const PICTURE_REQUEST_INFO picture_request_info = PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
-		const int PictureWidth1 = 0,
-		const int PictureHeight1 = 0,
-		const int PictureWidth2 = 0,
-		const int PictureHeight2 = 0)
-		: m_picture_request_info(picture_request_info),
-		m_PictureWidth1(PictureWidth1),
-		m_PictureHeight1(PictureHeight1),
-		m_PictureWidth2(PictureWidth2),
-		m_PictureHeight2(PictureHeight2)
+	request_info_size(
+		const int picture_width = 0,
+		const int picture_height = 0)
+		: picture_width(picture_width),
+		picture_height(picture_height)
 	{
 	};
 
-	PICTURE_REQUEST_INFO m_picture_request_info;
-	int m_PictureWidth1;
-	int m_PictureHeight1;
-	int m_PictureWidth2;
-	int m_PictureHeight2;
+	int picture_width;
+	int picture_height;
+};
+
+
+struct request_info
+{
+	request_info(const PICTURE_REQUEST_INFO picture_request_info = PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
+		vector<request_info_size> request_info_sizes = vector<request_info_size>())
+		: picture_request_info(picture_request_info),
+		request_info_sizes(request_info_sizes)
+	{
+	};
+
+	PICTURE_REQUEST_INFO picture_request_info;
+	vector<request_info_size> request_info_sizes;
 };
 
 
@@ -59,22 +65,32 @@ struct update_info
 };
 
 
+struct requested_data
+{
+	struct requested_data
+	(
+		const int picture_width = 0,
+		const int picture_height = 0,
+		BYTE* buf = NULL,
+		int len = 0
+	)
+		: picture_width(picture_width),
+		picture_height(picture_height),
+		buf(buf),
+		len(len)
+	{
+	};
+
+	int picture_width;
+	int picture_height;
+	BYTE* buf;
+	int len;
+};
+
+
 struct picture_data
 {
 	picture_data(const CString FileName,
-		const int PictureWidth1 = 0,
-		const int PictureHeight1 = 0,
-		const int OriginalPictureWidth1 = 0,
-		const int OriginalPictureHeight1 = 0,
-		BYTE* buf1 = NULL,
-		const int len1 = 0,
-		const int PictureWidth2 = 0,
-		const int PictureHeight2 = 0,
-		const int OriginalPictureWidth2 = 0,
-		const int OriginalPictureHeight2 = 0,
-		BYTE* buf2 = NULL,
-		const int len2 = 0,
-
 		const CString ErrorMsg = L"",
 		const bool bAudio = false,
 		const bool bVideo = false,
@@ -89,19 +105,6 @@ struct picture_data
 		const CString Lens = L"",
 		const CString cdata = L"")
 		: m_FileName(FileName),
-		m_PictureWidth1(PictureWidth1),
-		m_PictureHeight1(PictureHeight1),
-		m_OriginalPictureWidth1(OriginalPictureWidth1),
-		m_OriginalPictureHeight1(OriginalPictureHeight1),
-		m_buf1(buf1),
-		m_len1(len1),
-		m_PictureWidth2(PictureWidth2),
-		m_PictureHeight2(PictureHeight2),
-		m_OriginalPictureWidth2(OriginalPictureWidth2),
-		m_OriginalPictureHeight2(OriginalPictureHeight2),
-		m_buf2(buf2),
-		m_len2(len2),
-
 		m_ErrorMsg(ErrorMsg),
 		m_bAudio(bAudio),
 		m_bVideo(bVideo),
@@ -119,19 +122,10 @@ struct picture_data
 	};
 
 	CString m_FileName;
-	int m_PictureWidth1;
-	int m_PictureHeight1;
-	int m_OriginalPictureWidth1;
-	int m_OriginalPictureHeight1;
-	BYTE* m_buf1;
-	int m_len1;
 
-	int m_PictureWidth2;
-	int m_PictureHeight2;
-	int m_OriginalPictureWidth2;
-	int m_OriginalPictureHeight2;
-	BYTE* m_buf2;
-	int m_len2;
+	int picture_width;
+	int picture_height;
+	vector<requested_data> requested_data_set;
 
 	CString m_ErrorMsg;
 	bool m_bAudio;

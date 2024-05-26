@@ -23,6 +23,7 @@ struct request_info_size
 		picture_height(picture_height)
 	{
 	};
+
 	int picture_width;
 	int picture_height;
 };
@@ -69,7 +70,7 @@ struct requested_data
 	struct requested_data
 	(
 		const int picture_width = 0,
-		const int PictureHeight = 0,
+		const int picture_height = 0,
 		BYTE* buf = NULL,
 		int len = 0
 	)
@@ -79,6 +80,7 @@ struct requested_data
 		len(len)
 	{
 	};
+
 	int picture_width;
 	int picture_height;
 	BYTE* buf;
