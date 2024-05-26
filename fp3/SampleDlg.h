@@ -18,15 +18,15 @@ struct picture_order
 	picture_order(const CString& name = L"", 
 					 const PICTURE_FORMAT picture_format = PICTURE_FORMAT_10,
 					 const unsigned int number_of_prints = 1)
-	  : m_name(name),
-		m_picture_format(picture_format),
-		m_number_of_prints(number_of_prints)
+	  : name(name),
+		picture_format(picture_format),
+		number_of_prints(number_of_prints)
 	{
 	};
 
-	CString m_name;
-	PICTURE_FORMAT m_picture_format;
-	unsigned int m_number_of_prints;
+	CString name;
+	PICTURE_FORMAT picture_format;
+	unsigned int number_of_prints;
 };
 
 
@@ -42,18 +42,18 @@ public:
 	enum { IDD = IDD_DIALOG_SAMPLE3 };
 
 protected:
-	HIMAGELIST m_hImageList;
-	CListCtrl m_PictureListCtrl;
-	CComboBox m_Format;
-	CEdit m_Prints;
-	CStatic m_StaticTotalPrice;
-	CStatic m_StaticNumberOfPictures;
+	HIMAGELIST hImageList;
+	CListCtrl PictureListCtrl;
+	CComboBox Format;
+	CEdit Prints;
+	CStatic StaticTotalPrice;
+	CStatic StaticNumberOfPictures;
 
 	int picture_price[PICTURE_FORMAT_SIZE];
-	const vector<picture_data>& m_picture_data_list;
+	const vector<picture_data>& picture_data_list;
 
 public:
-	vector<picture_order> m_picture_orders;
+	vector<picture_order> picture_orders;
 
 public:
 	void update_total(int& numberOfPictures, int& totalPrice);

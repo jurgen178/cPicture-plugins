@@ -33,7 +33,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginSample2::CFunctionPluginSample2()
-  : hwnd(NULL)
+  : handle_wnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
@@ -52,11 +52,11 @@ struct PluginData __stdcall CFunctionPluginSample2::get_plugin_data()
 
 enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
-	hwnd = hwnd;
+	handle_wnd = hwnd;
 
 	// Get preview rect sizes.
 	CWnd parent;
-	parent.Attach(hwnd);
+	parent.Attach(handle_wnd);
 
 	vector<picture_data> picture_data_list;
 	CSampleDlg SampleDlg(picture_data_list, &parent);
@@ -81,7 +81,7 @@ bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& pictu
 const vector<update_data>& __stdcall CFunctionPluginSample2::end() 
 { 
 	CWnd parent;
-	parent.Attach(hwnd);
+	parent.Attach(handle_wnd);
 
 	CSampleDlg SampleDlg(picture_data_list, &parent);
 	SampleDlg.DoModal();

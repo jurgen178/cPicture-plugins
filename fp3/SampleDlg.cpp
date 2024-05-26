@@ -11,8 +11,8 @@
 
 CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
   : CDialog(CSampleDlg::IDD, pParent),
-	m_hImageList(NULL),
-	m_picture_data_list(picture_data_list)
+	hImageList(NULL),
+	picture_data_list(picture_data_list)
 {
 	// Setup the price for the prints in cents.
 	picture_price[PICTURE_FORMAT_9] = 10;
@@ -21,18 +21,18 @@ CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pPar
 
 CSampleDlg::~CSampleDlg()
 {
-	if(m_hImageList)
-		ImageList_Destroy(m_hImageList);
+	if(hImageList)
+		ImageList_Destroy(hImageList);
 }
 
 void CSampleDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_PICTURE_LIST, m_PictureListCtrl);
-	DDX_Control(pDX, IDC_COMBO_FORMAT, m_Format);
-	DDX_Control(pDX, IDC_EDIT_NUMBER_OF_PRINTS, m_Prints);
-	DDX_Control(pDX, IDC_STATIC_TOTAL_PRICE, m_StaticTotalPrice);
-	DDX_Control(pDX, IDC_STATIC_NUMBER_OF_PICTURES, m_StaticNumberOfPictures);
+	DDX_Control(pDX, IDC_PICTURE_LIST, PictureListCtrl);
+	DDX_Control(pDX, IDC_COMBO_FORMAT, Format);
+	DDX_Control(pDX, IDC_EDIT_NUMBER_OF_PRINTS, Prints);
+	DDX_Control(pDX, IDC_STATIC_TOTAL_PRICE, StaticTotalPrice);
+	DDX_Control(pDX, IDC_STATIC_NUMBER_OF_PICTURES, StaticNumberOfPictures);
 }
 
 
@@ -48,24 +48,24 @@ BOOL CSampleDlg::OnInitDialog()
 
 	CString str;
 	str.LoadString(IDS_PICTURE_FORMAT_9);
-	m_Format.AddString(str);
+	Format.AddString(str);
 	str.LoadString(IDS_PICTURE_FORMAT_10);
-	m_Format.AddString(str);
+	Format.AddString(str);
 
-	m_Format.SetCurSel(PICTURE_FORMAT_10);
-	m_Prints.SetWindowText(L"1");
+	Format.SetCurSel(PICTURE_FORMAT_10);
+	Prints.SetWindowText(L"1");
 
-	const int size(static_cast<int>(m_picture_data_list.size()));
-	m_hImageList = ImageList_Create(size_x, size_y, ILC_COLOR24, 0, size);
-	ImageList_SetImageCount(m_hImageList, size);
-	::SendMessage(m_PictureListCtrl.m_hWnd, LVM_SETIMAGELIST, LVSIL_SMALL, (LPARAM)m_hImageList);
-	m_PictureListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_FLATSB);
+	const int size(static_cast<int>(picture_data_list.size()));
+	hImageList = ImageList_Create(size_x, size_y, ILC_COLOR24, 0, size);
+	ImageList_SetImageCount(hImageList, size);
+	::SendMessage(PictureListCtrl.m_hWnd, LVM_SETIMAGELIST, LVSIL_SMALL, (LPARAM)hImageList);
+	PictureListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_FLATSB);
 
 	str = L"";
 	int col = 0;
-	m_PictureListCtrl.InsertColumn(col++, str, LVCFMT_LEFT, size_x+2);
+	PictureListCtrl.InsertColumn(col++, str, LVCFMT_LEFT, size_x+2);
 	str.LoadString(IDS_COLUMNHEADER_NAME);
-	m_PictureListCtrl.InsertColumn(col++, str, LVCFMT_LEFT);
+	PictureListCtrl.InsertColumn(col++, str, LVCFMT_LEFT);
 
 	LVITEM LviData;
 	memset(&LviData, 0, sizeof(LVITEM));
@@ -92,17 +92,17 @@ BOOL CSampleDlg::OnInitDialog()
 	CDC* pDC = GetDC();
 	HBITMAP hBmp = ::CreateCompatibleBitmap(pDC->m_hDC, size_x, size_y);
 
-	m_picture_orders.reserve(m_picture_data_list.size());
+	picture_orders.reserve(picture_data_list.size());
 
 	int i = 0;
-	for(vector<picture_data>::const_iterator it = m_picture_data_list.begin(); it != m_picture_data_list.end(); ++it, i++)
+	for(vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it, i++)
 	{
 		vector<requested_data> requested_data_set = it->requested_data_set;
 		requested_data requested_data1 = requested_data_set.back();
 
-		m_picture_orders.push_back(picture_order(it->m_FileName));
+		picture_orders.push_back(picture_order(it->file_name));
 
-		m_PictureListCtrl.InsertItem(i, L"");
+		PictureListCtrl.InsertItem(i, L"");
 
 		// reset the background of the bitmap bits
 		memcpy(draw_buf, bufBk, size3);
@@ -128,13 +128,13 @@ BOOL CSampleDlg::OnInitDialog()
 		}
 
 		::SetDIBits(pDC->m_hDC, hBmp, 0, size_y, draw_buf, &bmInfo, DIB_RGB_COLORS);
-		ImageList_Replace(m_hImageList, i, hBmp, NULL);
+		ImageList_Replace(hImageList, i, hBmp, NULL);
 		LviData.iImage = i;
 		LviData.iItem = i;
-		::SendMessage(m_PictureListCtrl.m_hWnd, LVM_SETITEM, 0, (LPARAM)&LviData);
+		::SendMessage(PictureListCtrl.m_hWnd, LVM_SETITEM, 0, (LPARAM)&LviData);
 	}
 
-	m_PictureListCtrl.SetColumnWidth(1, LVSCW_AUTOSIZE_USEHEADER);
+	PictureListCtrl.SetColumnWidth(1, LVSCW_AUTOSIZE_USEHEADER);
 	ReleaseDC(pDC);
 	
 	update_total();
@@ -146,10 +146,10 @@ void CSampleDlg::update_total(int& numberOfPictures, int& totalPrice)
 {
 	numberOfPictures = 0;
 	totalPrice = 0;
-	for (vector<picture_order>::const_iterator it = m_picture_orders.begin(); it != m_picture_orders.end(); ++it)
+	for (vector<picture_order>::const_iterator it = picture_orders.begin(); it != picture_orders.end(); ++it)
 	{
-		numberOfPictures += it->m_number_of_prints;
-		totalPrice += picture_price[it->m_picture_format] * it->m_number_of_prints;
+		numberOfPictures += it->number_of_prints;
+		totalPrice += picture_price[it->picture_format] * it->number_of_prints;
 	}
 }
 
@@ -161,11 +161,11 @@ void CSampleDlg::update_total()
 
 	CString str;
 	str.Format(L"%d", numberOfPictures);
-	m_StaticNumberOfPictures.SetWindowText(str);
+	StaticNumberOfPictures.SetWindowText(str);
 	CString fmt;
 	fmt.LoadString(IDS_TOTAL_PRICE_FORMAT);
 	str.Format(fmt, (float)totalPrice / 100);
-	m_StaticTotalPrice.SetWindowText(str);
+	StaticTotalPrice.SetWindowText(str);
 
 	UpdateData(false); // write the data
 }
@@ -192,25 +192,25 @@ void CSampleDlg::OnNMCustomdrawPictureList(NMHDR *pNMHDR, LRESULT *pResult)
 		{
 			const int iItem(static_cast<int>(pLVCD->nmcd.dwItemSpec));
 			CRect rect;
-			m_PictureListCtrl.GetItemRect(iItem, rect, LVIR_BOUNDS);
+			PictureListCtrl.GetItemRect(iItem, rect, LVIR_BOUNDS);
 			LVCOLUMN lvcolumn;
 			memset(&lvcolumn, 0, sizeof(LVCOLUMN));
 			lvcolumn.mask = LVCF_WIDTH;
-			m_PictureListCtrl.GetColumn(0, &lvcolumn);
+			PictureListCtrl.GetColumn(0, &lvcolumn);
 			rect.left += lvcolumn.cx + 2;
 			rect.top += 2;
 			
 			const bool selected((pLVCD->nmcd.uItemState & (CDIS_FOCUS | CDIS_SELECTED)) != 0);
 
 			CString format;
-			m_Format.GetLBText(m_picture_orders[iItem].m_picture_format, format);
+			Format.GetLBText(picture_orders[iItem].picture_format, format);
 
 			CString text;
 			text.FormatMessage(IDS_DISPLAY_FORMAT,
-				m_picture_data_list[iItem].m_FileName.Mid(m_picture_data_list[iItem].m_FileName.ReverseFind('\\')+1),
-				m_picture_data_list[iItem].picture_width,
-				m_picture_data_list[iItem].picture_height,
-				m_picture_orders[iItem].m_number_of_prints,
+				picture_data_list[iItem].file_name.Mid(picture_data_list[iItem].file_name.ReverseFind('\\')+1),
+				picture_data_list[iItem].picture_width,
+				picture_data_list[iItem].picture_height,
+				picture_orders[iItem].number_of_prints,
 				format
 				);			
 			
@@ -226,13 +226,13 @@ void CSampleDlg::OnBnClickedButtonSet()
 {
 	UpdateData(true); // read the data
 
-	int nHitItem = m_PictureListCtrl.GetNextItem(-1, LVNI_SELECTED);
+	int nHitItem = PictureListCtrl.GetNextItem(-1, LVNI_SELECTED);
 
 	if (nHitItem != -1)
 	{
-		PICTURE_FORMAT picture_format((PICTURE_FORMAT)m_Format.GetCurSel());
+		PICTURE_FORMAT picture_format((PICTURE_FORMAT)Format.GetCurSel());
 		CString str;
-		m_Prints.GetWindowText(str);
+		Prints.GetWindowText(str);
 
 		const int number_of_prints(_wtol(str));
 
@@ -251,15 +251,15 @@ void CSampleDlg::OnBnClickedButtonSet()
 			return;
 		}
 
-		while (nHitItem != -1 && nHitItem < static_cast<int>(m_picture_orders.size()))
+		while (nHitItem != -1 && nHitItem < static_cast<int>(picture_orders.size()))
 		{
-			m_picture_orders[nHitItem].m_picture_format = picture_format;
-			m_picture_orders[nHitItem].m_number_of_prints = number_of_prints;
+			picture_orders[nHitItem].picture_format = picture_format;
+			picture_orders[nHitItem].number_of_prints = number_of_prints;
 
-			nHitItem = m_PictureListCtrl.GetNextItem(nHitItem, LVNI_SELECTED);
+			nHitItem = PictureListCtrl.GetNextItem(nHitItem, LVNI_SELECTED);
 		}
 
 		update_total();
-		m_PictureListCtrl.RedrawWindow();
+		PictureListCtrl.RedrawWindow();
 	}
 }

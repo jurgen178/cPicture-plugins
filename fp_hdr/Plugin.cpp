@@ -200,7 +200,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginHDR::CFunctionPluginHDR()
-	: m_hwnd(NULL)
+	: handle_wnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP");
 }
@@ -217,35 +217,35 @@ struct PluginData __stdcall CFunctionPluginHDR::get_plugin_data()
 	return pluginData;
 }
 
-struct request_info __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<const WCHAR*>& file_list)
+enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
-	m_hwnd = hwnd;
+	handle_wnd = hwnd;
 
 	// Requires at least 2 pictures.
 	if (file_list.size() < 2)
 	{
 		AfxMessageBox(IDS_MIN_SELECTION, MB_ICONINFORMATION);
-		return request_info(PICTURE_REQUEST_INFO_CANCEL_REQUEST);
+		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 	}
 
 	picture_list = file_list;
 
-	return request_info();
+	return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY;
 }
 
-bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& _picture_data)
+bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& picture_data)
 {
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginHDR::end()
+const vector<update_data>& __stdcall CFunctionPluginHDR::end()
 {
 	// Run enfuse with the selected pictures.
 	if (picture_list.size() >= 2)
 	{
 		CWnd parent;
-		parent.Attach(m_hwnd);
+		parent.Attach(handle_wnd);
 
 		ParameterDlg parameterDlg(picture_list, &parent);
 
@@ -274,11 +274,11 @@ const vector<update_info>& __stdcall CFunctionPluginHDR::end()
 
 		if (parameterDlg.DoModal() == IDOK)
 		{
-			m_update_info.push_back(update_info(parameterDlg.m_OutputFile, UPDATE_TYPE_ADDED));
+			update_data_set.push_back(update_data(parameterDlg.m_OutputFile, UPDATE_TYPE_ADDED));
 		}
 
 		parent.Detach();
 	}
 
-	return m_update_info;
+	return update_data_set;
 }

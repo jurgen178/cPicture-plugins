@@ -2,7 +2,6 @@
 #include "stdafx.h"
 
 #include "vector"
-#include <memory>
 using namespace std;
 
 // Request_TYPE used in the 'start' event.
@@ -125,9 +124,6 @@ enum PLUGIN_TYPE
 	PLUGIN_TYPE_FUNCTION = 0x0002,
 };
 
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2);
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2);
-
 
 struct PluginData
 {
@@ -168,7 +164,7 @@ public:
 
 public:
 	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY; };
-	virtual bool __stdcall process_picture(const picture_data& _picture_data) { return true; };
+	virtual bool __stdcall process_picture(const picture_data& picture_data) { return true; };
 	virtual const vector<update_data>& __stdcall end() { return update_data_set; };
 };
 

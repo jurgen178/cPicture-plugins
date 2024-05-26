@@ -4,16 +4,6 @@
 
 // Example Plugin cpp_fp1.
 
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
-}
-
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 & (const unsigned int)t2);
-}
-
 
 const CString __stdcall GetPluginVersion()
 {
@@ -58,7 +48,7 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 	return pluginData;
 }
 
-struct request_info __stdcall CFunctionPluginSample1::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
+enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	CString list(L"start\n------\n");
 	for(vector<const WCHAR*>::const_iterator it = file_list.begin(); it != file_list.end(); ++it)
@@ -69,22 +59,22 @@ struct request_info __stdcall CFunctionPluginSample1::start(HWND hwnd, const vec
 	
 	AfxMessageBox(list, MB_ICONINFORMATION);
 	
-	return request_info();
+	return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY;
 }
 
-bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& _picture_data) 
+bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& picture_data)
 { 
 	const CString msg(L"process picture:\n");
-	AfxMessageBox(msg + _picture_data.m_FileName, MB_ICONINFORMATION);
+	AfxMessageBox(msg + picture_data.file_name, MB_ICONINFORMATION);
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginSample1::end() 
+const vector<update_data>& __stdcall CFunctionPluginSample1::end()
 { 
 	AfxMessageBox(L"end", MB_ICONINFORMATION);
 
-	return m_update_info;
+	return update_data_set;
 }
 

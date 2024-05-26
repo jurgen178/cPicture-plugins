@@ -4,19 +4,18 @@
 #include "vector"
 using namespace std;
 
-// Request-info used in the 'start' event.
-enum PICTURE_REQUEST_INFO
+// Request_TYPE used in the 'start' event.
+enum REQUEST_TYPE
 {
-	PICTURE_REQUEST_INFO_CANCEL_REQUEST = 0,
-	PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
-	PICTURE_REQUEST_INFO_RGB_DATA,
-	PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA,
+	REQUEST_TYPE_CANCEL = 0,
+	REQUEST_TYPE_FILE_NAME_ONLY,
+	REQUEST_TYPE_RGB_DATA,
+	REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA,
 };
 
-
-struct request_info_size
+struct request_data_size
 {
-	request_info_size(
+	request_data_size(
 		const int picture_width = 0,
 		const int picture_height = 0)
 		: picture_width(picture_width),
@@ -29,20 +28,6 @@ struct request_info_size
 };
 
 
-struct request_info
-{
-	request_info(const PICTURE_REQUEST_INFO picture_request_info = PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
-		vector<request_info_size> request_info_sizes = vector<request_info_size>())
-		: picture_request_info(picture_request_info),
-		request_info_sizes(request_info_sizes)
-	{
-	};
-
-	PICTURE_REQUEST_INFO picture_request_info;
-	vector<request_info_size> request_info_sizes;
-};
-
-
 // Update-info used in the 'end' event.
 enum UPDATE_TYPE
 {
@@ -52,16 +37,16 @@ enum UPDATE_TYPE
 	UPDATE_TYPE_DELETED,
 };
 
-struct update_info
+struct update_data
 {
-	update_info(const CString& _list_obj = L"", const UPDATE_TYPE _update_type = UPDATE_TYPE_UNCHANGED)
-		: m_list_obj(_list_obj),
-		m_update_type(_update_type)
+	update_data(const CString& list_obj = L"", const UPDATE_TYPE update_type = UPDATE_TYPE_UNCHANGED)
+		: list_obj(list_obj),
+		update_type(update_type)
 	{
 	};
 
-	CString m_list_obj;
-	UPDATE_TYPE m_update_type;
+	CString list_obj;
+	UPDATE_TYPE update_type;
 };
 
 
@@ -90,56 +75,45 @@ struct requested_data
 
 struct picture_data
 {
-	picture_data(const CString FileName,
-		const CString ErrorMsg = L"",
-		const bool bAudio = false,
-		const bool bVideo = false,
-		const bool bColorProfile = false,
-		const CString GPSdata = L"",
-		const __int64 exiftime = 0,
-		const float fAperture = 0.0,
-		const int Shutterspeed = 0,
-		const int ISO = 0,
-		const CString ExifDateTime_display = L"",
-		const CString Model = L"",
-		const CString Lens = L"",
-		const CString cdata = L"")
-		: m_FileName(FileName),
-		m_ErrorMsg(ErrorMsg),
-		m_bAudio(bAudio),
-		m_bVideo(bVideo),
-		m_bColorProfile(bColorProfile),
-		m_GPSdata(GPSdata),
-		m_exiftime(exiftime),
-		m_fAperture(fAperture),
-		m_Shutterspeed(Shutterspeed),
-		m_ISO(ISO),
-		m_ExifDateTime_display(ExifDateTime_display),
-		m_Model(Model),
-		m_Lens(Lens),
-		m_cdata(cdata)
+	picture_data(CString file_name = L"")
+		: file_name(file_name),
+		picture_width(0),
+		picture_height(0),
+		error_msg(L""),
+		audio(false),
+		video(false),
+		color_profile(false),
+		gps(L""),
+		exif_time(0),
+		aperture(0.0),
+		shutterspeed(0),
+		iso(0),
+		exif_datetime_display(L""),
+		model(L""),
+		lens(L""),
+		cdata(L"")
 	{
 	};
 
-	CString m_FileName;
+	CString file_name;
 
 	int picture_width;
 	int picture_height;
 	vector<requested_data> requested_data_set;
 
-	CString m_ErrorMsg;
-	bool m_bAudio;
-	bool m_bVideo;
-	bool m_bColorProfile;
-	CString m_GPSdata;
-	__int64 m_exiftime;
-	float m_fAperture;
-	int m_Shutterspeed;
-	int m_ISO;
-	CString m_ExifDateTime_display;
-	CString m_Model;
-	CString m_Lens;
-	CString m_cdata;
+	CString error_msg;
+	bool audio;
+	bool video;
+	bool color_profile;
+	CString gps;
+	__int64 exif_time;
+	float aperture;
+	int shutterspeed;
+	int iso;
+	CString exif_datetime_display;
+	CString model;
+	CString lens;
+	CString cdata;
 };
 
 
@@ -149,9 +123,6 @@ enum PLUGIN_TYPE
 	PLUGIN_TYPE_FORMAT = 0x0001,
 	PLUGIN_TYPE_FUNCTION = 0x0002,
 };
-
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2);
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2);
 
 
 struct PluginData
@@ -186,15 +157,15 @@ public:
 	virtual __stdcall ~CFunctionPlugin() { };
 
 protected:
-	vector<update_info> m_update_info;
+	vector<update_data> update_data_set;
 
 public:
 	virtual struct PluginData __stdcall get_plugin_data() = 0;
 
 public:
-	virtual request_info __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list) { return request_info(); };
-	virtual bool __stdcall process_picture(const picture_data& _picture_data) { return true; };
-	virtual const vector<update_info>& __stdcall end() { return m_update_info; };
+	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY; };
+	virtual bool __stdcall process_picture(const picture_data& picture_data) { return true; };
+	virtual const vector<update_data>& __stdcall end() { return update_data_set; };
 };
 
 

@@ -9,9 +9,9 @@ public:
 	CFunctionPluginScript(const CString& script);
 
 protected:
-	CString m_script;
-	int m_i;
-	int m_n;
+	CString script;
+	int sequence;
+	int max_files;
 
 public:
 	virtual __stdcall ~CFunctionPluginScript() { };
@@ -20,6 +20,6 @@ public:
 	virtual struct PluginData __stdcall get_plugin_data();
 
 public:
-	virtual request_info __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list);
-	virtual bool __stdcall process_picture(const picture_data& _picture_data);
+	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes);
+	virtual bool __stdcall process_picture(const picture_data& picture_data);
 };

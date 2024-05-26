@@ -10,16 +10,6 @@ using namespace std;
 
 // PowerShell script plugin cpp_ps1_script.
 
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
-}
-
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 & (const unsigned int)t2);
-}
-
 
 static vector<lpfnFunctionGetInstanceProc> PluginProcArray;
 static vector<script_info> Scripts;
@@ -329,7 +319,7 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 }
 
 
-struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list)
+enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	const bool bScript(CheckFile(m_script_info.script));
 	if (!bScript)
@@ -346,7 +336,7 @@ struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vect
 		AfxMessageBox(msg);
 	}
 
-	return request_info(bScript ? PICTURE_REQUEST_INFO_FILE_NAME_ONLY : PICTURE_REQUEST_INFO_CANCEL_REQUEST);
+	return bScript ? REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY : REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 }
 
 bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data)
@@ -355,13 +345,13 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& pictur
 
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
-	m_update_info.push_back(update_info(picture_data.m_FileName, UPDATE_TYPE_UPDATED));
+	update_data_set.push_back(update_data(picture_data.file_name, UPDATE_TYPE_UPDATED));
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginScript::end()
+const vector<update_data>& __stdcall CFunctionPluginScript::end()
 {
 	//# plugin variables
 	//
@@ -461,30 +451,30 @@ const vector<update_info>& __stdcall CFunctionPluginScript::end()
 	{
 		// \"\" escapes the quotes in a quoted string.
 		CString cmd_format(L"{\"\"file\"\":\"\"%1\"\",\"\"name\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"errormsg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
-		const int f(it->m_FileName.ReverseFind(L'\\') + 1);
-		const CString name(it->m_FileName.Mid(f));
-		const CString dir(it->m_FileName.Left(f));
+		const int f(it->file_name.ReverseFind(L'\\') + 1);
+		const CString name(it->file_name.Mid(f));
+		const CString dir(it->file_name.Left(f));
 
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			escapeCmdLineJsonData(it->m_FileName),
+			escapeCmdLineJsonData(it->file_name),
 			escapeCmdLineJsonData(name),
 			escapeCmdLineJsonData(dir),
-			it->m_OriginalPictureWidth1,
-			it->m_OriginalPictureHeight1,
-			escapeCmdLineJsonData(it->m_ErrorMsg),
-			escapeCmdLineJsonData(it->m_bAudio),
-			escapeCmdLineJsonData(it->m_bVideo),
-			escapeCmdLineJsonData(it->m_bColorProfile),
-			escapeCmdLineJsonData(it->m_GPSdata),
-			escapeCmdLineJsonData(it->m_fAperture),
-			it->m_Shutterspeed,
-			it->m_ISO,
-			escapeCmdLineJsonData(it->m_exiftime),
-			it->m_ExifDateTime_display,
-			escapeCmdLineJsonData(it->m_Model),
-			escapeCmdLineJsonData(it->m_Lens),
-			escapeCmdLineJsonData(it->m_cdata)
+			it->picture_width,
+			it->picture_height,
+			escapeCmdLineJsonData(it->error_msg),
+			escapeCmdLineJsonData(it->audio),
+			escapeCmdLineJsonData(it->video),
+			escapeCmdLineJsonData(it->color_profile),
+			escapeCmdLineJsonData(it->gps),
+			escapeCmdLineJsonData(it->aperture),
+			it->shutterspeed,
+			it->iso,
+			escapeCmdLineJsonData(it->exif_time),
+			it->exif_datetime_display,
+			escapeCmdLineJsonData(it->model),
+			escapeCmdLineJsonData(it->lens),
+			escapeCmdLineJsonData(it->cdata)
 		);
 
 		// No trailing separator for the last array element.
@@ -515,5 +505,5 @@ const vector<update_info>& __stdcall CFunctionPluginScript::end()
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
-	return m_update_info;
+	return update_data_set;
 }
