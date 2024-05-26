@@ -30,9 +30,9 @@ unsigned int GetFileSize(const WCHAR* pFile)
 
 // CSampleDlg dialog
 
-CSampleDlg::CSampleDlg(const vector<picture_data>& _picture_data_list, CWnd* pParent /*=NULL*/)
+CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
   : CDialog(CSampleDlg::IDD, pParent),
-	m_picture_data_list(_picture_data_list),
+	m_picture_data_list(picture_data_list),
 	m_index(0)
 {
 	memset(&m_bmiHeader, 0, sizeof(BITMAPINFOHEADER));
@@ -96,6 +96,9 @@ void CSampleDlg::OnPaint()
 	{
 		vector<picture_data>::const_iterator it = m_picture_data_list.begin() + m_index;
 
+		vector<requested_data> requested_data_set = it->requested_data_set;
+		requested_data requested_data1 = requested_data_set.back();
+
 		m_Info.SetWindowText(it->m_FileName);
 
 		CString str;
@@ -103,14 +106,14 @@ void CSampleDlg::OnPaint()
 		m_Counter.SetWindowText(str);
 
 		const unsigned int fsize = ::GetFileSize(it->m_FileName);
-		str.Format(L"%dx%d, %dKB", it->m_OriginalPictureWidth1, it->m_OriginalPictureHeight1, fsize >> 10);
+		str.Format(L"%dx%d, %dKB", it->picture_width, it->picture_height, fsize >> 10);
 		m_Info2.SetWindowText(str);
 
 
-		m_bmiHeader.biWidth = it->m_PictureWidth1;
-		m_bmiHeader.biHeight = it->m_PictureHeight1;
-		const int left(m_PreviewPositionRect.left + (m_PreviewPositionRect.Width() - (int)it->m_PictureWidth1) / 2);
-		const int top(m_PreviewPositionRect.top + (m_PreviewPositionRect.Height() - (int)it->m_PictureHeight1) / 2);
+		m_bmiHeader.biWidth = requested_data1.picture_width;
+		m_bmiHeader.biHeight = requested_data1.picture_height;
+		const int left(m_PreviewPositionRect.left + (m_PreviewPositionRect.Width() - (int)requested_data1.picture_width) / 2);
+		const int top(m_PreviewPositionRect.top + (m_PreviewPositionRect.Height() - (int)requested_data1.picture_height) / 2);
 
 		HDRAWDIB hdd = DrawDibOpen();
 
@@ -118,14 +121,14 @@ void CSampleDlg::OnPaint()
 					dc.m_hDC,                  
 					left,                 
 					top,                 
-					it->m_PictureWidth1,                
-					it->m_PictureHeight1, 
+					requested_data1.picture_width,
+					requested_data1.picture_height,
 					&m_bmiHeader,  
-					it->m_buf1,            
+					requested_data1.buf,
 					0,                 
 					0,                 
-					it->m_PictureWidth1,                
-					it->m_PictureHeight1, 
+					requested_data1.picture_width,
+					requested_data1.picture_height,
 					0
 					);
 

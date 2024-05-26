@@ -73,22 +73,37 @@ struct request_info __stdcall CFunctionPluginSample2::start(HWND hwnd, const vec
 	
 	parent.Detach();
 
-	// Request up to two picture data sets.
-	// In this example, request one picture data set for the preview size. 
-	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height());
+	// Request one picture data set for the preview size.
+	vector<request_info_size> request_info_sizes = vector<request_info_size>();
+	request_info_sizes.push_back(request_info_size(SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height()));
+	
+	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, request_info_sizes);
 }
 
 bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _picture_data) 
 { 
-	if(_picture_data.m_len1)
+	picture_data_list.push_back(_picture_data);
+
+	if(_picture_data.requested_data_set.size() > 0)
 	{
-		picture_data picture_data_cpy(_picture_data);
-		picture_data_cpy.m_buf1 = new BYTE[_picture_data.m_len1];
-		if(picture_data_cpy.m_buf1)
-		{
-			memcpy(picture_data_cpy.m_buf1, _picture_data.m_buf1, _picture_data.m_len1);
-			picture_data_list.push_back(picture_data_cpy);
-		}
+		//picture_data picture_data_copy(_picture_data);
+		//picture_data_list.push_back(picture_data_copy);
+
+
+		//picture_data_copy.m_buf1 = new BYTE[_picture_data.m_len1];
+		//if (picture_data_cpy.m_buf1)
+		//{
+		//	memcpy(picture_data_cpy.m_buf1, _picture_data.m_buf1, _picture_data.m_len1);
+		//	picture_data_list.push_back(picture_data_cpy);
+		//}
+
+		//requested_data requested_data_copy(picture_data.requested_data_set[0]);
+		//requested_data_copy.buf = new BYTE[requested_data_copy.len];
+		//if(requested_data_copy.buf)
+		//{
+		//	memcpy(requested_data_copy.buf, picture_data.requested_data_set[0].buf, picture_data.requested_data_set[0].len);
+		//	picture_data_list.push_back(requested_data_copy);
+		//}
 	}
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
@@ -104,11 +119,6 @@ const vector<update_info>& __stdcall CFunctionPluginSample2::end()
 	SampleDlg.DoModal();
 
 	parent.Detach();
-
-	for(vector<picture_data>::iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
-	{
-		delete it->m_buf1;
-	}
 
 	return m_update_info;
 }
