@@ -93,8 +93,8 @@ bool CheckFile(const WCHAR* pFile)
 }
 
 
-CFunctionPluginScript::CFunctionPluginScript(const CString& script)
-  :	script(script),
+CFunctionPluginScript::CFunctionPluginScript(const CString& script_file)
+  : script_file(script_file),
 	sequence(0),
 	max_files(0)
 {
@@ -106,9 +106,9 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.file_name = script;
-	pluginData.name.FormatMessage(IDS_SCRIPT_SHORT, script);
-	pluginData.desc.FormatMessage(IDS_SCRIPT_LONG, script.Left(script.ReverseFind(L'.')));
+	pluginData.file_name = script_file;
+	pluginData.name.FormatMessage(IDS_SCRIPT_SHORT, script_file);
+	pluginData.desc.FormatMessage(IDS_SCRIPT_LONG, script_file.Left(script_file.ReverseFind(L'.')));
 
 	return pluginData;
 }
@@ -119,7 +119,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 	sequence = 0;
 	max_files = (int)file_list.size();
 
-	const bool bScript(CheckFile(script));
+	const bool bScript(CheckFile(script_file));
 	if(!bScript)
 	{
 		const CString path(L".");
@@ -128,7 +128,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH-1);
 
 		CString msg;
-		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, script, abs_path);
+		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, script_file, abs_path);
 
 		AfxMessageBox(msg);
 	}
@@ -173,7 +173,7 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& pictur
 
 	CString script;
 	script += L"\"";
-	script += script;
+	script += script_file;
 	script += L"\"";
 
 	SHELLEXECUTEINFO shInfo = { 0 };

@@ -14,7 +14,7 @@ public:
 
 // Attributes
 protected:
-	const CBrush m_Brush;
+	const CBrush brush;
 
 public:
 
@@ -32,22 +32,22 @@ protected:
 class ParameterDlg : public CDialog
 {
 public:
-	ParameterDlg(const vector<const WCHAR*>& _picture_list, CWnd* pParent = NULL);   // standard constructor
+	ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent = NULL);   // standard constructor
 	virtual ~ParameterDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_HDR };
 
 public:
-	CString m_Enfuse;
-	CString m_OutputFile;
-	UINT m_JpegQuality;
+	CString enfuse_exe_path;
+	CString output_file;
+	UINT jpeg_quality;
 
 protected:
-	const vector<const WCHAR*>& m_picture_list;
-	CFont m_ConsoleFont;
-	CColorEdit m_Console;
-	bool m_bFinished;
+	const vector<const WCHAR*>& picture_list;
+	CFont console_font;
+	CColorEdit console;
+	bool finished;
 
 protected:
 	void Go(LPCTSTR commandLine);

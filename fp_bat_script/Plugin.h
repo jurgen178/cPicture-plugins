@@ -6,10 +6,10 @@ class CFunctionPluginScript : public CFunctionPlugin
 {
 protected:
 public:
-	CFunctionPluginScript(const CString& script);
+	CFunctionPluginScript(const CString& script_file);
 
 protected:
-	CString script;
+	CString script_file;
 	int sequence;
 	int max_files;
 

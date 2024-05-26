@@ -262,19 +262,19 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end()
 		const CString ext_bild_1(bild_1.Mid(bild_1.ReverseFind(L'.')));
 		const CString ldr_file(dir_bild + name_bild_1 + L"-" + name_bild_n + ext_bild_1);
 
-		parameterDlg.m_OutputFile = ldr_file;
-		parameterDlg.m_JpegQuality = 95;
+		parameterDlg.output_file = ldr_file;
+		parameterDlg.jpeg_quality = 95;
 
 		const CString path(L".");
 		WCHAR abs_path[MAX_PATH] = { 0 };
 		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
 
-		parameterDlg.m_Enfuse = CString(abs_path) + L"\\enfuse.exe";
+		parameterDlg.enfuse_exe_path = CString(abs_path) + L"\\enfuse.exe";
 
 		if (parameterDlg.DoModal() == IDOK)
 		{
-			update_data_set.push_back(update_data(parameterDlg.m_OutputFile, UPDATE_TYPE_ADDED));
+			update_data_set.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE_ADDED));
 		}
 
 		parent.Detach();

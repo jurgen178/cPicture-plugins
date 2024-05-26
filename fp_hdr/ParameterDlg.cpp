@@ -7,7 +7,7 @@
 
 
 CColorEdit::CColorEdit()
-  : m_Brush(RGB(0, 0, 0))
+  : brush(RGB(0, 0, 0))
 {
 }
 
@@ -30,17 +30,17 @@ HBRUSH CColorEdit::CtlColor(CDC* pDC, UINT nCtlColor)
 	pDC->SetTextColor(RGB(255, 255, 255));
 	pDC->SetBkColor(RGB(0, 0, 0));
 
-	return (HBRUSH)m_Brush;
+	return (HBRUSH)brush;
 }
 
 
 // ParameterDlg dialog
 
-ParameterDlg::ParameterDlg(const vector<const WCHAR*>& _picture_list, CWnd* pParent /*=NULL*/)
+ParameterDlg::ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent /*=NULL*/)
   : CDialog(ParameterDlg::IDD, pParent),
-	m_picture_list(_picture_list),
-	m_JpegQuality(95),
-	m_bFinished(false)
+	picture_list(picture_list),
+	jpeg_quality(95),
+	finished(false)
 {
 }
 
@@ -51,10 +51,10 @@ ParameterDlg::~ParameterDlg()
 void ParameterDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_OUTPUT, m_OutputFile);
-	DDX_Text(pDX, IDC_EDIT_JPEG_QUALITY, m_JpegQuality);
-	DDX_Text(pDX, IDC_EDIT_ENFUSE, m_Enfuse);
-	DDX_Control(pDX, IDC_EDIT_CONSOLE, m_Console);
+	DDX_Text(pDX, IDC_EDIT_OUTPUT, output_file);
+	DDX_Text(pDX, IDC_EDIT_JPEG_QUALITY, jpeg_quality);
+	DDX_Text(pDX, IDC_EDIT_ENFUSE, enfuse_exe_path);
+	DDX_Control(pDX, IDC_EDIT_CONSOLE, console);
 }
 
 
@@ -68,10 +68,10 @@ BOOL ParameterDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_ConsoleFont.CreateFont(22, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS, 
+	console_font.CreateFont(22, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS, 
 				  CLIP_CHARACTER_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_SWISS, L"Consolas");
 
-	m_Console.SetFont(&m_ConsoleFont, FALSE);
+	console.SetFont(&console_font, FALSE);
 
 	return TRUE;
 }
@@ -89,7 +89,7 @@ void ParameterDlg::OnBnClickedButtonBrowse()
 	{
 		if(fd.GetPathName().GetLength())
 		{
-			m_Enfuse = fd.GetPathName();
+			enfuse_exe_path = fd.GetPathName();
 			UpdateData(false); // write the data
 		}
 	}
@@ -99,7 +99,7 @@ void ParameterDlg::OnBnClickedOk()
 {
 	UpdateData(true); // read the data
 
-	if(!CheckFile(m_Enfuse))
+	if(!CheckFile(enfuse_exe_path))
 	{
 		AfxMessageBox(IDS_ENFUSE_MISSING);
 		OnBnClickedButtonBrowse();
@@ -163,7 +163,7 @@ HANDLE ParameterDlg::SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputRea
 
 void ParameterDlg::Go(LPCTSTR commandLine)
 {
-	m_Console.SetWindowText(NULL);
+	console.SetWindowText(NULL);
 	HANDLE hOutput, hProcess;
 	hProcess = SpawnAndRedirect(commandLine, &hOutput, NULL);
 	if (!hProcess) 
@@ -191,18 +191,18 @@ void ParameterDlg::Go(LPCTSTR commandLine)
 				break;
 		}
 		 
-		const int nSize(m_Console.GetWindowTextLength());
-		m_Console.SetSel(nSize, nSize);
-		m_Console.ReplaceSel(out);
+		const int nSize(console.GetWindowTextLength());
+		console.SetSel(nSize, nSize);
+		console.ReplaceSel(out);
 
 		out = L"";
 	}
 
 	out.LoadString(IDS_CONSOLE_FINSH);
 
-	const int nSize(m_Console.GetWindowTextLength());
-	m_Console.SetSel(nSize, nSize);
-	m_Console.ReplaceSel(L"\r\n" + out);
+	const int nSize(console.GetWindowTextLength());
+	console.SetSel(nSize, nSize);
+	console.ReplaceSel(L"\r\n" + out);
 
 	CloseHandle(hOutput);
 	CloseHandle(hProcess);
@@ -211,9 +211,9 @@ void ParameterDlg::Go(LPCTSTR commandLine)
 
 void ParameterDlg::OnOK()
 {
-	if(!m_bFinished)
+	if(!finished)
 	{
-		m_Console.ModifyStyle(0, WS_VISIBLE);
+		console.ModifyStyle(0, WS_VISIBLE);
 
 		GetDlgItem(IDCANCEL)->MoveWindow(-1, -1, 0, 0);	// Kein EnableWindow(FALSE), sonst geht Abbrechen mit ESC oder [x] nicht mehr
 
@@ -227,9 +227,9 @@ void ParameterDlg::OnOK()
 
 
 		CString cmd;
-		cmd.FormatMessage(L"\"%1!s!\" -o \"%2!s!\" --compression=%3!d!", m_Enfuse, m_OutputFile, m_JpegQuality);
+		cmd.FormatMessage(L"\"%1!s!\" -o \"%2!s!\" --compression=%3!d!", enfuse_exe_path, output_file, jpeg_quality);
 
-		for(vector<const WCHAR*>::const_iterator it = m_picture_list.begin(); it != m_picture_list.end(); ++it)
+		for(vector<const WCHAR*>::const_iterator it = picture_list.begin(); it != picture_list.end(); ++it)
 		{
 			cmd += L" \"";
 			cmd += *it;
@@ -238,7 +238,7 @@ void ParameterDlg::OnOK()
 
 		Go(cmd);
 
-		m_bFinished = true;
+		finished = true;
 	}
 	else
 	{
