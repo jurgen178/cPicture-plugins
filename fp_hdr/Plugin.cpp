@@ -239,7 +239,7 @@ bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& picture_d
 	return true;
 }
 
-const vector<update_data>& __stdcall CFunctionPluginHDR::end()
+const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<picture_data>& picture_data_list)
 {
 	// Run enfuse with the selected pictures.
 	if (picture_list.size() >= 2)
@@ -274,11 +274,11 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end()
 
 		if (parameterDlg.DoModal() == IDOK)
 		{
-			update_data_set.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE_ADDED));
+			update_data_list.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE_ADDED));
 		}
 
 		parent.Detach();
 	}
 
-	return update_data_set;
+	return update_data_list;
 }

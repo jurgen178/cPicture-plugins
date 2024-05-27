@@ -97,7 +97,7 @@ void CSampleDlg::OnPaint()
 		vector<picture_data>::const_iterator it = picture_data_list.begin() + m_index;
 
 		vector<requested_data> requested_data_set = it->requested_data_set;
-		requested_data requested_data1 = requested_data_set.back();
+		requested_data requested_data1 = requested_data_set.front();
 
 		m_Info.SetWindowText(it->file_name);
 

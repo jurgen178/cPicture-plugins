@@ -157,7 +157,7 @@ public:
 	virtual __stdcall ~CFunctionPlugin() { };
 
 protected:
-	vector<update_data> update_data_set;
+	vector<update_data> update_data_list;
 
 public:
 	virtual struct PluginData __stdcall get_plugin_data() = 0;
@@ -165,7 +165,7 @@ public:
 public:
 	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY; };
 	virtual bool __stdcall process_picture(const picture_data& picture_data) { return true; };
-	virtual const vector<update_data>& __stdcall end() { return update_data_set; };
+	virtual const vector<update_data>& __stdcall end(const vector<picture_data>& picture_data_list) { return update_data_list; };
 };
 
 

@@ -65,6 +65,9 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vecto
 	parent.Detach();
 
 	// Request one picture data set for the preview size.
+	// A negative value requests a relative size for the picture data.
+	// For example, -100 requests data for the original 100% picture size.
+	// request_data_sizes.push_back(request_data_size(-50, -50));
 	request_data_sizes.push_back(request_data_size(SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height()));
 
 	return REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA;
@@ -72,13 +75,11 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vecto
 
 bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& picture_data) 
 { 
-	picture_data_list.push_back(picture_data);
-
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_data>& __stdcall CFunctionPluginSample2::end() 
+const vector<update_data>& __stdcall CFunctionPluginSample2::end(const vector<picture_data>& picture_data_list)
 { 
 	CWnd parent;
 	parent.Attach(handle_wnd);
@@ -88,6 +89,6 @@ const vector<update_data>& __stdcall CFunctionPluginSample2::end()
 
 	parent.Detach();
 
-	return update_data_set;
+	return update_data_list;
 }
 

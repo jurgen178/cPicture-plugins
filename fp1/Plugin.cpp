@@ -71,10 +71,10 @@ bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& pictu
 	return true;
 }
 
-const vector<update_data>& __stdcall CFunctionPluginSample1::end()
+const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<picture_data>& picture_data_list)
 { 
 	AfxMessageBox(L"end", MB_ICONINFORMATION);
 
-	return update_data_set;
+	return update_data_list;
 }
 

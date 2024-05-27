@@ -35,7 +35,7 @@ struct picture_order
 class CSampleDlg : public CDialog
 {
 public:
-	CSampleDlg(const vector<picture_data>& _picture_data_list, CWnd* pParent = NULL);   // standard constructor
+	CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL);   // standard constructor
 	virtual ~CSampleDlg();
 
 // Dialog Data

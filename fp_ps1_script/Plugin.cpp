@@ -341,17 +341,15 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 
 bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data)
 {
-	picture_data_list.push_back(picture_data);
-
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
-	update_data_set.push_back(update_data(picture_data.file_name, UPDATE_TYPE_UPDATED));
+	update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE_UPDATED));
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_data>& __stdcall CFunctionPluginScript::end()
+const vector<update_data>& __stdcall CFunctionPluginScript::end(const vector<picture_data>& picture_data_list)
 {
 	//# plugin variables
 	//
@@ -505,5 +503,5 @@ const vector<update_data>& __stdcall CFunctionPluginScript::end()
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
-	return update_data_set;
+	return update_data_list;
 }
