@@ -157,6 +157,9 @@ public:
 	virtual __stdcall ~CFunctionPlugin() { };
 
 protected:
+	// List of pictures that are updated, added or deleted (enum UPDATE_TYPE).
+	// This info will be submitted in the 'end' event.
+	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE_UPDATED));
 	vector<update_data> update_data_list;
 
 public:
