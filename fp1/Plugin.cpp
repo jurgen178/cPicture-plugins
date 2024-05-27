@@ -78,7 +78,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vecto
 
 	::MessageBox(handle_wnd, list, get_plugin_data().desc, MB_ICONINFORMATION);
 	
-	return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY;
+	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
 bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& picture_data)

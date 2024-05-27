@@ -336,7 +336,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 		::MessageBox(hwnd, msg, get_plugin_data().name, MB_ICONEXCLAMATION);
 	}
 
-	return bScript ? REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY : REQUEST_TYPE::REQUEST_TYPE_CANCEL;
+	return bScript ? REQUEST_TYPE::REQUEST_TYPE_DATA : REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 }
 
 bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data)

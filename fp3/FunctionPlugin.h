@@ -4,11 +4,15 @@
 #include "vector"
 using namespace std;
 
-// Request_TYPE used in the 'start' event.
+// Request type used in the 'start' event.
 enum REQUEST_TYPE
 {
 	REQUEST_TYPE_CANCEL = 0,
-	REQUEST_TYPE_FILE_NAME_ONLY,
+	REQUEST_TYPE_DATA,
+};
+
+enum DATA_REQUEST_TYPE
+{
 	REQUEST_TYPE_RGB_DATA,
 	REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA,
 };
@@ -16,15 +20,18 @@ enum REQUEST_TYPE
 struct request_data_size
 {
 	request_data_size(
-		const int picture_width = 0,
-		const int picture_height = 0)
+		const int picture_width,
+		const int picture_height,
+		const enum DATA_REQUEST_TYPE data_request_type)
 		: picture_width(picture_width),
-		picture_height(picture_height)
+		picture_height(picture_height),
+		data_request_type(data_request_type)
 	{
 	};
 
 	int picture_width;
 	int picture_height;
+	enum DATA_REQUEST_TYPE data_request_type;
 };
 
 
@@ -163,7 +170,7 @@ public:
 	virtual struct PluginData __stdcall get_plugin_data() = 0;
 
 public:
-	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY; };
+	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_DATA; };
 	virtual bool __stdcall process_picture(const picture_data& picture_data) { return true; };
 	virtual const vector<update_data>& __stdcall end(const vector<picture_data>& picture_data_list) { return update_data_list; };
 };
