@@ -503,5 +503,6 @@ const vector<update_data>& __stdcall CFunctionPluginScript::end(const vector<pic
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
+	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	return update_data_list;
 }

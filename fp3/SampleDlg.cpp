@@ -98,7 +98,8 @@ BOOL CSampleDlg::OnInitDialog()
 	for(vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it, i++)
 	{
 		vector<requested_data> requested_data_set = it->requested_data_set;
-		requested_data requested_data1 = requested_data_set.back();
+		// Get the data for the requested preview picture (160x120 pixel).
+		requested_data requested_data1 = requested_data_set.front();
 
 		picture_orders.push_back(picture_order(it->file_name));
 

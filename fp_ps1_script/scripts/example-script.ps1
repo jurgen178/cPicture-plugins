@@ -70,7 +70,6 @@ foreach ($picture_data in $picture_data_set) {
     [int]$MP = $picture_data.width * $picture_data.height / 1000000
     "Image '{0}' ({4} of {5}) with {1}x{2} pixel ({3}MP)" -f $picture_data.file, $picture_data.width, $picture_data.height, $MP, $i, $size
     "  name='$($picture_data.name)', dir='$($picture_data.dir)'`n"
-    "picture_data:"
 
     <# 
         Use ConvertFrom-Json when cdata is a json array to access the data elements.

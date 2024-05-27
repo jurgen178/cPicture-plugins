@@ -7,6 +7,10 @@ class CFunctionPluginSample1 : public CFunctionPlugin
 protected:
 	CFunctionPluginSample1();
 
+protected:
+	int picture_processed;
+	int pictures;
+
 public:
 	virtual __stdcall ~CFunctionPluginSample1() { };
 

@@ -64,11 +64,12 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vecto
 	SampleDlg.Create(IDD_DIALOG_SAMPLE2, &parent);
 	parent.Detach();
 
-	// Request one picture data set for the preview size.
+	// Request one picture data set for the dialog preview size.
 	// A negative value requests a relative size for the picture data.
 	// For example, -100 requests data for the original 100% picture size.
+	// To get picture data for the half size, use
 	// request_data_sizes.push_back(request_data_size(-50, -50));
-	request_data_sizes.push_back(request_data_size(SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height()));
+	request_data_sizes.push_back(request_data_size(SampleDlg.preview_position_rect.Width(), SampleDlg.preview_position_rect.Height()));
 
 	return REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA;
 }
