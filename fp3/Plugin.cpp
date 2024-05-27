@@ -54,11 +54,11 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample3::start(HWND hwnd, const vecto
 {
 	handle_wnd = hwnd;
 
-	// Request one picture data set for the preview picture 80x80 pixel.
+	// Request one picture data set for the preview picture 160x120 pixel.
 	// A negative value requests a relative size for the picture data.
 	// For example, -100 requests data for the original 100% picture size.
 	// request_data_sizes.push_back(request_data_size(-50, -50));
-	request_data_sizes.push_back(request_data_size(80, 80));
+	request_data_sizes.push_back(request_data_size(size_x, size_y));
 
 	return REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA;
 }

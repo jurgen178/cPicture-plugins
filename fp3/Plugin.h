@@ -1,8 +1,8 @@
 #pragma once
 #include "FunctionPlugin.h"
 
-const int size_x = 80;
-const int size_y = 80;
+const int size_x = 160;
+const int size_y = 120;
 
 class CFunctionPluginSample3 : public CFunctionPlugin
 {
