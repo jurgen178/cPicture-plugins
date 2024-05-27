@@ -130,7 +130,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 		CString msg;
 		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, script_file, abs_path);
 
-		AfxMessageBox(msg);
+		::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONEXCLAMATION);
 	}
 
 	return bScript ? REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY : REQUEST_TYPE::REQUEST_TYPE_CANCEL;

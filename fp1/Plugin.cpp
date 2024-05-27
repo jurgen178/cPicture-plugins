@@ -32,7 +32,8 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginSample1::CFunctionPluginSample1()
-	:picture_processed(0),
+	: handle_wnd(NULL),
+	picture_processed(0),
 	pictures(0)
 {
 	_wsetlocale(LC_ALL, L".ACP");
@@ -54,17 +55,28 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vecto
 {
 	// Start processing and print the picture names to process.
 
+	handle_wnd = hwnd;
 	pictures = (int)file_list.size();
 
 	CString list;
-	list.Format(L"start, %d pictures\n-------------------\n", pictures);
-	for(vector<const WCHAR*>::const_iterator it = file_list.begin(); it != file_list.end(); ++it)
+	list.Format(L"start event, %d pictures\n------------------------\n", pictures);
+	int i = 0;
+	const int max_pictures(10);
+
+	// Display the first max_pictures picture names.
+	vector<const WCHAR*>::const_iterator it;
+	for(it = file_list.begin(); i < max_pictures && it != file_list.end(); ++i, ++it)
 	{
 		list += *it;
 		list += L"\n";
 	}
 	
-	AfxMessageBox(list, MB_ICONINFORMATION);
+	if (it != file_list.end())
+	{
+		list += L"  :\n";
+	}
+
+	::MessageBox(handle_wnd, list, get_plugin_data().desc, MB_ICONINFORMATION);
 	
 	return REQUEST_TYPE::REQUEST_TYPE_FILE_NAME_ONLY;
 }
@@ -74,8 +86,8 @@ bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& pictu
 	// Process each picture.
 
 	CString msg;
-	msg.Format(L"process picture (%d/%d):\n", ++picture_processed, pictures);
-	const int ret(AfxMessageBox(msg + picture_data.file_name, MB_OKCANCEL | MB_ICONINFORMATION));
+	msg.Format(L"process picture event (%d/%d):\n", ++picture_processed, pictures);
+	const int ret(::MessageBox(handle_wnd, msg + picture_data.file_name, get_plugin_data().desc, MB_OKCANCEL | MB_ICONINFORMATION));
 
 	// Signal that pictures are updated, added or deleted (enum UPDATE_TYPE).
 	// For example:
@@ -90,8 +102,8 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 	// Print summary at the end of the processing.
 
 	CString msg;
-	msg.Format(L"%d pictures processed", picture_processed);
-	AfxMessageBox(msg, MB_ICONINFORMATION);
+	msg.Format(L"end event, %d pictures processed", picture_processed);
+	::MessageBox(handle_wnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	return update_data_list;

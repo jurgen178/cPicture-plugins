@@ -8,6 +8,7 @@ protected:
 	CFunctionPluginSample1();
 
 protected:
+	HWND handle_wnd;
 	int picture_processed;
 	int pictures;
 

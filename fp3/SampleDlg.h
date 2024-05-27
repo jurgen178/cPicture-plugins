@@ -35,13 +35,14 @@ struct picture_order
 class CSampleDlg : public CDialog
 {
 public:
-	CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL);   // standard constructor
+	CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL, CString title = L"");   // standard constructor
 	virtual ~CSampleDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_SAMPLE3 };
 
 protected:
+	CString title;
 	HIMAGELIST hImageList;
 	CListCtrl PictureListCtrl;
 	CComboBox Format;

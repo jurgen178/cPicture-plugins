@@ -75,7 +75,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample3::end(const vector<pi
 	CWnd parent;
 	parent.Attach(handle_wnd);
 
-	CSampleDlg SampleDlg(picture_data_list, &parent);
+	CSampleDlg SampleDlg(picture_data_list, &parent, get_plugin_data().desc);
 	if (SampleDlg.DoModal() == IDOK)
 	{
 		int numberOfPictures = 0;
@@ -92,7 +92,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample3::end(const vector<pi
 			CString orderText;
 			orderText.FormatMessage(IDS_ORDER_CONFIRMATION, numberOfPictures, totalPriceStr);
 
-			AfxMessageBox(orderText, MB_OK | MB_ICONINFORMATION);
+			::MessageBox(handle_wnd, orderText, get_plugin_data().desc, MB_OK | MB_ICONINFORMATION);
 		}
 	}
 

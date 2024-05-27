@@ -224,7 +224,10 @@ enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<co
 	// Requires at least 2 pictures.
 	if (file_list.size() < 2)
 	{
-		AfxMessageBox(IDS_MIN_SELECTION, MB_ICONINFORMATION);
+		CString msg;
+		msg.Format(IDS_MIN_SELECTION);
+		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+		
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 	}
 

@@ -9,8 +9,9 @@
 
 // CSampleDlg dialog
 
-CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
+CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/, CString title)
   : CDialog(CSampleDlg::IDD, pParent),
+	title(title),
 	hImageList(NULL),
 	picture_data_list(picture_data_list)
 {
@@ -248,7 +249,10 @@ void CSampleDlg::OnBnClickedButtonSet()
 		// Only max 100 prints can be ordered.
 		if (number_of_prints > 100)
 		{
-			AfxMessageBox(IDS_MAX_PRINTS);
+			CString msg;
+			msg.Format(IDS_MAX_PRINTS);
+			::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
+
 			return;
 		}
 
