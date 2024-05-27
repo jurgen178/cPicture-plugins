@@ -87,9 +87,9 @@ bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& pictu
 
 	CString msg;
 	msg.Format(L"process picture event (%d/%d):\n", ++picture_processed, pictures);
-	const int ret(::MessageBox(handle_wnd, msg + picture_data.file_name, get_plugin_data().desc, MB_OKCANCEL | MB_ICONINFORMATION));
+	const int ret(::MessageBox(handle_wnd, msg + picture_data.file_name, get_plugin_data().desc, pictures > 1 ? MB_OKCANCEL | MB_ICONINFORMATION : MB_ICONINFORMATION));
 
-	// Signal that pictures are updated, added or deleted (enum UPDATE_TYPE).
+	// Signal that pictures could be updated, added or deleted (enum UPDATE_TYPE).
 	// For example:
 	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE_UPDATED));
 
