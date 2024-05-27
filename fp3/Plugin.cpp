@@ -23,6 +23,7 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 const int __stdcall GetPluginInit()
 {
+	// Implement one function plugin.
 	return 1;
 }
 

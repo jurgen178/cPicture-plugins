@@ -22,11 +22,13 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 const int __stdcall GetPluginInit()
 {
+	// Implement one function plugin.
 	return 1;
 }
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
+	// Plugin-Fabric: return the one function plugin.
 	return CFunctionPluginSample1::GetInstance;
 }
 
