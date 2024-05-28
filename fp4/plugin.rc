@@ -47,7 +47,7 @@ BEGIN
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "cPicture function plugin"
             VALUE "LegalCopyright", "Copyright (C)"
-            VALUE "OriginalFilename", "cpp_fp1.dll"
+            VALUE "OriginalFilename", "cpp_fp4.dll"
             VALUE "ProductName", "cPicture function plugin"
             VALUE "ProductVersion", "1.0.0.0"
         END

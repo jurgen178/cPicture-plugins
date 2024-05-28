@@ -1,4 +1,4 @@
-LIBRARY      "cpp_fp1"
+LIBRARY      "cpp_fp4"
 EXPORTS
 	GetPluginType
 	GetPluginVersion

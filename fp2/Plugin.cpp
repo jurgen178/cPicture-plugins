@@ -5,6 +5,11 @@
 
 // Example Plugin cpp_fp2.
 // Display the selected pictures.
+// 
+// This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
+// request_data_size type to get resized picture data,
+// DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA for Windows dialog usage
+// and the update_data type.
 
 
 const CString __stdcall GetPluginVersion()

@@ -4,6 +4,12 @@
 
 // Example Plugin cpp_fp4.
 // Resize and invert pictures.
+// 
+// This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
+// request_data_size type to get resized picture data,
+// DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA for picture modification 
+// and the update_data type to update/create a picture.
+
 
 const CString __stdcall GetPluginVersion()
 {

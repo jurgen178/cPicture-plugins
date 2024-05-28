@@ -4,6 +4,8 @@
 
 // Example Plugin cpp_fp1.
 // List the selected pictures.
+// This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA.
+
 
 const CString __stdcall GetPluginVersion()
 {
