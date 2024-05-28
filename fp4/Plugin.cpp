@@ -43,7 +43,6 @@ CFunctionPluginSample4::CFunctionPluginSample4()
 	: handle_wnd(NULL),
 	picture_processed(0)
 {
-	_wsetlocale(LC_ALL, L".ACP");
 }
 
 struct PluginData __stdcall CFunctionPluginSample4::get_plugin_data()
@@ -63,7 +62,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample4::start(HWND hwnd, const vecto
 	// Start event.
 
 	handle_wnd = hwnd;
-	if (::MessageBox(handle_wnd, L"This example function plugin resize the picture by 50% and invert the colors.\nYou can always revert the original picture.\nDo you want to continue?", get_plugin_data().desc, MB_YESNO | MB_ICONQUESTION) == IDYES)
+	if (::MessageBox(handle_wnd, L"This example function plugin resize the picture by 50% and invert the colors.\nYou can always revert to the original picture.\nDo you want to continue?", get_plugin_data().desc, MB_YESNO | MB_ICONQUESTION) == IDYES)
 	{
 		// Request a half size picture size data in RGB layout.
 		// A negative value requests a relative size for the picture data.
