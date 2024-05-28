@@ -29,9 +29,32 @@ struct request_data_size
 	{
 	};
 
+	const int picture_width;
+	const int picture_height;
+	const enum DATA_REQUEST_TYPE data_request_type;
+};
+
+
+struct requested_data
+{
+	requested_data
+	(
+		int picture_width = 0,
+		int picture_height = 0,
+		BYTE* data = NULL,
+		int len = 0
+	)
+		: picture_width(picture_width),
+		picture_height(picture_height),
+		data(data),
+		len(len)
+	{
+	};
+
 	int picture_width;
 	int picture_height;
-	enum DATA_REQUEST_TYPE data_request_type;
+	BYTE* data;
+	int len;
 };
 
 
@@ -46,43 +69,30 @@ enum UPDATE_TYPE
 
 struct update_data
 {
-	update_data(const CString& list_obj = L"", const UPDATE_TYPE update_type = UPDATE_TYPE_UNCHANGED)
-		: list_obj(list_obj),
-		update_type(update_type)
-	{
-	};
-
-	CString list_obj;
-	UPDATE_TYPE update_type;
-};
-
-
-struct requested_data
-{
-	struct requested_data
-	(
+	update_data(const CString file_name = L"",
+		const UPDATE_TYPE update_type = UPDATE_TYPE_UNCHANGED,
 		const int picture_width = 0,
 		const int picture_height = 0,
-		BYTE* buf = NULL,
-		int len = 0
-	)
-		: picture_width(picture_width),
+		BYTE* data = NULL)
+		: file_name(file_name),
+		update_type(update_type),
+		picture_width(picture_width),
 		picture_height(picture_height),
-		buf(buf),
-		len(len)
+		data(data)
 	{
 	};
 
-	int picture_width;
-	int picture_height;
-	BYTE* buf;
-	int len;
+	const CString file_name;
+	const UPDATE_TYPE update_type;
+	const int picture_width;
+	const int picture_height;
+	BYTE* data;
 };
 
 
 struct picture_data
 {
-	picture_data(CString file_name = L"")
+	picture_data(const CString file_name = L"")
 		: file_name(file_name),
 		picture_width(0),
 		picture_height(0),
@@ -102,11 +112,11 @@ struct picture_data
 	{
 	};
 
-	CString file_name;
+	const CString file_name;
 
 	int picture_width;
 	int picture_height;
-	vector<requested_data> requested_data_set;
+	vector<requested_data> requested_data_list;
 
 	CString error_msg;
 	bool audio;

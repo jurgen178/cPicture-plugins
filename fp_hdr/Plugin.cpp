@@ -4,6 +4,8 @@
 #include "ParameterDlg.h"
 
 // Plugin cpp_fp_hdr
+// Blends two pictures using the enfuse app.
+
 
 // https://sourceforge.net/projects/enblend/
 // 

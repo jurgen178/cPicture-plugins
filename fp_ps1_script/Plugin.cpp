@@ -9,6 +9,7 @@
 using namespace std;
 
 // PowerShell script plugin cpp_ps1_script.
+// Runs a pswh script for the selected pictures.
 
 
 static vector<lpfnFunctionGetInstanceProc> PluginProcArray;

@@ -3,7 +3,7 @@
 #include "locale.h"
 
 // Example Plugin cpp_fp1.
-
+// List the selected pictures.
 
 const CString __stdcall GetPluginVersion()
 {

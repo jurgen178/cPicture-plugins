@@ -98,9 +98,9 @@ BOOL CSampleDlg::OnInitDialog()
 	int i = 0;
 	for(vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it, i++)
 	{
-		vector<requested_data> requested_data_set = it->requested_data_set;
+		vector<requested_data> requested_data_list = it->requested_data_list;
 		// Get the data for the requested preview picture (160x120 pixel).
-		requested_data requested_data1 = requested_data_set.front();
+		requested_data requested_data1 = requested_data_list.front();
 
 		picture_orders.push_back(picture_order(it->file_name));
 
@@ -109,7 +109,7 @@ BOOL CSampleDlg::OnInitDialog()
 		// reset the background of the bitmap bits
 		memcpy(draw_buf, bufBk, size3);
 
-		if(requested_data1.buf)
+		if(requested_data1.data)
 		{
 			// copy and center the bitmap
 			const int XDest = (requested_data1.picture_width < size_x) ? (size_x - requested_data1.picture_width) / 2 : 0;
@@ -123,7 +123,7 @@ BOOL CSampleDlg::OnInitDialog()
 
 			for(int y = YDest; y < YDest + requested_data1.picture_height; y++)
 			{ 
-				memcpy(draw_buf + index2, requested_data1.buf + index, XDest2);
+				memcpy(draw_buf + index2, requested_data1.data + index, XDest2);
 				index += WidthBytes;
 				index2 += 3*size_x;
 			}

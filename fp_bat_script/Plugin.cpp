@@ -7,7 +7,7 @@
 using namespace std;
 
 // Plugin cpp_bat_script
-
+// Runs a .bat script for each selected picture.
 
 static vector<lpfnFunctionGetInstanceProc> PluginProcArray;
 static vector<CString> Scripts;

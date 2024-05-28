@@ -96,9 +96,9 @@ void CSampleDlg::OnPaint()
 	{
 		vector<picture_data>::const_iterator it = picture_data_list.begin() + index;
 
-		vector<requested_data> requested_data_set = it->requested_data_set;
+		vector<requested_data> requested_data_list = it->requested_data_list;
 		// Get the data for the requested dialog preview picture size.
-		requested_data requested_data1 = requested_data_set.front();
+		requested_data requested_data1 = requested_data_list.front();
 
 		info.SetWindowText(it->file_name);
 
@@ -126,7 +126,7 @@ void CSampleDlg::OnPaint()
 					requested_data1.picture_width,
 					requested_data1.picture_height,
 					&bmiHeader,  
-					requested_data1.buf,
+					requested_data1.data,
 					0,                 
 					0,                 
 					requested_data1.picture_width,

@@ -4,7 +4,7 @@
 #include "SampleDlg.h"
 
 // Example Plugin cpp_fp3.
-
+// Simple order form for pictures.
 
 const CString __stdcall GetPluginVersion()
 {

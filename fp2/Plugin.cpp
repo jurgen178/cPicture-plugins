@@ -4,6 +4,7 @@
 #include "SampleDlg.h"
 
 // Example Plugin cpp_fp2.
+// Display the selected pictures.
 
 
 const CString __stdcall GetPluginVersion()
