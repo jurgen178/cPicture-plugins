@@ -62,7 +62,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample4::start(HWND hwnd, const vecto
 	// Start event.
 
 	handle_wnd = hwnd;
-	if (::MessageBox(handle_wnd, L"This example function plugin resize the picture by 50% and invert the colors.\nYou can always revert to the original picture.\nDo you want to continue?", get_plugin_data().desc, MB_YESNO | MB_ICONQUESTION) == IDYES)
+	if (::MessageBox(handle_wnd, L"This example function plugin resizes the picture by 50% and invert the colors.\nYou can always revert to the original picture.\nDo you want to continue?", get_plugin_data().desc, MB_YESNO | MB_ICONQUESTION) == IDYES)
 	{
 		// Request a half size picture size data in RGB layout.
 		// A negative value requests a relative size for the picture data.
@@ -81,6 +81,7 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 	// Process picture event.
 
 	// Get the requested data (picture resized to 50%).
+	// requested_data_list is one element as only one size was requested.
 	requested_data requested_data1 = picture_data.requested_data_list.front();
 
 	BYTE* data = requested_data1.data;
@@ -95,7 +96,7 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 			*data = 255 - *data++;	// green
 			*data = 255 - *data++;	// blue
 
-			//// Make grey scale picture.
+			//// Or make a grey scale picture.
 			//const BYTE grey(306 * *(data) + 601 * *(data+1) + 117 * *(data + 2) >> 10);
 			//*data++ = grey;	// red
 			//*data++ = grey;	// green
@@ -103,7 +104,7 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 		}
 	}
 
-
+	// Or modify only a part of the picture:
 	//// Process only the upper left half side with a border of 20 pixel.
 	//// 
 	////  --------
@@ -133,11 +134,11 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 	//}
 
 
-	// Signal that pictures is updated (enum UPDATE_TYPE).
+	// Signal that the picture is updated (enum UPDATE_TYPE).
 	// Use UPDATE_TYPE_ADDED if the file name is changed.
 	update_data_list.push_back(update_data(picture_data.file_name,
 		UPDATE_TYPE_UPDATED,
-		// Picture will be updated/created with this data:
+		// Picture will be updated with this data:
 		requested_data1.picture_width,
 		requested_data1.picture_height,
 		requested_data1.data));
