@@ -79,8 +79,8 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vecto
 	// request_data_sizes.push_back(request_data_size(-50, -50));
 	request_data_sizes.push_back(
 		request_data_size(SampleDlg.preview_position_rect.Width(),
-		SampleDlg.preview_position_rect.Height(),
-		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA)
+			SampleDlg.preview_position_rect.Height(),
+			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA)
 	);
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
