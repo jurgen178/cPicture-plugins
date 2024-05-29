@@ -53,7 +53,7 @@ struct PluginData __stdcall CFunctionPluginSample2::get_plugin_data()
 	// Set plugin info.
 	pluginData.name = L"Sample2 (Dialog display)";
 	pluginData.desc = L"Sample function plugin 2";
-	pluginData.info = L"Additional Info plugin 2";
+	pluginData.info = L"Example dialog displaying the selected pictures.";
 
 	return pluginData;
 }

@@ -52,7 +52,7 @@ struct PluginData __stdcall CFunctionPluginSample4::get_plugin_data()
 	// Set plugin info.
 	pluginData.name = L"Sample4 (resize and invert)";
 	pluginData.desc = L"Sample function plugin 4";
-	pluginData.info = L"Resize and invert pictures";
+	pluginData.info = L"Resize and invert the selected pictures";
 
 	return pluginData;
 }
