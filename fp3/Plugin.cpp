@@ -8,7 +8,7 @@
 // 
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,
-// DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA for Windows dialog ctrl usage
+// DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY for Windows dialog ctrl usage
 // and the update_data type.
 
 
@@ -66,7 +66,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample3::start(HWND hwnd, const vecto
 	// For example, -100 requests data for the original 100% picture size.
 	// To get picture data for the half size, use
 	// request_data_sizes.push_back(request_data_size(-50, -50));
-	request_data_sizes.push_back(request_data_size(size_x, size_y, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
+	request_data_sizes.push_back(request_data_size(size_x, size_y, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY));
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }

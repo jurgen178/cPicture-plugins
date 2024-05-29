@@ -8,7 +8,7 @@
 // 
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,
-// DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA for Windows dialog usage
+// DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY for Windows dialog usage
 // and the update_data type.
 
 
@@ -80,7 +80,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vecto
 	request_data_sizes.push_back(
 		request_data_size(SampleDlg.preview_position_rect.Width(),
 			SampleDlg.preview_position_rect.Height(),
-			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA)
+			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY)
 	);
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
