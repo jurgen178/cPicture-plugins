@@ -13,8 +13,12 @@ enum REQUEST_TYPE
 
 enum DATA_REQUEST_TYPE
 {
+	// Picture format in RGB format.
 	REQUEST_TYPE_RGB_DATA,
+	// Picture format in BGR format DWORD aligned.
 	REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA,
+	// Picture data to be used in a device context for display purpose.
+	REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY,
 };
 
 struct request_data_size
@@ -70,15 +74,17 @@ enum UPDATE_TYPE
 struct update_data
 {
 	update_data(const CString file_name = L"",
-		const UPDATE_TYPE update_type = UPDATE_TYPE_UNCHANGED,
+		const UPDATE_TYPE update_type = UPDATE_TYPE::UPDATE_TYPE_UNCHANGED,
 		const int picture_width = 0,
 		const int picture_height = 0,
-		BYTE* data = NULL)
+		BYTE* data = NULL,
+		const DATA_REQUEST_TYPE request_type = DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA)
 		: file_name(file_name),
 		update_type(update_type),
 		picture_width(picture_width),
 		picture_height(picture_height),
-		data(data)
+		data(data),
+		request_type(request_type)
 	{
 	};
 
@@ -87,6 +93,7 @@ struct update_data
 	const int picture_width;
 	const int picture_height;
 	BYTE* data;
+	const DATA_REQUEST_TYPE request_type;
 };
 
 

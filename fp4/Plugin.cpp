@@ -141,7 +141,8 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 		// Picture will be updated with this data:
 		requested_data1.picture_width,
 		requested_data1.picture_height,
-		requested_data1.data));
+		requested_data1.data,
+		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
 
 	picture_processed++;
 
