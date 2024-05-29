@@ -48,7 +48,7 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample1";
+	pluginData.name = L"Sample1 (list file names)";
 	pluginData.desc = L"Sample function plugin 1";
 	pluginData.info = L"Additional Info plugin 1";
 

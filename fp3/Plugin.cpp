@@ -50,7 +50,7 @@ struct PluginData __stdcall CFunctionPluginSample3::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample3";
+	pluginData.name = L"Sample3 (Order form)";
 	pluginData.desc = L"Sample function plugin 3";
 	pluginData.info = L"Additional Info plugin 3";
 
