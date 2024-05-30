@@ -185,6 +185,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	// Add the pictures to the DIB section.
 	for (int index = 0; index < 2; index++)
 	{
+		// Get the picture data.
 		picture_data picture_data_index = picture_data_list[index];
 		requested_data requested_data_index = picture_data_index.requested_data_list[0];
 		BYTE* data = requested_data_index.data;
@@ -214,10 +215,11 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 			requested_data_index.picture_height,
 			0
 		);
+
 		DrawDibClose(hdd);
 	}
 
-	// Create a new file for the index print.
+	// Create a new file name for the index print.
 	picture_data picture_data1 = picture_data_list[0];
 	picture_data picture_data2 = picture_data_list[1];
 
@@ -227,8 +229,8 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	filename2 = filename2.Left(filename2.ReverseFind(L'.'));
 
 	// Use the file type of the first file.
-	const CString filename1ext(picture_data1.file_name.Mid(picture_data1.file_name.ReverseFind(L'.')));
-	CString filename(filename1 + L"-" + filename2 + filename1ext);
+	const CString filename1_ext(picture_data1.file_name.Mid(picture_data1.file_name.ReverseFind(L'.')));
+	CString filename(filename1 + L"-" + filename2 + filename1_ext);
 
 	// Signal that the picture is added (enum UPDATE_TYPE).
 	update_data_list.push_back(update_data(filename,
@@ -237,7 +239,9 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 		bitmap_width,
 		bitmap_height,
 		(BYTE*)ppvBits,
-		// DIB data is using this format:
+		// DIB data is using this format. When the end function return, the picture is created.
+		// ppvBits is still valid until the plugin call is finished, and by that time
+		// ~CFunctionPluginSample5() release the DIB Section.
 		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
 
 	// Clean-up
