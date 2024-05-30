@@ -23,6 +23,7 @@ public:
 
 protected:
 	const CString m_PowerShellExe;
+	HWND handle_wnd;
 	script_info m_script_info;
 
 public:

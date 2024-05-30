@@ -301,6 +301,7 @@ CString escapeCmdLineJsonData(__int64 value)
 CFunctionPluginScript::CFunctionPluginScript(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	: m_PowerShellExe(L"pwsh.exe "),
+	handle_wnd(NULL),
 	m_script_info(script_info)
 {
 	// Do not set locale to keep decimal point (LC_NUMERIC) for PowerShell.
@@ -322,6 +323,8 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 
 enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
+	handle_wnd = hwnd;
+
 	const bool bScript(CheckFile(m_script_info.script));
 	if (!bScript)
 	{
@@ -334,7 +337,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 		CString msg;
 		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, m_script_info.script, abs_path);
 
-		::MessageBox(hwnd, msg, get_plugin_data().name, MB_ICONEXCLAMATION);
+		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_ICONEXCLAMATION);
 	}
 
 	return bScript ? REQUEST_TYPE::REQUEST_TYPE_DATA : REQUEST_TYPE::REQUEST_TYPE_CANCEL;
@@ -496,10 +499,11 @@ const vector<update_data>& __stdcall CFunctionPluginScript::end(const vector<pic
 	memset(&shInfo, 0, sizeof(shInfo));
 	shInfo.cbSize = sizeof(shInfo);
 
+	shInfo.hwnd = handle_wnd;
 	shInfo.lpFile = m_PowerShellExe;
 	shInfo.lpParameters = script;
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
-	shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);

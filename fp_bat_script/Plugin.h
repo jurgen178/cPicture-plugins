@@ -10,6 +10,7 @@ public:
 	CFunctionPluginScript(const CString& script_file);
 
 protected:
+	HWND handle_wnd;
 	CString script_file;
 	int sequence;
 	int max_files;

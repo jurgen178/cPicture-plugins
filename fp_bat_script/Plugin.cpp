@@ -94,7 +94,8 @@ bool CheckFile(const WCHAR* pFile)
 
 
 CFunctionPluginScript::CFunctionPluginScript(const CString& script_file)
-  : script_file(script_file),
+  : handle_wnd(NULL),
+	script_file(script_file),
 	sequence(0),
 	max_files(0)
 {
@@ -118,6 +119,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 {
 	sequence = 0;
 	max_files = (int)file_list.size();
+	handle_wnd = hwnd;
 
 	const bool bScript(CheckFile(script_file));
 	if(!bScript)
@@ -130,7 +132,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector
 		CString msg;
 		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, script_file, abs_path);
 
-		::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONEXCLAMATION);
+		::MessageBox(handle_wnd, msg, get_plugin_data().desc, MB_ICONEXCLAMATION);
 	}
 
 	return bScript ? REQUEST_TYPE::REQUEST_TYPE_DATA : REQUEST_TYPE::REQUEST_TYPE_CANCEL;
@@ -179,10 +181,11 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& pictur
 	SHELLEXECUTEINFO shInfo = { 0 };
 	shInfo.cbSize = sizeof(shInfo);
 
+	shInfo.hwnd = handle_wnd;
 	shInfo.lpFile = script;
 	shInfo.lpParameters = cmd;
 	shInfo.nShow = SW_SHOWNORMAL;
-	shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
