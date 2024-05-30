@@ -149,6 +149,12 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 		0
 	);
 
+	if (Dib == NULL)
+	{
+		AfxMessageBox(IDS_INDEX_TOO_LARGE);
+		return update_data_list;
+	}
+
 	// Create the DeviceContext to draw the Frame, Text and Bitmaps.
 	CBitmap* pDib = CBitmap::FromHandle(Dib);
 	CDC memDC;

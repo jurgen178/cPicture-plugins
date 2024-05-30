@@ -5,6 +5,7 @@
 #define VS_VERSION_INFO                 1
 #define IDS_MIN_SELECTION               100
 #define IDD_DIALOG_SAMPLE5              101
+#define IDS_INDEX_TOO_LARGE             102
 #define IDC_EDIT_HEADLINE_TEXT          1000
 #define IDC_BUTTON_BORDER_COLOR         1001
 

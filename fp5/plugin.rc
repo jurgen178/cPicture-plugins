@@ -115,6 +115,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_MIN_SELECTION       "Select two pictures for this example plugin."
+    IDS_INDEX_TOO_LARGE     "The selected size for the index print is too large."
 END
 
 #endif    // German (Germany) resources
