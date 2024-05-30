@@ -1,4 +1,5 @@
 #pragma once
+
 #include "FunctionPlugin.h"
 
 const int size_x = 160;

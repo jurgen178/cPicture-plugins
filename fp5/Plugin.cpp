@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "plugin.h"
 #include "locale.h"
-#include "resource.h"
+#include "SettingsDlg.h"
 
-// Example Plugin cpp_fp4.
-// Combine max two pictures.
+// Example Plugin cpp_fp5.
+// Combine two pictures.
 // 
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,
@@ -12,8 +12,8 @@
 // and the update_data type to create a picture.
 
 
-const int picture_width(300);
-const int picture_height(200);
+const int picture_width(360);
+const int picture_height(240);
 const int headline_height(50);
 const int border(10);
 
@@ -86,10 +86,28 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(HWND hwnd, const vecto
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 	}
 
-	// Request picture size data in BGR DWORD aligned layout.
-	request_data_sizes.push_back(request_data_size(picture_width, picture_height, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
+	// Get the headline text and border color from the settings dialog.
+	CWnd parent;
+	parent.Attach(handle_wnd);
 
-	return REQUEST_TYPE::REQUEST_TYPE_DATA;
+	CSettingsDlg SettingsDlg(&parent);
+	if (SettingsDlg.DoModal() == IDOK)
+	{
+		// Get the headline text.
+		headline_text = SettingsDlg.headline_text;
+
+		// Get the border color.
+		border_color = SettingsDlg.border_color;
+
+		// Request picture size data in BGR DWORD aligned layout.
+		request_data_sizes.push_back(request_data_size(picture_width, picture_height, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
+	
+		parent.Detach();
+		return REQUEST_TYPE::REQUEST_TYPE_DATA;
+	}
+
+	parent.Detach();
+	return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 }
 
 bool __stdcall CFunctionPluginSample5::process_picture(const picture_data& picture_data)
@@ -108,15 +126,10 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 { 
 	// End event.
 
-	// This example code is a set of steps to combine pictures using
-	// the Windows device context and DIB section to illustrate the usage.
-	// For simplicity, none of the steps are using sub-functions or any other optimizations.
-	// For example, you could keep the main device context the same size as the first picture,
-	// and add a smaller second picture as a signature or watermark.
-
-	// Setup the bitmap for max two pictures with 300x200 with a headline and border.
+	// Setup the bitmap for two pictures with 360x240px side by side with a headline and border.
 	const int bitmap_width(2 * picture_width + 4 * border);
 	const int bitmap_height(picture_height + headline_height + 2 * border);
+
 	BITMAPINFO BitmapInfo = { 0 };
 	BitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	BitmapInfo.bmiHeader.biPlanes = 1;
@@ -145,7 +158,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 
 	// Setup the Pen to draw the Frame.
 	CPen pen;
-	pen.CreatePen(PS_SOLID, 4, RGB(255, 255, 0));
+	pen.CreatePen(PS_SOLID, 5, border_color);
 	CPen* pPen = memDC.SelectObject(&pen);
 	HPEN hOldPen = (HPEN)pPen->GetSafeHandle();
 
@@ -169,7 +182,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	memDC.Rectangle(0, 0, bitmap_width, bitmap_height);
 
 	// Add the Text.
-	CString text(L"Sample5 Headline");
+	CString text(headline_text);
 	CRect textRect;
 	textRect.top = border;
 	memDC.DrawText(text, textRect, DT_CALCRECT);

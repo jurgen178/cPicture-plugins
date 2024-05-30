@@ -5,6 +5,7 @@
 
 // Example Plugin cpp_fp3.
 // Simple order form for pictures.
+// Simple rder form for pictures.
 // 
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,

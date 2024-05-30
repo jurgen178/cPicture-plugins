@@ -1,4 +1,5 @@
 #pragma once
+
 #include "FunctionPlugin.h"
 #include <Vfw.h>
 
@@ -12,6 +13,8 @@ protected:
 	HWND handle_wnd;
 	int picture_processed;
 	HBITMAP Dib;
+	CString headline_text;
+	COLORREF border_color;
 
 public:
 	virtual __stdcall ~CFunctionPluginSample5();
