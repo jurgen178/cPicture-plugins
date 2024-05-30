@@ -255,11 +255,11 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	// Signal that the picture is added (enum UPDATE_TYPE).
 	update_data_list.push_back(update_data(filename,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
-		// Picture will be updated with this data:
+		// Picture will be added with this data:
 		bitmap_width,
 		bitmap_height,
 		(BYTE*)ppvBits,
-		// The Dib is using this format:
+		// DIB data is using this format:
 		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
 
 	// Clean-up
@@ -274,6 +274,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 		CPen* pPen = CPen::FromHandle(hOldPen);
 		memDC.SelectObject(pPen);
 	}
+
 	memDC.SelectObject(pOldBitmap);
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
