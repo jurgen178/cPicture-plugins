@@ -103,10 +103,12 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(HWND hwnd, const vecto
 		request_data_sizes.push_back(request_data_size(picture_width, picture_height, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
 	
 		parent.Detach();
+
 		return REQUEST_TYPE::REQUEST_TYPE_DATA;
 	}
 
 	parent.Detach();
+
 	return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 }
 
