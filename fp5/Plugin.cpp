@@ -4,7 +4,7 @@
 #include "SettingsDlg.h"
 
 // Example Plugin cpp_fp5.
-// Combine two pictures.
+// Index print of two pictures.
 // 
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,
@@ -63,9 +63,9 @@ struct PluginData __stdcall CFunctionPluginSample5::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample5 (combine pictures)";
+	pluginData.name = L"Sample5 (index print of two pictures)";
 	pluginData.desc = L"Sample function plugin 5";
-	pluginData.info = L"Combine the selected pictures";
+	pluginData.info = L"Index print of the two selected pictures";
 
 	return pluginData;
 }
@@ -169,15 +169,6 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	CFont* pOldFont = memDC.SelectObject(&headline_font);
 	HFONT hOldFont = (HFONT)pOldFont->GetSafeHandle();
 
-	// Get the requested picture data.
-	picture_data picture_data1 = picture_data_list[0];
-	requested_data requested_data1 = picture_data1.requested_data_list[0];
-	BYTE* data1 = requested_data1.data;
-
-	picture_data picture_data2 = picture_data_list[1];
-	requested_data requested_data2 = picture_data2.requested_data_list[0];
-	BYTE* data2 = requested_data2.data;
-
 	// Add the Frame.
 	memDC.Rectangle(0, 0, bitmap_width, bitmap_height);
 
@@ -191,58 +182,45 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	textRect.right = textRect.left + w;
 	memDC.DrawText(text, textRect, DT_CENTER);
 
-	// Add the first picture to the DIB section.
-	HDRAWDIB hdd = DrawDibOpen();
+	// Add the pictures to the DIB section.
+	for (int index = 0; index < 2; index++)
+	{
+		picture_data picture_data_index = picture_data_list[index];
+		requested_data requested_data_index = picture_data_index.requested_data_list[0];
+		BYTE* data = requested_data_index.data;
 
-	BITMAPINFOHEADER bmiHeader = { 0 };
-	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmiHeader.biPlanes = 1;
-	bmiHeader.biBitCount = 24;
-	bmiHeader.biCompression = BI_RGB;
-	bmiHeader.biWidth = requested_data1.picture_width;
-	bmiHeader.biHeight = requested_data1.picture_height;
+		HDRAWDIB hdd = DrawDibOpen();
 
-	BOOL bDrawOK = DrawDibDraw(
-		hdd,
-		memDC.m_hDC,
-		border + (picture_width - requested_data1.picture_width) / 2,
-		border + headline_height + (picture_height - requested_data1.picture_height) / 2,
-		requested_data1.picture_width,
-		requested_data1.picture_height,
-		&bmiHeader,
-		data1,
-		0,
-		0,
-		requested_data1.picture_width,
-		requested_data1.picture_height,
-		0
-	);
-	DrawDibClose(hdd);
+		BITMAPINFOHEADER bmiHeader = { 0 };
+		bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		bmiHeader.biPlanes = 1;
+		bmiHeader.biBitCount = 24;
+		bmiHeader.biCompression = BI_RGB;
+		bmiHeader.biWidth = requested_data_index.picture_width;
+		bmiHeader.biHeight = requested_data_index.picture_height;
 
-	// Add the second picture to the DIB section.
-	hdd = DrawDibOpen();
+		BOOL bDrawOK = DrawDibDraw(
+			hdd,
+			memDC.m_hDC,
+			border + index * (bitmap_width / 2) + (picture_width - requested_data_index.picture_width) / 2,
+			border + headline_height + (picture_height - requested_data_index.picture_height) / 2,
+			requested_data_index.picture_width,
+			requested_data_index.picture_height,
+			&bmiHeader,
+			data,
+			0,
+			0,
+			requested_data_index.picture_width,
+			requested_data_index.picture_height,
+			0
+		);
+		DrawDibClose(hdd);
+	}
 
-	bmiHeader.biWidth = requested_data2.picture_width;
-	bmiHeader.biHeight = requested_data2.picture_height;
+	// Create a new file for the index print.
+	picture_data picture_data1 = picture_data_list[0];
+	picture_data picture_data2 = picture_data_list[1];
 
-	bDrawOK = DrawDibDraw(
-		hdd,
-		memDC.m_hDC,
-		border + bitmap_width / 2 + (picture_width - requested_data2.picture_width) / 2,
-		border + headline_height + (picture_height - requested_data2.picture_height) / 2,
-		requested_data2.picture_width,
-		requested_data2.picture_height,
-		&bmiHeader,
-		data2,
-		0,
-		0,
-		requested_data2.picture_width,
-		requested_data2.picture_height,
-		0
-	);
-	DrawDibClose(hdd);
-
-	// Create a new file with the combined pictures.
 	CString filename1(picture_data1.file_name.Mid(picture_data1.file_name.ReverseFind(L'\\') + 1));
 	filename1 = filename1.Left(filename1.ReverseFind(L'.'));
 	CString filename2(picture_data2.file_name.Mid(picture_data2.file_name.ReverseFind(L'\\') + 1));
