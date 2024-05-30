@@ -281,7 +281,7 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<pictur
 
 		if (parameterDlg.DoModal() == IDOK)
 		{
-			update_data_list.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE_ADDED));
+			update_data_list.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE::UPDATE_TYPE_ADDED));
 		}
 
 		parent.Detach();
