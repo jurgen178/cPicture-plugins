@@ -134,12 +134,14 @@ cPicture can supply each picture with additional picture data. This is controlle
 
 Currently used base addresses:  
 
-cpp_tiff_png:	0x180000000  
-FP1 sample:		0x201000000  
-FP2 sample:		0x202000000  
-FP3 sample:		0x203000000  
-cpp_ps1_script: 0x204000000  
-cpp_bat_script: 0x205000000  
-cpp_fp_hdr:		0x206000000  
+cpp_tiff_png:	0x180000000
+FP1 sample:		0x201000000
+FP2 sample:		0x202000000
+FP3 sample:		0x203000000
+FP4 sample:		0x204000000
+FP5 sample:		0x205000000
+cpp_ps1_script: 0x210000000
+cpp_bat_script: 0x211000000
+cpp_fp_hdr:		0x212000000
 
 
