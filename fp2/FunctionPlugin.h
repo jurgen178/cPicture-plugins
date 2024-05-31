@@ -1,39 +1,65 @@
 #pragma once
+
 #include "stdafx.h"
 
 #include "vector"
 using namespace std;
 
-// Request-info used in the 'start' event.
-enum PICTURE_REQUEST_INFO
+// Request type used in the 'start' event.
+enum REQUEST_TYPE
 {
-	PICTURE_REQUEST_INFO_CANCEL_REQUEST = 0,
-	PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
-	PICTURE_REQUEST_INFO_RGB_DATA,
-	PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA,
+	REQUEST_TYPE_CANCEL = 0,
+	REQUEST_TYPE_DATA,
 };
 
-
-struct request_info
+enum DATA_REQUEST_TYPE
 {
-	request_info(const PICTURE_REQUEST_INFO picture_request_info = PICTURE_REQUEST_INFO_FILE_NAME_ONLY,
-		const int PictureWidth1 = 0,
-		const int PictureHeight1 = 0,
-		const int PictureWidth2 = 0,
-		const int PictureHeight2 = 0)
-		: m_picture_request_info(picture_request_info),
-		m_PictureWidth1(PictureWidth1),
-		m_PictureHeight1(PictureHeight1),
-		m_PictureWidth2(PictureWidth2),
-		m_PictureHeight2(PictureHeight2)
+	// Picture format in RGB format.
+	REQUEST_TYPE_RGB_DATA,
+	// Picture format in BGR format DWORD aligned.
+	REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA,
+	// Picture data to be used in a device context for display purpose.
+	REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY,
+};
+
+struct request_data_size
+{
+	request_data_size(
+		const int picture_width,
+		const int picture_height,
+		const enum DATA_REQUEST_TYPE data_request_type)
+		: picture_width(picture_width),
+		picture_height(picture_height),
+		data_request_type(data_request_type)
 	{
 	};
 
-	PICTURE_REQUEST_INFO m_picture_request_info;
-	int m_PictureWidth1;
-	int m_PictureHeight1;
-	int m_PictureWidth2;
-	int m_PictureHeight2;
+	const int picture_width;
+	const int picture_height;
+	const enum DATA_REQUEST_TYPE data_request_type;
+};
+
+
+struct requested_data
+{
+	requested_data
+	(
+		int picture_width = 0,
+		int picture_height = 0,
+		BYTE* data = NULL,
+		int len = 0
+	)
+		: picture_width(picture_width),
+		picture_height(picture_height),
+		data(data),
+		len(len)
+	{
+	};
+
+	int picture_width;
+	int picture_height;
+	BYTE* data;
+	int len;
 };
 
 
@@ -46,106 +72,73 @@ enum UPDATE_TYPE
 	UPDATE_TYPE_DELETED,
 };
 
-struct update_info
+struct update_data
 {
-	update_info(const CString& _list_obj = L"", const UPDATE_TYPE _update_type = UPDATE_TYPE_UNCHANGED)
-		: m_list_obj(_list_obj),
-		m_update_type(_update_type)
+	update_data(const CString file_name = L"",
+		const UPDATE_TYPE update_type = UPDATE_TYPE::UPDATE_TYPE_UNCHANGED,
+		const int picture_width = 0,
+		const int picture_height = 0,
+		BYTE* data = NULL,
+		const DATA_REQUEST_TYPE request_type = DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA)
+		: file_name(file_name),
+		update_type(update_type),
+		picture_width(picture_width),
+		picture_height(picture_height),
+		data(data),
+		request_type(request_type)
 	{
 	};
 
-	CString m_list_obj;
-	UPDATE_TYPE m_update_type;
+	const CString file_name;
+	const UPDATE_TYPE update_type;
+	const int picture_width;
+	const int picture_height;
+	BYTE* data;
+	const DATA_REQUEST_TYPE request_type;
 };
 
 
 struct picture_data
 {
-	picture_data(const CString FileName,
-		const int PictureWidth1 = 0,
-		const int PictureHeight1 = 0,
-		const int OriginalPictureWidth1 = 0,
-		const int OriginalPictureHeight1 = 0,
-		BYTE* buf1 = NULL,
-		const int len1 = 0,
-		const int PictureWidth2 = 0,
-		const int PictureHeight2 = 0,
-		const int OriginalPictureWidth2 = 0,
-		const int OriginalPictureHeight2 = 0,
-		BYTE* buf2 = NULL,
-		const int len2 = 0,
-
-		const CString ErrorMsg = L"",
-		const bool bAudio = false,
-		const bool bVideo = false,
-		const bool bColorProfile = false,
-		const CString GPSdata = L"",
-		const __int64 exiftime = 0,
-		const float fAperture = 0.0,
-		const int Shutterspeed = 0,
-		const int ISO = 0,
-		const CString ExifDateTime_display = L"",
-		const CString Model = L"",
-		const CString Lens = L"",
-		const CString cdata = L"")
-		: m_FileName(FileName),
-		m_PictureWidth1(PictureWidth1),
-		m_PictureHeight1(PictureHeight1),
-		m_OriginalPictureWidth1(OriginalPictureWidth1),
-		m_OriginalPictureHeight1(OriginalPictureHeight1),
-		m_buf1(buf1),
-		m_len1(len1),
-		m_PictureWidth2(PictureWidth2),
-		m_PictureHeight2(PictureHeight2),
-		m_OriginalPictureWidth2(OriginalPictureWidth2),
-		m_OriginalPictureHeight2(OriginalPictureHeight2),
-		m_buf2(buf2),
-		m_len2(len2),
-
-		m_ErrorMsg(ErrorMsg),
-		m_bAudio(bAudio),
-		m_bVideo(bVideo),
-		m_bColorProfile(bColorProfile),
-		m_GPSdata(GPSdata),
-		m_exiftime(exiftime),
-		m_fAperture(fAperture),
-		m_Shutterspeed(Shutterspeed),
-		m_ISO(ISO),
-		m_ExifDateTime_display(ExifDateTime_display),
-		m_Model(Model),
-		m_Lens(Lens),
-		m_cdata(cdata)
+	picture_data(const CString file_name = L"")
+		: file_name(file_name),
+		picture_width(0),
+		picture_height(0),
+		error_msg(L""),
+		audio(false),
+		video(false),
+		color_profile(false),
+		gps(L""),
+		exif_time(0),
+		aperture(0.0),
+		shutterspeed(0),
+		iso(0),
+		exif_datetime_display(L""),
+		model(L""),
+		lens(L""),
+		cdata(L"")
 	{
 	};
 
-	CString m_FileName;
-	int m_PictureWidth1;
-	int m_PictureHeight1;
-	int m_OriginalPictureWidth1;
-	int m_OriginalPictureHeight1;
-	BYTE* m_buf1;
-	int m_len1;
+	const CString file_name;
 
-	int m_PictureWidth2;
-	int m_PictureHeight2;
-	int m_OriginalPictureWidth2;
-	int m_OriginalPictureHeight2;
-	BYTE* m_buf2;
-	int m_len2;
+	int picture_width;
+	int picture_height;
+	vector<requested_data> requested_data_list;
 
-	CString m_ErrorMsg;
-	bool m_bAudio;
-	bool m_bVideo;
-	bool m_bColorProfile;
-	CString m_GPSdata;
-	__int64 m_exiftime;
-	float m_fAperture;
-	int m_Shutterspeed;
-	int m_ISO;
-	CString m_ExifDateTime_display;
-	CString m_Model;
-	CString m_Lens;
-	CString m_cdata;
+	CString error_msg;
+	bool audio;
+	bool video;
+	bool color_profile;
+	CString gps;
+	__int64 exif_time;
+	float aperture;
+	int shutterspeed;
+	int iso;
+	CString exif_datetime_display;
+	CString model;
+	CString lens;
+	CString cdata;
 };
 
 
@@ -155,9 +148,6 @@ enum PLUGIN_TYPE
 	PLUGIN_TYPE_FORMAT = 0x0001,
 	PLUGIN_TYPE_FUNCTION = 0x0002,
 };
-
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2);
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2);
 
 
 struct PluginData
@@ -192,15 +182,18 @@ public:
 	virtual __stdcall ~CFunctionPlugin() { };
 
 protected:
-	vector<update_info> m_update_info;
+	// List of pictures that are updated, added or deleted (enum UPDATE_TYPE).
+	// This info will be submitted in the 'end' event.
+	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED));
+	vector<update_data> update_data_list;
 
 public:
 	virtual struct PluginData __stdcall get_plugin_data() = 0;
 
 public:
-	virtual request_info __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list) { return request_info(); };
-	virtual bool __stdcall process_picture(const picture_data& _picture_data) { return true; };
-	virtual const vector<update_info>& __stdcall end() { return m_update_info; };
+	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_DATA; };
+	virtual bool __stdcall process_picture(const picture_data& picture_data) { return true; };
+	virtual const vector<update_data>& __stdcall end(const vector<picture_data>& picture_data_list) { return update_data_list; };
 };
 
 

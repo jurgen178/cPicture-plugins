@@ -7,17 +7,7 @@
 using namespace std;
 
 // Plugin cpp_bat_script
-
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
-}
-
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 & (const unsigned int)t2);
-}
-
+// Runs a .bat script for each selected picture.
 
 static vector<lpfnFunctionGetInstanceProc> PluginProcArray;
 static vector<CString> Scripts;
@@ -56,7 +46,7 @@ const int __stdcall GetPluginInit()
 	const CString ScriptMask(L"*.bat");
 	if((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
-		int i = 0;
+		int sequence = 0;
 
 		do
 		{
@@ -64,10 +54,10 @@ const int __stdcall GetPluginInit()
 			{
 				const CString script(c_file.cFileName);
 				Scripts.push_back(script);
-				PluginProcArray.push_back(GetInstanceList[i++]);
+				PluginProcArray.push_back(GetInstanceList[sequence++]);
 			}
 		}
-		while(i < maxscripts && FindNextFile(hFile, &c_file) != 0);
+		while(sequence < maxscripts && FindNextFile(hFile, &c_file) != 0);
 
 		FindClose(hFile);
 	}
@@ -103,10 +93,11 @@ bool CheckFile(const WCHAR* pFile)
 }
 
 
-CFunctionPluginScript::CFunctionPluginScript(const CString& script)
-  :	m_script(script),
-	m_i(0),
-	m_n(0)
+CFunctionPluginScript::CFunctionPluginScript(const CString& script_file)
+  : handle_wnd(NULL),
+	script_file(script_file),
+	sequence(0),
+	max_files(0)
 {
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
@@ -116,20 +107,21 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.file_name = m_script;
-	pluginData.name.FormatMessage(IDS_SCRIPT_SHORT, m_script);
-	pluginData.desc.FormatMessage(IDS_SCRIPT_LONG, m_script.Left(m_script.ReverseFind(L'.')));
+	pluginData.file_name = script_file;
+	pluginData.name.FormatMessage(IDS_SCRIPT_SHORT, script_file);
+	pluginData.desc.FormatMessage(IDS_SCRIPT_LONG, script_file.Left(script_file.ReverseFind(L'.')));
 
 	return pluginData;
 }
 
 
-struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
+enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
-	m_i = 0;
-	m_n = (int)file_list.size();
+	sequence = 0;
+	max_files = (int)file_list.size();
+	handle_wnd = hwnd;
 
-	const bool bScript(CheckFile(m_script));
+	const bool bScript(CheckFile(script_file));
 	if(!bScript)
 	{
 		const CString path(L".");
@@ -138,15 +130,15 @@ struct request_info __stdcall CFunctionPluginScript::start(HWND hwnd, const vect
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH-1);
 
 		CString msg;
-		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, m_script, abs_path);
+		msg.FormatMessage(IDS_ERROR_SCRIPT_MISSING, script_file, abs_path);
 
-		AfxMessageBox(msg);
+		::MessageBox(handle_wnd, msg, get_plugin_data().desc, MB_ICONEXCLAMATION);
 	}
 
-	return request_info(bScript?PICTURE_REQUEST_INFO_FILE_NAME_ONLY:PICTURE_REQUEST_INFO_CANCEL_REQUEST);
+	return bScript ? REQUEST_TYPE::REQUEST_TYPE_DATA : REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 }
 
-bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data) 
+bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data)
 { 
 	// %1 file
 	// %2 name
@@ -166,42 +158,43 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& pictur
 	// number of files = 1
 
 	const CString cmd_format(L" \"%1\" \"%2\" \"%3\" %4!d! %5!d! %6!d! %7!d!");
-	const int f(picture_data.m_FileName.ReverseFind(L'\\')+1);
-	const CString name(picture_data.m_FileName.Mid(f));
-	const CString dir(picture_data.m_FileName.Left(f));
+	const int f(picture_data.file_name.ReverseFind(L'\\')+1);
+	const CString name(picture_data.file_name.Mid(f));
+	const CString dir(picture_data.file_name.Left(f));
 
 	CString cmd;
 	cmd.FormatMessage(cmd_format, 
-		picture_data.m_FileName,
+		picture_data.file_name,
 		name,
 		dir,
-		picture_data.m_OriginalPictureWidth1,
-		picture_data.m_OriginalPictureHeight1,
-		m_i, 
-		m_n
+		picture_data.picture_width,
+		picture_data.picture_height,
+		sequence, 
+		max_files
 		);
 
 	CString script;
 	script += L"\"";
-	script += m_script;
+	script += script_file;
 	script += L"\"";
 
 	SHELLEXECUTEINFO shInfo = { 0 };
 	shInfo.cbSize = sizeof(shInfo);
 
+	shInfo.hwnd = handle_wnd;
 	shInfo.lpFile = script;
 	shInfo.lpParameters = cmd;
 	shInfo.nShow = SW_SHOWNORMAL;
-	shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	ShellExecuteEx(&shInfo);
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
-	m_update_info.push_back(update_info(picture_data.m_FileName, UPDATE_TYPE_UPDATED));
+	update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED));
 
-	m_i++;
+	sequence++;
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;

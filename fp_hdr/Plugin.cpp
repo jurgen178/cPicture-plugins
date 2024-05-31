@@ -4,6 +4,8 @@
 #include "ParameterDlg.h"
 
 // Plugin cpp_fp_hdr
+// Blends two pictures using the enfuse app.
+
 
 // https://sourceforge.net/projects/enblend/
 // 
@@ -190,17 +192,19 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 const int __stdcall GetPluginInit()
 {
+	// Implement one function plugin.
 	return 1;
 }
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
+	// Plugin-Fabric: return the one function plugin.
 	return CFunctionPluginHDR::GetInstance;
 }
 
 
 CFunctionPluginHDR::CFunctionPluginHDR()
-	: m_hwnd(NULL)
+	: handle_wnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP");
 }
@@ -217,35 +221,38 @@ struct PluginData __stdcall CFunctionPluginHDR::get_plugin_data()
 	return pluginData;
 }
 
-struct request_info __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<const WCHAR*>& file_list)
+enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
-	m_hwnd = hwnd;
+	handle_wnd = hwnd;
 
 	// Requires at least 2 pictures.
 	if (file_list.size() < 2)
 	{
-		AfxMessageBox(IDS_MIN_SELECTION, MB_ICONINFORMATION);
-		return request_info(PICTURE_REQUEST_INFO_CANCEL_REQUEST);
+		CString msg;
+		msg.Format(IDS_MIN_SELECTION);
+		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+		
+		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 	}
 
 	picture_list = file_list;
 
-	return request_info();
+	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
-bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& _picture_data)
+bool __stdcall CFunctionPluginHDR::process_picture(const picture_data& picture_data)
 {
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginHDR::end()
+const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<picture_data>& picture_data_list)
 {
 	// Run enfuse with the selected pictures.
 	if (picture_list.size() >= 2)
 	{
 		CWnd parent;
-		parent.Attach(m_hwnd);
+		parent.Attach(handle_wnd);
 
 		ParameterDlg parameterDlg(picture_list, &parent);
 
@@ -262,23 +269,23 @@ const vector<update_info>& __stdcall CFunctionPluginHDR::end()
 		const CString ext_bild_1(bild_1.Mid(bild_1.ReverseFind(L'.')));
 		const CString ldr_file(dir_bild + name_bild_1 + L"-" + name_bild_n + ext_bild_1);
 
-		parameterDlg.m_OutputFile = ldr_file;
-		parameterDlg.m_JpegQuality = 95;
+		parameterDlg.output_file = ldr_file;
+		parameterDlg.jpeg_quality = 95;
 
 		const CString path(L".");
 		WCHAR abs_path[MAX_PATH] = { 0 };
 		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
 			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
 
-		parameterDlg.m_Enfuse = CString(abs_path) + L"\\enfuse.exe";
+		parameterDlg.enfuse_exe_path = CString(abs_path) + L"\\enfuse.exe";
 
 		if (parameterDlg.DoModal() == IDOK)
 		{
-			m_update_info.push_back(update_info(parameterDlg.m_OutputFile, UPDATE_TYPE_ADDED));
+			update_data_list.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE::UPDATE_TYPE_ADDED));
 		}
 
 		parent.Detach();
 	}
 
-	return m_update_info;
+	return update_data_list;
 }

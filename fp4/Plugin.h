@@ -3,25 +3,22 @@
 #include "FunctionPlugin.h"
 
 
-class CFunctionPluginHDR : public CFunctionPlugin
+class CFunctionPluginSample4 : public CFunctionPlugin
 {
 protected:
-	CFunctionPluginHDR();
-
-public:
-	virtual __stdcall ~CFunctionPluginHDR() { };
+	CFunctionPluginSample4();
 
 protected:
 	HWND handle_wnd;
-	CWnd parent_wnd;
-	vector<const WCHAR*> picture_list;
+	int picture_processed;
 
-protected:
+public:
+	virtual __stdcall ~CFunctionPluginSample4() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
 	{
-		return new CFunctionPluginHDR;
+		return new CFunctionPluginSample4;
 	};
 
 public:

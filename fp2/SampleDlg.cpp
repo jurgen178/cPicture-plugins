@@ -30,16 +30,16 @@ unsigned int GetFileSize(const WCHAR* pFile)
 
 // CSampleDlg dialog
 
-CSampleDlg::CSampleDlg(const vector<picture_data>& _picture_data_list, CWnd* pParent /*=NULL*/)
+CSampleDlg::CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
   : CDialog(CSampleDlg::IDD, pParent),
-	m_picture_data_list(_picture_data_list),
-	m_index(0)
+	picture_data_list(picture_data_list),
+	index(0)
 {
-	memset(&m_bmiHeader, 0, sizeof(BITMAPINFOHEADER));
-	m_bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	m_bmiHeader.biPlanes = 1;
-	m_bmiHeader.biBitCount = 24;
-	m_bmiHeader.biCompression = BI_RGB;
+	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
+	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = 24;
+	bmiHeader.biCompression = BI_RGB;
 }
 
 CSampleDlg::~CSampleDlg()
@@ -49,10 +49,10 @@ CSampleDlg::~CSampleDlg()
 void CSampleDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_PREVIEW, m_PreviewPosition);
-	DDX_Control(pDX, IDC_INFO, m_Info);
-	DDX_Control(pDX, IDC_INFO2, m_Info2);
-	DDX_Control(pDX, IDC_COUNTER, m_Counter);
+	DDX_Control(pDX, IDC_PREVIEW, preview_position);
+	DDX_Control(pDX, IDC_INFO, info);
+	DDX_Control(pDX, IDC_INFO2, info2);
+	DDX_Control(pDX, IDC_COUNTER, counter);
 }
 
 
@@ -68,10 +68,10 @@ BOOL CSampleDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 	update_button_state();
 
-	m_PreviewPosition.GetClientRect(&m_PreviewPositionRect);
-	m_PreviewPosition.MapWindowPoints(this, &m_PreviewPositionRect);
+	preview_position.GetClientRect(&preview_position_rect);
+	preview_position.MapWindowPoints(this, &preview_position_rect);
 
-	const size_t size(m_picture_data_list.size());
+	const size_t size(picture_data_list.size());
 	CString str;
 
 	if(size == 0)
@@ -80,7 +80,7 @@ BOOL CSampleDlg::OnInitDialog()
 	if(size == 1)
 		str.LoadString(IDS_ONE_ITEM_IN_LIST);
 	else
-		str.Format(IDS_N_ITEMS_IN_LIST, m_picture_data_list.size());
+		str.Format(IDS_N_ITEMS_IN_LIST, picture_data_list.size());
 	
 	SetWindowText(str);
 
@@ -91,26 +91,31 @@ void CSampleDlg::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 
-	const int size(static_cast<int>(m_picture_data_list.size()));
-	if(m_index >= 0 && m_index < size)
+	const int size(static_cast<int>(picture_data_list.size()));
+	if(index >= 0 && index < size)
 	{
-		vector<picture_data>::const_iterator it = m_picture_data_list.begin() + m_index;
+		vector<picture_data>::const_iterator it = picture_data_list.begin() + index;
 
-		m_Info.SetWindowText(it->m_FileName);
+		vector<requested_data> requested_data_list = it->requested_data_list;
+		// Get the data for the requested dialog preview picture size.
+		requested_data requested_data1 = requested_data_list.front();
+
+		info.SetWindowText(it->file_name);
 
 		CString str;
-		str.Format(L"%d/%d", m_index+1, size);
-		m_Counter.SetWindowText(str);
+		str.Format(L"%d/%d", index+1, size);
+		counter.SetWindowText(str);
 
-		const unsigned int fsize = ::GetFileSize(it->m_FileName);
-		str.Format(L"%dx%d, %dKB", it->m_OriginalPictureWidth1, it->m_OriginalPictureHeight1, fsize >> 10);
-		m_Info2.SetWindowText(str);
+		// Set Description text.
+		const unsigned int fsize = ::GetFileSize(it->file_name);
+		str.Format(L"%dx%d, %dKB", it->picture_width, it->picture_height, fsize >> 10);
+		info2.SetWindowText(str);
 
-
-		m_bmiHeader.biWidth = it->m_PictureWidth1;
-		m_bmiHeader.biHeight = it->m_PictureHeight1;
-		const int left(m_PreviewPositionRect.left + (m_PreviewPositionRect.Width() - (int)it->m_PictureWidth1) / 2);
-		const int top(m_PreviewPositionRect.top + (m_PreviewPositionRect.Height() - (int)it->m_PictureHeight1) / 2);
+		// Draw the selected picture.
+		bmiHeader.biWidth = requested_data1.picture_width;
+		bmiHeader.biHeight = requested_data1.picture_height;
+		const int left(preview_position_rect.left + (preview_position_rect.Width() - (int)requested_data1.picture_width) / 2);
+		const int top(preview_position_rect.top + (preview_position_rect.Height() - (int)requested_data1.picture_height) / 2);
 
 		HDRAWDIB hdd = DrawDibOpen();
 
@@ -118,14 +123,14 @@ void CSampleDlg::OnPaint()
 					dc.m_hDC,                  
 					left,                 
 					top,                 
-					it->m_PictureWidth1,                
-					it->m_PictureHeight1, 
-					&m_bmiHeader,  
-					it->m_buf1,            
+					requested_data1.picture_width,
+					requested_data1.picture_height,
+					&bmiHeader,  
+					requested_data1.data,
 					0,                 
 					0,                 
-					it->m_PictureWidth1,                
-					it->m_PictureHeight1, 
+					requested_data1.picture_width,
+					requested_data1.picture_height,
 					0
 					);
 
@@ -135,9 +140,9 @@ void CSampleDlg::OnPaint()
 
 void CSampleDlg::OnBnClickedButtonNext()
 {
-	if(m_index < (int)m_picture_data_list.size() - 1)
+	if(index < (int)picture_data_list.size() - 1)
 	{
-		m_index++;
+		index++;
 		RedrawWindow();
 		update_button_state();
 	}
@@ -145,9 +150,9 @@ void CSampleDlg::OnBnClickedButtonNext()
 
 void CSampleDlg::OnBnClickedButtonPrev()
 {
-	if(m_index > 0)
+	if(index > 0)
 	{
-		m_index--;
+		index--;
 		RedrawWindow();
 		update_button_state();
 	}
@@ -155,6 +160,6 @@ void CSampleDlg::OnBnClickedButtonPrev()
 
 void CSampleDlg::update_button_state()
 {
-	GetDlgItem(IDC_BUTTON_PREV)->EnableWindow(m_index > 0);
-	GetDlgItem(IDC_BUTTON_NEXT)->EnableWindow(m_index < (int)m_picture_data_list.size() - 1);
+	GetDlgItem(IDC_BUTTON_PREV)->EnableWindow(index > 0);
+	GetDlgItem(IDC_BUTTON_NEXT)->EnableWindow(index < (int)picture_data_list.size() - 1);
 }

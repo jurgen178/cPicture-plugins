@@ -4,16 +4,12 @@
 #include "SampleDlg.h"
 
 // Example Plugin cpp_fp2.
-
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
-}
-
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 & (const unsigned int)t2);
-}
+// Display the selected pictures.
+// 
+// This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
+// request_data_size type to get resized picture data,
+// DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY for Windows dialog usage
+// and the update_data type.
 
 
 const CString __stdcall GetPluginVersion()
@@ -33,17 +29,19 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 const int __stdcall GetPluginInit()
 {
+	// Implement one function plugin.
 	return 1;
 }
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
+	// Plugin-Fabric: return the one function plugin.
 	return CFunctionPluginSample2::GetInstance;
 }
 
 
 CFunctionPluginSample2::CFunctionPluginSample2()
-  : m_hwnd(NULL)
+  : handle_wnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
@@ -53,63 +51,57 @@ struct PluginData __stdcall CFunctionPluginSample2::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample2";
+	pluginData.name = L"Sample2 (Dialog display)";
 	pluginData.desc = L"Sample function plugin 2";
-	pluginData.info = L"Additional Info plugin 2";
+	pluginData.info = L"Example dialog displaying the selected pictures.";
 
 	return pluginData;
 }
 
-struct request_info __stdcall CFunctionPluginSample2::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
+enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
-	m_hwnd = hwnd;
+	handle_wnd = hwnd;
+
+	// Get preview rect sizes.
+	CWnd parent;
+	parent.Attach(handle_wnd);
 
 	vector<picture_data> picture_data_list;
-
-	CWnd parent;
-	parent.Attach(m_hwnd);
 	CSampleDlg SampleDlg(picture_data_list, &parent);
-	SampleDlg.Create(IDD_DIALOG_SAMPLE2, &parent);
 	
+	SampleDlg.Create(IDD_DIALOG_SAMPLE2, &parent);
 	parent.Detach();
 
-	// Request up to two picture data sets.
-	// In this example, request one picture data set for the preview size. 
-	return request_info(PICTURE_REQUEST_INFO_BGR_DWORD_ALIGNED_DATA, SampleDlg.m_PreviewPositionRect.Width(), SampleDlg.m_PreviewPositionRect.Height());
+	// Request one picture data set for the dialog preview size.
+	// A negative value requests a relative size for the picture data.
+	// For example, -100 requests data for the original 100% picture size.
+	// To get picture data for the half size, use
+	// request_data_sizes.push_back(request_data_size(-50, -50));
+	request_data_sizes.push_back(
+		request_data_size(SampleDlg.preview_position_rect.Width(),
+			SampleDlg.preview_position_rect.Height(),
+			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY)
+	);
+
+	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
-bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& _picture_data) 
+bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& picture_data) 
 { 
-	if(_picture_data.m_len1)
-	{
-		picture_data picture_data_cpy(_picture_data);
-		picture_data_cpy.m_buf1 = new BYTE[_picture_data.m_len1];
-		if(picture_data_cpy.m_buf1)
-		{
-			memcpy(picture_data_cpy.m_buf1, _picture_data.m_buf1, _picture_data.m_len1);
-			picture_data_list.push_back(picture_data_cpy);
-		}
-	}
-
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginSample2::end() 
+const vector<update_data>& __stdcall CFunctionPluginSample2::end(const vector<picture_data>& picture_data_list)
 { 
 	CWnd parent;
-	parent.Attach(m_hwnd);
+	parent.Attach(handle_wnd);
 
 	CSampleDlg SampleDlg(picture_data_list, &parent);
 	SampleDlg.DoModal();
 
 	parent.Detach();
 
-	for(vector<picture_data>::iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
-	{
-		delete it->m_buf1;
-	}
-
-	return m_update_info;
+	return update_data_list;
 }
 

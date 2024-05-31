@@ -139,7 +139,8 @@
       </DataExecutionPrevention>
       <ImportLibrary>
       </ImportLibrary>
-      <BaseAddress>0x206000000</BaseAddress>
+      <BaseAddress>0x212000000</BaseAddress>
+      <OutputFile>C:\Projects\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -212,7 +213,7 @@
       </DataExecutionPrevention>
       <ImportLibrary>
       </ImportLibrary>
-      <BaseAddress>0x206000000</BaseAddress>
+      <BaseAddress>0x212000000</BaseAddress>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>

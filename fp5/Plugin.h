@@ -1,27 +1,28 @@
 #pragma once
 
 #include "FunctionPlugin.h"
+#include <Vfw.h>
 
 
-class CFunctionPluginHDR : public CFunctionPlugin
+class CFunctionPluginSample5 : public CFunctionPlugin
 {
 protected:
-	CFunctionPluginHDR();
-
-public:
-	virtual __stdcall ~CFunctionPluginHDR() { };
+	CFunctionPluginSample5();
 
 protected:
 	HWND handle_wnd;
-	CWnd parent_wnd;
-	vector<const WCHAR*> picture_list;
+	int picture_processed;
+	HBITMAP Dib;
+	CString headline_text;
+	COLORREF border_color;
 
-protected:
+public:
+	virtual __stdcall ~CFunctionPluginSample5();
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
 	{
-		return new CFunctionPluginHDR;
+		return new CFunctionPluginSample5;
 	};
 
 public:

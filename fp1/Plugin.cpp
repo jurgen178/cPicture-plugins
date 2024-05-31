@@ -3,16 +3,8 @@
 #include "locale.h"
 
 // Example Plugin cpp_fp1.
-
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 | (const unsigned int)t2);
-}
-
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return (enum PLUGIN_TYPE)((const unsigned int)t1 & (const unsigned int)t2);
-}
+// List the selected pictures.
+// This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA.
 
 
 const CString __stdcall GetPluginVersion()
@@ -32,18 +24,23 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 const int __stdcall GetPluginInit()
 {
+	// Implement one function plugin.
 	return 1;
 }
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
+	// Plugin-Fabric: return the one function plugin.
 	return CFunctionPluginSample1::GetInstance;
 }
 
 
 CFunctionPluginSample1::CFunctionPluginSample1()
+	: handle_wnd(NULL),
+	picture_processed(0),
+	pictures(0)
 {
-	_wsetlocale(LC_ALL, L".ACP"); 
+	_wsetlocale(LC_ALL, L".ACP");
 }
 
 struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
@@ -51,40 +48,68 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample1";
+	pluginData.name = L"Sample1 (list file names)";
 	pluginData.desc = L"Sample function plugin 1";
-	pluginData.info = L"Additional Info plugin 1";
+	pluginData.info = L"Displays each event and lists the selected file names.";
 
 	return pluginData;
 }
 
-struct request_info __stdcall CFunctionPluginSample1::start(HWND hwnd, const vector<const WCHAR*>& file_list) 
+enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
-	CString list(L"start\n------\n");
-	for(vector<const WCHAR*>::const_iterator it = file_list.begin(); it != file_list.end(); ++it)
+	// Start processing and print the picture names to process.
+
+	handle_wnd = hwnd;
+	pictures = (int)file_list.size();
+
+	CString list;
+	list.Format(L"start event, %d pictures\n------------------------\n", pictures);
+	int i = 0;
+	const int max_pictures(10);
+
+	// Display the first max_pictures picture names.
+	vector<const WCHAR*>::const_iterator it;
+	for(it = file_list.begin(); i < max_pictures && it != file_list.end(); ++i, ++it)
 	{
 		list += *it;
 		list += L"\n";
 	}
 	
-	AfxMessageBox(list, MB_ICONINFORMATION);
+	if (it != file_list.end())
+	{
+		list += L"  :\n";
+	}
+
+	::MessageBox(handle_wnd, list, get_plugin_data().desc, MB_ICONINFORMATION);
 	
-	return request_info();
+	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
-bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& _picture_data) 
+bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& picture_data)
 { 
-	const CString msg(L"process picture:\n");
-	AfxMessageBox(msg + _picture_data.m_FileName, MB_ICONINFORMATION);
+	// Process each picture.
+
+	CString msg;
+	msg.Format(L"process picture event (%d/%d):\n", ++picture_processed, pictures);
+	const int ret(::MessageBox(handle_wnd, msg + picture_data.file_name, get_plugin_data().desc, pictures > 1 ? MB_OKCANCEL | MB_ICONINFORMATION : MB_ICONINFORMATION));
+
+	// Signal that pictures could be updated, added or deleted (enum UPDATE_TYPE).
+	// For example:
+	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED));
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
-	return true;
+	return ret == IDOK;
 }
 
-const vector<update_info>& __stdcall CFunctionPluginSample1::end() 
+const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<picture_data>& picture_data_list)
 { 
-	AfxMessageBox(L"end", MB_ICONINFORMATION);
+	// Print summary at the end of the processing.
 
-	return m_update_info;
+	CString msg;
+	msg.Format(L"end event, %d pictures processed", picture_processed);
+	::MessageBox(handle_wnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
+
+	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
+	return update_data_list;
 }
 

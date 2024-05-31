@@ -9,23 +9,23 @@
 class CSampleDlg : public CDialog
 {
 public:
-	CSampleDlg(const vector<picture_data>& _picture_data_list, CWnd* pParent = NULL);   // standard constructor
+	CSampleDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL);   // standard constructor
 	virtual ~CSampleDlg();
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_SAMPLE2 };
 
 public:
-	CRect m_PreviewPositionRect;
+	CRect preview_position_rect;
 
 protected:
-	CStatic	m_PreviewPosition;
-	CStatic	m_Info;
-	CStatic	m_Info2;
-	CStatic	m_Counter;
-	const vector<picture_data>& m_picture_data_list;
-	BITMAPINFOHEADER m_bmiHeader;
-	int m_index;
+	CStatic	preview_position;
+	CStatic	info;
+	CStatic	info2;
+	CStatic	counter;
+	const vector<picture_data>& picture_data_list;
+	BITMAPINFOHEADER bmiHeader;
+	int index;
 
 protected:
 	void update_button_state();

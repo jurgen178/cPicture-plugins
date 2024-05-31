@@ -131,7 +131,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>C:\Projects\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
       <DelayLoadDLLs>oleacc.dll;winspool.drv;shlwapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
