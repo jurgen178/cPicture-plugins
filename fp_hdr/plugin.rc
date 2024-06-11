@@ -103,6 +103,17 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_HDR AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -115,7 +126,7 @@ BEGIN
                             "Enfuse-Program (enfuse.exe)|enfuse.exe|Ausführbare Datei (*.exe)|*.exe||"
     IDS_MIN_SELECTION       "Wählen Sie mindestens zwei Bilder aus."
     IDS_ENFUSE_MISSING      "Das Programm ""Enfuse"" konnte nicht gefunden werden.\nStellen Sie sicher, dass das Programm vorhanden ist und\nwählen Sie dann das Programm aus."
-    IDS_CONSOLE_FINSH       "Klicken Sie auf ""OK"", um das Fenster zu schließen."
+    IDS_CONSOLE_FINISH      "Klicken Sie auf ""OK"", um das Fenster zu schließen."
 END
 
 #endif    // German (Germany) resources

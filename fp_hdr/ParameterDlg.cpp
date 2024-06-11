@@ -198,7 +198,7 @@ void ParameterDlg::Go(LPCTSTR commandLine)
 		out = L"";
 	}
 
-	out.LoadString(IDS_CONSOLE_FINSH);
+	out.LoadString(IDS_CONSOLE_FINISH);
 
 	const int nSize(console.GetWindowTextLength());
 	console.SetSel(nSize, nSize);
