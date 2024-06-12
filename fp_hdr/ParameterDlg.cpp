@@ -70,7 +70,6 @@ BOOL ParameterDlg::OnInitDialog()
 
 	console_font.CreateFont(-11, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS, 
 				  CLIP_CHARACTER_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_SWISS, L"Consolas");
-
 	console.SetFont(&console_font, FALSE);
 
 	return TRUE;
