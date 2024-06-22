@@ -59,6 +59,7 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
+
 	// Requires at least 2 pictures.
 	if (file_list.size() < 2)
 	{
@@ -115,6 +116,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 
 			CString evStr;
 			evStr.Format(L"%s - %s = %.2fEV\n", nameA, nameB, ev);
+
 			list += evStr;
 		}
 
