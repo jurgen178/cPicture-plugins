@@ -65,7 +65,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vecto
 	{
 		CString msg;
 		msg.Format(IDS_MIN_SELECTION);
-		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 	}
@@ -91,6 +91,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 
 	if (it != picture_data_list.end())
 	{
+		// Reference picture A
 		const int f(it->file_name.ReverseFind(L'\\') + 1);
 		const CString nameA(it->file_name.Mid(f));
 
@@ -98,31 +99,49 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 		const double apertureA(it->aperture);
 		const double isoA(it->iso);
 
-		++it;
-		for (; it != picture_data_list.end(); ++it)
+		if (shutterspeedA < 1.0 || apertureA < 1.0 || isoA < 1.0)
 		{
-			const int f(it->file_name.ReverseFind(L'\\') + 1);
-			const CString nameB(it->file_name.Mid(f));
-
-			const double shutterspeedB(it->shutterspeed);
-			const double apertureB(it->aperture);
-			const double isoB(it->iso);
-
-			const double shutterspeedAB(log2(shutterspeedA) - log2(shutterspeedB));
-			const double apertureAB(2 * (log2(apertureA) - log2(apertureB)));
-			const double isoAB(log2(isoB) - log2(isoA));
-
-			const double ev(shutterspeedAB + apertureAB + isoAB);
-
-			CString evStr;
-			evStr.Format(L"%s - %s = %.2fEV\n", nameA, nameB, ev);
-
-			list += evStr;
+			list.Format(IDS_NO_EXIF, nameA);
 		}
+		else
+		{
+			// Calculate diff to reference picture A
 
-		CString msg;
-		msg.LoadString(IDS_COPY);
-		list += msg;
+			++it;
+			for (; it != picture_data_list.end(); ++it)
+			{
+				const int f(it->file_name.ReverseFind(L'\\') + 1);
+				const CString nameB(it->file_name.Mid(f));
+
+				const double shutterspeedB(it->shutterspeed);
+				const double apertureB(it->aperture);
+				const double isoB(it->iso);
+
+				// Diff
+				const double shutterspeedAB(log2(shutterspeedA) - log2(shutterspeedB));
+				const double apertureAB(2 * (log2(apertureA) - log2(apertureB)));
+				const double isoAB(log2(isoB) - log2(isoA));
+
+				const double ev(shutterspeedAB + apertureAB + isoAB);
+
+				CString evStr;
+				if (shutterspeedB < 1.0 || apertureB < 1.0 || isoB < 1.0)
+				{
+					evStr.Format(L"%s - %s = --EV\n", nameA, nameB);
+				}
+				else
+				{
+					evStr.Format(L"%s - %s = %.2fEV\n", nameA, nameB, ev);
+				}
+
+				list += evStr;
+			}
+
+			CString msg;
+			msg.LoadString(IDS_COPY);
+
+			list += msg;
+		}
 	}
 
 	::MessageBox(handle_wnd, list, get_plugin_data().desc, MB_ICONINFORMATION);

@@ -68,6 +68,7 @@ STRINGTABLE
 BEGIN
     IDS_MIN_SELECTION       "Wählen Sie mindestens zwei Bilder aus."
     IDS_COPY                "\n(Strg+C um die Werte in die Zwischenablage zu kopieren)"
+    IDS_NO_EXIF             "Das Bild '%s' hat keine zusätzlichen Bildinformationen, die zur Berechnung der Belichtung notwendig sind."
 END
 
 #endif    // German (Germany) resources

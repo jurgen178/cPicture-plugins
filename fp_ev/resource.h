@@ -5,6 +5,7 @@
 #define VS_VERSION_INFO                 1
 #define IDS_MIN_SELECTION               107
 #define IDS_COPY                        108
+#define IDS_NO_EXIF                     109
 
 // Next default values for new objects
 // 
