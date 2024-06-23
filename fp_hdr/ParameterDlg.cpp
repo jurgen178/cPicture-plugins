@@ -61,6 +61,7 @@ void ParameterDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(ParameterDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BROWSE, &ParameterDlg::OnBnClickedButtonBrowse)
 	ON_BN_CLICKED(IDOK, &ParameterDlg::OnBnClickedOk)
+	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_ENFUSE, &ParameterDlg::OnClickSyslinkEnfuse)
 END_MESSAGE_MAP()
 
 
@@ -261,4 +262,15 @@ bool ParameterDlg::CheckFile(const WCHAR* pFile)
 	}
 
 	return false;
+}
+
+
+void ParameterDlg::OnClickSyslinkEnfuse(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	PNMLINK pNMLink = (PNMLINK)pNMHDR;
+	LITEM   item = pNMLink->item;
+
+	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
+
+	*pResult = 0;
 }
