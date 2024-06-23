@@ -163,7 +163,8 @@ HANDLE ParameterDlg::SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputRea
 
 void ParameterDlg::Go(LPCTSTR commandLine)
 {
-	console.SetWindowText(NULL);
+	console.RedrawWindow();
+
 	HANDLE hOutput, hProcess;
 	hProcess = SpawnAndRedirect(commandLine, &hOutput, NULL);
 	if (!hProcess) 
@@ -220,6 +221,7 @@ void ParameterDlg::OnOK()
 		RemoveCtrl(IDC_EDIT_OUTPUT);
 		RemoveCtrl(IDC_STATIC_JPEG_QUALITY);
 		RemoveCtrl(IDC_EDIT_JPEG_QUALITY);
+		RemoveCtrl(IDC_SYSLINK_ENFUSE);
 
 
 		CString cmd;
