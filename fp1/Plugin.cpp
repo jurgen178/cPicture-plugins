@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "plugin.h"
 #include "locale.h"
+#include "resource.h"
 
 // Example Plugin cpp_fp1.
 // List the selected pictures.

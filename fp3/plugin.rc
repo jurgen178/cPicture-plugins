@@ -125,8 +125,8 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PLUGIN_SHORT_DESC   "Beispiel3 (Bestellformular)"
-    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel3"
+    IDS_PLUGIN_SHORT_DESC   "Beispiel 3 (Bestellformular)"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel 3 (Bestellformular)"
     IDS_PLUGIN_INFO         "Beispiel eines Bestellformulars für die ausgewählten Bilder."
     IDS_COLUMNHEADER_NAME   "Bestell-Info"
     IDS_PICTURE_FORMAT_9    "9x13cm"
@@ -233,8 +233,8 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PLUGIN_SHORT_DESC   "Sample3 (Order form)"
-    IDS_PLUGIN_LONG_DESC    "Sample function plugin 3"
+    IDS_PLUGIN_SHORT_DESC   "Sample 3 (Order form)"
+    IDS_PLUGIN_LONG_DESC    "Sample function plugin 3 (Order form)"
     IDS_PLUGIN_INFO         "Example of an Order form for the selected pictures."
     IDS_COLUMNHEADER_NAME   "Order info"
     IDS_PICTURE_FORMAT_9    "9x13cm"

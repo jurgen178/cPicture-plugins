@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "plugin.h"
 #include "locale.h"
+#include "resource.h"
 
 // Example Plugin cpp_fp4.
 // Resize and invert pictures.
@@ -50,9 +51,6 @@ struct PluginData __stdcall CFunctionPluginSample4::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample4 (resize and invert)";
-	pluginData.desc = L"Sample function plugin 4";
-	pluginData.info = L"Resize and invert the selected pictures";
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
 	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
 	pluginData.info.LoadString(IDS_PLUGIN_INFO);

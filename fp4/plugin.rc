@@ -66,8 +66,8 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PLUGIN_SHORT_DESC   "Beispiel4 (Größe ändern und invertieren)"
-    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel4"
+    IDS_PLUGIN_SHORT_DESC   "Beispiel 4 (Größe ändern und invertieren)"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel 4 (Größe ändern und invertieren)"
     IDS_PLUGIN_INFO         "Ändern die Größe und invertiert die ausgewählten Bilder."
 END
 
@@ -115,8 +115,8 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PLUGIN_SHORT_DESC   "Sample4 (resize and invert)"
-    IDS_PLUGIN_LONG_DESC    "Sample function plugin 4"
+    IDS_PLUGIN_SHORT_DESC   "Sample 4 (resize and invert)"
+    IDS_PLUGIN_LONG_DESC    "Sample function plugin 4 (resize and invert)"
     IDS_PLUGIN_INFO         "Resize and invert the selected pictures."
 END
 
