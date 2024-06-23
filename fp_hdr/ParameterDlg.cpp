@@ -168,10 +168,6 @@ void ParameterDlg::Go(LPCTSTR commandLine)
 	if (!hProcess) 
 		return;
 
-	//m_Console.SetWindowText(L"Child started ! Receiving output pipe :\r\n");
-	//m_Console.SetSel(MAXLONG, MAXLONG);
-	//m_Console.RedrawWindow();
-	
 	CString out;
 
 	BeginWaitCursor();

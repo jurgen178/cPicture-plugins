@@ -119,6 +119,7 @@ BEGIN
     IDS_PLUGIN_INFO         "Indexdruck der beiden ausgewählten Bilder."
     IDS_MIN_SELECTION       "Wählen Sie für dieses Funktionszusatzmodul zwei Bilder aus."
     IDS_INDEX_TOO_LARGE     "Die gewählte Größe für den Indexdruck ist zu groß."
+    IDS_HEADLINE_TEXT       "Beispiel-Überschrift"
 END
 
 #endif    // German (Germany) resources
@@ -218,6 +219,7 @@ BEGIN
     IDS_PLUGIN_INFO         "Index print of the two selected pictures."
     IDS_MIN_SELECTION       "Select two pictures for this example plugin."
     IDS_INDEX_TOO_LARGE     "The selected size for the index print is too large."
+    IDS_HEADLINE_TEXT       "Sample Headline"
 END
 
 #endif    // English (United States) resources

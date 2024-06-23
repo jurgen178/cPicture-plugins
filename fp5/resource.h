@@ -9,6 +9,7 @@
 #define IDS_MIN_SELECTION               103
 #define IDD_DIALOG_SAMPLE5              104
 #define IDS_INDEX_TOO_LARGE             105
+#define IDS_HEADLINE_TEXT               106
 #define IDC_EDIT_HEADLINE_TEXT          1000
 #define IDC_BUTTON_BORDER_COLOR         1001
 

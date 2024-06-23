@@ -69,6 +69,8 @@ BEGIN
     IDS_PLUGIN_SHORT_DESC   "Beispiel 4 (Größe ändern und invertieren)"
     IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel 4 (Größe ändern und invertieren)"
     IDS_PLUGIN_INFO         "Ändern die Größe und invertiert die ausgewählten Bilder."
+    IDS_START_CONFIRM       "Dieses Funktionszusatzmodul-Beispiel ändert die Bildgröße um 50 % und invertiert die Farben.\nSie können jederzeit zum Originalbild zurückkehren.\nMöchten Sie fortfahren?"
+    IDS_END_MSG             "%d Bilder verarbeitet."
 END
 
 #endif    // German (Germany) resources
@@ -118,6 +120,8 @@ BEGIN
     IDS_PLUGIN_SHORT_DESC   "Sample 4 (resize and invert)"
     IDS_PLUGIN_LONG_DESC    "Sample function plugin 4 (resize and invert)"
     IDS_PLUGIN_INFO         "Resize and invert the selected pictures."
+    IDS_START_CONFIRM       "This example function plugin resizes the picture by 50% and invert the colors.\nYou can always revert to the original picture.\nDo you want to continue?"
+    IDS_END_MSG             "%d pictures processed."
 END
 
 #endif    // English (United States) resources

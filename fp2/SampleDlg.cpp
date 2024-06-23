@@ -105,7 +105,7 @@ void CSampleDlg::OnPaint()
 
 		// Set Description text.
 		const unsigned int fsize = ::GetFileSize(it->file_name);
-		str.Format(L"%dx%d, %dKB", it->picture_width, it->picture_height, fsize >> 10);
+		str.Format(IDS_PICTURE_SIZE, it->picture_width, it->picture_height, fsize >> 10);
 		info2.SetWindowText(str);
 
 		// Draw the selected picture.

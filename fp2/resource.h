@@ -8,6 +8,7 @@
 #define IDS_PLUGIN_INFO                 102
 #define IDS_EMPTY_LIST                  105
 #define IDS_N_ITEMS_IN_LIST             106
+#define IDS_PICTURE_SIZE                107
 #define IDD_DIALOG_SAMPLE2              1000
 #define IDC_PREVIEW                     1001
 #define IDC_BUTTON_PREV                 1002

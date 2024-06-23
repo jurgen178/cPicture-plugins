@@ -109,6 +109,7 @@ BEGIN
     IDS_PLUGIN_INFO         "Beispieldialogfeld zur Anzeige der ausgewählten Bilder."
     IDS_EMPTY_LIST          "Keine ausgewählten Bilder"
     IDS_N_ITEMS_IN_LIST     "%d ausgewählte Bilder"
+    IDS_PICTURE_SIZE        "%dx%d, %dKB"
 END
 
 #endif    // German (Germany) resources
@@ -198,6 +199,7 @@ BEGIN
     IDS_PLUGIN_INFO         "Example dialog displaying the selected pictures."
     IDS_EMPTY_LIST          "No selected pictures"
     IDS_N_ITEMS_IN_LIST     "%d selected pictures"
+    IDS_PICTURE_SIZE        "%dx%d, %dKB"
 END
 
 #endif    // English (United States) resources
