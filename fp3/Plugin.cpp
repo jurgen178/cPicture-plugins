@@ -51,9 +51,9 @@ struct PluginData __stdcall CFunctionPluginSample3::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample3 (Order form)";
-	pluginData.desc = L"Sample function plugin 3";
-	pluginData.info = L"Example of an Order form for the selected pictures.";
+	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
+	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
+	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
 }

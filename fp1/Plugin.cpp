@@ -48,9 +48,9 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample1 (list file names)";
-	pluginData.desc = L"Sample function plugin 1";
-	pluginData.info = L"Displays each event and lists the selected file names.";
+	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
+	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
+	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
 }

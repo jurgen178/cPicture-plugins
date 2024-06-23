@@ -114,8 +114,11 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_MIN_SELECTION       "Select two pictures for this example plugin."
-    IDS_INDEX_TOO_LARGE     "The selected size for the index print is too large."
+    IDS_PLUGIN_SHORT_DESC   "Beispiel 5 (Indexdruck von zwei Bildern)"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel5"
+    IDS_PLUGIN_INFO         "Indexdruck der beiden ausgewählten Bilder."
+    IDS_MIN_SELECTION       "Wählen Sie für dieses Funktionszusatzmodul zwei Bilder aus."
+    IDS_INDEX_TOO_LARGE     "Die gewählte Größe für den Indexdruck ist zu groß."
 END
 
 #endif    // German (Germany) resources
@@ -153,6 +156,21 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Sample5 (index print of two pictures)"
+    IDS_PLUGIN_LONG_DESC    "Function plugin to calculate the exposure difference."
+    IDS_PLUGIN_INFO         "Index print of the two selected pictures."
+    IDS_MIN_SELECTION       "Select two pictures for this example plugin."
+    IDS_INDEX_TOO_LARGE     "The selected size for the index print is too large."
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

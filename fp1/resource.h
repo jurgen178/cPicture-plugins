@@ -3,6 +3,10 @@
 // Used by plugin.rc
 //
 #define VS_VERSION_INFO                 1
+#define IDS_PLUGIN_SHORT_DESC           100
+#define IDS_PLUGIN_LONG_DESC            101
+#define IDS_PLUGIN_INFO                 102
+#define IDS_PLUGIN_SHORT_DESC2          103
 
 // Next default values for new objects
 // 

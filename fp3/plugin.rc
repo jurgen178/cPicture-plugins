@@ -66,6 +66,99 @@ END
 
 IDD_DIALOG_SAMPLE3 DIALOGEX 0, 0, 369, 257
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Bestellformular"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PICTURE_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,206,243
+    DEFPUSHBUTTON   "OK",IDOK,312,236,50,14
+    GROUPBOX        "Gesamt",IDC_STATIC,241,161,121,65
+    GROUPBOX        "Details",IDC_STATIC,241,7,121,107
+    COMBOBOX        IDC_COMBO_FORMAT,250,30,48,55,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_NUMBER_OF_PRINTS,250,64,40,14,ES_AUTOHSCROLL
+    LTEXT           "Anzahl Ausdrucke:",IDC_STATIC,250,51,104,8
+    LTEXT           "Format:",IDC_STATIC,250,17,105,8
+    PUSHBUTTON      "Abbrechen",IDCANCEL,250,236,50,14
+    PUSHBUTTON      "Setzen",IDC_BUTTON_SET,250,92,50,14
+    LTEXT           "Anzahl Bilder:",IDC_STATIC,250,176,51,8
+    LTEXT           "",IDC_STATIC_NUMBER_OF_PICTURES,307,176,47,8
+    LTEXT           "Preis:",IDC_STATIC,250,200,18,8
+    LTEXT           "",IDC_STATIC_TOTAL_PRICE,307,200,47,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SAMPLE3, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 362
+        VERTGUIDE, 241
+        VERTGUIDE, 250
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 250
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SAMPLE3 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Beispiel3 (Bestellformular)"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel3"
+    IDS_PLUGIN_INFO         "Beispiel eines Bestellformulars für die ausgewählten Bilder."
+    IDS_COLUMNHEADER_NAME   "Bestell-Info"
+    IDS_PICTURE_FORMAT_9    "9x13cm"
+    IDS_PICTURE_FORMAT_10   "10x15cm"
+    IDS_DISPLAY_FORMAT      "%1, %2!d!x%3!d! Pixel\n%4!d! Ausdruck(e) in %5"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TOTAL_PRICE_FORMAT  "$%.2f"
+    IDS_ORDER_CONFIRMATION  "Vielen Dank für Ihre Bestellung!\nBestellübersicht: %1!d! Ausdruck(e) für %2"
+    IDS_MAX_PRINTS          "Es können nur 100 Drucke bestellt werden."
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SAMPLE3 DIALOGEX 0, 0, 369, 257
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Order form"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -107,37 +200,6 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    IDS_COLUMNHEADER_NAME   "Order info"
-    IDS_PICTURE_FORMAT_9    "9x13cm"
-    IDS_PICTURE_FORMAT_10   "10x15cm"
-    IDS_DISPLAY_FORMAT      "%1, %2!d!x%3!d! pixel\n%4!d! print(s) in %5"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_TOTAL_PRICE_FORMAT  "$%.2f"
-    IDS_ORDER_CONFIRMATION  "Thank you for your Order!\nOrder summary: %1!d! print(s) for %2"
-    IDS_MAX_PRINTS          "Only 100 prints can be ordered."
-END
-
-#endif    // German (Germany) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -162,6 +224,30 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Sample3 (Order form)"
+    IDS_PLUGIN_LONG_DESC    "Sample function plugin 3"
+    IDS_PLUGIN_INFO         "Example of an Order form for the selected pictures."
+    IDS_COLUMNHEADER_NAME   "Order info"
+    IDS_PICTURE_FORMAT_9    "9x13cm"
+    IDS_PICTURE_FORMAT_10   "10x15cm"
+    IDS_DISPLAY_FORMAT      "%1, %2!d!x%3!d! pixel\n%4!d! print(s) in %5"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TOTAL_PRICE_FORMAT  "$%.2f"
+    IDS_ORDER_CONFIRMATION  "Thank you for your Order!\nOrder summary: %1!d! print(s) for %2"
+    IDS_MAX_PRINTS          "Only 100 prints can be ordered."
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -67,7 +67,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_ERROR_SCRIPT_MISSING 
-                            "Das Skript ""%1"" ist nicht im\nOrdner ""%2"" vorhanden."
+                            "Das Skript '%1' ist nicht im\nOrdner '%2' vorhanden."
     IDS_SCRIPT_SHORT        "Skript '%1'"
     IDS_SCRIPT_LONG         "Batch-Skript '%1'"
 END
@@ -107,6 +107,20 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ERROR_SCRIPT_MISSING 
+                            "The script '%1' is not present in the folder\n'%2'."
+    IDS_SCRIPT_SHORT        "Script '%1'"
+    IDS_SCRIPT_LONG         "Batch script '%1'"
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

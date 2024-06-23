@@ -58,6 +58,19 @@ BEGIN
     END
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Beispiel4 (Größe ändern und invertieren)"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel4"
+    IDS_PLUGIN_INFO         "Ändern die Größe und invertiert die ausgewählten Bilder."
+END
+
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -93,6 +106,19 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Sample4 (resize and invert)"
+    IDS_PLUGIN_LONG_DESC    "Sample function plugin 4"
+    IDS_PLUGIN_INFO         "Resize and invert the selected pictures."
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

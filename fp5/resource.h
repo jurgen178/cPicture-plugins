@@ -3,9 +3,12 @@
 // Used by plugin.rc
 //
 #define VS_VERSION_INFO                 1
-#define IDS_MIN_SELECTION               100
-#define IDD_DIALOG_SAMPLE5              101
-#define IDS_INDEX_TOO_LARGE             102
+#define IDS_PLUGIN_SHORT_DESC           100
+#define IDS_PLUGIN_LONG_DESC            101
+#define IDS_PLUGIN_INFO                 102
+#define IDS_MIN_SELECTION               103
+#define IDD_DIALOG_SAMPLE5              104
+#define IDS_INDEX_TOO_LARGE             105
 #define IDC_EDIT_HEADLINE_TEXT          1000
 #define IDC_BUTTON_BORDER_COLOR         1001
 
