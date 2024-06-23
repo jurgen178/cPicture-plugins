@@ -4,7 +4,7 @@
 #include "resource.h"
 
 // Example Plugin cpp_fp_ev.
-// Function plugin to calculate expose difference.
+// Function plugin to calculate the exposure difference.
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA.
 
 
@@ -49,9 +49,9 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Belichtungsunterschied";
-	pluginData.desc = L"Berechnet den Belichtungsunterschied";
-	pluginData.info = L"Berechnet den Belichtungsunterschied der ausgewählten Bilder mit dem ersten Bild als Referenzbild.";
+	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
+	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
+	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
 }
@@ -105,7 +105,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 		}
 		else
 		{
-			// Calculate diff to reference picture A
+			// Calculate diff to the reference picture A
 
 			++it;
 			for (; it != picture_data_list.end(); ++it)
