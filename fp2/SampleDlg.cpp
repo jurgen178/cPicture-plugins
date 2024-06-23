@@ -77,9 +77,6 @@ BOOL CSampleDlg::OnInitDialog()
 	if(size == 0)
 		str.LoadString(IDS_EMPTY_LIST);
 	else
-	if(size == 1)
-		str.LoadString(IDS_ONE_ITEM_IN_LIST);
-	else
 		str.Format(IDS_N_ITEMS_IN_LIST, picture_data_list.size());
 	
 	SetWindowText(str);

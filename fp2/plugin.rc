@@ -108,7 +108,6 @@ BEGIN
     IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel 2 (Dialoganzeige)"
     IDS_PLUGIN_INFO         "Beispieldialogfeld zur Anzeige der ausgewählten Bilder."
     IDS_EMPTY_LIST          "Keine ausgewählten Bilder"
-    IDS_ONE_ITEM_IN_LIST    "Ein ausgewähltes Bild"
     IDS_N_ITEMS_IN_LIST     "%d ausgewählte Bilder"
 END
 
@@ -198,7 +197,6 @@ BEGIN
     IDS_PLUGIN_LONG_DESC    "Sample function plugin 2 (Dialog display)"
     IDS_PLUGIN_INFO         "Example dialog displaying the selected pictures."
     IDS_EMPTY_LIST          "No selected pictures"
-    IDS_ONE_ITEM_IN_LIST    "One selected picture"
     IDS_N_ITEMS_IN_LIST     "%d selected pictures"
 END
 
