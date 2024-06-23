@@ -41,7 +41,7 @@ BEGIN
     BEGIN
         BLOCK "040704b0"
         BEGIN
-            VALUE "Comments", "Function plugin to calculate expose difference for cPicture"
+            VALUE "Comments", "Function plugin to calculate the exposure difference."
             VALUE "CompanyName", "cPicture"
             VALUE "FileDescription", "cPicture function plugin"
             VALUE "FileVersion", "1.0.0.0"
