@@ -67,7 +67,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_PLUGIN_SHORT_DESC   "Belichtungsunterschied"
-    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede."
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede der ausgewählten Bilder."
     IDS_PLUGIN_INFO         "Dieses Funktionszusatzmodul berechnet die Belichtungsunterschiede der ausgewählten Bilder mit dem ersten Bild als Referenzbild."
     IDS_MIN_SELECTION       "Wählen Sie mindestens zwei Bilder aus."
     IDS_COPY                "\n(Strg+C um die Werte in die Zwischenablage zu kopieren)"
@@ -119,7 +119,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_PLUGIN_SHORT_DESC   "Exposure Difference"
-    IDS_PLUGIN_LONG_DESC    "Function plugin to calculate the exposure difference."
+    IDS_PLUGIN_LONG_DESC    "Function plugin to calculate the exposure difference of the selected pictures."
     IDS_PLUGIN_INFO         "This function plugin calculate the exposure difference of the selected pictures. The first selected picture is the reference picture."
     IDS_MIN_SELECTION       "Select at least two pictures."
     IDS_COPY                "\n(Ctrl+C to copy the values to the clipboard)"
