@@ -77,9 +77,6 @@ BOOL CSampleDlg::OnInitDialog()
 	if(size == 0)
 		str.LoadString(IDS_EMPTY_LIST);
 	else
-	if(size == 1)
-		str.LoadString(IDS_ONE_ITEM_IN_LIST);
-	else
 		str.Format(IDS_N_ITEMS_IN_LIST, picture_data_list.size());
 	
 	SetWindowText(str);
@@ -108,7 +105,7 @@ void CSampleDlg::OnPaint()
 
 		// Set Description text.
 		const unsigned int fsize = ::GetFileSize(it->file_name);
-		str.Format(L"%dx%d, %dKB", it->picture_width, it->picture_height, fsize >> 10);
+		str.Format(IDS_PICTURE_SIZE, it->picture_width, it->picture_height, fsize >> 10);
 		info2.SetWindowText(str);
 
 		// Draw the selected picture.

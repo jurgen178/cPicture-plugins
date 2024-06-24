@@ -267,9 +267,9 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<pictur
 		name_bild_n = name_bild_n.Left(name_bild_n.ReverseFind(L'.'));
 
 		const CString ext_bild_1(bild_1.Mid(bild_1.ReverseFind(L'.')));
-		const CString ldr_file(dir_bild + name_bild_1 + L"-" + name_bild_n + ext_bild_1);
+		const CString hdr_file(dir_bild + name_bild_1 + L"-" + name_bild_n + ext_bild_1);
 
-		parameterDlg.output_file = ldr_file;
+		parameterDlg.output_file = hdr_file;
 		parameterDlg.jpeg_quality = 95;
 
 		const CString path(L".");
@@ -281,7 +281,10 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<pictur
 
 		if (parameterDlg.DoModal() == IDOK)
 		{
-			update_data_list.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE::UPDATE_TYPE_ADDED));
+			if (parameterDlg.CheckFile(parameterDlg.output_file))
+			{
+				update_data_list.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE::UPDATE_TYPE_ADDED));
+			}
 		}
 
 		parent.Detach();

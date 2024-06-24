@@ -41,13 +41,13 @@ BEGIN
     BEGIN
         BLOCK "040704b0"
         BEGIN
-            VALUE "Comments", "Script function plugin for cPicture"
+            VALUE "Comments", "Function plugin to calculate the exposure difference."
             VALUE "CompanyName", "cPicture"
             VALUE "FileDescription", "cPicture function plugin"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "cPicture function plugin"
             VALUE "LegalCopyright", "Copyright (C)"
-            VALUE "OriginalFilename", "cpp_bat_script.dll"
+            VALUE "OriginalFilename", "cpp_fp_ev.dll"
             VALUE "ProductName", "cPicture function plugin"
             VALUE "ProductVersion", "1.0.0.0"
         END
@@ -66,10 +66,12 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_ERROR_SCRIPT_MISSING 
-                            "Das Skript '%1' ist nicht im\nOrdner '%2' vorhanden."
-    IDS_SCRIPT_SHORT        "Skript '%1'"
-    IDS_SCRIPT_LONG         "Batch-Skript '%1'"
+    IDS_PLUGIN_SHORT_DESC   "Belichtungsunterschied"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede."
+    IDS_PLUGIN_INFO         "Dieses Funktionszusatzmodul berechnet die Belichtungsunterschiede der ausgewählten Bilder mit dem ersten Bild als Referenzbild."
+    IDS_MIN_SELECTION       "Wählen Sie mindestens zwei Bilder aus."
+    IDS_COPY                "\n(Strg+C um die Werte in die Zwischenablage zu kopieren)"
+    IDS_NO_EXIF             "Das Bild '%s' hat keine zusätzlichen Bildinformationen, die zur Berechnung der Belichtung notwendig sind."
 END
 
 #endif    // German (Germany) resources
@@ -116,10 +118,12 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_ERROR_SCRIPT_MISSING 
-                            "The script '%1' is not present in the folder\n'%2'."
-    IDS_SCRIPT_SHORT        "Script '%1'"
-    IDS_SCRIPT_LONG         "Batch script '%1'"
+    IDS_PLUGIN_SHORT_DESC   "Exposure Difference"
+    IDS_PLUGIN_LONG_DESC    "Function plugin to calculate the exposure difference."
+    IDS_PLUGIN_INFO         "This function plugin calculate the exposure difference of the selected pictures. The first selected picture is the reference picture."
+    IDS_MIN_SELECTION       "Select at least two pictures."
+    IDS_COPY                "\n(Ctrl+C to copy the values to the clipboard)"
+    IDS_NO_EXIF             "The picture '%s' has no additional information necessary to calculate the exposure."
 END
 
 #endif    // English (United States) resources

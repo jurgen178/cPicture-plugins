@@ -49,11 +49,13 @@ protected:
 	CColorEdit console;
 	bool finished;
 
+public:
+	bool CheckFile(const WCHAR* pFile);
+
 protected:
 	void Go(LPCTSTR commandLine);
 	HANDLE SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputReadPipe, LPCTSTR lpCurrentDirectory);
 	void RemoveCtrl(const DWORD id);
-	bool CheckFile(const WCHAR* pFile);
 
 protected:
 	virtual BOOL OnInitDialog();
@@ -61,6 +63,7 @@ protected:
 	afx_msg void OnBnClickedButtonBrowse();
 	afx_msg void OnBnClickedOk();
 	virtual void OnOK();
+	afx_msg void OnClickSyslinkEnfuse(NMHDR* pNMHDR, LRESULT* pResult);
 
 	DECLARE_MESSAGE_MAP()
 };

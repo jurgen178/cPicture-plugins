@@ -9,7 +9,7 @@
 #define IDS_FILE_MASK_DESCRIPTION       106
 #define IDS_MIN_SELECTION               107
 #define IDS_ENFUSE_MISSING              108
-#define IDS_CONSOLE_FINSH               109
+#define IDS_CONSOLE_FINISH              109
 #define IDD_DIALOG_HDR                  1000
 #define IDC_PREVIEW                     1001
 #define IDC_BUTTON_PREV                 1002
@@ -25,14 +25,15 @@
 #define IDC_STATIC_JPEG_QUALITY         1012
 #define IDC_STATIC_OUTPUT               1013
 #define IDC_STATIC_ENFUSE               1014
+#define IDC_SYSLINK_ENFUSE              1015
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        108
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

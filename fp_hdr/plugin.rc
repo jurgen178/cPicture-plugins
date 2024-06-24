@@ -64,21 +64,23 @@ END
 // Dialog
 //
 
-IDD_DIALOG_HDR DIALOGEX 0, 0, 300, 161
+IDD_DIALOG_HDR DIALOGEX 0, 0, 300, 175
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Belichtungsreihen zusammenführen"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_EDIT_CONSOLE,7,7,286,126,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | NOT WS_VISIBLE | NOT WS_BORDER | WS_VSCROLL
+    EDITTEXT        IDC_EDIT_CONSOLE,7,7,286,140,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | NOT WS_VISIBLE | NOT WS_BORDER | WS_VSCROLL
     LTEXT           "Programmdatei ""Enfuse.exe"":",IDC_STATIC_ENFUSE,7,7,286,8
     EDITTEXT        IDC_EDIT_ENFUSE,7,18,210,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Durchsuchen...",IDC_BUTTON_BROWSE,223,18,70,14
-    LTEXT           "Ausgabedatei:",IDC_STATIC_OUTPUT,7,42,286,8
-    EDITTEXT        IDC_EDIT_OUTPUT,7,53,286,14,ES_AUTOHSCROLL
-    LTEXT           "Einstellung für die JPEG-Qualität:",IDC_STATIC_JPEG_QUALITY,7,77,286,8
-    EDITTEXT        IDC_EDIT_JPEG_QUALITY,7,90,40,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,125,140,50,14
-    PUSHBUTTON      "Abbrechen",IDCANCEL,243,140,50,14
+    CONTROL         "<a href=""https://wiki.panotools.org/Enfuse"">https://wiki.panotools.org/Enfuse</a>",IDC_SYSLINK_ENFUSE,
+                    "SysLink",WS_TABSTOP,7,40,286,14
+    LTEXT           "Ausgabedatei:",IDC_STATIC_OUTPUT,7,69,286,8
+    EDITTEXT        IDC_EDIT_OUTPUT,7,80,286,14,ES_AUTOHSCROLL
+    LTEXT           "Einstellung für die JPEG-Qualität:",IDC_STATIC_JPEG_QUALITY,7,104,286,8
+    EDITTEXT        IDC_EDIT_JPEG_QUALITY,7,117,40,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,125,154,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,243,154,50,14
 END
 
 
@@ -95,10 +97,21 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 293
         TOPMARGIN, 7
-        BOTTOMMARGIN, 154
+        BOTTOMMARGIN, 168
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_HDR AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,14 +121,14 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PLUGIN_SHORT_DESC   "HDR enfuse"
+    IDS_PLUGIN_SHORT_DESC   "HDR-Enfuse"
     IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul zum Zusammenführen von Belichtungsreihen."
-    IDS_PLUGIN_INFO         "Plugin uses the enfuse tool"
+    IDS_PLUGIN_INFO         "Das Funktionszusatzmodul verwendet das Enfuse-Programm."
     IDS_FILE_MASK_DESCRIPTION 
-                            "Enfuse-Program (enfuse.exe)|enfuse.exe|Ausführbare Datei (*.exe)|*.exe||"
+                            "Enfuse-Programm (enfuse.exe)|enfuse.exe|Ausführbare Datei (*.exe)|*.exe||"
     IDS_MIN_SELECTION       "Wählen Sie mindestens zwei Bilder aus."
     IDS_ENFUSE_MISSING      "Das Programm ""Enfuse"" konnte nicht gefunden werden.\nStellen Sie sicher, dass das Programm vorhanden ist und\nwählen Sie dann das Programm aus."
-    IDS_CONSOLE_FINSH       "Klicken Sie auf ""OK"", um das Fenster zu schließen."
+    IDS_CONSOLE_FINISH      "Klicken Sie auf ""OK"", um das Fenster zu schließen."
 END
 
 #endif    // German (Germany) resources
@@ -128,6 +141,61 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_HDR DIALOGEX 0, 0, 300, 175
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Merge exposure bracketing"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT_CONSOLE,7,7,286,140,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | NOT WS_VISIBLE | NOT WS_BORDER | WS_VSCROLL
+    LTEXT           "Program file ""Enfuse.exe"":",IDC_STATIC_ENFUSE,7,7,286,8
+    EDITTEXT        IDC_EDIT_ENFUSE,7,18,210,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Search...",IDC_BUTTON_BROWSE,223,18,70,14
+    CONTROL         "<a href=""https://wiki.panotools.org/Enfuse"">https://wiki.panotools.org/Enfuse</a>",IDC_SYSLINK_ENFUSE,
+                    "SysLink",WS_TABSTOP,7,40,286,14
+    LTEXT           "Output file:",IDC_STATIC_OUTPUT,7,69,286,8
+    EDITTEXT        IDC_EDIT_OUTPUT,7,80,286,14,ES_AUTOHSCROLL
+    LTEXT           "JPEG quality setting:",IDC_STATIC_JPEG_QUALITY,7,104,286,8
+    EDITTEXT        IDC_EDIT_JPEG_QUALITY,7,117,40,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,125,154,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,243,154,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_HDR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 168
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_HDR AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -153,6 +221,24 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "HDR enfuse"
+    IDS_PLUGIN_LONG_DESC    "Function plugin to merge different exposures."
+    IDS_PLUGIN_INFO         "Plugin uses the enfuse tool"
+    IDS_FILE_MASK_DESCRIPTION 
+                            "Enfuse program (enfuse.exe)|enfuse.exe|Executable file (*.exe)|*.exe||"
+    IDS_MIN_SELECTION       "Select at least two pictures."
+    IDS_ENFUSE_MISSING      "The program ""Enfuse"" could not be found.\nMake sure the program exists and then select the program."
+    IDS_CONSOLE_FINISH      "Click ""OK"" to close the window."
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "plugin.h"
 #include "locale.h"
+#include "resource.h"
 
 // Example Plugin cpp_fp4.
 // Resize and invert pictures.
@@ -50,9 +51,9 @@ struct PluginData __stdcall CFunctionPluginSample4::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample4 (resize and invert)";
-	pluginData.desc = L"Sample function plugin 4";
-	pluginData.info = L"Resize and invert the selected pictures";
+	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
+	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
+	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
 }
@@ -62,7 +63,11 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample4::start(HWND hwnd, const vecto
 	// Start event.
 
 	handle_wnd = hwnd;
-	if (::MessageBox(handle_wnd, L"This example function plugin resizes the picture by 50% and invert the colors.\nYou can always revert to the original picture.\nDo you want to continue?", get_plugin_data().desc, MB_YESNO | MB_ICONQUESTION) == IDYES)
+	
+	CString msg;
+	msg.LoadString(IDS_START_CONFIRM);
+
+	if (::MessageBox(handle_wnd, msg, get_plugin_data().desc, MB_YESNO | MB_ICONQUESTION) == IDYES)
 	{
 		// Request a half size picture size data in RGB layout.
 		// A negative value requests a relative size for the picture data.
@@ -155,7 +160,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample4::end(const vector<pi
 	// End event.
 
 	CString msg;
-	msg.Format(L"%d pictures processed.", picture_processed);
+	msg.Format(IDS_END_MSG, picture_processed);
 	::MessageBox(handle_wnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).

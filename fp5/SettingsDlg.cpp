@@ -35,7 +35,10 @@ BOOL CSettingsDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	HeadlineEditCtrl.SetWindowText(L"Sample5 Headline");
+	CString headline;
+	headline.LoadString(IDS_HEADLINE_TEXT);
+
+	HeadlineEditCtrl.SetWindowText(headline);
 
 	return TRUE;
 }

@@ -61,6 +61,7 @@ void ParameterDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(ParameterDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BROWSE, &ParameterDlg::OnBnClickedButtonBrowse)
 	ON_BN_CLICKED(IDOK, &ParameterDlg::OnBnClickedOk)
+	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_ENFUSE, &ParameterDlg::OnClickSyslinkEnfuse)
 END_MESSAGE_MAP()
 
 
@@ -68,9 +69,8 @@ BOOL ParameterDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	console_font.CreateFont(22, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS, 
+	console_font.CreateFont(-12, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS, 
 				  CLIP_CHARACTER_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_SWISS, L"Consolas");
-
 	console.SetFont(&console_font, FALSE);
 
 	return TRUE;
@@ -163,16 +163,13 @@ HANDLE ParameterDlg::SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputRea
 
 void ParameterDlg::Go(LPCTSTR commandLine)
 {
-	console.SetWindowText(NULL);
+	console.RedrawWindow();
+
 	HANDLE hOutput, hProcess;
 	hProcess = SpawnAndRedirect(commandLine, &hOutput, NULL);
 	if (!hProcess) 
 		return;
 
-	//m_Console.SetWindowText(L"Child started ! Receiving output pipe :\r\n");
-	//m_Console.SetSel(MAXLONG, MAXLONG);
-	//m_Console.RedrawWindow();
-	
 	CString out;
 
 	BeginWaitCursor();
@@ -198,7 +195,7 @@ void ParameterDlg::Go(LPCTSTR commandLine)
 		out = L"";
 	}
 
-	out.LoadString(IDS_CONSOLE_FINSH);
+	out.LoadString(IDS_CONSOLE_FINISH);
 
 	const int nSize(console.GetWindowTextLength());
 	console.SetSel(nSize, nSize);
@@ -224,6 +221,7 @@ void ParameterDlg::OnOK()
 		RemoveCtrl(IDC_EDIT_OUTPUT);
 		RemoveCtrl(IDC_STATIC_JPEG_QUALITY);
 		RemoveCtrl(IDC_EDIT_JPEG_QUALITY);
+		RemoveCtrl(IDC_SYSLINK_ENFUSE);
 
 
 		CString cmd;
@@ -266,4 +264,15 @@ bool ParameterDlg::CheckFile(const WCHAR* pFile)
 	}
 
 	return false;
+}
+
+
+void ParameterDlg::OnClickSyslinkEnfuse(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	PNMLINK pNMLink = (PNMLINK)pNMHDR;
+	LITEM   item = pNMLink->item;
+
+	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
+
+	*pResult = 0;
 }

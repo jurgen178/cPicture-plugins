@@ -66,14 +66,14 @@ END
 
 IDD_DIALOG_SAMPLE5 DIALOGEX 0, 0, 201, 112
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Combine pictures"
+CAPTION "Indexdruck von zwei Bildern"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Headline Text:",IDC_STATIC,7,7,187,8
+    LTEXT           "Überschrift:",IDC_STATIC,7,7,187,8
     EDITTEXT        IDC_EDIT_HEADLINE_TEXT,7,20,187,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Border Color",IDC_BUTTON_BORDER_COLOR,7,53,50,14
+    PUSHBUTTON      "Randfarbe",IDC_BUTTON_BORDER_COLOR,7,53,50,14
     DEFPUSHBUTTON   "OK",IDOK,35,91,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,116,91,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,116,91,50,14
 END
 
 
@@ -114,8 +114,12 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_MIN_SELECTION       "Select two pictures for this example plugin."
-    IDS_INDEX_TOO_LARGE     "The selected size for the index print is too large."
+    IDS_PLUGIN_SHORT_DESC   "Beispiel 5 (Indexdruck von zwei Bildern)"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel 5 (Indexdruck von zwei Bildern)"
+    IDS_PLUGIN_INFO         "Indexdruck der beiden ausgewählten Bilder."
+    IDS_MIN_SELECTION       "Wählen Sie für dieses Funktionszusatzmodul zwei Bilder aus."
+    IDS_INDEX_TOO_LARGE     "Die gewählte Größe für den Indexdruck ist zu groß."
+    IDS_HEADLINE_TEXT       "Beispiel-Überschrift"
 END
 
 #endif    // German (Germany) resources
@@ -128,6 +132,54 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_SAMPLE5 DIALOGEX 0, 0, 201, 112
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Index print of two pictures"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Headline Text:",IDC_STATIC,7,7,187,8
+    EDITTEXT        IDC_EDIT_HEADLINE_TEXT,7,20,187,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Border Color",IDC_BUTTON_BORDER_COLOR,7,53,50,14
+    DEFPUSHBUTTON   "OK",IDOK,35,91,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,116,91,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_SAMPLE5, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 105
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SAMPLE5 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -153,6 +205,22 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Sample 5 (index print of two pictures)"
+    IDS_PLUGIN_LONG_DESC    "Sample function plugin 5 (index print of two pictures)"
+    IDS_PLUGIN_INFO         "Index print of the two selected pictures."
+    IDS_MIN_SELECTION       "Select two pictures for this example plugin."
+    IDS_INDEX_TOO_LARGE     "The selected size for the index print is too large."
+    IDS_HEADLINE_TEXT       "Sample Headline"
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

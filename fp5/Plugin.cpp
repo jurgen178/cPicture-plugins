@@ -63,9 +63,9 @@ struct PluginData __stdcall CFunctionPluginSample5::get_plugin_data()
 	struct PluginData pluginData;
 
 	// Set plugin info.
-	pluginData.name = L"Sample5 (index print of two pictures)";
-	pluginData.desc = L"Sample function plugin 5";
-	pluginData.info = L"Index print of the two selected pictures";
+	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
+	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
+	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
 }

@@ -58,6 +58,19 @@ BEGIN
     END
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Beispiel 1 (Dateinamen auflisten)"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul-Beispiel 1 (Dateinamen auflisten)"
+    IDS_PLUGIN_INFO         "Zeigt jedes Ereignis an und listet die ausgewählten Dateinamen auf."
+END
+
 #endif    // German (Germany) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -93,6 +106,19 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Sample 1 (list file names)"
+    IDS_PLUGIN_LONG_DESC    "Sample function plugin 1 (list file names)"
+    IDS_PLUGIN_INFO         "Displays each event and lists the selected file names."
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
