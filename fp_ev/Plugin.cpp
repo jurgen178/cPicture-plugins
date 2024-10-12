@@ -79,7 +79,7 @@ bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& pictu
 	return true;
 }
 
-double log2(double x) 
+double log_2(double x) 
 {
 	return log(x) / log(2.0);
 }
@@ -127,13 +127,13 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 				if (shutterspeedMatch || apertureMatch || isoMatch)
 				{
 					// Diff
-					auto shutterspeedEV([&matchList](double shutterspeedA, double shutterspeedB) { matchList.push_back(IDS_SHUTTERSPEED); return log2(shutterspeedA) - log2(shutterspeedB); });
+					auto shutterspeedEV([&matchList](double shutterspeedA, double shutterspeedB) { matchList.push_back(IDS_SHUTTERSPEED); return log_2(shutterspeedA) - log_2(shutterspeedB); });
 					const double shutterspeedAB(shutterspeedMatch ? shutterspeedEV(shutterspeedA, shutterspeedB) : 0.0);
 
-					auto apertureEV([&matchList](double apertureA, double apertureB) { matchList.push_back(IDS_APERTURE); return 2 * (log2(apertureA) - log2(apertureB)); });
+					auto apertureEV([&matchList](double apertureA, double apertureB) { matchList.push_back(IDS_APERTURE); return 2 * (log_2(apertureA) - log_2(apertureB)); });
 					const double apertureAB(apertureMatch ? apertureEV(apertureA, apertureB) : 0.0);
 
-					auto isoEV([&matchList](double isoA, double isoB) { matchList.push_back(IDS_ISO); return log2(isoB) - log2(isoA); });
+					auto isoEV([&matchList](double isoA, double isoB) { matchList.push_back(IDS_ISO); return log_2(isoB) - log_2(isoA); });
 					const double isoAB(isoMatch ? isoEV(isoA, isoB) : 0.0);
 
 					const double ev(shutterspeedAB + apertureAB + isoAB);
