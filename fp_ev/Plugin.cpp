@@ -141,11 +141,11 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 					// Add list of matched parameter.
 					CString matchParameter(L"(");
 					CString text;
-					for (vector<unsigned int>::const_iterator it = matchList.begin(); it != matchList.end(); ++it)
+					for (vector<unsigned int>::const_iterator it2 = matchList.begin(); it2 != matchList.end(); ++it2)
 					{
-						text.LoadString(*it);
+						text.LoadString(*it2);
 						matchParameter += text;
-						if (it != matchList.end() - 1)
+						if (it2 != matchList.end() - 1)
 						{
 							matchParameter += L", ";
 						}
