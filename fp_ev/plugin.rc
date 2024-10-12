@@ -72,6 +72,9 @@ BEGIN
     IDS_MIN_SELECTION       "W‰hlen Sie mindestens zwei Bilder aus."
     IDS_COPY                "\n(Strg+C um die Werte in die Zwischenablage zu kopieren)"
     IDS_NO_EXIF             "Das Bild '%s' hat keine zus‰tzlichen Bildinformationen, die zur Berechnung der Belichtung notwendig sind."
+    IDS_SHUTTERSPEED        "Verschluﬂzeit"
+    IDS_APERTURE            "Blende"
+    IDS_ISO                 "Iso"
 END
 
 #endif    // German (Germany) resources
@@ -124,6 +127,9 @@ BEGIN
     IDS_MIN_SELECTION       "Select at least two pictures."
     IDS_COPY                "\n(Ctrl+C to copy the values to the clipboard)"
     IDS_NO_EXIF             "The picture '%s' has no additional information necessary to calculate the exposure."
+    IDS_SHUTTERSPEED        "Shutterspeed"
+    IDS_APERTURE            "Aperture"
+    IDS_ISO                 "Iso"
 END
 
 #endif    // English (United States) resources

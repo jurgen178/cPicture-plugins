@@ -99,7 +99,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 		const double apertureA(it->aperture);
 		const double isoA(it->iso);
 
-		if (shutterspeedA < 1.0 || apertureA < 1.0 || isoA < 1.0)
+		if (shutterspeedA < 1.0 && apertureA < 1.0 && isoA < 1.0)
 		{
 			list.Format(IDS_NO_EXIF, nameA);
 		}
@@ -117,21 +117,46 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 				const double apertureB(it->aperture);
 				const double isoB(it->iso);
 
-				// Diff
-				const double shutterspeedAB(log2(shutterspeedA) - log2(shutterspeedB));
-				const double apertureAB(2 * (log2(apertureA) - log2(apertureB)));
-				const double isoAB(log2(isoB) - log2(isoA));
-
-				const double ev(shutterspeedAB + apertureAB + isoAB);
+				const bool shutterspeedMatch(shutterspeedA >= 1.0 && shutterspeedB >= 1.0);
+				const bool apertureMatch(apertureA >= 1.0 && apertureB >= 1.0);
+				const bool isoMatch(isoA >= 1.0 && isoB >= 1.0);
 
 				CString evStr;
-				if (shutterspeedB < 1.0 || apertureB < 1.0 || isoB < 1.0)
+				vector <unsigned int> matchList;
+
+				if (shutterspeedMatch || apertureMatch || isoMatch)
 				{
-					evStr.Format(L"%s - %s = --EV\n", nameA, nameB);
+					// Diff
+					auto shutterspeedEV([&matchList](double shutterspeedA, double shutterspeedB) { matchList.push_back(IDS_SHUTTERSPEED); return log2(shutterspeedA) - log2(shutterspeedB); });
+					const double shutterspeedAB(shutterspeedMatch ? shutterspeedEV(shutterspeedA, shutterspeedB) : 0.0);
+
+					auto apertureEV([&matchList](double apertureA, double apertureB) { matchList.push_back(IDS_APERTURE); return 2 * (log2(apertureA) - log2(apertureB)); });
+					const double apertureAB(apertureMatch ? apertureEV(apertureA, apertureB) : 0.0);
+
+					auto isoEV([&matchList](double isoA, double isoB) { matchList.push_back(IDS_ISO); return log2(isoB) - log2(isoA); });
+					const double isoAB(isoMatch ? isoEV(isoA, isoB) : 0.0);
+
+					const double ev(shutterspeedAB + apertureAB + isoAB);
+
+					// Add list of matched parameter.
+					CString matchParameter(L"(");
+					CString text;
+					for (vector<unsigned int>::const_iterator it = matchList.begin(); it != matchList.end(); ++it)
+					{
+						text.LoadString(*it);
+						matchParameter += text;
+						if (it != matchList.end() - 1)
+						{
+							matchParameter += L", ";
+						}
+					}
+					matchParameter += L")";
+
+					evStr.Format(L"%s - %s = %.2fEV %s\n", nameA, nameB, ev, matchParameter);
 				}
 				else
 				{
-					evStr.Format(L"%s - %s = %.2fEV\n", nameA, nameB, ev);
+					evStr.Format(L"%s - %s = --EV\n", nameA, nameB);
 				}
 
 				list += evStr;
