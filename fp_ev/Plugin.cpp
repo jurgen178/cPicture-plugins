@@ -97,7 +97,7 @@ CString JoinString(typename vector<T>::iterator begin,
 	CString text(startText);
 	for (typename vector<T>::const_iterator it = begin; it != end; ++it)
 	{
-		// Add text.
+		// Use the lambda to convert the template type data to text.
 		text += toString(*it);
 
 		// Skip separator for last element.
