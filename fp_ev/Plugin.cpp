@@ -84,6 +84,33 @@ double log_2(double x)
 	return log(x) / log(2.0);
 }
 
+// Aggregate vector to a string.
+template<class T>
+CString aggregate(typename T::iterator begin,
+	typename T::iterator end,
+	const CString& startText,
+	const CString& endText,
+	const CString& delimiter)
+{
+	CString matchParameter(startText);
+	CString text;
+	for (typename T::const_iterator it = begin; it != end; ++it)
+	{
+		// Add description.
+		text.LoadString(*it);
+		matchParameter += text;
+
+		// Skip delimiter for last element.
+		if (it != end - 1)
+		{
+			matchParameter += delimiter;
+		}
+	}
+	matchParameter += endText;
+
+	return matchParameter;
+}
+
 const vector<update_data>& __stdcall CFunctionPluginEV::end(const vector<picture_data>& picture_data_list)
 {
 	CString list;
@@ -138,19 +165,8 @@ const vector<update_data>& __stdcall CFunctionPluginEV::end(const vector<picture
 
 					const double ev(shutterspeedAB + apertureAB + isoAB);
 
-					// Add list of matched parameter.
-					CString matchParameter(L"(");
-					CString text;
-					for (vector<unsigned int>::const_iterator it2 = matchList.begin(); it2 != matchList.end(); ++it2)
-					{
-						text.LoadString(*it2);
-						matchParameter += text;
-						if (it2 != matchList.end() - 1)
-						{
-							matchParameter += L", ";
-						}
-					}
-					matchParameter += L")";
+					// Add list of matched parameter '(p1, p2, p3)'.
+					const CString matchParameter(aggregate<vector<unsigned int>>(matchList.begin(), matchList.end(), L"(", L")", L", "));
 
 					evStr.Format(L"%s - %s = %.2fEV %s\n", nameA, nameB, ev, matchParameter);
 				}
