@@ -89,7 +89,7 @@ double log_2(double x)
 template<class T>
 CString aggregate(typename T::iterator begin,
 	typename T::iterator end,
-	const std::function<CString(unsigned int)>& toStringFunction,
+	const std::function<CString(unsigned int)>& toString,
 	const CString& startText,
 	const CString& endText,
 	const CString& separator)
@@ -99,7 +99,7 @@ CString aggregate(typename T::iterator begin,
 	for (typename T::const_iterator it2 = begin; it2 != end; ++it2)
 	{
 		// Add text.
-		matchParameter += toStringFunction(*it2);
+		matchParameter += toString(*it2);
 
 		// Skip separator for last element.
 		if (it2 != end - 1)
