@@ -2,6 +2,7 @@
 #include "plugin.h"
 #include "locale.h"
 #include "resource.h"
+#include <functional>
 
 // Example Plugin cpp_fp_ev.
 // Function plugin to calculate the exposure difference.
@@ -88,20 +89,20 @@ double log_2(double x)
 template<class T>
 CString aggregate(typename T::iterator begin,
 	typename T::iterator end,
+	const std::function<CString(unsigned int)>& toStringFunction,
 	const CString& startText,
 	const CString& endText,
 	const CString& delimiter)
 {
 	CString matchParameter(startText);
 	CString text;
-	for (typename T::const_iterator it = begin; it != end; ++it)
+	for (typename T::const_iterator it2 = begin; it2 != end; ++it2)
 	{
-		// Add description.
-		text.LoadString(*it);
-		matchParameter += text;
+		// Add text.
+		matchParameter += toStringFunction(*it2);
 
 		// Skip delimiter for last element.
-		if (it != end - 1)
+		if (it2 != end - 1)
 		{
 			matchParameter += delimiter;
 		}
@@ -165,8 +166,11 @@ const vector<update_data>& __stdcall CFunctionPluginEV::end(const vector<picture
 
 					const double ev(shutterspeedAB + apertureAB + isoAB);
 
-					// Add list of matched parameter '(p1, p2, p3)'.
-					const CString matchParameter(aggregate<vector<unsigned int>>(matchList.begin(), matchList.end(), L"(", L")", L", "));
+					// toString lambda expression
+					auto getText([](unsigned int id) { CString text; text.LoadString(id); return text; });
+					
+					// Add list of matched parameter '(p1, p2, p3)'.		
+					const CString matchParameter(aggregate<vector<unsigned int>>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
 
 					evStr.Format(L"%s - %s = %.2fEV %s\n", nameA, nameB, ev, matchParameter);
 				}
