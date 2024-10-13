@@ -92,7 +92,7 @@ CString aggregate(typename T::iterator begin,
 	const std::function<CString(unsigned int)>& toStringFunction,
 	const CString& startText,
 	const CString& endText,
-	const CString& delimiter)
+	const CString& separator)
 {
 	CString matchParameter(startText);
 	CString text;
@@ -101,10 +101,10 @@ CString aggregate(typename T::iterator begin,
 		// Add text.
 		matchParameter += toStringFunction(*it2);
 
-		// Skip delimiter for last element.
+		// Skip separator for last element.
 		if (it2 != end - 1)
 		{
-			matchParameter += delimiter;
+			matchParameter += separator;
 		}
 	}
 	matchParameter += endText;
