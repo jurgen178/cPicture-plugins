@@ -87,8 +87,8 @@ double log_2(double x)
 
 // Aggregate vector to a string.
 template<class T>
-CString JoinString(typename vector<T>::iterator begin,
-	typename vector<T>::iterator end,
+CString JoinString(typename vector<T>::const_iterator begin,
+	typename vector<T>::const_iterator end,
 	const function<CString(typename T)>& toString,
 	const CString& startText,
 	const CString& endText,
