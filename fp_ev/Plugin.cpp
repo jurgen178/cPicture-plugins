@@ -95,6 +95,7 @@ CString JoinString(typename vector<T>::const_iterator begin,
 	const CString& separator)
 {
 	CString text(startText);
+
 	for (typename vector<T>::const_iterator it = begin; it != end; ++it)
 	{
 		// Use the lambda to convert the template type data to text.
@@ -106,9 +107,8 @@ CString JoinString(typename vector<T>::const_iterator begin,
 			text += separator;
 		}
 	}
-	text += endText;
 
-	return text;
+	return text + endText;
 }
 
 const vector<update_data>& __stdcall CFunctionPluginEV::end(const vector<picture_data>& picture_data_list)
