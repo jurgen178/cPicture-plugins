@@ -3,10 +3,10 @@
 #include "FunctionPlugin.h"
 
 
-class CFunctionPluginSample1 : public CFunctionPlugin
+class CFunctionPluginEV : public CFunctionPlugin
 {
 protected:
-	CFunctionPluginSample1();
+	CFunctionPluginEV();
 
 protected:
 	HWND handle_wnd;
@@ -14,12 +14,12 @@ protected:
 	int pictures;
 
 public:
-	virtual __stdcall ~CFunctionPluginSample1() { };
+	virtual __stdcall ~CFunctionPluginEV() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
 	{
-		return new CFunctionPluginSample1;
+		return new CFunctionPluginEV;
 	};
 
 public:

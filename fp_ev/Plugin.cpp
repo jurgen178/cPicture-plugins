@@ -32,11 +32,11 @@ const int __stdcall GetPluginInit()
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
 	// Plugin-Fabric: return the one function plugin.
-	return CFunctionPluginSample1::GetInstance;
+	return CFunctionPluginEV::GetInstance;
 }
 
 
-CFunctionPluginSample1::CFunctionPluginSample1()
+CFunctionPluginEV::CFunctionPluginEV()
 	: handle_wnd(NULL),
 	picture_processed(0),
 	pictures(0)
@@ -44,7 +44,7 @@ CFunctionPluginSample1::CFunctionPluginSample1()
 	_wsetlocale(LC_ALL, L".ACP");
 }
 
-struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
+struct PluginData __stdcall CFunctionPluginEV::get_plugin_data()
 {
 	struct PluginData pluginData;
 
@@ -56,7 +56,7 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+enum REQUEST_TYPE __stdcall CFunctionPluginEV::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 
@@ -73,7 +73,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vecto
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
-bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& picture_data)
+bool __stdcall CFunctionPluginEV::process_picture(const picture_data& picture_data)
 { 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
@@ -84,7 +84,7 @@ double log_2(double x)
 	return log(x) / log(2.0);
 }
 
-const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<picture_data>& picture_data_list)
+const vector<update_data>& __stdcall CFunctionPluginEV::end(const vector<picture_data>& picture_data_list)
 {
 	CString list;
 	vector<picture_data>::const_iterator it = picture_data_list.begin();
