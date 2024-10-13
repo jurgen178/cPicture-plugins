@@ -89,7 +89,7 @@ double log_2(double x)
 template<class T>
 CString JoinString(typename vector<T>::iterator begin,
 	typename vector<T>::iterator end,
-	const std::function<CString(typename T)>& toString,
+	const function<CString(typename T)>& toString,
 	const CString& startText,
 	const CString& endText,
 	const CString& separator)
