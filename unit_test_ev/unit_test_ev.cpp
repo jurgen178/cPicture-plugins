@@ -27,7 +27,7 @@ namespace unittest
 			// toString lambda expression
 			auto getText([](unsigned int id) { CString text; text.Format(L"%d", id); return text; });
 			
-			const CString matchParameter(aggregate<vector<unsigned int>>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
+			const CString matchParameter(JoinString<vector<unsigned int>>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
 			
 			Assert::AreEqual(L"(1, 2, 3)", matchParameter);
 
