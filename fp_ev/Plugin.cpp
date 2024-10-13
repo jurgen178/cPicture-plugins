@@ -87,21 +87,21 @@ double log_2(double x)
 
 // Aggregate vector to a string.
 template<class T>
-CString JoinString(typename T::iterator begin,
-	typename T::iterator end,
-	const std::function<CString(unsigned int)>& toString,
+CString JoinString(typename vector<T>::iterator begin,
+	typename vector<T>::iterator end,
+	const std::function<CString(typename T)>& toString,
 	const CString& startText,
 	const CString& endText,
 	const CString& separator)
 {
 	CString text(startText);
-	for (typename T::const_iterator it2 = begin; it2 != end; ++it2)
+	for (typename vector<T>::const_iterator it = begin; it != end; ++it)
 	{
 		// Add text.
-		text += toString(*it2);
+		text += toString(*it);
 
 		// Skip separator for last element.
-		if (it2 != end - 1)
+		if (it != end - 1)
 		{
 			text += separator;
 		}
@@ -166,10 +166,10 @@ const vector<update_data>& __stdcall CFunctionPluginEV::end(const vector<picture
 					const double ev(shutterspeedAB + apertureAB + isoAB);
 
 					// toString lambda expression
-					auto getText([](unsigned int id) { CString text; text.LoadString(id); return text; });
-					
+					auto getText([](auto id) { CString text; text.LoadString(id); return text; });
+
 					// Add list of matched parameter '(p1, p2, p3)'.		
-					const CString matchParameter(JoinString<vector<unsigned int>>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
+					const CString matchParameter(JoinString<unsigned int>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
 
 					evStr.Format(L"%s - %s = %.2fEV %s\n", nameA, nameB, ev, matchParameter);
 				}

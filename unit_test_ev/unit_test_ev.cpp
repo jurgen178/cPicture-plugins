@@ -19,15 +19,12 @@ namespace unittest
 #pragma warning (push)
 #pragma warning(disable : 4996)
 
-			vector <unsigned int> matchList;
-			matchList.push_back(1);
-			matchList.push_back(2);
-			matchList.push_back(3);
+			vector <unsigned int> matchList = { 1, 2, 3 };
 
 			// toString lambda expression
-			auto getText([](unsigned int id) { CString text; text.Format(L"%d", id); return text; });
-			
-			const CString matchParameter(JoinString<vector<unsigned int>>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
+			auto getText([](auto id) { CString text; text.Format(L"%d", id); return text; });
+
+			const CString matchParameter(JoinString<unsigned int>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
 			
 			Assert::AreEqual(L"(1, 2, 3)", matchParameter);
 
