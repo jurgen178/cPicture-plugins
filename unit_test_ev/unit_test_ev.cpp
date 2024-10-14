@@ -14,7 +14,7 @@ namespace unittest
 	{
 	public:
 
-		TEST_METHOD(TestMatchParameterLambda)
+		TEST_METHOD(TestIntDataLambda)
 		{
 #pragma warning (push)
 #pragma warning(disable : 4996)
@@ -29,6 +29,13 @@ namespace unittest
 
 			Assert::AreEqual(L"(1, 2, 3)", matchParameter);
 
+#pragma warning (pop)
+		}
+
+		TEST_METHOD(TestStringDataLambda)
+		{
+#pragma warning (push)
+#pragma warning(disable : 4996)
 
 			// CString data
 			vector <CString> strList = { L"a", L"b", L"c" };
