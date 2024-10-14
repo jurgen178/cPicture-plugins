@@ -16,9 +16,6 @@ namespace unittest
 
 		TEST_METHOD(TestIntDataLambda)
 		{
-#pragma warning (push)
-#pragma warning(disable : 4996)
-
 			// int data
 			vector <unsigned int> matchList = { 1, 2, 3 };
 
@@ -28,23 +25,16 @@ namespace unittest
 			const CString matchParameter(JoinString<unsigned int>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
 
 			Assert::AreEqual(L"(1, 2, 3)", matchParameter);
-
-#pragma warning (pop)
 		}
 
 		TEST_METHOD(TestStringDataLambda)
 		{
-#pragma warning (push)
-#pragma warning(disable : 4996)
-
 			// CString data
 			vector <CString> strList = { L"a", L"b", L"c" };
 
 			const CString combinedText(JoinString<CString>(strList.begin(), strList.end(), [](auto text) { return text; }, L"[", L"]", L"+"));
 
 			Assert::AreEqual(L"[a+b+c]", combinedText);
-
-#pragma warning (pop)
 		}
 	};
 }
