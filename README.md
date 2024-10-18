@@ -144,5 +144,6 @@ cpp_ps1_script: 0x210000000
 cpp_bat_script: 0x211000000  
 cpp_fp_hdr:		0x212000000  
 cpp_fp_ev:		0x213000000  
+cpp_ascii_art:0x214000000  
 
 
