@@ -68,7 +68,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vecto
 	vector<picture_data> picture_data_list;
 	CAsciiArtDlg AsciiDlg(picture_data_list, &parent);
 	
-	AsciiDlg.Create(IDD_DIALOG_SAMPLE2, &parent);
+	AsciiDlg.Create(IDD_DIALOG_ASCII_ART, &parent);
 	parent.Detach();
 
 	// Request one picture data set for the dialog preview size.

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Plugin.h"
+#include "FontSelectComboBox.h"
 #include "resource.h"
 
 
@@ -13,10 +14,12 @@ public:
 	virtual ~CAsciiArtDlg();
 
 // Dialog Data
-	enum { IDD = IDD_DIALOG_SAMPLE2 };
+	enum { IDD = IDD_DIALOG_ASCII_ART
+	};
 
 public:
 	CRect preview_position_rect;
+	CFontSelectComboBox	m_myCombo1;
 
 protected:
 	CStatic	preview_position;

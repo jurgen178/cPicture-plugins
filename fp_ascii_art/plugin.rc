@@ -64,14 +64,15 @@ END
 // Dialog
 //
 
-IDD_DIALOG_SAMPLE2 DIALOGEX 0, 0, 200, 198
+IDD_DIALOG_ASCII_ART DIALOGEX 0, 0, 200, 212
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,186,120
-    DEFPUSHBUTTON   "OK",IDOK,143,177,50,14
+    DEFPUSHBUTTON   "OK",IDOK,143,191,50,14
     EDITTEXT        IDC_EDIT1,7,140,40,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Schriftart",IDC_BUTTON_FONT,7,164,50,14
+    PUSHBUTTON      "Schriftart",IDC_BUTTON_FONT,7,191,50,14
+    COMBOBOX        IDC_FONT_SELECT_COMBO,7,164,166,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -83,12 +84,12 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
-    IDD_DIALOG_SAMPLE2, DIALOG
+    IDD_DIALOG_ASCII_ART, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 193
         TOPMARGIN, 7
-        BOTTOMMARGIN, 191
+        BOTTOMMARGIN, 205
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -99,7 +100,7 @@ END
 // AFX_DIALOG_LAYOUT
 //
 
-IDD_DIALOG_SAMPLE2 AFX_DIALOG_LAYOUT
+IDD_DIALOG_ASCII_ART AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -128,44 +129,6 @@ END
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_DIALOG_SAMPLE2 DIALOGEX 0, 0, 200, 198
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,186,120
-    LTEXT           "",IDC_INFO,7,131,186,27
-    LTEXT           "",IDC_INFO2,7,165,186,9
-    PUSHBUTTON      "<",IDC_BUTTON_PREV,7,177,14,14
-    PUSHBUTTON      ">",IDC_BUTTON_NEXT,34,177,14,14
-    LTEXT           "",IDC_COUNTER,60,179,46,12
-    DEFPUSHBUTTON   "OK",IDOK,143,177,50,14
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_DIALOG_SAMPLE2, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 193
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 191
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -190,17 +153,6 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_DIALOG_SAMPLE2 AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
 
 
 /////////////////////////////////////////////////////////////////////////////

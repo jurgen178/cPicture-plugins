@@ -139,7 +139,7 @@
       </DataExecutionPrevention>
       <ImportLibrary>
       </ImportLibrary>
-      <BaseAddress>0x202000000</BaseAddress>
+      <BaseAddress>0x214000000</BaseAddress>
       <OutputFile>C:\Projects\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
@@ -213,11 +213,12 @@
       </DataExecutionPrevention>
       <ImportLibrary>
       </ImportLibrary>
-      <BaseAddress>0x202000000</BaseAddress>
+      <BaseAddress>0x214000000</BaseAddress>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FontSelectComboBox.cpp" />
     <ClCompile Include="Plugin.cpp" />
     <ClCompile Include="AsciiArtDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -231,6 +232,7 @@
     <None Include="plugin.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FontSelectComboBox.h" />
     <ClInclude Include="FunctionPlugin.h" />
     <ClInclude Include="Plugin.h" />
     <ClInclude Include="resource.h" />

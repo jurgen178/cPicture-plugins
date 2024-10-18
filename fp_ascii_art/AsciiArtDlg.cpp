@@ -50,6 +50,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PREVIEW, preview_position);
+	DDX_Control(pDX, IDC_FONT_SELECT_COMBO, m_myCombo1);
 }
 
 
@@ -76,6 +77,8 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	//	str.Format(IDS_N_ITEMS_IN_LIST, picture_data_list.size());
 	
 	SetWindowText(str);
+
+	m_myCombo1.Init();
 
 	return TRUE;
 }
@@ -137,7 +140,7 @@ void CAsciiArtDlg::OnBnClickedButtonFont()
 
 	CFontDialog dlg(&lfFont, CF_SCREENFONTS | CF_FIXEDPITCHONLY);
 	dlg.m_cf.Flags &= ~CF_EFFECTS;
-	dlg.m_cf.Flags |= CF_NOSCRIPTSEL;
+	dlg.m_cf.Flags |= CF_NOSCRIPTSEL | CF_NOSIZESEL | CF_NOSTYLESEL;
 
 	//dlg.m_cf.lpLogFont = &lfTitle;
 
