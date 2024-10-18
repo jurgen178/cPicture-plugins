@@ -57,17 +57,9 @@ void CFontSelectComboBox::Init(CWnd* pParent)
 	SetCurSel(0);
 }
 
-void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
+BOOL CFontSelectComboBox::GetFont(CFont& font, const CString& fontName, const int fontHeight)
 {
-	if (lpDIS->itemID == -1)
-		return;
-
-	CString fontName;
-	GetLBText(lpDIS->itemID, fontName);
-
-	CFont cfont;
-	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (cfont.CreateFont(
+	return font.CreateFont(
 		fontHeight,                // Height
 		0,                         // Width
 		0,                         // Escapement
@@ -82,7 +74,20 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 		DEFAULT_QUALITY,           // Quality
 		FIXED_PITCH,	           // PitchAndFamily
 		fontName)                  // Facename
-		)
+		;
+}
+
+void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
+{
+	if (lpDIS->itemID == -1)
+		return;
+
+	CString fontName;
+	GetLBText(lpDIS->itemID, fontName);
+
+	CFont cfont;
+	const int fontHeight(8 * ctrlHeight / 10);	// 80%
+	if (GetFont(cfont, fontName, fontHeight))
 	{
 		CDC dc;
 		dc.Attach(lpDIS->hDC);
@@ -127,22 +132,7 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (cfont.CreateFont(
-		fontHeight,                // Height
-		0,                         // Width
-		0,                         // Escapement
-		0,                         // Orientation
-		FW_NORMAL,                 // Weight
-		FALSE,                     // Italic
-		FALSE,                     // Underline
-		0,                         // StrikeOut
-		DEFAULT_CHARSET,           // CharSet
-		OUT_DEFAULT_PRECIS,        // OutPrecision
-		CLIP_DEFAULT_PRECIS,       // ClipPrecision
-		DEFAULT_QUALITY,           // Quality
-		FIXED_PITCH,	           // PitchAndFamily
-		fontName)                  // Facename
-		)
+	if (GetFont(cfont, fontName, fontHeight))
 	{
 		LOGFONT lf;
 		cfont.GetLogFont(&lf);
@@ -172,22 +162,7 @@ void CFontSelectComboBox::OnCbnSelchange()
 
 		CFont cfont;
 		const int fontHeight(8 * ctrlHeight / 10);	// 80%
-		if (cfont.CreateFont(
-			fontHeight,                // Height
-			0,                         // Width
-			0,                         // Escapement
-			0,                         // Orientation
-			FW_NORMAL,                 // Weight
-			FALSE,                     // Italic
-			FALSE,                     // Underline
-			0,                         // StrikeOut
-			DEFAULT_CHARSET,           // CharSet
-			OUT_DEFAULT_PRECIS,        // OutPrecision
-			CLIP_DEFAULT_PRECIS,       // ClipPrecision
-			DEFAULT_QUALITY,           // Quality
-			FIXED_PITCH,	           // PitchAndFamily
-			fontName)                  // Facename
-			)
+		if (GetFont(cfont, fontName, fontHeight))
 		{
 			CPaintDC dc(this); // device context for painting
 
