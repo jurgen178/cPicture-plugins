@@ -67,7 +67,22 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (cfont.CreateFont(fontHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH, fontName))
+	if (cfont.CreateFont(
+		fontHeight,                // Height
+		0,                         // Width
+		0,                         // Escapement
+		0,                         // Orientation
+		FW_NORMAL,                 // Weight
+		FALSE,                     // Italic
+		FALSE,                     // Underline
+		0,                         // StrikeOut
+		DEFAULT_CHARSET,           // CharSet
+		OUT_DEFAULT_PRECIS,        // OutPrecision
+		CLIP_DEFAULT_PRECIS,       // ClipPrecision
+		DEFAULT_QUALITY,           // Quality
+		FIXED_PITCH,	           // PitchAndFamily
+		fontName)                  // Facename
+		)
 	{
 		CDC dc;
 		dc.Attach(lpDIS->hDC);
@@ -98,7 +113,7 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 		const int iPosY((rc.Height() - dc.GetTextExtent(fontName).cy) / 2);
 		dc.TextOut(rc.left, rc.top + iPosY, fontName);
-		
+
 		dc.SelectObject(hf);
 		dc.RestoreDC(indexDC);
 		dc.Detach();
@@ -112,7 +127,22 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (cfont.CreateFont(fontHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH, fontName))
+	if (cfont.CreateFont(
+		fontHeight,                // Height
+		0,                         // Width
+		0,                         // Escapement
+		0,                         // Orientation
+		FW_NORMAL,                 // Weight
+		FALSE,                     // Italic
+		FALSE,                     // Underline
+		0,                         // StrikeOut
+		DEFAULT_CHARSET,           // CharSet
+		OUT_DEFAULT_PRECIS,        // OutPrecision
+		CLIP_DEFAULT_PRECIS,       // ClipPrecision
+		DEFAULT_QUALITY,           // Quality
+		FIXED_PITCH,	           // PitchAndFamily
+		fontName)                  // Facename
+		)
 	{
 		LOGFONT lf;
 		cfont.GetLogFont(&lf);
@@ -134,11 +164,97 @@ void CFontSelectComboBox::OnDropdown()
 
 void CFontSelectComboBox::OnCbnSelchange()
 {
-	int selIndex = GetCurSel();
+	const int selIndex(GetCurSel());
 	if (selIndex != CB_ERR)
 	{
-		CString selectedText;
-		GetLBText(selIndex, selectedText);
-		AfxMessageBox(_T("Selected: ") + selectedText);
+		CString fontName;
+		GetLBText(selIndex, fontName);
+
+		CFont cfont;
+		const int fontHeight(8 * ctrlHeight / 10);	// 80%
+		if (cfont.CreateFont(
+			fontHeight,                // Height
+			0,                         // Width
+			0,                         // Escapement
+			0,                         // Orientation
+			FW_NORMAL,                 // Weight
+			FALSE,                     // Italic
+			FALSE,                     // Underline
+			0,                         // StrikeOut
+			DEFAULT_CHARSET,           // CharSet
+			OUT_DEFAULT_PRECIS,        // OutPrecision
+			CLIP_DEFAULT_PRECIS,       // ClipPrecision
+			DEFAULT_QUALITY,           // Quality
+			FIXED_PITCH,	           // PitchAndFamily
+			fontName)                  // Facename
+			)
+		{
+			CPaintDC dc(this); // device context for painting
+
+			// Create a memory DC and a bitmap
+			CDC memDC;
+			memDC.CreateCompatibleDC(&dc);
+
+			// Select the font into the memory DC
+			CFont* pOldFont = memDC.SelectObject(&cfont);
+
+			// Character to rasterize
+			WCHAR ch = L'A';
+
+			// Measure the character size
+			CSize size = memDC.GetTextExtent(&ch, 1);
+
+			WCHAR letters[] = L"abcdefghijklmnopqrstuvwxyz";
+			for (wchar_t wc : letters)
+			{
+				CSize size1 = memDC.GetTextExtent(&wc, 1);
+				size1.cx++;
+			}
+
+			// Create a monochrome bitmap with the character size
+			CBitmap bitmap;
+			bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
+			CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+
+			// Fill the background with white
+			memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
+
+			// Set text color and background mode
+			memDC.SetTextColor(RGB(0, 0, 0));
+			memDC.SetBkMode(OPAQUE);
+			memDC.SetBkColor(RGB(255, 255, 255));
+
+			// Draw the character
+			memDC.TextOut(0, 0, &ch, 1);
+
+			CString text;
+
+			// Extract the bitmap data
+			BITMAP bm;
+			bitmap.GetBitmap(&bm);
+			int width = bm.bmWidth;
+			int height = bm.bmHeight;
+			int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
+			BYTE* pBits = new BYTE[sizeBytes];
+			bitmap.GetBitmapBits(sizeBytes, pBits);
+
+			// Output the bitmap data as 0s and 1s
+			for (int y = 0; y < height; ++y)
+			{
+				for (int x = 0; x < width; ++x)
+				{
+					int byteIndex = y * bm.bmWidthBytes + x / 8;
+					int bitIndex = 7 - (x % 8);
+					bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
+					text += bit ? L'1' : L'0';
+				}
+				text += L'\n';
+			}
+
+			// Clean up
+			delete[] pBits;
+			memDC.SelectObject(pOldBitmap);
+			memDC.SelectObject(pOldFont);
+		}
 	}
 }
