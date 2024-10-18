@@ -79,9 +79,13 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	
 	SetWindowText(str);
 
-	fontSelectComboBox.Init(pParentWnd);
+	fontSelectComboBox.Init(pParentWnd, &CAsciiArtDlg::Update, this);
 
 	return TRUE;
+}
+
+void CAsciiArtDlg::Update(const CString fontName)
+{
 }
 
 void CAsciiArtDlg::OnPaint()

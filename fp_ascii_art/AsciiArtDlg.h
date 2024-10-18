@@ -30,6 +30,7 @@ protected:
 
 protected:
 	void update_button_state();
+	void Update(const CString fontName);
 
 protected:
 	virtual BOOL OnInitDialog();

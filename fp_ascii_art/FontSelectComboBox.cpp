@@ -33,8 +33,11 @@ BEGIN_MESSAGE_MAP(CFontSelectComboBox, CComboBox)
 	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnCbnSelchange)
 END_MESSAGE_MAP()
 
-void CFontSelectComboBox::Init(CWnd* pParent)
+void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* obj)
 {
+	callback = ptr;
+	callbackObj = obj;
+
 	pParentWnd = pParent;
 
 	// Get height of a large text line to be used for the font dropdown using the menu height property.
@@ -159,6 +162,8 @@ void CFontSelectComboBox::OnCbnSelchange()
 	{
 		CString fontName;
 		GetLBText(selIndex, fontName);
+
+		(callbackObj->*callback)(fontName);
 
 		CFont cfont;
 		const int fontHeight(8 * ctrlHeight / 10);	// 80%

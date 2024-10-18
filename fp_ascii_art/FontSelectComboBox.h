@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 
+class CAsciiArtDlg;
+
 class CFontSelectComboBox : public CComboBox
 {
 public:
@@ -13,8 +15,12 @@ public:
 	int maxFontNameWidth;
 	CWnd* pParentWnd;
 
+	typedef void (CAsciiArtDlg::* CallbackFunc)(const CString fontName);
+	CallbackFunc callback;
+	CAsciiArtDlg* callbackObj;
+
 public:
-	void Init(CWnd* pParent);
+	void Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* obj);
 	BOOL CreateFont(CFont& font, const CString& fontName, const int fontHeight);
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
