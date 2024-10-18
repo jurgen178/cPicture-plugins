@@ -19,7 +19,8 @@ public:
 
 public:
 	CRect preview_position_rect;
-	CFontSelectComboBox	m_myCombo1;
+	CFontSelectComboBox	fontSelectComboBox;
+	CWnd* pParentWnd;
 
 protected:
 	CStatic	preview_position;

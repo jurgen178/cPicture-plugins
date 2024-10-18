@@ -35,17 +35,17 @@ const int __stdcall GetPluginInit()
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
 	// Plugin-Fabric: return the one function plugin.
-	return CFunctionPluginSample2::GetInstance;
+	return CFunctionPluginAsciiArt::GetInstance;
 }
 
 
-CFunctionPluginSample2::CFunctionPluginSample2()
+CFunctionPluginAsciiArt::CFunctionPluginAsciiArt()
   : handle_wnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
 
-struct PluginData __stdcall CFunctionPluginSample2::get_plugin_data()
+struct PluginData __stdcall CFunctionPluginAsciiArt::get_plugin_data()
 {
 	struct PluginData pluginData;
 
@@ -57,7 +57,7 @@ struct PluginData __stdcall CFunctionPluginSample2::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 
@@ -85,13 +85,13 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vecto
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
-bool __stdcall CFunctionPluginSample2::process_picture(const picture_data& picture_data) 
+bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& picture_data) 
 { 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-const vector<update_data>& __stdcall CFunctionPluginSample2::end(const vector<picture_data>& picture_data_list)
+const vector<update_data>& __stdcall CFunctionPluginAsciiArt::end(const vector<picture_data>& picture_data_list)
 { 
 	CWnd parent;
 	parent.Attach(handle_wnd);

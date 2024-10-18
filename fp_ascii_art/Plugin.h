@@ -3,13 +3,13 @@
 #include "FunctionPlugin.h"
 
 
-class CFunctionPluginSample2 : public CFunctionPlugin
+class CFunctionPluginAsciiArt : public CFunctionPlugin
 {
 protected:
-	CFunctionPluginSample2();
+	CFunctionPluginAsciiArt();
 
 public:
-	virtual __stdcall ~CFunctionPluginSample2() { };
+	virtual __stdcall ~CFunctionPluginAsciiArt() { };
 
 protected:
 	HWND handle_wnd;
@@ -18,7 +18,7 @@ protected:
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
 	{
-		return new CFunctionPluginSample2;
+		return new CFunctionPluginAsciiArt;
 	};
 
 public:

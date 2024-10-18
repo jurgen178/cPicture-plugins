@@ -33,7 +33,8 @@ unsigned int GetFileSize(const WCHAR* pFile)
 CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
   : CDialog(CAsciiArtDlg::IDD, pParent),
 	picture_data_list(picture_data_list),
-	index(0)
+	index(0),
+	pParentWnd(pParent)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -50,7 +51,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PREVIEW, preview_position);
-	DDX_Control(pDX, IDC_FONT_SELECT_COMBO, m_myCombo1);
+	DDX_Control(pDX, IDC_FONT_SELECT_COMBO, fontSelectComboBox);
 }
 
 
@@ -78,7 +79,7 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	
 	SetWindowText(str);
 
-	m_myCombo1.Init();
+	fontSelectComboBox.Init(pParentWnd);
 
 	return TRUE;
 }
