@@ -15,7 +15,7 @@ public:
 
 public:
 	void Init(CWnd* pParent);
-	BOOL GetFont(CFont& font, const CString& fontName, const int fontHeight);
+	BOOL CreateFont(CFont& font, const CString& fontName, const int fontHeight);
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 

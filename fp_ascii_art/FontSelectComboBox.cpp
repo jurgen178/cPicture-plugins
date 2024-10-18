@@ -57,7 +57,7 @@ void CFontSelectComboBox::Init(CWnd* pParent)
 	SetCurSel(0);
 }
 
-BOOL CFontSelectComboBox::GetFont(CFont& font, const CString& fontName, const int fontHeight)
+BOOL CFontSelectComboBox::CreateFont(CFont& font, const CString& fontName, const int fontHeight)
 {
 	return font.CreateFont(
 		fontHeight,                // Height
@@ -87,7 +87,7 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (GetFont(cfont, fontName, fontHeight))
+	if (CreateFont(cfont, fontName, fontHeight))
 	{
 		CDC dc;
 		dc.Attach(lpDIS->hDC);
@@ -132,7 +132,7 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (GetFont(cfont, fontName, fontHeight))
+	if (CreateFont(cfont, fontName, fontHeight))
 	{
 		LOGFONT lf;
 		cfont.GetLogFont(&lf);
@@ -162,21 +162,21 @@ void CFontSelectComboBox::OnCbnSelchange()
 
 		CFont cfont;
 		const int fontHeight(8 * ctrlHeight / 10);	// 80%
-		if (GetFont(cfont, fontName, fontHeight))
+		if (CreateFont(cfont, fontName, fontHeight))
 		{
 			CPaintDC dc(this); // device context for painting
 
-			// Create a memory DC and a bitmap
+			// Create a memory DC and a bitmap.
 			CDC memDC;
 			memDC.CreateCompatibleDC(&dc);
 
-			// Select the font into the memory DC
+			// Select the font into the memory DC.
 			CFont* pOldFont = memDC.SelectObject(&cfont);
 
-			// Character to rasterize
+			// Character to rasterize.
 			WCHAR ch = L'A';
 
-			// Measure the character size
+			// Measure the character size.
 			CSize size = memDC.GetTextExtent(&ch, 1);
 
 			WCHAR letters[] = L"abcdefghijklmnopqrstuvwxyz";
@@ -186,25 +186,25 @@ void CFontSelectComboBox::OnCbnSelchange()
 				size1.cx++;
 			}
 
-			// Create a monochrome bitmap with the character size
+			// Create a monochrome bitmap with the character size.
 			CBitmap bitmap;
 			bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
 			CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
 
-			// Fill the background with white
+			// Fill the background with white.
 			memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
 
-			// Set text color and background mode
+			// Set text color and background mode.
 			memDC.SetTextColor(RGB(0, 0, 0));
 			memDC.SetBkMode(OPAQUE);
 			memDC.SetBkColor(RGB(255, 255, 255));
 
-			// Draw the character
+			// Draw the character.
 			memDC.TextOut(0, 0, &ch, 1);
 
 			CString text;
 
-			// Extract the bitmap data
+			// Extract the bitmap data.
 			BITMAP bm;
 			bitmap.GetBitmap(&bm);
 			int width = bm.bmWidth;
@@ -213,7 +213,7 @@ void CFontSelectComboBox::OnCbnSelchange()
 			BYTE* pBits = new BYTE[sizeBytes];
 			bitmap.GetBitmapBits(sizeBytes, pBits);
 
-			// Output the bitmap data as 0s and 1s
+			// Output the bitmap data as 0s and 1s.
 			for (int y = 0; y < height; ++y)
 			{
 				for (int x = 0; x < width; ++x)
@@ -226,7 +226,7 @@ void CFontSelectComboBox::OnCbnSelchange()
 				text += L'\n';
 			}
 
-			// Clean up
+			// Clean up.
 			delete[] pBits;
 			memDC.SelectObject(pOldBitmap);
 			memDC.SelectObject(pOldFont);
