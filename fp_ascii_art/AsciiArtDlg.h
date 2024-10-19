@@ -29,7 +29,6 @@ protected:
 	int index;
 
 protected:
-	void update_button_state();
 	void Update(const CString fontName);
 
 protected:
@@ -38,5 +37,4 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();
-	afx_msg void OnBnClickedButtonFont();
 };

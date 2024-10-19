@@ -75,18 +75,37 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 	// A negative value requests a relative size for the picture data.
 	// For example, -100 requests data for the original 100% picture size.
 	// To get picture data for the half size, use
-	// request_data_sizes.push_back(request_data_size(-50, -50));
+	// request_data_sizes.push_back(request_data_size(-50, -50, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
 	request_data_sizes.push_back(
 		request_data_size(AsciiDlg.preview_position_rect.Width(),
 			AsciiDlg.preview_position_rect.Height(),
 			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY)
 	);
+	request_data_sizes.push_back(request_data_size(-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
 bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& picture_data) 
 { 
+	// Get the second requested data set (unresized picture resized, 100%).
+	requested_data requested_data2 = picture_data.requested_data_list.back();
+
+	BYTE* data = requested_data2.data;
+
+	// Modify the picture data.
+	for (register unsigned int y = requested_data2.picture_height; y != 0; y--)
+	{
+		for (register unsigned int x = requested_data2.picture_width; x != 0; x--)
+		{
+			// Make a grey scale picture.
+			const BYTE grey((306 * *(data) + 601 * *(data+1) + 117 * *(data + 2)) >> 10);
+			*data++ = grey;	// red
+			*data++ = grey;	// green
+			*data++ = grey;	// blue
+		}
+	}
+
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }

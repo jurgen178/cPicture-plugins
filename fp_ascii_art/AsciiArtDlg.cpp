@@ -59,14 +59,12 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAsciiArtDlg, CDialog)
 	ON_WM_PAINT()
-	ON_BN_CLICKED(IDC_BUTTON_FONT, OnBnClickedButtonFont)
 END_MESSAGE_MAP()
 
 
 BOOL CAsciiArtDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	update_button_state();
 
 	preview_position.GetClientRect(&preview_position_rect);
 	preview_position.MapWindowPoints(this, &preview_position_rect);
@@ -114,9 +112,9 @@ void CAsciiArtDlg::Update(const CString fontName)
 			CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
 
 			// Set text color and background mode.
-			memDC.SetTextColor(RGB(0, 0, 0));
+			memDC.SetTextColor(RGB(255, 255, 255));
 			memDC.SetBkMode(OPAQUE);
-			memDC.SetBkColor(RGB(255, 255, 255));
+			memDC.SetBkColor(RGB(0, 0, 0));
 
 			// Extract the bitmap data.
 			BITMAP bm;
@@ -128,13 +126,13 @@ void CAsciiArtDlg::Update(const CString fontName)
 			BYTE* pBits = new BYTE[sizeBytes];
 
 			// Fill the background with white.
-			memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
+			memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(0, 0, 0));
 
 			// Create a map to store all the densities.
 			std::map<double, WCHAR> densities;
 
 			// Get the char densities.
-			WCHAR letters[] = L"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+			WCHAR letters[] = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 			for (wchar_t wc : letters)
 			{
 				if (wc == 0)
@@ -150,15 +148,16 @@ void CAsciiArtDlg::Update(const CString fontName)
 #endif
 
 				int ones = 0;
+				int yOffset = 0;
 
 				// Output the bitmap data as 0s and 1s.
 				for (int y = 0; y < height; ++y)
 				{
 					for (int x = 0; x < width; ++x)
 					{
-						const int byteIndex = y * bm.bmWidthBytes + x / 8;
+						const int byteIndex = yOffset + x / 8;
 						const int bitIndex = 7 - (x % 8);
-						const bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
+						const bool bit = (pBits[byteIndex] & (1 << bitIndex)) != 0;
 
 						if (bit)
 							ones++;
@@ -167,6 +166,10 @@ void CAsciiArtDlg::Update(const CString fontName)
 						text += bit ? L'1' : L'0';
 #endif
 					}
+
+					// Next line.
+					yOffset += bm.bmWidthBytes;
+
 #ifdef DEBUG
 					text += L'\n';
 #endif
@@ -185,6 +188,50 @@ void CAsciiArtDlg::Update(const CString fontName)
 		}
 
 		memDC.SelectObject(pOldFont);
+
+
+		// Segment the grey scale picture and assign matching letters from the density map.
+
+		vector<picture_data>::const_iterator it = picture_data_list.begin();
+
+		vector<requested_data> requested_data_list = it->requested_data_list;
+		// Get the second requested data set (unresized picture resized, 100%).
+		requested_data requested_data2 = requested_data_list.back();
+
+		BYTE* data = requested_data2.data;
+
+		// Read the grey scale picture data.
+		for (register unsigned int y = requested_data2.picture_height; y != 0; y--)
+		{
+			for (register unsigned int x = requested_data2.picture_width; x != 0; x--)
+			{
+				// Make a grey scale picture.
+				const BYTE grey((306 * *(data)+601 * *(data + 1) + 117 * *(data + 2)) >> 10);
+				*data++ = grey;	// red
+				*data++ = grey;	// green
+				*data++ = grey;	// blue
+			}
+		}
+
+		//for (register unsigned int y = 20; y < requested_data1.picture_height / 2; y++)
+//{
+//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; x++)
+//	{
+//		const int index(3 * (y * requested_data1.picture_width + x));
+
+//		const BYTE red(data[index]);
+//		const BYTE green(data[index + 1]);
+//		const BYTE blue(data[index + 2]);
+
+//		// Swap colors.
+//		data[index] = blue;			// red
+//		data[index + 1] = red;		// green
+//		data[index + 2] = green;	// blue
+//	}
+//}
+
+
+
 	}
 }
 
@@ -237,25 +284,4 @@ void CAsciiArtDlg::OnPaint()
 
 		DrawDibClose(hdd);
 	}
-}
-
-void CAsciiArtDlg::OnBnClickedButtonFont()
-{
-	LOGFONT lfFont = { 0 };
-
-	CFontDialog dlg(&lfFont, CF_SCREENFONTS | CF_FIXEDPITCHONLY);
-	dlg.m_cf.Flags &= ~CF_EFFECTS;
-	dlg.m_cf.Flags |= CF_NOSCRIPTSEL | CF_NOSIZESEL | CF_NOSTYLESEL;
-
-	//dlg.m_cf.lpLogFont = &lfTitle;
-
-	if (dlg.DoModal() == IDOK)
-	{
-		LOGFONT lf;
-		dlg.GetCurrentFont(&lf);
-	}
-}
-
-void CAsciiArtDlg::update_button_state()
-{
 }
