@@ -6,6 +6,7 @@
 #include "vfw.h"
 #include <sys/stat.h>
 #include <map>
+#include "locale.h"
 
 extern BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight);
 
@@ -183,9 +184,16 @@ void CAsciiArtDlg::Update(const CString fontName)
 			densities[(double)ones / area] = wc;
 		}
 
-		//for (const auto& pair : densities) {
-		//	std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
-		//}
+
+#ifdef DEBUG
+		_wsetlocale(LC_ALL, L"en-US");
+		CString density_map_text;
+		CString f;
+		for (const auto& pair : densities) {
+			f.Format(L"densities[%f] = L'%c';\n", pair.first, pair.second);
+			density_map_text += f;
+		}
+#endif
 
 		// Clean up.
 		delete[] pBits;
@@ -206,7 +214,16 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		for (int i = 0; i < 256; ++i)
 		{
-			densities_index[i] = 
+			const double d(i / largestDensity / 255);
+
+			// Find best matching density.
+			for (const auto& pair : densities) {
+				if (pair.first >= d)
+				{
+					densities_index[i] = pair.second;
+					break;
+				}
+			}
 		}
 
 		vector<picture_data>::const_iterator it = picture_data_list.begin();
