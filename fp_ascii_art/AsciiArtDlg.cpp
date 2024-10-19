@@ -39,6 +39,7 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	: CDialog(CAsciiArtDlg::IDD, pParent),
 	picture_data_list(picture_data_list),
 	index(0),
+	blocksize(72),
 	pParentWnd(pParent)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
@@ -59,6 +60,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_FONT_SELECT_COMBO, fontSelectComboBox);
 	DDX_Control(pDX, IDC_EDIT_ASCII, ascii_display);
 	DDX_Control(pDX, IDC_SLIDER_FONTSIZE, fontSizeSliderCtrl);
+	DDX_Control(pDX, IDC_SLIDER_BLOCKSIZE, blockSizeSliderCtrl);
 }
 
 
@@ -66,6 +68,7 @@ BEGIN_MESSAGE_MAP(CAsciiArtDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_HSCROLL()
 	ON_MESSAGE(WM_POST_INITDIALOG, &CAsciiArtDlg::OnPostInitDialog)
+	ON_BN_CLICKED(IDC_BUTTON_COPY, &CAsciiArtDlg::OnClickedButtonCopy)
 END_MESSAGE_MAP()
 
 
@@ -127,7 +130,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 	UpdateDisplayFont(fontName, pos);
 
 	CFont cfont;
-	const int fontHeight(72);
+	const int fontHeight(blocksize);
 	if (CreateSelectedFont(cfont, fontName, fontHeight))
 	{
 		CPaintDC dc(this); // device context for painting
@@ -318,6 +321,12 @@ void CAsciiArtDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		const int pos = fontSizeSliderCtrl.GetPos();
 		UpdateDisplayFont(fontSelectComboBox.GetSelectedFont(), pos);
 	}
+	else
+	if (pScrollBar->GetSafeHwnd() == blockSizeSliderCtrl.GetSafeHwnd())
+	{
+		blocksize = blockSizeSliderCtrl.GetPos();
+		Update(fontSelectComboBox.GetSelectedFont());
+	}
 
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -371,4 +380,44 @@ void CAsciiArtDlg::OnPaint()
 
 		DrawDibClose(hdd);
 	}
+}
+
+void CAsciiArtDlg::TextToClipboard(CString text)
+{
+	const int text_lenW = text.GetLength();
+
+	// Allocate a global memory object for the text. 
+	HGLOBAL hglbCopyW = GlobalAlloc(GMEM_MOVEABLE, (text_lenW + 1) * sizeof(WCHAR));
+	if (hglbCopyW == NULL)
+	{
+		return;
+	}
+
+	// Lock the handle and copy the text to the buffer. 
+	LPWSTR lpwstrCopyW = (WCHAR*)GlobalLock(hglbCopyW);
+	memcpy(lpwstrCopyW, text, text_lenW * sizeof(WCHAR));
+	lpwstrCopyW[text_lenW] = (WCHAR)0;    // null character 
+	GlobalUnlock(hglbCopyW);
+
+	if (::OpenClipboard(NULL))
+	{
+		// Place the handle on the clipboard. 
+		::SetClipboardData(CF_UNICODETEXT, hglbCopyW);
+
+		// Close the clipboard. 
+		::CloseClipboard();
+	}
+	else
+	{
+		::GlobalFree(hglbCopyW);
+	}
+}
+
+void CAsciiArtDlg::OnClickedButtonCopy()
+{
+	CString text;
+	ascii_display.GetWindowText(text);
+	TextToClipboard(text);
+
+	AfxMessageBox(IDS_CLIPBOARD_COPY_TEXT, MB_ICONINFORMATION);
 }

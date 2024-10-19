@@ -23,24 +23,28 @@ public:
 	CWnd* pParentWnd;
 
 protected:
+	int index;
 	CStatic	preview_position;
 	CEdit ascii_display;
 	CFont ascii_display_font;
 	const vector<picture_data>& picture_data_list;
 	BITMAPINFOHEADER bmiHeader;
-	int index;
 	CSliderCtrl fontSizeSliderCtrl;
+	int blocksize;
+	CSliderCtrl blockSizeSliderCtrl;
 
 protected:
 	void Update(const CString fontName);
 	void UpdateDisplayFont(const CString fontName, const int fontsize);
+	void TextToClipboard(CString text);
 
 protected:
 	virtual BOOL OnInitDialog();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+	afx_msg LRESULT OnPostInitDialog(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-	afx_msg LRESULT OnPostInitDialog(WPARAM wParam, LPARAM lParam);
+	afx_msg void OnClickedButtonCopy();
 };

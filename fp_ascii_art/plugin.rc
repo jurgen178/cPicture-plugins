@@ -74,6 +74,9 @@ BEGIN
     COMBOBOX        IDC_FONT_SELECT_COMBO,7,164,166,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,313,137,100,12
     RTEXT           "Schriftgröße:",IDC_STATIC,216,139,89,8
+    LTEXT           "Schriftart:",IDC_STATIC,7,153,165,8
+    PUSHBUTTON      "Kopieren",IDC_BUTTON_COPY,242,169,50,14
+    CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,313,156,100,12
 END
 
 
@@ -118,6 +121,7 @@ BEGIN
     IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul Ascii Art"
     IDS_PLUGIN_INFO         "Beispieldialogfeld zum Erstellen von Ascii-Art."
     IDS_CHAR_SIZE_ERROR     "IDS_CHAR_SIZE_ERROR"
+    IDS_CLIPBOARD_COPY_TEXT "Das ASCII-Bild wurde als Text in die Zwischenablage übertragen.\nSie können dann den Text in einem anderen Programm mit dem Befehl ""Einfügen"" übernehmen."
 END
 
 #endif    // German (Germany) resources

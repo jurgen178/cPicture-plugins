@@ -7,6 +7,7 @@
 #define IDS_PLUGIN_LONG_DESC            101
 #define IDS_PLUGIN_INFO                 102
 #define IDS_CHAR_SIZE_ERROR             103
+#define IDS_CLIPBOARD_COPY_TEXT         104
 #define IDS_EMPTY_LIST                  105
 #define IDS_N_ITEMS_IN_LIST             106
 #define IDS_PICTURE_SIZE                107
@@ -16,8 +17,10 @@
 #define IDC_EDIT_ASCII                  1007
 #define IDC_BUTTON_FONT                 1009
 #define IDC_FONT_SELECT_COMBO           1010
-#define IDC_SLIDER1                     1012
 #define IDC_SLIDER_FONTSIZE             1012
+#define IDC_BUTTON_COPY                 1013
+#define IDC_SLIDER_FONTSIZE2            1014
+#define IDC_SLIDER_BLOCKSIZE            1014
 
 // Next default values for new objects
 // 
@@ -25,7 +28,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1013
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

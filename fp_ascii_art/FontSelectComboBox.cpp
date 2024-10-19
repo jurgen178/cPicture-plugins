@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CFontSelectComboBox, CComboBox)
 	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnCbnSelchange)
 END_MESSAGE_MAP()
 
+
 void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* obj)
 {
 	callback = ptr;
@@ -58,7 +59,12 @@ void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* ob
 	EnumFonts(dc, 0, (FONTENUMPROC)EnumFontProc, (LPARAM)this); //Enumerate font
 
 	SetItemHeight(-1, ctrlHeight);
-	SetCurSel(0);
+
+	// Use 'Consolas' as the default font selection.
+	const int index(FindStringExact(-1, L"Consolas"));
+	if (index != CB_ERR) {
+		SetCurSel(index);
+	}
 }
 
 BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight)
