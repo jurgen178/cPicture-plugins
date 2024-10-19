@@ -150,6 +150,20 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	}
 }
 
+CString CFontSelectComboBox::GetSelectedFont()
+{
+	const int selIndex(GetCurSel());
+	if (selIndex != CB_ERR)
+	{
+		CString fontName;
+		GetLBText(selIndex, fontName);
+
+		return fontName;
+	}
+
+	return L"";
+}
+
 void CFontSelectComboBox::OnDropdown()
 {
 	const int width(::GetSystemMetrics(SM_CXVSCROLL) + maxFontNameWidth);

@@ -7,6 +7,8 @@
 #include <sys/stat.h>
 #include <map>
 #include "locale.h"
+#include <commctrl.h>
+
 
 extern BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight);
 
@@ -56,11 +58,14 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PREVIEW, preview_position);
 	DDX_Control(pDX, IDC_FONT_SELECT_COMBO, fontSelectComboBox);
 	DDX_Control(pDX, IDC_EDIT_ASCII, ascii_display);
+	DDX_Control(pDX, IDC_SLIDER_FONTSIZE, fontSizeSliderCtrl);
 }
 
 
 BEGIN_MESSAGE_MAP(CAsciiArtDlg, CDialog)
 	ON_WM_PAINT()
+	ON_WM_HSCROLL()
+	ON_MESSAGE(WM_POST_INITDIALOG, &CAsciiArtDlg::OnPostInitDialog)
 END_MESSAGE_MAP()
 
 
@@ -71,9 +76,12 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	preview_position.GetClientRect(&preview_position_rect);
 	preview_position.MapWindowPoints(this, &preview_position_rect);
 
-	ascii_display_font.CreateFont(6, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
-		CLIP_CHARACTER_PRECIS, PROOF_QUALITY, FIXED_PITCH, L"Consolas");
-	ascii_display.SetFont(&ascii_display_font, FALSE);
+	//ascii_display_font.CreateFont(6, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
+	//	CLIP_CHARACTER_PRECIS, PROOF_QUALITY, FIXED_PITCH, L"Consolas");
+	//ascii_display.SetFont(&ascii_display_font, FALSE);
+
+	fontSizeSliderCtrl.SetRange(2, 72);  // Set the range.
+	fontSizeSliderCtrl.SetPos(12);       // Set initial position
 
 	const size_t size(picture_data_list.size());
 	CString str;
@@ -87,11 +95,37 @@ BOOL CAsciiArtDlg::OnInitDialog()
 
 	fontSelectComboBox.Init(pParentWnd, &CAsciiArtDlg::Update, this);
 
+	// Post the custom message to be handled after OnInitDialog.
+	PostMessage(WM_POST_INITDIALOG);
+
 	return TRUE;
+}
+
+LRESULT CAsciiArtDlg::OnPostInitDialog(WPARAM wParam, LPARAM lParam)
+{
+	Update(fontSelectComboBox.GetSelectedFont());
+
+	return 0;
+}
+
+void CAsciiArtDlg::UpdateDisplayFont(const CString fontName, const int fontsize)
+{
+	// Delete the old font if it exists.
+	if (ascii_display_font.m_hObject)
+		ascii_display_font.DeleteObject();
+
+	ascii_display_font.CreateFont(fontsize, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
+		CLIP_CHARACTER_PRECIS, PROOF_QUALITY, FIXED_PITCH, fontName);
+
+	ascii_display.SetFont(&ascii_display_font, FALSE);
+	ascii_display.Invalidate();
 }
 
 void CAsciiArtDlg::Update(const CString fontName)
 {
+	const int pos = fontSizeSliderCtrl.GetPos();
+	UpdateDisplayFont(fontName, pos);
+
 	CFont cfont;
 	const int fontHeight(72);
 	if (CreateSelectedFont(cfont, fontName, fontHeight))
@@ -225,7 +259,9 @@ void CAsciiArtDlg::Update(const CString fontName)
 			for (const auto& pair : densities) {
 				if (pair.first >= d)
 				{
-					densities_index[i] = pair.second;
+					// Invert (255-i)
+					// white is 255 with the least density and black 0 with the max density.
+					densities_index[255 - i] = pair.second;
 					break;
 				}
 			}
@@ -272,8 +308,18 @@ void CAsciiArtDlg::Update(const CString fontName)
 		}
 
 		ascii_display.SetWindowText(ascii_art);
-		//ascii_display.SetWindowText(L"This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.\r\nThis is line two.\r\nThis is line three.");
 	}
+}
+
+void CAsciiArtDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	if (pScrollBar->GetSafeHwnd() == fontSizeSliderCtrl.GetSafeHwnd())
+	{
+		const int pos = fontSizeSliderCtrl.GetPos();
+		UpdateDisplayFont(fontSelectComboBox.GetSelectedFont(), pos);
+	}
+
+	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CAsciiArtDlg::OnPaint()

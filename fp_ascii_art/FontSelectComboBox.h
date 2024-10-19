@@ -24,7 +24,7 @@ public:
 
 public:
 	void Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* obj);
-	BOOL CreateFont(CFont& font, const CString& fontName, const int fontHeight);
+	CString GetSelectedFont();
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
 	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 
