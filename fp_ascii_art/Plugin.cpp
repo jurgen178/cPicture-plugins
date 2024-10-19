@@ -5,7 +5,7 @@
 
 // Ascii Art Plugin cpp_ascii_art.
 // 
-// This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
+// This plugin uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,
 // DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY for Windows dialog usage
 // and the update_data type.
@@ -60,6 +60,16 @@ struct PluginData __stdcall CFunctionPluginAsciiArt::get_plugin_data()
 enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
+
+	// Requires one picture.
+	if (file_list.size() != 1)
+	{
+		CString msg;
+		msg.Format(IDS_STRING_SINGLE_FILE_ONLY);
+		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+
+		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
+	}
 
 	// Get preview rect sizes.
 	CWnd parent;

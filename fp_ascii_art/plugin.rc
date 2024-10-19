@@ -122,9 +122,11 @@ BEGIN
     IDS_PLUGIN_SHORT_DESC   "Ascii Art"
     IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul Ascii Art"
     IDS_PLUGIN_INFO         "Beispieldialogfeld zum Erstellen von Ascii-Art."
-    IDS_CHAR_SIZE_ERROR     "IDS_CHAR_SIZE_ERROR"
+    IDS_CHAR_SIZE_ERROR     "Blockgröße konnte nicht berechnet werden."
     IDS_CLIPBOARD_COPY_TEXT "Das ASCII-Bild wurde als Text in die Zwischenablage übertragen.\nSie können dann den Text in einem anderen Programm mit dem Befehl ""Einfügen"" übernehmen."
-    IDS_STRING_INFO         "Ausgabe: %dx%d Zeichen\r\nBlockgröße=%d\r\n%d verwendete Zeichen: %s"
+    IDS_STRING_INFO         "Ausgabe: %dx%d Zeichen\r\nBlockgröße=%dx%d\r\n%d verwendete Zeichen: %s"
+    IDS_STRING_SINGLE_FILE_ONLY 
+                            "Wählen Sie für dieses Funktionszusatzmodul nur ein Bild aus."
 END
 
 #endif    // German (Germany) resources

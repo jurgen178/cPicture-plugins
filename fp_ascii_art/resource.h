@@ -11,6 +11,7 @@
 #define IDS_EMPTY_LIST                  105
 #define IDS_STRING_INFO                 105
 #define IDS_N_ITEMS_IN_LIST             106
+#define IDS_STRING_SINGLE_FILE_ONLY     106
 #define IDS_PICTURE_SIZE                107
 #define IDD_DIALOG_ASCII_ART            1000
 #define IDC_PREVIEW                     1001

@@ -12,26 +12,6 @@
 
 extern BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight);
 
-unsigned int GetFileSize(const WCHAR* pFile)
-{
-	unsigned int file_size = 0;
-
-	FILE* infile = NULL;
-	const errno_t err(_wfopen_s(&infile, pFile, L"rb"));
-
-	if (err == 0)
-	{
-		struct _stat fbuf;
-		_fstat(_fileno(infile), &fbuf);
-
-		file_size = fbuf.st_size;
-
-		fclose(infile);
-	}
-
-	return file_size;
-}
-
 
 // CAsciiArtDlg dialog
 
@@ -335,7 +315,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 		static_text_info.Format(IDS_STRING_INFO,
 			requested_data2.picture_width / rect_w,
 			requested_data2.picture_height / rect_h,
-			blocksize,
+			size.cx, size.cy,
 			densities.size(),
 			usedChars);
 		UpdateData(false); // write the data
@@ -377,11 +357,6 @@ void CAsciiArtDlg::OnPaint()
 		//CString str;
 		//str.Format(L"%d/%d", index+1, size);
 		//counter.SetWindowText(str);
-
-		//// Set Description text.
-		//const unsigned int fsize = ::GetFileSize(it->file_name);
-		//str.Format(IDS_PICTURE_SIZE, it->picture_width, it->picture_height, fsize >> 10);
-		//info2.SetWindowText(str);
 
 		// Draw the selected picture.
 		bmiHeader.biWidth = requested_data1.picture_width;
