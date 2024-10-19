@@ -55,6 +55,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PREVIEW, preview_position);
 	DDX_Control(pDX, IDC_FONT_SELECT_COMBO, fontSelectComboBox);
+	DDX_Control(pDX, IDC_EDIT_ASCII, ascii_display);
 }
 
 
@@ -69,6 +70,10 @@ BOOL CAsciiArtDlg::OnInitDialog()
 
 	preview_position.GetClientRect(&preview_position_rect);
 	preview_position.MapWindowPoints(this, &preview_position_rect);
+
+	ascii_display_font.CreateFont(6, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
+		CLIP_CHARACTER_PRECIS, PROOF_QUALITY, FIXED_PITCH, L"Consolas");
+	ascii_display.SetFont(&ascii_display_font, FALSE);
 
 	const size_t size(picture_data_list.size());
 	CString str;
@@ -202,9 +207,9 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		// Segment the grey scale picture and assign matching letters from the density map.
 		// Each Segment is a rect.
-		const unsigned int rect_w(size.cx);
-		const unsigned int rect_h(size.cy);
-		const unsigned int rect_area(rect_w * rect_h);
+		const int rect_w(size.cx);
+		const int rect_h(size.cy);
+		const int rect_area(rect_w * rect_h);
 
 		// Array to map the normalized grey values 0..255 to the matching char.
 		WCHAR densities_index[256] = { 0 };
@@ -245,9 +250,9 @@ void CAsciiArtDlg::Update(const CString fontName)
 				__int64 grey_sum = 0;
 
 				// Read the rect segment at (rect_x, rect_y).
-				for (register unsigned int y = 0; y < rect_h; y++)
+				for (register int y = 0; y < rect_h; y++)
 				{
-					for (register unsigned int x = 0; x < rect_w; x++)
+					for (register int x = 0; x < rect_w; x++)
 					{
 						const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
 						const BYTE grey(data[index]);
@@ -263,8 +268,11 @@ void CAsciiArtDlg::Update(const CString fontName)
 				ascii_art += w;
 			}
 
-			ascii_art += L'\n';
+			ascii_art += L"\r\n";
 		}
+
+		ascii_display.SetWindowText(ascii_art);
+		//ascii_display.SetWindowText(L"This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.This is line one.\r\nThis is line two.\r\nThis is line three.");
 	}
 }
 

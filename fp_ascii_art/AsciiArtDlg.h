@@ -24,6 +24,8 @@ public:
 
 protected:
 	CStatic	preview_position;
+	CEdit ascii_display;
+	CFont ascii_display_font;
 	const vector<picture_data>& picture_data_list;
 	BITMAPINFOHEADER bmiHeader;
 	int index;

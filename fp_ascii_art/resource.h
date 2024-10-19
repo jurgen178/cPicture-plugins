@@ -13,6 +13,7 @@
 #define IDD_DIALOG_ASCII_ART            1000
 #define IDC_PREVIEW                     1001
 #define IDC_EDIT1                       1007
+#define IDC_EDIT_ASCII                  1007
 #define IDC_BUTTON_FONT                 1009
 #define IDC_FONT_SELECT_COMBO           1010
 
