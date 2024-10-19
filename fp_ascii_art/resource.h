@@ -10,20 +10,16 @@
 #define IDS_CLIPBOARD_COPY_TEXT         104
 #define IDS_EMPTY_LIST                  105
 #define IDS_STRING_INFO                 105
-#define IDS_N_ITEMS_IN_LIST             106
 #define IDS_STRING_SINGLE_FILE_ONLY     106
-#define IDS_PICTURE_SIZE                107
 #define IDD_DIALOG_ASCII_ART            1000
 #define IDC_PREVIEW                     1001
-#define IDC_EDIT_ASCII                  1007
-#define IDC_BUTTON_FONT                 1009
-#define IDC_FONT_SELECT_COMBO           1010
-#define IDC_SLIDER_FONTSIZE             1012
-#define IDC_BUTTON_COPY                 1013
-#define IDC_SLIDER_BLOCKSIZE            1014
-#define IDC_STATIC_TEXT_FONTSIZE        1015
-#define IDC_STATIC_TEXT_BLOCKSIZE       1016
-#define IDC_STATIC_INFO                 1017
+#define IDC_EDIT_ASCII                  1002
+#define IDC_FONT_SELECT_COMBO           1003
+#define IDC_SLIDER_FONTSIZE             1004
+#define IDC_BUTTON_COPY                 1005
+#define IDC_SLIDER_BLOCKSIZE            1006
+#define IDC_STATIC_TEXT_FONTSIZE        1007
+#define IDC_STATIC_INFO                 1008
 
 // Next default values for new objects
 // 

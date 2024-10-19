@@ -176,9 +176,6 @@ BEGIN
     IDS_PLUGIN_SHORT_DESC   "Ascii Art"
     IDS_PLUGIN_LONG_DESC    "Function plugin Ascii Art"
     IDS_PLUGIN_INFO         "Function plugin to create Ascii Art."
-    IDS_EMPTY_LIST          "No selected pictures"
-    IDS_N_ITEMS_IN_LIST     "%d selected pictures"
-    IDS_PICTURE_SIZE        "%dx%d, %dKB"
 END
 
 #endif    // English (United States) resources

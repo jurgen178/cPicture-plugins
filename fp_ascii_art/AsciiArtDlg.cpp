@@ -12,6 +12,8 @@
 
 extern BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight);
 
+#define WM_POST_INITDIALOG (WM_USER + 1)
+
 
 // CAsciiArtDlg dialog
 
@@ -61,10 +63,6 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	preview_position.GetClientRect(&preview_position_rect);
 	preview_position.MapWindowPoints(this, &preview_position_rect);
 
-	//ascii_display_font.CreateFont(6, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
-	//	CLIP_CHARACTER_PRECIS, PROOF_QUALITY, FIXED_PITCH, L"Consolas");
-	//ascii_display.SetFont(&ascii_display_font, FALSE);
-
 	fontSizeSliderCtrl.SetRange(1, 40);  // Set the range.
 	fontSizeSliderCtrl.SetPos(12);       // Set initial position.
 
@@ -79,12 +77,7 @@ BOOL CAsciiArtDlg::OnInitDialog()
 
 	const size_t size(picture_data_list.size());
 	CString str;
-
-	//if(size == 0)
-	//	str.LoadString(IDS_EMPTY_LIST);
-	//else
-	//	str.Format(IDS_N_ITEMS_IN_LIST, picture_data_list.size());
-
+	str.LoadString(IDS_PLUGIN_LONG_DESC);
 	SetWindowText(str);
 
 	fontSelectComboBox.Init(pParentWnd, &CAsciiArtDlg::Update, this);
@@ -136,7 +129,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 		// Select the font into the memory DC.
 		CFont* pOldFont = memDC.SelectObject(&cfont);
 
-		// Character to rasterize.
+		// Character to rasterize. Fixed pitch fonts have the same size for all chars.
 		WCHAR ch = L'A';
 
 		// Measure the character size.
@@ -351,12 +344,6 @@ void CAsciiArtDlg::OnPaint()
 		vector<requested_data> requested_data_list = it->requested_data_list;
 		// Get the data for the requested dialog preview picture size.
 		requested_data requested_data1 = requested_data_list.front();
-
-		//info.SetWindowText(it->file_name);
-
-		//CString str;
-		//str.Format(L"%d/%d", index+1, size);
-		//counter.SetWindowText(str);
 
 		// Draw the selected picture.
 		bmiHeader.biWidth = requested_data1.picture_width;

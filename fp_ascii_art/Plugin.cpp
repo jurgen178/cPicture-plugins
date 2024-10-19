@@ -61,7 +61,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 {
 	handle_wnd = hwnd;
 
-	// Requires one picture.
+	// Allow only one picture.
 	if (file_list.size() != 1)
 	{
 		CString msg;
@@ -132,4 +132,3 @@ const vector<update_data>& __stdcall CFunctionPluginAsciiArt::end(const vector<p
 
 	return update_data_list;
 }
-
