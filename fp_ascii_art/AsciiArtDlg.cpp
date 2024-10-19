@@ -191,46 +191,73 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 
 		// Segment the grey scale picture and assign matching letters from the density map.
-
-		vector<picture_data>::const_iterator it = picture_data_list.begin();
-
-		vector<requested_data> requested_data_list = it->requested_data_list;
-		// Get the second requested data set (unresized picture resized, 100%).
-		requested_data requested_data2 = requested_data_list.back();
-
-		BYTE* data = requested_data2.data;
-
-		// Read the grey scale picture data.
-		for (register unsigned int y = requested_data2.picture_height; y != 0; y--)
+		if (size.cx > 0 && size.cy > 0)
 		{
-			for (register unsigned int x = requested_data2.picture_width; x != 0; x--)
+			// Each Segment is a rect.
+			const unsigned int rect_w(size.cx);
+			const unsigned int rect_h(size.cy);
+			const unsigned int rect_area(rect_w * rect_h);
+
+			vector<picture_data>::const_iterator it = picture_data_list.begin();
+
+			vector<requested_data> requested_data_list = it->requested_data_list;
+			// Get the second requested data set (unresized picture resized, 100%).
+			requested_data requested_data2 = requested_data_list.back();
+
+			BYTE* data = requested_data2.data;
+
+			// Enumerate all rect segments.
+			for (register int rect_x = 0; rect_x < requested_data2.picture_width; rect_x += rect_w)
 			{
-				// Make a grey scale picture.
-				const BYTE grey((306 * *(data)+601 * *(data + 1) + 117 * *(data + 2)) >> 10);
-				*data++ = grey;	// red
-				*data++ = grey;	// green
-				*data++ = grey;	// blue
+				for (register int rect_y = 0; rect_y < requested_data2.picture_height; rect_y += rect_h)
+				{
+					__int64 grey_sum = 0;
+
+					// Read the rect segment at rect_x, rect_y.
+					for (register unsigned int x = 0; x < rect_w; x++)
+					{
+						for (register unsigned int y = 0; y < rect_h; y++)
+						{
+							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+							const BYTE grey(data[index]);
+							grey_sum += grey;
+						}
+					}
+
+				}
 			}
+
+			// Read the grey scale picture data.
+			for (register unsigned int y = requested_data2.picture_height; y != 0; y--)
+			{
+				for (register unsigned int x = requested_data2.picture_width; x != 0; x--)
+				{
+					// Make a grey scale picture.
+					const BYTE grey((306 * *(data)+601 * *(data + 1) + 117 * *(data + 2)) >> 10);
+					*data++ = grey;	// red
+					*data++ = grey;	// green
+					*data++ = grey;	// blue
+				}
+			}
+
+			//for (register unsigned int y = 20; y < requested_data1.picture_height / 2; y++)
+	//{
+	//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; x++)
+	//	{
+	//		const int index(3 * (y * requested_data1.picture_width + x));
+
+	//		const BYTE red(data[index]);
+	//		const BYTE green(data[index + 1]);
+	//		const BYTE blue(data[index + 2]);
+
+	//		// Swap colors.
+	//		data[index] = blue;			// red
+	//		data[index + 1] = red;		// green
+	//		data[index + 2] = green;	// blue
+	//	}
+	//}
+
 		}
-
-		//for (register unsigned int y = 20; y < requested_data1.picture_height / 2; y++)
-//{
-//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; x++)
-//	{
-//		const int index(3 * (y * requested_data1.picture_width + x));
-
-//		const BYTE red(data[index]);
-//		const BYTE green(data[index + 1]);
-//		const BYTE blue(data[index + 2]);
-
-//		// Swap colors.
-//		data[index] = blue;			// red
-//		data[index + 1] = red;		// green
-//		data[index + 2] = green;	// blue
-//	}
-//}
-
-
 
 	}
 }
