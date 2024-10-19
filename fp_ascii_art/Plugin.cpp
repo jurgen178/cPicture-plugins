@@ -88,7 +88,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 
 bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& picture_data) 
 { 
-	// Get the second requested data set (unresized picture resized, 100%).
+	// Get the second requested data set (unresized picture, 100%).
 	requested_data requested_data2 = picture_data.requested_data_list.back();
 
 	BYTE* data = requested_data2.data;
@@ -99,7 +99,7 @@ bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& pict
 		for (register unsigned int x = requested_data2.picture_width; x != 0; x--)
 		{
 			// Make a grey scale picture.
-			const BYTE grey((306 * *(data) + 601 * *(data+1) + 117 * *(data + 2)) >> 10);
+			const BYTE grey((306 * *(data) + 601 * *(data + 1) + 117 * *(data + 2)) >> 10);
 			*data++ = grey;	// red
 			*data++ = grey;	// green
 			*data++ = grey;	// blue

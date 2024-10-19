@@ -107,7 +107,7 @@ namespace unittest
 			densities[0.279948] = L'@';
 
 			// Create a map to map the normalized grey values 0..255 to the matching char.
-			std::map<int, WCHAR> densities_index;
+			WCHAR densities_index[256] = { 0 };
 
 			// Largest density.
 			const double largestDensity(densities.rbegin()->first);

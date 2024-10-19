@@ -206,8 +206,8 @@ void CAsciiArtDlg::Update(const CString fontName)
 		const unsigned int rect_h(size.cy);
 		const unsigned int rect_area(rect_w * rect_h);
 
-		// Create a map to map the normalized grey values 0..255 to the matching char.
-		std::map<int, WCHAR> densities_index;
+		// Array to map the normalized grey values 0..255 to the matching char.
+		WCHAR densities_index[256] = { 0 };
 
 		// Largest density.
 		const double largestDensity(densities.rbegin()->first);
@@ -234,17 +234,20 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		BYTE* data = requested_data2.data;
 
+		// Convert the segments to chars.
+		CString ascii_art;
+
 		// Enumerate all rect segments.
-		for (register int rect_x = 0; rect_x < requested_data2.picture_width; rect_x += rect_w)
+		for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
 		{
-			for (register int rect_y = 0; rect_y < requested_data2.picture_height; rect_y += rect_h)
+			for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
 			{
 				__int64 grey_sum = 0;
 
 				// Read the rect segment at (rect_x, rect_y).
-				for (register unsigned int x = 0; x < rect_w; x++)
+				for (register unsigned int y = 0; y < rect_h; y++)
 				{
-					for (register unsigned int y = 0; y < rect_h; y++)
+					for (register unsigned int x = 0; x < rect_w; x++)
 					{
 						const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
 						const BYTE grey(data[index]);
@@ -253,8 +256,14 @@ void CAsciiArtDlg::Update(const CString fontName)
 				}
 
 				// average grey value mapped to 0..255
-				const int density_index((int)(255 * grey_sum / rect_area));
+				const int density_index((int)(grey_sum / rect_area));
+
+				// Add density matching char.
+				const WCHAR w(densities_index[density_index]);
+				ascii_art += w;
 			}
+
+			ascii_art += L'\n';
 		}
 	}
 }
