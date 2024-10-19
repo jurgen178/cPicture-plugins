@@ -63,6 +63,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_BLOCKSIZE, blockSizeSliderCtrl);
 	DDX_Text(pDX, IDC_STATIC_TEXT_FONTSIZE, static_text_fontsize);
 	DDX_Text(pDX, IDC_STATIC_TEXT_BLOCKSIZE, static_text_blocksize);
+	DDX_Text(pDX, IDC_STATIC_DENSITY, static_text_density);
 }
 
 
@@ -134,7 +135,7 @@ void CAsciiArtDlg::UpdateDisplayFont(const CString fontName, const int fontsize)
 
 void CAsciiArtDlg::Update(const CString fontName)
 {
-	const int pos = fontSizeSliderCtrl.GetPos();
+	const int pos(fontSizeSliderCtrl.GetPos());
 	UpdateDisplayFont(fontName, pos);
 
 	static_text_blocksize.Format(L"%d", blocksize);
@@ -247,6 +248,10 @@ void CAsciiArtDlg::Update(const CString fontName)
 			density_map_test_case += f;
 		}
 #endif
+
+		static_text_density.Format(L"%d", densities.size());
+		UpdateData(false); // write the data
+
 
 		// Clean up.
 		delete[] pBits;

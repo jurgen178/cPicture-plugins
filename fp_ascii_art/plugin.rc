@@ -80,6 +80,8 @@ BEGIN
     LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,374,139,18,8
     LTEXT           "Static",IDC_STATIC_TEXT_BLOCKSIZE,374,157,18,8
     RTEXT           "Blockgröße:",IDC_STATIC,195,159,64,8
+    LTEXT           "Density:",IDC_STATIC,73,139,26,8
+    LTEXT           "Static",IDC_STATIC_DENSITY,102,140,18,8
 END
 
 

@@ -34,6 +34,7 @@ protected:
 	int blocksize;
 	CSliderCtrl blockSizeSliderCtrl;
 	CString static_text_blocksize;
+	CString static_text_density;
 
 protected:
 	void Update(const CString fontName);
