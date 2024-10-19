@@ -71,14 +71,14 @@ BEGIN
     CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,192,137
     DEFPUSHBUTTON   "OK",IDOK,423,259,50,14
     EDITTEXT        IDC_EDIT_ASCII,215,7,258,241,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
-    COMBOBOX        IDC_FONT_SELECT_COMBO,7,189,166,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONT_SELECT_COMBO,7,175,166,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,213,259,100,12
-    LTEXT           "Schriftart:",IDC_STATIC,7,178,165,8
+    LTEXT           "Schriftart:",IDC_STATIC,7,164,165,8
     PUSHBUTTON      "Kopieren",IDC_BUTTON_COPY,359,259,50,14
-    CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,59,216,100,12
+    CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,59,202,100,12
     LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,318,261,18,8
-    LTEXT           "Blockgröße:",IDC_STATIC,7,218,50,8
-    LTEXT           "Static",IDC_STATIC_INFO,7,238,173,35
+    LTEXT           "Blockgröße:",IDC_STATIC,7,204,50,8
+    LTEXT           "Static",IDC_STATIC_INFO,7,220,194,53
 END
 
 
@@ -124,6 +124,7 @@ BEGIN
     IDS_PLUGIN_INFO         "Beispieldialogfeld zum Erstellen von Ascii-Art."
     IDS_CHAR_SIZE_ERROR     "IDS_CHAR_SIZE_ERROR"
     IDS_CLIPBOARD_COPY_TEXT "Das ASCII-Bild wurde als Text in die Zwischenablage übertragen.\nSie können dann den Text in einem anderen Programm mit dem Befehl ""Einfügen"" übernehmen."
+    IDS_STRING_INFO         "Ausgabe: %dx%d Zeichen\r\nBlockgröße=%d\r\n%d verwendete Zeichen: %s"
 END
 
 #endif    // German (Germany) resources

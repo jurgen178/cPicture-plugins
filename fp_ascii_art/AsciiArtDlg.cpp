@@ -86,10 +86,16 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	//ascii_display.SetFont(&ascii_display_font, FALSE);
 
 	fontSizeSliderCtrl.SetRange(1, 40);  // Set the range.
-	fontSizeSliderCtrl.SetPos(12);       // Set initial position
+	fontSizeSliderCtrl.SetPos(12);       // Set initial position.
 
 	blockSizeSliderCtrl.SetRange(4, 200);	// Set the range.
-	blockSizeSliderCtrl.SetPos(blocksize);	// Set initial position
+	blockSizeSliderCtrl.SetPos(blocksize);	// Set initial position.
+
+	// Set text wrap for static control.
+	CStatic* pStaticText = (CStatic*)GetDlgItem(IDC_STATIC_INFO);
+	LONG_PTR styles = ::GetWindowLongPtr(pStaticText->GetSafeHwnd(), GWL_STYLE);
+	styles |= SS_EDITCONTROL;
+	::SetWindowLongPtr(pStaticText->GetSafeHwnd(), GWL_STYLE, styles);
 
 	const size_t size(picture_data_list.size());
 	CString str;
@@ -321,11 +327,17 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		ascii_display.SetWindowText(ascii_art);
 
-		static_text_info.Format(L"output: %dx%d chars\r\nblocksize=%d\r\nchars used=%d",
+		CString usedChars;
+		for (const auto& pair : densities) {
+			usedChars += pair.second;
+		}
+
+		static_text_info.Format(IDS_STRING_INFO,
 			requested_data2.picture_width / rect_w,
 			requested_data2.picture_height / rect_h,
 			blocksize,
-			densities.size());
+			densities.size(),
+			usedChars);
 		UpdateData(false); // write the data
 	}
 }

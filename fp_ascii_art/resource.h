@@ -9,6 +9,7 @@
 #define IDS_CHAR_SIZE_ERROR             103
 #define IDS_CLIPBOARD_COPY_TEXT         104
 #define IDS_EMPTY_LIST                  105
+#define IDS_STRING_INFO                 105
 #define IDS_N_ITEMS_IN_LIST             106
 #define IDS_PICTURE_SIZE                107
 #define IDD_DIALOG_ASCII_ART            1000
