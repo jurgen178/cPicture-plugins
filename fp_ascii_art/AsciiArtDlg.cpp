@@ -89,7 +89,7 @@ BOOL CAsciiArtDlg::OnInitDialog()
 void CAsciiArtDlg::Update(const CString fontName)
 {
 	CFont cfont;
-	const int fontHeight(20);
+	const int fontHeight(72);
 	if (CreateSelectedFont(cfont, fontName, fontHeight))
 	{
 		CPaintDC dc(this); // device context for painting
@@ -106,75 +106,84 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		// Measure the character size.
 		const CSize size(memDC.GetTextExtent(&ch, 1));
-
-		// Create a monochrome bitmap with the character size.
-		CBitmap bitmap;
-		bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
-		CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
-
-		// Set text color and background mode.
-		memDC.SetTextColor(RGB(0, 0, 0));
-		memDC.SetBkMode(OPAQUE);
-		memDC.SetBkColor(RGB(255, 255, 255));
-
-		// Extract the bitmap data.
-		BITMAP bm;
-		bitmap.GetBitmap(&bm);
-		const int width = bm.bmWidth;
-		const int height = bm.bmHeight;
-		const int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
-		BYTE* pBits = new BYTE[sizeBytes];
-		const int area = width * height;
-
-		// Fill the background with white.
-		memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
-
-		// Create a map to store all the densities.
-		std::map<double, char> densities;
-
-		// Measure the chars.
-		WCHAR letters[] = L"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-		for (wchar_t wc : letters)
+		if (size.cx > 0 && size.cy > 0)
 		{
-			if (wc == 0)
-				continue;
+			// Create a monochrome bitmap with the character size.
+			CBitmap bitmap;
+			bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
+			CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
 
-			// Draw the character.
-			memDC.TextOut(0, 0, &wc, 1);
+			// Set text color and background mode.
+			memDC.SetTextColor(RGB(0, 0, 0));
+			memDC.SetBkMode(OPAQUE);
+			memDC.SetBkColor(RGB(255, 255, 255));
 
-			bitmap.GetBitmapBits(sizeBytes, pBits);
+			// Extract the bitmap data.
+			BITMAP bm;
+			bitmap.GetBitmap(&bm);
+			const int width = bm.bmWidth;
+			const int height = bm.bmHeight;
+			const int area = width * height;
+			const int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
+			BYTE* pBits = new BYTE[sizeBytes];
 
-			CString text;
+			// Fill the background with white.
+			memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
 
-			int ones = 0;
+			// Create a map to store all the densities.
+			std::map<double, WCHAR> densities;
 
-			// Output the bitmap data as 0s and 1s.
-			for (int y = 0; y < height; ++y)
+			// Get the char densities.
+			WCHAR letters[] = L"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+			for (wchar_t wc : letters)
 			{
-				for (int x = 0; x < width; ++x)
+				if (wc == 0)
+					continue;
+
+				// Draw the character.
+				memDC.TextOut(0, 0, &wc, 1);
+
+				bitmap.GetBitmapBits(sizeBytes, pBits);
+
+#ifdef DEBUG
+				CString text;
+#endif
+
+				int ones = 0;
+
+				// Output the bitmap data as 0s and 1s.
+				for (int y = 0; y < height; ++y)
 				{
-					const int byteIndex = y * bm.bmWidthBytes + x / 8;
-					const int bitIndex = 7 - (x % 8);
-					const bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
+					for (int x = 0; x < width; ++x)
+					{
+						const int byteIndex = y * bm.bmWidthBytes + x / 8;
+						const int bitIndex = 7 - (x % 8);
+						const bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
 
-					if (bit)
-						ones++;
+						if (bit)
+							ones++;
 
-					text += bit ? L'1' : L'0';
+#ifdef DEBUG
+						text += bit ? L'1' : L'0';
+#endif
+					}
+#ifdef DEBUG
+					text += L'\n';
+#endif
 				}
-				text += L'\n';
+
+				densities[(double)ones / area] = wc;
 			}
 
-			densities[(double)ones / area] = wc;
+			//for (const auto& pair : densities) {
+			//	std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+			//}
+
+			// Clean up.
+			delete[] pBits;
+			memDC.SelectObject(pOldBitmap);
 		}
 
-		//for (const auto& pair : densities) {
-		//	std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
-		//}
-
-		// Clean up.
-		delete[] pBits;
-		memDC.SelectObject(pOldBitmap);
 		memDC.SelectObject(pOldFont);
 	}
 }
