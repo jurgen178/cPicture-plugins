@@ -5,6 +5,7 @@
 #include "AsciiArtDlg.h"
 #include "vfw.h"
 #include <sys/stat.h>
+#include <map>
 
 extern BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight);
 
@@ -32,7 +33,7 @@ unsigned int GetFileSize(const WCHAR* pFile)
 // CAsciiArtDlg dialog
 
 CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
-  : CDialog(CAsciiArtDlg::IDD, pParent),
+	: CDialog(CAsciiArtDlg::IDD, pParent),
 	picture_data_list(picture_data_list),
 	index(0),
 	pParentWnd(pParent)
@@ -62,7 +63,7 @@ BEGIN_MESSAGE_MAP(CAsciiArtDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-BOOL CAsciiArtDlg::OnInitDialog() 
+BOOL CAsciiArtDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	update_button_state();
@@ -77,7 +78,7 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	//	str.LoadString(IDS_EMPTY_LIST);
 	//else
 	//	str.Format(IDS_N_ITEMS_IN_LIST, picture_data_list.size());
-	
+
 	SetWindowText(str);
 
 	fontSelectComboBox.Init(pParentWnd, &CAsciiArtDlg::Update, this);
@@ -104,54 +105,72 @@ void CAsciiArtDlg::Update(const CString fontName)
 		WCHAR ch = L'A';
 
 		// Measure the character size.
-		CSize size = memDC.GetTextExtent(&ch, 1);
-
-		WCHAR letters[] = L"abcdefghijklmnopqrstuvwxyz";
-		for (wchar_t wc : letters)
-		{
-			CSize size1 = memDC.GetTextExtent(&wc, 1);
-			size1.cx++;
-		}
+		const CSize size(memDC.GetTextExtent(&ch, 1));
 
 		// Create a monochrome bitmap with the character size.
 		CBitmap bitmap;
 		bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
 		CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
 
-		// Fill the background with white.
-		memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
-
 		// Set text color and background mode.
 		memDC.SetTextColor(RGB(0, 0, 0));
 		memDC.SetBkMode(OPAQUE);
 		memDC.SetBkColor(RGB(255, 255, 255));
 
-		// Draw the character.
-		memDC.TextOut(0, 0, &ch, 1);
-
-		CString text;
-
 		// Extract the bitmap data.
 		BITMAP bm;
 		bitmap.GetBitmap(&bm);
-		int width = bm.bmWidth;
-		int height = bm.bmHeight;
-		int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
+		const int width = bm.bmWidth;
+		const int height = bm.bmHeight;
+		const int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
 		BYTE* pBits = new BYTE[sizeBytes];
-		bitmap.GetBitmapBits(sizeBytes, pBits);
+		const int area = width * height;
 
-		// Output the bitmap data as 0s and 1s.
-		for (int y = 0; y < height; ++y)
+		// Fill the background with white.
+		memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
+
+		// Create a map to store all the densities.
+		std::map<double, char> densities;
+
+		// Measure the chars.
+		WCHAR letters[] = L"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+		for (wchar_t wc : letters)
 		{
-			for (int x = 0; x < width; ++x)
+			if (wc == 0)
+				continue;
+
+			// Draw the character.
+			memDC.TextOut(0, 0, &wc, 1);
+
+			bitmap.GetBitmapBits(sizeBytes, pBits);
+
+			CString text;
+
+			int ones = 0;
+
+			// Output the bitmap data as 0s and 1s.
+			for (int y = 0; y < height; ++y)
 			{
-				int byteIndex = y * bm.bmWidthBytes + x / 8;
-				int bitIndex = 7 - (x % 8);
-				bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
-				text += bit ? L'1' : L'0';
+				for (int x = 0; x < width; ++x)
+				{
+					const int byteIndex = y * bm.bmWidthBytes + x / 8;
+					const int bitIndex = 7 - (x % 8);
+					const bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
+
+					if (bit)
+						ones++;
+
+					text += bit ? L'1' : L'0';
+				}
+				text += L'\n';
 			}
-			text += L'\n';
+
+			densities[(double)ones / area] = wc;
 		}
+
+		//for (const auto& pair : densities) {
+		//	std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+		//}
 
 		// Clean up.
 		delete[] pBits;
@@ -165,7 +184,7 @@ void CAsciiArtDlg::OnPaint()
 	CPaintDC dc(this); // device context for painting
 
 	const int size(static_cast<int>(picture_data_list.size()));
-	if(index >= 0 && index < size)
+	if (index >= 0 && index < size)
 	{
 		vector<picture_data>::const_iterator it = picture_data_list.begin() + index;
 
@@ -192,20 +211,20 @@ void CAsciiArtDlg::OnPaint()
 
 		HDRAWDIB hdd = DrawDibOpen();
 
-		DrawDibDraw(hdd,             
-					dc.m_hDC,                  
-					left,                 
-					top,                 
-					requested_data1.picture_width,
-					requested_data1.picture_height,
-					&bmiHeader,  
-					requested_data1.data,
-					0,                 
-					0,                 
-					requested_data1.picture_width,
-					requested_data1.picture_height,
-					0
-					);
+		DrawDibDraw(hdd,
+			dc.m_hDC,
+			left,
+			top,
+			requested_data1.picture_width,
+			requested_data1.picture_height,
+			&bmiHeader,
+			requested_data1.data,
+			0,
+			0,
+			requested_data1.picture_width,
+			requested_data1.picture_height,
+			0
+		);
 
 		DrawDibClose(hdd);
 	}
