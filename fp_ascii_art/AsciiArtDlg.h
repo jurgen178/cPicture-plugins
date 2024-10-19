@@ -30,8 +30,10 @@ protected:
 	const vector<picture_data>& picture_data_list;
 	BITMAPINFOHEADER bmiHeader;
 	CSliderCtrl fontSizeSliderCtrl;
+	CString static_text_fontsize;
 	int blocksize;
 	CSliderCtrl blockSizeSliderCtrl;
+	CString static_text_blocksize;
 
 protected:
 	void Update(const CString fontName);

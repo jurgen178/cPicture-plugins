@@ -19,8 +19,10 @@
 #define IDC_FONT_SELECT_COMBO           1010
 #define IDC_SLIDER_FONTSIZE             1012
 #define IDC_BUTTON_COPY                 1013
-#define IDC_SLIDER_FONTSIZE2            1014
 #define IDC_SLIDER_BLOCKSIZE            1014
+#define IDC_STATIC_TEXT_FONTSIZE        1015
+#define IDC_STATIC_TEXT_FONTSIZE2       1016
+#define IDC_STATIC_TEXT_BLOCKSIZE       1016
 
 // Next default values for new objects
 // 
@@ -28,7 +30,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

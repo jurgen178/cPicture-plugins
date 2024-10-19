@@ -61,6 +61,8 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_ASCII, ascii_display);
 	DDX_Control(pDX, IDC_SLIDER_FONTSIZE, fontSizeSliderCtrl);
 	DDX_Control(pDX, IDC_SLIDER_BLOCKSIZE, blockSizeSliderCtrl);
+	DDX_Text(pDX, IDC_STATIC_TEXT_FONTSIZE, static_text_fontsize);
+	DDX_Text(pDX, IDC_STATIC_TEXT_BLOCKSIZE, static_text_blocksize);
 }
 
 
@@ -83,8 +85,11 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	//	CLIP_CHARACTER_PRECIS, PROOF_QUALITY, FIXED_PITCH, L"Consolas");
 	//ascii_display.SetFont(&ascii_display_font, FALSE);
 
-	fontSizeSliderCtrl.SetRange(2, 72);  // Set the range.
+	fontSizeSliderCtrl.SetRange(1, 72);  // Set the range.
 	fontSizeSliderCtrl.SetPos(12);       // Set initial position
+
+	blockSizeSliderCtrl.SetRange(4, 200);	// Set the range.
+	blockSizeSliderCtrl.SetPos(blocksize);	// Set initial position
 
 	const size_t size(picture_data_list.size());
 	CString str;
@@ -122,12 +127,18 @@ void CAsciiArtDlg::UpdateDisplayFont(const CString fontName, const int fontsize)
 
 	ascii_display.SetFont(&ascii_display_font, FALSE);
 	ascii_display.Invalidate();
+
+	static_text_fontsize.Format(L"%d", fontsize);
+	UpdateData(false); // write the data
 }
 
 void CAsciiArtDlg::Update(const CString fontName)
 {
 	const int pos = fontSizeSliderCtrl.GetPos();
 	UpdateDisplayFont(fontName, pos);
+
+	static_text_blocksize.Format(L"%d", blocksize);
+	UpdateData(false); // write the data
 
 	CFont cfont;
 	const int fontHeight(blocksize);
