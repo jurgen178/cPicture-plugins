@@ -104,127 +104,139 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		// Measure the character size.
 		const CSize size(memDC.GetTextExtent(&ch, 1));
-		if (size.cx > 0 && size.cy > 0)
+		if (!(size.cx > 0 && size.cy > 0))
 		{
-			// Create a monochrome bitmap with the character size.
-			CBitmap bitmap;
-			bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
-			CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
-
-			// Set text color and background mode.
-			memDC.SetTextColor(RGB(255, 255, 255));
-			memDC.SetBkMode(OPAQUE);
-			memDC.SetBkColor(RGB(0, 0, 0));
-
-			// Extract the bitmap data.
-			BITMAP bm;
-			bitmap.GetBitmap(&bm);
-			const int width = bm.bmWidth;
-			const int height = bm.bmHeight;
-			const int area = width * height;
-			const int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
-			BYTE* pBits = new BYTE[sizeBytes];
-
-			// Fill the background with white.
-			memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(0, 0, 0));
-
-			// Create a map to store all the densities.
-			std::map<double, WCHAR> densities;
-
-			// Get the char densities.
-			WCHAR letters[] = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-			for (wchar_t wc : letters)
-			{
-				if (wc == 0)
-					continue;
-
-				// Draw the character.
-				memDC.TextOut(0, 0, &wc, 1);
-
-				bitmap.GetBitmapBits(sizeBytes, pBits);
-
-#ifdef DEBUG
-				CString text;
-#endif
-
-				int ones = 0;
-				int yOffset = 0;
-
-				// Output the bitmap data as 0s and 1s.
-				for (int y = 0; y < height; ++y)
-				{
-					for (int x = 0; x < width; ++x)
-					{
-						const int byteIndex = yOffset + x / 8;
-						const int bitIndex = 7 - (x % 8);
-						const bool bit = (pBits[byteIndex] & (1 << bitIndex)) != 0;
-
-						if (bit)
-							ones++;
-
-#ifdef DEBUG
-						text += bit ? L'1' : L'0';
-#endif
-					}
-
-					// Next line.
-					yOffset += bm.bmWidthBytes;
-
-#ifdef DEBUG
-					text += L'\n';
-#endif
-				}
-
-				densities[(double)ones / area] = wc;
-			}
-
-			//for (const auto& pair : densities) {
-			//	std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
-			//}
-
-			// Clean up.
-			delete[] pBits;
-			memDC.SelectObject(pOldBitmap);
+			memDC.SelectObject(pOldFont);
+			AfxMessageBox(IDS_CHAR_SIZE_ERROR, MB_ICONERROR);
+			return;
 		}
 
+		// Create a monochrome bitmap with the character size.
+		CBitmap bitmap;
+		bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
+		CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+
+		// Set text color and background mode.
+		memDC.SetTextColor(RGB(255, 255, 255));
+		memDC.SetBkMode(OPAQUE);
+		memDC.SetBkColor(RGB(0, 0, 0));
+
+		// Extract the bitmap data.
+		BITMAP bm;
+		bitmap.GetBitmap(&bm);
+		const int width = bm.bmWidth;
+		const int height = bm.bmHeight;
+		const int area = width * height;
+		const int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
+		BYTE* pBits = new BYTE[sizeBytes];
+
+		// Fill the background with white.
+		memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(0, 0, 0));
+
+		// Create a map to store all the densities.
+		std::map<double, WCHAR> densities;
+
+		// Get the char densities.
+		WCHAR letters[] = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+		for (wchar_t wc : letters)
+		{
+			if (wc == 0)
+				continue;
+
+			// Draw the character.
+			memDC.TextOut(0, 0, &wc, 1);
+
+			bitmap.GetBitmapBits(sizeBytes, pBits);
+
+#ifdef DEBUG
+			CString text;
+#endif
+
+			int ones = 0;
+			int yOffset = 0;
+
+			// Output the bitmap data as 0s and 1s.
+			for (int y = 0; y < height; ++y)
+			{
+				for (int x = 0; x < width; ++x)
+				{
+					const int byteIndex = yOffset + x / 8;
+					const int bitIndex = 7 - (x % 8);
+					const bool bit = (pBits[byteIndex] & (1 << bitIndex)) != 0;
+
+					if (bit)
+						ones++;
+
+#ifdef DEBUG
+					text += bit ? L'1' : L'0';
+#endif
+				}
+
+				// Next line.
+				yOffset += bm.bmWidthBytes;
+
+#ifdef DEBUG
+				text += L'\n';
+#endif
+			}
+
+			densities[(double)ones / area] = wc;
+		}
+
+		//for (const auto& pair : densities) {
+		//	std::cout << "Key: " << pair.first << ", Value: " << pair.second << std::endl;
+		//}
+
+		// Clean up.
+		delete[] pBits;
+		memDC.SelectObject(pOldBitmap);
 		memDC.SelectObject(pOldFont);
 
-
 		// Segment the grey scale picture and assign matching letters from the density map.
-		if (size.cx > 0 && size.cy > 0)
+		// Each Segment is a rect.
+		const unsigned int rect_w(size.cx);
+		const unsigned int rect_h(size.cy);
+		const unsigned int rect_area(rect_w * rect_h);
+
+		// Create a map to map the normalized grey values 0..255 to the matching char.
+		std::map<int, WCHAR> densities_index;
+
+		// Largest density.
+		const double largestDensity(densities.rbegin()->first);
+
+		for (int i = 0; i < 256; ++i)
 		{
-			// Each Segment is a rect.
-			const unsigned int rect_w(size.cx);
-			const unsigned int rect_h(size.cy);
-			const unsigned int rect_area(rect_w * rect_h);
+			densities_index[i] = 
+		}
 
-			vector<picture_data>::const_iterator it = picture_data_list.begin();
+		vector<picture_data>::const_iterator it = picture_data_list.begin();
 
-			vector<requested_data> requested_data_list = it->requested_data_list;
-			// Get the second requested data set (unresized picture resized, 100%).
-			requested_data requested_data2 = requested_data_list.back();
+		vector<requested_data> requested_data_list = it->requested_data_list;
+		// Get the second requested data set (unresized picture resized, 100%).
+		requested_data requested_data2 = requested_data_list.back();
 
-			BYTE* data = requested_data2.data;
+		BYTE* data = requested_data2.data;
 
-			// Enumerate all rect segments.
-			for (register int rect_x = 0; rect_x < requested_data2.picture_width; rect_x += rect_w)
+		// Enumerate all rect segments.
+		for (register int rect_x = 0; rect_x < requested_data2.picture_width; rect_x += rect_w)
+		{
+			for (register int rect_y = 0; rect_y < requested_data2.picture_height; rect_y += rect_h)
 			{
-				for (register int rect_y = 0; rect_y < requested_data2.picture_height; rect_y += rect_h)
+				__int64 grey_sum = 0;
+
+				// Read the rect segment at (rect_x, rect_y).
+				for (register unsigned int x = 0; x < rect_w; x++)
 				{
-					__int64 grey_sum = 0;
-
-					// Read the rect segment at (rect_x, rect_y).
-					for (register unsigned int x = 0; x < rect_w; x++)
+					for (register unsigned int y = 0; y < rect_h; y++)
 					{
-						for (register unsigned int y = 0; y < rect_h; y++)
-						{
-							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
-							const BYTE grey(data[index]);
-							grey_sum += grey;
-						}
+						const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+						const BYTE grey(data[index]);
+						grey_sum += grey;
 					}
-
 				}
+
+				// average grey value mapped to 0..255
+				const int density_index((int)(255 * grey_sum / rect_area));
 			}
 		}
 	}

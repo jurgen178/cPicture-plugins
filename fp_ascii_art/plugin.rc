@@ -115,6 +115,7 @@ BEGIN
     IDS_PLUGIN_SHORT_DESC   "Ascii Art"
     IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul Ascii Art"
     IDS_PLUGIN_INFO         "Beispieldialogfeld zum Erstellen von Ascii-Art."
+    IDS_CHAR_SIZE_ERROR     "IDS_CHAR_SIZE_ERROR"
 END
 
 #endif    // German (Germany) resources
