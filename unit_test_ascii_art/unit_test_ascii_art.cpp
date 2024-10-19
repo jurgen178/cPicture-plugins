@@ -114,7 +114,7 @@ namespace unittest
 
 			for (int i = 0; i < 256; ++i)
 			{
-				const double d(i / largestDensity / 255);
+				const double d(i * largestDensity / 255);
 
 				// Find best matching density.
 				for (const auto& pair : densities) {
@@ -127,6 +127,7 @@ namespace unittest
 			}
 
 			Assert::AreEqual(L' ', densities_index[0]);
+			Assert::AreEqual(L'L', densities_index[127]);
 			Assert::AreEqual(L'@', densities_index[255]);
 		}
 	};

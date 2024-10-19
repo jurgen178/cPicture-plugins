@@ -187,11 +187,11 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 #ifdef DEBUG
 		_wsetlocale(LC_ALL, L"en-US");
-		CString density_map_text;
+		CString density_map_test_case;
 		CString f;
 		for (const auto& pair : densities) {
 			f.Format(L"densities[%f] = L'%c';\n", pair.first, pair.second);
-			density_map_text += f;
+			density_map_test_case += f;
 		}
 #endif
 
@@ -214,7 +214,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		for (int i = 0; i < 256; ++i)
 		{
-			const double d(i / largestDensity / 255);
+			const double d(i * largestDensity / 255);
 
 			// Find best matching density.
 			for (const auto& pair : densities) {
