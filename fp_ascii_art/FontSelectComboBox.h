@@ -15,8 +15,11 @@ public:
 	int maxFontNameWidth;
 	CWnd* pParentWnd;
 
+	// Function pointer to a member function of CAsciiArtDlg.
 	typedef void (CAsciiArtDlg::* CallbackFunc)(const CString fontName);
 	CallbackFunc callback;
+
+	// Pointer to an instance of CAsciiArtDlg.
 	CAsciiArtDlg* callbackObj;
 
 public:

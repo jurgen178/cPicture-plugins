@@ -7,6 +7,7 @@ static BOOL CALLBACK EnumFontProc(LPLOGFONT lplf, LPTEXTMETRIC lptm, DWORD dwTyp
 {
 	CFontSelectComboBox* pFontSelectComboBox = (CFontSelectComboBox*)lpData;
 
+	// Select only monospace fonts (all chars have the same width).
 	if ((lplf->lfPitchAndFamily & 0x03) == FIXED_PITCH &&	// MONO_FONT
 		lplf->lfWeight == 400
 		)
@@ -60,7 +61,7 @@ void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* ob
 	SetCurSel(0);
 }
 
-BOOL CFontSelectComboBox::CreateFont(CFont& font, const CString& fontName, const int fontHeight)
+BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight)
 {
 	return font.CreateFont(
 		fontHeight,                // Height
@@ -90,7 +91,7 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (CreateFont(cfont, fontName, fontHeight))
+	if (CreateSelectedFont(cfont, fontName, fontHeight))
 	{
 		CDC dc;
 		dc.Attach(lpDIS->hDC);
@@ -135,7 +136,7 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (CreateFont(cfont, fontName, fontHeight))
+	if (CreateSelectedFont(cfont, fontName, fontHeight))
 	{
 		LOGFONT lf;
 		cfont.GetLogFont(&lf);
@@ -163,78 +164,7 @@ void CFontSelectComboBox::OnCbnSelchange()
 		CString fontName;
 		GetLBText(selIndex, fontName);
 
+		// Call the member function on the object of CAsciiArtDlg.
 		(callbackObj->*callback)(fontName);
-
-		CFont cfont;
-		const int fontHeight(8 * ctrlHeight / 10);	// 80%
-		if (CreateFont(cfont, fontName, fontHeight))
-		{
-			CPaintDC dc(this); // device context for painting
-
-			// Create a memory DC and a bitmap.
-			CDC memDC;
-			memDC.CreateCompatibleDC(&dc);
-
-			// Select the font into the memory DC.
-			CFont* pOldFont = memDC.SelectObject(&cfont);
-
-			// Character to rasterize.
-			WCHAR ch = L'A';
-
-			// Measure the character size.
-			CSize size = memDC.GetTextExtent(&ch, 1);
-
-			WCHAR letters[] = L"abcdefghijklmnopqrstuvwxyz";
-			for (wchar_t wc : letters)
-			{
-				CSize size1 = memDC.GetTextExtent(&wc, 1);
-				size1.cx++;
-			}
-
-			// Create a monochrome bitmap with the character size.
-			CBitmap bitmap;
-			bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
-			CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
-
-			// Fill the background with white.
-			memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
-
-			// Set text color and background mode.
-			memDC.SetTextColor(RGB(0, 0, 0));
-			memDC.SetBkMode(OPAQUE);
-			memDC.SetBkColor(RGB(255, 255, 255));
-
-			// Draw the character.
-			memDC.TextOut(0, 0, &ch, 1);
-
-			CString text;
-
-			// Extract the bitmap data.
-			BITMAP bm;
-			bitmap.GetBitmap(&bm);
-			int width = bm.bmWidth;
-			int height = bm.bmHeight;
-			int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
-			BYTE* pBits = new BYTE[sizeBytes];
-			bitmap.GetBitmapBits(sizeBytes, pBits);
-
-			// Output the bitmap data as 0s and 1s.
-			for (int y = 0; y < height; ++y)
-			{
-				for (int x = 0; x < width; ++x)
-				{
-					int byteIndex = y * bm.bmWidthBytes + x / 8;
-					int bitIndex = 7 - (x % 8);
-					bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
-					text += bit ? L'1' : L'0';
-				}
-				text += L'\n';
-			}
-
-			// Clean up.
-			delete[] pBits;
-			memDC.SelectObject(pOldBitmap);
-			memDC.SelectObject(pOldFont);
-		}
 	}
 }

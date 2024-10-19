@@ -6,6 +6,7 @@
 #include "vfw.h"
 #include <sys/stat.h>
 
+extern BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight);
 
 unsigned int GetFileSize(const WCHAR* pFile)
 {
@@ -86,6 +87,77 @@ BOOL CAsciiArtDlg::OnInitDialog()
 
 void CAsciiArtDlg::Update(const CString fontName)
 {
+	CFont cfont;
+	const int fontHeight(20);
+	if (CreateSelectedFont(cfont, fontName, fontHeight))
+	{
+		CPaintDC dc(this); // device context for painting
+
+		// Create a memory DC and a bitmap.
+		CDC memDC;
+		memDC.CreateCompatibleDC(&dc);
+
+		// Select the font into the memory DC.
+		CFont* pOldFont = memDC.SelectObject(&cfont);
+
+		// Character to rasterize.
+		WCHAR ch = L'A';
+
+		// Measure the character size.
+		CSize size = memDC.GetTextExtent(&ch, 1);
+
+		WCHAR letters[] = L"abcdefghijklmnopqrstuvwxyz";
+		for (wchar_t wc : letters)
+		{
+			CSize size1 = memDC.GetTextExtent(&wc, 1);
+			size1.cx++;
+		}
+
+		// Create a monochrome bitmap with the character size.
+		CBitmap bitmap;
+		bitmap.CreateBitmap(size.cx, size.cy, 1, 1, nullptr);
+		CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+
+		// Fill the background with white.
+		memDC.FillSolidRect(0, 0, size.cx, size.cy, RGB(255, 255, 255));
+
+		// Set text color and background mode.
+		memDC.SetTextColor(RGB(0, 0, 0));
+		memDC.SetBkMode(OPAQUE);
+		memDC.SetBkColor(RGB(255, 255, 255));
+
+		// Draw the character.
+		memDC.TextOut(0, 0, &ch, 1);
+
+		CString text;
+
+		// Extract the bitmap data.
+		BITMAP bm;
+		bitmap.GetBitmap(&bm);
+		int width = bm.bmWidth;
+		int height = bm.bmHeight;
+		int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
+		BYTE* pBits = new BYTE[sizeBytes];
+		bitmap.GetBitmapBits(sizeBytes, pBits);
+
+		// Output the bitmap data as 0s and 1s.
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				int byteIndex = y * bm.bmWidthBytes + x / 8;
+				int bitIndex = 7 - (x % 8);
+				bool bit = (pBits[byteIndex] & (1 << bitIndex)) == 0;
+				text += bit ? L'1' : L'0';
+			}
+			text += L'\n';
+		}
+
+		// Clean up.
+		delete[] pBits;
+		memDC.SelectObject(pOldBitmap);
+		memDC.SelectObject(pOldFont);
+	}
 }
 
 void CAsciiArtDlg::OnPaint()
