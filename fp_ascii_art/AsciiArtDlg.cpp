@@ -23,6 +23,7 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	index(0),
 	blocksize(72),
 	brightness(0),
+	contrast(0),
 	pParentWnd(pParent)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
@@ -45,8 +46,10 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_FONTSIZE, fontSizeSliderCtrl);
 	DDX_Control(pDX, IDC_SLIDER_BLOCKSIZE, blockSizeSliderCtrl);
 	DDX_Control(pDX, IDC_SLIDER_BRIGHTNESS, brightnessSliderCtrl);
+	DDX_Control(pDX, IDC_SLIDER_CONTRAST, contrastSliderCtrl);
 	DDX_Text(pDX, IDC_STATIC_TEXT_FONTSIZE, static_text_fontsize);
 	DDX_Text(pDX, IDC_STATIC_TEXT_BRIGHTNESS, static_text_brightness);
+	DDX_Text(pDX, IDC_STATIC_TEXT_CONTRAST, static_text_contrast);
 	DDX_Text(pDX, IDC_STATIC_INFO, static_text_info);
 }
 
@@ -75,6 +78,10 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	brightnessSliderCtrl.SetRange(-127, 127);	// Set the range.
 	brightnessSliderCtrl.SetPos(1);				// Default brightness=0 does not move the slider to the middle.
 	brightnessSliderCtrl.SetPos(brightness);	// Set initial position.
+
+	contrastSliderCtrl.SetRange(-100, 100);	// Set the range.
+	contrastSliderCtrl.SetPos(1);			// Default contrast=0 does not move the slider to the middle.
+	contrastSliderCtrl.SetPos(contrast);	// Set initial position.
 
 	// Set text wrap mode for static control.
 	CStatic* pStaticText = (CStatic*)GetDlgItem(IDC_STATIC_INFO);
@@ -251,23 +258,6 @@ void CAsciiArtDlg::Update(const CString fontName)
 		const WCHAR smallestDensityChar(densities.begin()->second);
 		const WCHAR largestDensityChar(densities.rbegin()->second);
 
-		// Brightness shifts the values. Fill the end gaps.
-		if (brightness > 0)
-		{
-			for (int i = 0; i < brightness; ++i)
-			{
-				densities_index[255 - i] = smallestDensityChar;
-			}
-		}
-		else
-		if (brightness < 0)
-		{
-			for (int i = 0; i >= brightness; --i)
-			{
-				densities_index[-i] = largestDensityChar;
-			}
-		}
-
 		for (int i = 0; i < 256; ++i)
 		{
 			const double d(i * largestDensity / 255);
@@ -279,7 +269,21 @@ void CAsciiArtDlg::Update(const CString fontName)
 				{
 					// Invert (255-i)
 					// white is 255 with the least density and black 0 with the max density.
-					const int index(255 - i - brightness);
+					int index = 255 - i;
+
+					// Contrast.
+					// Shift the range to be symmetrical around x=0 (-127..0..127).
+					// Stretch the range
+					//  -100..0, factor 2..1 (low contrast)
+					//  0, factor 1 (no contrast change)
+					//  0..+100, factor 1..0 (high contrast)
+					// Shift back the range (0..+127..+255)
+					index = (index - 127) * (100 - contrast) / 100 + 127;
+
+					// Brightness.
+					// Shift the range by the brightness value.
+					index -= brightness;
+
 					if (index >= 0 && index < 256)
 						densities_index[index] = pair.second;
 
@@ -287,6 +291,55 @@ void CAsciiArtDlg::Update(const CString fontName)
 				}
 			}
 		}
+
+		// Brightness shifts the values. Fill the end gaps.
+		// Right side gap.
+		int i = 255;
+		while (i > 0)
+		{
+			if (!densities_index[i])
+				densities_index[i--] = smallestDensityChar;
+			else
+				break;
+		}
+
+		// Left side gap.
+		i = 0;
+		while (i < 255)
+		{
+			if (!densities_index[i])
+				densities_index[i++] = largestDensityChar;
+			else
+				break;
+		}
+
+		// Contrast stretches the index. Fill any gaps with the neighboring value.
+		i = 1;
+		while (i < 255)
+		{
+			if (!densities_index[i])
+				densities_index[i] = densities_index[i - 1];
+
+			i++;
+		}
+
+		//// Brightness shifts the values. Fill the end gaps.
+		//if (brightness > 0)
+		//{
+		//	for (int i = 0; i < brightness; ++i)
+		//	{
+		//		densities_index[255 - i] = smallestDensityChar;
+		//	}
+		//}
+		//else
+		//if (brightness < 0)
+		//{
+		//	for (int i = 0; i >= brightness; --i)
+		//	{
+		//		densities_index[-i] = largestDensityChar;
+		//	}
+		//}
+
 
 		// Get the second requested data set (unresized picture resized, 100%).
 		vector<picture_data>::const_iterator it = picture_data_list.begin();
@@ -338,6 +391,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 		// L"%+d" outputs '+0' for the zero value
 		// \x200B is zero width space (ZWSP) because L'' is invalid for %c
 		static_text_brightness.Format(L"%c%d", brightness > 0 ? L'+' : L'\x200B', brightness);
+		static_text_contrast.Format(L"%c%d", contrast > 0 ? L'+' : L'\x200B', contrast);
 
 		static_text_info.Format(IDS_STRING_INFO,
 			requested_data2.picture_width / rect_w,
@@ -360,17 +414,23 @@ void CAsciiArtDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		UpdateDisplayFont(fontSelectComboBox.GetSelectedFont(), pos);
 	}
 	else
-		if (hwnd == blockSizeSliderCtrl.GetSafeHwnd())
-		{
-			blocksize = blockSizeSliderCtrl.GetPos();
-			Update(fontSelectComboBox.GetSelectedFont());
-		}
-		else
-			if (hwnd == brightnessSliderCtrl.GetSafeHwnd())
-			{
-				brightness = brightnessSliderCtrl.GetPos();
-				Update(fontSelectComboBox.GetSelectedFont());
-			}
+	if (hwnd == blockSizeSliderCtrl.GetSafeHwnd())
+	{
+		blocksize = blockSizeSliderCtrl.GetPos();
+		Update(fontSelectComboBox.GetSelectedFont());
+	}
+	else
+	if (hwnd == brightnessSliderCtrl.GetSafeHwnd())
+	{
+		brightness = brightnessSliderCtrl.GetPos();
+		Update(fontSelectComboBox.GetSelectedFont());
+	}
+	else
+	if (hwnd == contrastSliderCtrl.GetSafeHwnd())
+	{
+		contrast = contrastSliderCtrl.GetPos();
+		Update(fontSelectComboBox.GetSelectedFont());
+	}
 
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }

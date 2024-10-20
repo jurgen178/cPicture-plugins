@@ -21,7 +21,10 @@
 #define IDC_STATIC_TEXT_FONTSIZE        1007
 #define IDC_STATIC_INFO                 1008
 #define IDC_SLIDER_BRIGHTNESS           1009
+#define IDC_SLIDER_CONTRAST             1010
 #define IDC_STATIC_TEXT_BRIGHTNESS      1018
+#define IDC_STATIC_TEXT_BRIGHTNESS2     1019
+#define IDC_STATIC_TEXT_CONTRAST        1019
 
 // Next default values for new objects
 // 

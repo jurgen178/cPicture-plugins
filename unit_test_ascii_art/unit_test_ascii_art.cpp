@@ -114,23 +114,8 @@ namespace unittest
 			const WCHAR smallestDensityChar(densities.begin()->second);
 			const WCHAR largestDensityChar(densities.rbegin()->second);
 
-			int brightness = 1;
-
-			if (brightness > 0)
-			{
-				for (int i = 0; i < brightness; ++i)
-				{
-					densities_index[255 - i] = smallestDensityChar;
-				}
-			}
-			else
-			if (brightness < 0)
-			{
-				for (int i = 0; i >= brightness; --i)
-				{
-					densities_index[-i] = largestDensityChar;
-				}
-			}
+			int brightness = 0;
+			int contrast = -86;
 
 			for (int i = 0; i < 256; ++i)
 			{
@@ -143,7 +128,14 @@ namespace unittest
 					{
 						// Invert (255-i)
 						// white is 255 with the least density and black 0 with the max density.
-						const int index(255 - i - brightness);
+						int index = 255 - i;
+
+						// Contrast.
+						index = (index - 127) * (100 - contrast) / 100 + 127;
+
+						// Brightness.
+						index = index - brightness;
+
 						if (index >= 0 && index < 256)
 							densities_index[index] = pair.second;
 
@@ -151,6 +143,51 @@ namespace unittest
 					}
 				}
 			}
+
+			// Brightness and Contrast shifts the values. Fill the end gaps.
+			int i = 255;
+			while (i > 0)
+			{
+				if (!densities_index[i])
+					densities_index[i--] = smallestDensityChar;
+				else
+					break;
+			}
+
+			i = 0;
+			while (i < 255)
+			{
+				if (!densities_index[i])
+					densities_index[i++] = largestDensityChar;
+				else
+					break;
+			}
+
+			i = 1;
+			while (i < 255)
+			{
+				if (!densities_index[i])
+					densities_index[i] = densities_index[i - 1];
+
+				i++;
+			}
+
+			//// Brightness shifts the values. Fill the end gaps.
+			//if (brightness > 0)
+			//{
+			//	for (int i = 0; i < brightness; ++i)
+			//	{
+			//		densities_index[255 - i] = smallestDensityChar;
+			//	}
+			//}
+			//else
+			//if (brightness < 0)
+			//{
+			//	for (int i = 0; i >= brightness; --i)
+			//	{
+			//		densities_index[-i] = largestDensityChar;
+			//	}
+			//}
 
 			Assert::AreEqual(L'@', densities_index[0]);
 			Assert::AreEqual(L'L', densities_index[127]);

@@ -38,6 +38,9 @@ protected:
 	int brightness;
 	CSliderCtrl brightnessSliderCtrl;
 	CString static_text_brightness;
+	int contrast;
+	CSliderCtrl contrastSliderCtrl;
+	CString static_text_contrast;
 	CString static_text_info;
 
 protected:
