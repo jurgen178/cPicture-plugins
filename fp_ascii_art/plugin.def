@@ -1,0 +1,7 @@
+LIBRARY      "cpp_ascii_art"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

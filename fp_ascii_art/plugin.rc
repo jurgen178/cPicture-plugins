@@ -1,0 +1,263 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "Comments", "Ascii Art plugin for cPicture"
+            VALUE "CompanyName", "cPicture"
+            VALUE "FileDescription", "cPicture function plugin"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "cPicture function plugin"
+            VALUE "LegalCopyright", "Copyright (C)"
+            VALUE "OriginalFilename", "cpp_ascii_art.dll"
+            VALUE "ProductName", "cPicture function plugin"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_ASCII_ART DIALOGEX 0, 0, 480, 300
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,192,137
+    DEFPUSHBUTTON   "OK",IDOK,423,279,50,14
+    EDITTEXT        IDC_EDIT_ASCII,215,7,258,262,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    COMBOBOX        IDC_FONT_SELECT_COMBO,51,195,148,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,214,280,100,12
+    LTEXT           "Schriftart:",IDC_STATIC,7,197,43,8
+    PUSHBUTTON      "Kopieren",IDC_BUTTON_COPY,359,279,50,14
+    CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,223,100,12
+    LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,319,282,18,8
+    LTEXT           "Static",IDC_STATIC_INFO,7,240,194,53
+    CONTROL         "",IDC_SLIDER_BRIGHTNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,156,100,12
+    LTEXT           "Helligkeit:",IDC_STATIC,7,158,42,8
+    LTEXT           "Static",IDC_STATIC_TEXT_BRIGHTNESS,175,157,18,8
+    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,170,100,12
+    LTEXT           "Kontrast:",IDC_STATIC,7,172,42,8
+    LTEXT           "Static",IDC_STATIC_TEXT_CONTRAST,175,171,18,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_ASCII_ART, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 473
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 293
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_ASCII_ART AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Ascii Art"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul Ascii Art"
+    IDS_PLUGIN_INFO         "Funktionszusatzmodul um ein Bild in ein Buchstabenbild (Ascii Art) zu konvertieren."
+    IDS_CHAR_SIZE_ERROR     "Blockgröße konnte nicht berechnet werden. Wählen Sie eine andere Schiftart."
+    IDS_CLIPBOARD_COPY_TEXT "Das ASCII-Bild wurde als Text in die Zwischenablage übertragen.\nSie können dann den Text in einem anderen Programm mit dem Befehl ""Einfügen"" übernehmen."
+    IDS_STRING_INFO         "Ausgabegröße: %dx%d Zeichen\r\nBlockgröße für ein Zeichen: %dx%d Bildpunkte\r\n%d verwendete Zeichen: %s"
+    IDS_STRING_SINGLE_FILE_ONLY 
+                            "Wählen Sie für dieses Funktionszusatzmodul nur ein Bild aus."
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_ASCII_ART DIALOGEX 0, 0, 480, 300
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,192,137
+    DEFPUSHBUTTON   "OK",IDOK,423,279,50,14
+    EDITTEXT        IDC_EDIT_ASCII,215,7,258,262,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    COMBOBOX        IDC_FONT_SELECT_COMBO,51,195,148,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,214,280,100,12
+    LTEXT           "Font:",IDC_STATIC,7,197,43,8
+    PUSHBUTTON      "Copy",IDC_BUTTON_COPY,359,279,50,14
+    CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,223,100,12
+    LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,319,282,18,8
+    LTEXT           "Static",IDC_STATIC_INFO,7,240,194,53
+    CONTROL         "",IDC_SLIDER_BRIGHTNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,156,100,12
+    LTEXT           "Brightness:",IDC_STATIC,7,158,42,8
+    LTEXT           "Static",IDC_STATIC_TEXT_BRIGHTNESS,175,157,18,8
+    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,170,100,12
+    LTEXT           "Contrast:",IDC_STATIC,7,172,42,8
+    LTEXT           "Static",IDC_STATIC_TEXT_CONTRAST,175,171,18,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_ASCII_ART, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 473
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 293
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_ASCII_ART AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Ascii Art"
+    IDS_PLUGIN_LONG_DESC    "Function plugin Ascii Art"
+    IDS_PLUGIN_INFO         "Function plugin to convert a picture into ASCII art."
+    IDS_CHAR_SIZE_ERROR     "Blocksize could not be calculated. Choose another font."
+    IDS_CLIPBOARD_COPY_TEXT "The ASCII image has been copied to the clipboard as text.\nYou can then paste the text into another program using the Paste command."
+    IDS_STRING_INFO         "Output size: %dx%d chars\r\nBlock size for one char: %dx%d pixel\r\n%d used chars: %s"
+    IDS_STRING_SINGLE_FILE_ONLY 
+                            "Choose a single image for this function plugin."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
