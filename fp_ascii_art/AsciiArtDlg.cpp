@@ -335,7 +335,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 		}
 
 		// L"%+d" outputs '+0' for the zero value
-		// \x200B is zero width space (ZWSP)
+		// \x200B is zero width space (ZWSP) because L'' is invalid for %c
 		static_text_brightness.Format(L"%c%d", brightness > 0 ? L'+' : L'\x200B', brightness);
 		
 		static_text_info.Format(IDS_STRING_INFO,
