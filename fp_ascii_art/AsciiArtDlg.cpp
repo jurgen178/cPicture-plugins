@@ -10,7 +10,7 @@
 #include <commctrl.h>
 
 
-extern BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight);
+extern BOOL CreateFont2(CFont& font, const CString& fontName, const int fontHeight);
 
 #define WM_POST_INITDIALOG (WM_USER + 1)
 
@@ -76,7 +76,7 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	brightnessSliderCtrl.SetPos(1);				// Default brightness=0 does not move the slider to the middle.
 	brightnessSliderCtrl.SetPos(brightness);	// Set initial position.
 
-	// Set text wrap for static control.
+	// Set text wrap mode for static control.
 	CStatic* pStaticText = (CStatic*)GetDlgItem(IDC_STATIC_INFO);
 	LONG_PTR styles = ::GetWindowLongPtr(pStaticText->GetSafeHwnd(), GWL_STYLE);
 	styles |= SS_EDITCONTROL;
@@ -108,8 +108,7 @@ void CAsciiArtDlg::UpdateDisplayFont(const CString fontName, const int fontsize)
 	if (ascii_display_font.m_hObject)
 		ascii_display_font.DeleteObject();
 
-	ascii_display_font.CreateFont(fontsize, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
-		CLIP_CHARACTER_PRECIS, PROOF_QUALITY, FIXED_PITCH, fontName);
+	CreateFont2(ascii_display_font, fontName, fontsize);
 
 	ascii_display.SetFont(&ascii_display_font, FALSE);
 	ascii_display.Invalidate();
@@ -125,7 +124,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 	CFont cfont;
 	const int fontHeight(blocksize);
-	if (CreateSelectedFont(cfont, fontName, fontHeight))
+	if (CreateFont2(cfont, fontName, fontHeight))
 	{
 		CPaintDC dc(this); // device context for painting
 

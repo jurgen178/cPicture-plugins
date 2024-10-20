@@ -31,8 +31,8 @@ CFontSelectComboBox::~CFontSelectComboBox()
 
 BEGIN_MESSAGE_MAP(CFontSelectComboBox, CComboBox)
 	ON_WM_MEASUREITEM()
-	ON_CONTROL_REFLECT(CBN_DROPDOWN, OnDropdown)
-	ON_CONTROL_REFLECT(CBN_SELCHANGE, OnCbnSelchange)
+	ON_CONTROL_REFLECT(CBN_DROPDOWN, &CFontSelectComboBox::OnDropdown)
+	ON_CONTROL_REFLECT(CBN_SELCHANGE, &CFontSelectComboBox::OnCbnSelchange)
 END_MESSAGE_MAP()
 
 
@@ -69,7 +69,7 @@ void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* ob
 	}
 }
 
-BOOL CreateSelectedFont(CFont& font, const CString& fontName, const int fontHeight)
+BOOL CreateFont2(CFont& font, const CString& fontName, const int fontHeight)
 {
 	return font.CreateFont(
 		fontHeight,                // Height
@@ -99,7 +99,7 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (CreateSelectedFont(cfont, fontName, fontHeight))
+	if (CreateFont2(cfont, fontName, fontHeight))
 	{
 		CDC dc;
 		dc.Attach(lpDIS->hDC);
@@ -143,7 +143,7 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 	CFont cfont;
 	const int fontHeight(8 * ctrlHeight / 10);	// 80%
-	if (CreateSelectedFont(cfont, fontName, fontHeight))
+	if (CreateFont2(cfont, fontName, fontHeight))
 	{
 		LOGFONT lf;
 		cfont.GetLogFont(&lf);

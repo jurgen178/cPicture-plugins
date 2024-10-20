@@ -42,6 +42,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 CFunctionPluginAsciiArt::CFunctionPluginAsciiArt()
   : handle_wnd(NULL)
 {
+	// Set the locale to the system's ANSI code page.
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
 
@@ -81,7 +82,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 	AsciiDlg.Create(IDD_DIALOG_ASCII_ART, &parent);
 	parent.Detach();
 
-	// Request one picture data set for the dialog preview size.
+	// Request one picture data set for the dialog preview size and one unresized picture data set for the conversion.
 	// A negative value requests a relative size for the picture data.
 	// For example, -100 requests data for the original 100% picture size.
 	// To get picture data for the half size, use
