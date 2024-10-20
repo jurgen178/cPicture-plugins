@@ -71,9 +71,9 @@ BEGIN
     CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,192,137
     DEFPUSHBUTTON   "OK",IDOK,423,279,50,14
     EDITTEXT        IDC_EDIT_ASCII,215,7,258,262,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
-    COMBOBOX        IDC_FONT_SELECT_COMBO,7,193,166,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONT_SELECT_COMBO,51,180,148,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,213,280,100,12
-    LTEXT           "Schriftart:",IDC_STATIC,7,182,165,8
+    LTEXT           "Schriftart:",IDC_STATIC,7,182,43,8
     PUSHBUTTON      "Kopieren",IDC_BUTTON_COPY,359,279,50,14
     CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,223,100,12
     LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,318,282,18,8
@@ -126,7 +126,7 @@ BEGIN
     IDS_PLUGIN_INFO         "Funktionszusatzmodul zum Erstellen von Ascii-Art."
     IDS_CHAR_SIZE_ERROR     "Blockgröße konnte nicht berechnet werden. Wählen Sie eine andere Schiftart."
     IDS_CLIPBOARD_COPY_TEXT "Das ASCII-Bild wurde als Text in die Zwischenablage übertragen.\nSie können dann den Text in einem anderen Programm mit dem Befehl ""Einfügen"" übernehmen."
-    IDS_STRING_INFO         "Ausgabe: %dx%d Zeichen\r\nBlockgröße: %dx%d Bildpunkte\r\n%d verwendete Zeichen: %s"
+    IDS_STRING_INFO         "Ausgabegröße: %dx%d Zeichen\r\nBlockgröße für ein Zeichen: %dx%d Bildpunkte\r\n%d verwendete Zeichen: %s"
     IDS_STRING_SINGLE_FILE_ONLY 
                             "Wählen Sie für dieses Funktionszusatzmodul nur ein Bild aus."
 END
@@ -233,7 +233,7 @@ BEGIN
     IDS_PLUGIN_INFO         "Function plugin to create Ascii Art from a picture."
     IDS_CHAR_SIZE_ERROR     "Blocksize could not be calculated. Choose another font."
     IDS_CLIPBOARD_COPY_TEXT "The ASCII image has been copied to the clipboard as text.\nYou can then paste the text into another program using the Paste command."
-    IDS_STRING_INFO         "Output: %dx%d chars\r\nBlock size: %dx%d pixel\r\n%d used chars: %s"
+    IDS_STRING_INFO         "Output size: %dx%d chars\r\nBlock size for one char: %dx%d pixel\r\n%d used chars: %s"
     IDS_STRING_SINGLE_FILE_ONLY 
                             "Select only one picture for this function plugin."
 END

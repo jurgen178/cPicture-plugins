@@ -13,8 +13,10 @@ public:
 	CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL);   // standard constructor
 	virtual ~CAsciiArtDlg();
 
-// Dialog Data
-	enum { IDD = IDD_DIALOG_ASCII_ART
+	// Dialog Data
+	enum
+	{
+		IDD = IDD_DIALOG_ASCII_ART
 	};
 
 public:

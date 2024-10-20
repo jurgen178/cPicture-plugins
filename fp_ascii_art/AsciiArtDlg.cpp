@@ -225,7 +225,8 @@ void CAsciiArtDlg::Update(const CString fontName)
 		_wsetlocale(LC_ALL, L"en-US");
 		CString density_map_test_case;
 		CString f;
-		for (const auto& pair : densities) {
+		for (const auto& pair : densities)
+		{
 			f.Format(L"densities[%f] = L'%c';\n", pair.first, pair.second);
 			density_map_test_case += f;
 		}
@@ -260,26 +261,27 @@ void CAsciiArtDlg::Update(const CString fontName)
 			}
 		}
 		else
-		if (brightness < 0)
-		{
-			for (int i = 0; i >= brightness; --i)
+			if (brightness < 0)
 			{
-				densities_index[-i] = largestDensityChar;
+				for (int i = 0; i >= brightness; --i)
+				{
+					densities_index[-i] = largestDensityChar;
+				}
 			}
-		}
 
 		for (int i = 0; i < 256; ++i)
 		{
 			const double d(i * largestDensity / 255);
 
 			// Find best matching density.
-			for (const auto& pair : densities) {
+			for (const auto& pair : densities)
+			{
 				if (pair.first >= d)
 				{
 					// Invert (255-i)
 					// white is 255 with the least density and black 0 with the max density.
 					const int index(255 - i - brightness);
-					if(index >= 0 && index < 256)
+					if (index >= 0 && index < 256)
 						densities_index[index] = pair.second;
 
 					break;
@@ -329,14 +331,15 @@ void CAsciiArtDlg::Update(const CString fontName)
 		ascii_display.SetWindowText(ascii_art);
 
 		CString usedChars;
-		for (const auto& pair : densities) {
+		for (const auto& pair : densities)
+		{
 			usedChars += pair.second;
 		}
 
 		// L"%+d" outputs '+0' for the zero value
 		// \x200B is zero width space (ZWSP) because L'' is invalid for %c
 		static_text_brightness.Format(L"%c%d", brightness > 0 ? L'+' : L'\x200B', brightness);
-		
+
 		static_text_info.Format(IDS_STRING_INFO,
 			requested_data2.picture_width / rect_w,
 			requested_data2.picture_height / rect_h,
@@ -350,24 +353,26 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 void CAsciiArtDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if (pScrollBar->GetSafeHwnd() == fontSizeSliderCtrl.GetSafeHwnd())
+	const HWND hwnd = pScrollBar->GetSafeHwnd();
+
+	if (hwnd == fontSizeSliderCtrl.GetSafeHwnd())
 	{
 		const int pos = fontSizeSliderCtrl.GetPos();
 		UpdateDisplayFont(fontSelectComboBox.GetSelectedFont(), pos);
 	}
 	else
-	if (pScrollBar->GetSafeHwnd() == blockSizeSliderCtrl.GetSafeHwnd())
-	{
-		blocksize = blockSizeSliderCtrl.GetPos();
-		Update(fontSelectComboBox.GetSelectedFont());
-	}
-	else
-	if (pScrollBar->GetSafeHwnd() == brightnessSliderCtrl.GetSafeHwnd())
-	{
-		brightness = brightnessSliderCtrl.GetPos();
-		Update(fontSelectComboBox.GetSelectedFont());
-	}
-	
+		if (hwnd == blockSizeSliderCtrl.GetSafeHwnd())
+		{
+			blocksize = blockSizeSliderCtrl.GetPos();
+			Update(fontSelectComboBox.GetSelectedFont());
+		}
+		else
+			if (hwnd == brightnessSliderCtrl.GetSafeHwnd())
+			{
+				brightness = brightnessSliderCtrl.GetPos();
+				Update(fontSelectComboBox.GetSelectedFont());
+			}
+
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 

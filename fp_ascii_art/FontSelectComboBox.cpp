@@ -63,7 +63,8 @@ void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* ob
 
 	// Use 'Consolas' as the default font selection.
 	const int index(FindStringExact(-1, L"Consolas"));
-	if (index != CB_ERR) {
+	if (index != CB_ERR)
+	{
 		SetCurSel(index);
 	}
 }
@@ -103,35 +104,34 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 		CDC dc;
 		dc.Attach(lpDIS->hDC);
 
-		CRect rc(lpDIS->rcItem);
+		CRect item_rect(lpDIS->rcItem);
 
 		if (lpDIS->itemState & ODS_FOCUS)
-			dc.DrawFocusRect(&rc);
+			dc.DrawFocusRect(&item_rect);
 
-		const int indexDC(dc.SaveDC());
-
-		CBrush br;
+		const int saveDC(dc.SaveDC());
+		CBrush brush;
 
 		if (lpDIS->itemState & ODS_SELECTED)
 		{
-			br.CreateSolidBrush(::GetSysColor(COLOR_HIGHLIGHT));
+			brush.CreateSolidBrush(::GetSysColor(COLOR_HIGHLIGHT));
 			dc.SetTextColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
 		}
 		else
 		{
-			br.CreateSolidBrush(dc.GetBkColor());
+			brush.CreateSolidBrush(dc.GetBkColor());
 		}
 
 		dc.SetBkMode(TRANSPARENT);
-		dc.FillRect(&rc, &br);
+		dc.FillRect(&item_rect, &brush);
 
-		HFONT hf = (HFONT)dc.SelectObject(cfont);
+		const HFONT hf = (HFONT)dc.SelectObject(cfont);
 
-		const int iPosY((rc.Height() - dc.GetTextExtent(fontName).cy) / 2);
-		dc.TextOut(rc.left, rc.top + iPosY, fontName);
+		const int y((item_rect.Height() - dc.GetTextExtent(fontName).cy) / 2);
+		dc.TextOut(item_rect.left, item_rect.top + y, fontName);
 
 		dc.SelectObject(hf);
-		dc.RestoreDC(indexDC);
+		dc.RestoreDC(saveDC);
 		dc.Detach();
 	}
 }
@@ -151,7 +151,7 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 		// Get max width of the font name.
 		CClientDC dc(this);
-		HFONT hf = (HFONT)dc.SelectObject(cfont);
+		const HFONT hf = (HFONT)dc.SelectObject(cfont);
 		maxFontNameWidth = max(maxFontNameWidth, dc.GetTextExtent(fontName).cx);
 		dc.SelectObject(hf);
 	}
@@ -160,15 +160,14 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 CString CFontSelectComboBox::GetSelectedFont()
 {
 	const int selIndex(GetCurSel());
+	CString fontName;
+
 	if (selIndex != CB_ERR)
 	{
-		CString fontName;
 		GetLBText(selIndex, fontName);
-
-		return fontName;
 	}
 
-	return L"";
+	return fontName;
 }
 
 void CFontSelectComboBox::OnDropdown()
@@ -179,12 +178,9 @@ void CFontSelectComboBox::OnDropdown()
 
 void CFontSelectComboBox::OnCbnSelchange()
 {
-	const int selIndex(GetCurSel());
-	if (selIndex != CB_ERR)
+	const CString fontName(GetSelectedFont());
+	if (!fontName.IsEmpty())
 	{
-		CString fontName;
-		GetLBText(selIndex, fontName);
-
 		// Call the member function on the object of CAsciiArtDlg.
 		(callbackObj->*callback)(fontName);
 	}

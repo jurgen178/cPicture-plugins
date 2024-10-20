@@ -137,7 +137,8 @@ namespace unittest
 				const double d(i * largestDensity / 255);
 
 				// Find best matching density.
-				for (const auto& pair : densities) {
+				for (const auto& pair : densities)
+				{
 					if (pair.first >= d)
 					{
 						// Invert (255-i)
