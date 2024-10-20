@@ -114,7 +114,7 @@ namespace unittest
 			const WCHAR smallestDensityChar(densities.begin()->second);
 			const WCHAR largestDensityChar(densities.rbegin()->second);
 
-			int brightness = 0;
+			int brightness = 1;
 
 			if (brightness > 0)
 			{
@@ -152,9 +152,9 @@ namespace unittest
 				}
 			}
 
-			Assert::AreEqual(L' ', densities_index[0]);
+			Assert::AreEqual(L'@', densities_index[0]);
 			Assert::AreEqual(L'L', densities_index[127]);
-			Assert::AreEqual(L'@', densities_index[255]);
+			Assert::AreEqual(L' ', densities_index[255]);
 		}
 	};
 }

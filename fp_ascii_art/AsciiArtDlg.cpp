@@ -261,13 +261,13 @@ void CAsciiArtDlg::Update(const CString fontName)
 			}
 		}
 		else
-			if (brightness < 0)
+		if (brightness < 0)
+		{
+			for (int i = 0; i >= brightness; --i)
 			{
-				for (int i = 0; i >= brightness; --i)
-				{
-					densities_index[-i] = largestDensityChar;
-				}
+				densities_index[-i] = largestDensityChar;
 			}
+		}
 
 		for (int i = 0; i < 256; ++i)
 		{
