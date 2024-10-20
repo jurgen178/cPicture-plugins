@@ -246,7 +246,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 		// Array to map the normalized grey values 0..255 to the matching char.
 		WCHAR densities_index[256] = { 0 };
 
-		// Largest density.
+		// End values of the density map.
 		const double largestDensity(densities.rbegin()->first);
 		const WCHAR smallestDensityChar(densities.begin()->second);
 		const WCHAR largestDensityChar(densities.rbegin()->second);
@@ -287,10 +287,9 @@ void CAsciiArtDlg::Update(const CString fontName)
 			}
 		}
 
-		vector<picture_data>::const_iterator it = picture_data_list.begin();
-
-		vector<requested_data> requested_data_list = it->requested_data_list;
 		// Get the second requested data set (unresized picture resized, 100%).
+		vector<picture_data>::const_iterator it = picture_data_list.begin();
+		vector<requested_data> requested_data_list = it->requested_data_list;
 		requested_data requested_data2 = requested_data_list.back();
 
 		BYTE* data = requested_data2.data;
