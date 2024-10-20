@@ -46,6 +46,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_BLOCKSIZE, blockSizeSliderCtrl);
 	DDX_Control(pDX, IDC_SLIDER_BRIGHTNESS, brightnessSliderCtrl);
 	DDX_Text(pDX, IDC_STATIC_TEXT_FONTSIZE, static_text_fontsize);
+	DDX_Text(pDX, IDC_STATIC_TEXT_BRIGHTNESS, static_text_brightness);
 	DDX_Text(pDX, IDC_STATIC_INFO, static_text_info);
 }
 
@@ -333,6 +334,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 			usedChars += pair.second;
 		}
 
+		static_text_brightness.Format(L"%+d", -brightness);
 		static_text_info.Format(IDS_STRING_INFO,
 			requested_data2.picture_width / rect_w,
 			requested_data2.picture_height / rect_h,
@@ -359,6 +361,7 @@ void CAsciiArtDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	else
 	if (pScrollBar->GetSafeHwnd() == brightnessSliderCtrl.GetSafeHwnd())
 	{
+		// Brighter values have less density.
 		brightness = -brightnessSliderCtrl.GetPos();
 		Update(fontSelectComboBox.GetSelectedFont());
 	}

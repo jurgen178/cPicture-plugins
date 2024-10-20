@@ -80,6 +80,7 @@ BEGIN
     LTEXT           "Static",IDC_STATIC_INFO,7,240,194,53
     CONTROL         "",IDC_SLIDER_BRIGHTNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,156,100,12
     LTEXT           "Helligkeit:",IDC_STATIC,7,158,42,8
+    LTEXT           "Static",IDC_STATIC_TEXT_BRIGHTNESS,175,157,18,8
 END
 
 

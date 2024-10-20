@@ -35,6 +35,7 @@ protected:
 	CSliderCtrl blockSizeSliderCtrl;
 	int brightness;
 	CSliderCtrl brightnessSliderCtrl;
+	CString static_text_brightness;
 	CString static_text_info;
 
 protected:
