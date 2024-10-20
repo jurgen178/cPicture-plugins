@@ -295,7 +295,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		BYTE* data = requested_data2.data;
 
-		// Convert the segments to chars.
+		// Map the segments to the chars.
 		CString ascii_art;
 
 		// Enumerate all rect segments.
