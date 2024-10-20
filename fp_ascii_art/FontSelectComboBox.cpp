@@ -7,13 +7,14 @@ static BOOL CALLBACK EnumFontProc(LPLOGFONT lplf, LPTEXTMETRIC lptm, DWORD dwTyp
 {
 	CFontSelectComboBox* pFontSelectComboBox = (CFontSelectComboBox*)lpData;
 
-	// Select only monospace fonts (all chars have the same width).
-	if ((lplf->lfPitchAndFamily & 0x03) == FIXED_PITCH &&	// MONO_FONT
-		lplf->lfWeight == 400
+	// Filter fonts.
+	if ((lplf->lfPitchAndFamily & 0x03) == FIXED_PITCH &&	// MONO_FONT, only monospace fonts (all chars have the same width).
+		lplf->lfWeight == 400 &&							// No font variations.
+		lplf->lfFaceName[0] != L'@'							// No vertical fonts.
 		)
 	{
 		const int index(pFontSelectComboBox->AddString(lplf->lfFaceName));
-		pFontSelectComboBox->SetItemData(index, dwType);
+		//pFontSelectComboBox->SetItemData(index, dwType);
 	}
 
 	return TRUE;

@@ -22,6 +22,7 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	picture_data_list(picture_data_list),
 	index(0),
 	blocksize(72),
+	brightness(0),
 	pParentWnd(pParent)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
@@ -43,6 +44,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT_ASCII, ascii_display);
 	DDX_Control(pDX, IDC_SLIDER_FONTSIZE, fontSizeSliderCtrl);
 	DDX_Control(pDX, IDC_SLIDER_BLOCKSIZE, blockSizeSliderCtrl);
+	DDX_Control(pDX, IDC_SLIDER_BRIGHTNESS, brightnessSliderCtrl);
 	DDX_Text(pDX, IDC_STATIC_TEXT_FONTSIZE, static_text_fontsize);
 	DDX_Text(pDX, IDC_STATIC_INFO, static_text_info);
 }
@@ -68,6 +70,10 @@ BOOL CAsciiArtDlg::OnInitDialog()
 
 	blockSizeSliderCtrl.SetRange(4, 200);	// Set the range.
 	blockSizeSliderCtrl.SetPos(blocksize);	// Set initial position.
+
+	brightnessSliderCtrl.SetRange(-127, 127);	// Set the range.
+	brightnessSliderCtrl.SetPos(1);				// Default brightness=0 does not move the slider to the middle.
+	brightnessSliderCtrl.SetPos(brightness);	// Set initial position.
 
 	// Set text wrap for static control.
 	CStatic* pStaticText = (CStatic*)GetDlgItem(IDC_STATIC_INFO);
@@ -241,6 +247,25 @@ void CAsciiArtDlg::Update(const CString fontName)
 
 		// Largest density.
 		const double largestDensity(densities.rbegin()->first);
+		const WCHAR smallestDensityChar(densities.begin()->second);
+		const WCHAR largestDensityChar(densities.rbegin()->second);
+
+		// Brightness shifts the values. Fill the end gaps.
+		if (brightness > 0)
+		{
+			for (int i = 0; i < brightness; ++i)
+			{
+				densities_index[i] = largestDensityChar;
+			}
+		}
+		else
+		if (brightness < 0)
+		{
+			for (int i = 0; i >= brightness; --i)
+			{
+				densities_index[255 + i] = smallestDensityChar;
+			}
+		}
 
 		for (int i = 0; i < 256; ++i)
 		{
@@ -252,7 +277,10 @@ void CAsciiArtDlg::Update(const CString fontName)
 				{
 					// Invert (255-i)
 					// white is 255 with the least density and black 0 with the max density.
-					densities_index[255 - i] = pair.second;
+					const int index(brightness + 255 - i);
+					if(index >= 0 && index < 256)
+						densities_index[index] = pair.second;
+
 					break;
 				}
 			}
@@ -328,7 +356,13 @@ void CAsciiArtDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		blocksize = blockSizeSliderCtrl.GetPos();
 		Update(fontSelectComboBox.GetSelectedFont());
 	}
-
+	else
+	if (pScrollBar->GetSafeHwnd() == brightnessSliderCtrl.GetSafeHwnd())
+	{
+		brightness = -brightnessSliderCtrl.GetPos();
+		Update(fontSelectComboBox.GetSelectedFont());
+	}
+	
 	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 

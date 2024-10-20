@@ -20,6 +20,8 @@
 #define IDC_SLIDER_BLOCKSIZE            1006
 #define IDC_STATIC_TEXT_FONTSIZE        1007
 #define IDC_STATIC_INFO                 1008
+#define IDC_SLIDER_BLOCKSIZE2           1009
+#define IDC_SLIDER_BRIGHTNESS           1009
 
 // Next default values for new objects
 // 

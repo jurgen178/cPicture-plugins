@@ -33,6 +33,8 @@ protected:
 	CString static_text_fontsize;
 	int blocksize;
 	CSliderCtrl blockSizeSliderCtrl;
+	int brightness;
+	CSliderCtrl brightnessSliderCtrl;
 	CString static_text_info;
 
 protected:
