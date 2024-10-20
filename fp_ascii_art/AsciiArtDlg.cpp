@@ -256,7 +256,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 		{
 			for (int i = 0; i < brightness; ++i)
 			{
-				densities_index[i] = largestDensityChar;
+				densities_index[255 - i] = smallestDensityChar;
 			}
 		}
 		else
@@ -264,7 +264,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 		{
 			for (int i = 0; i >= brightness; --i)
 			{
-				densities_index[255 + i] = smallestDensityChar;
+				densities_index[-i] = largestDensityChar;
 			}
 		}
 
@@ -278,7 +278,7 @@ void CAsciiArtDlg::Update(const CString fontName)
 				{
 					// Invert (255-i)
 					// white is 255 with the least density and black 0 with the max density.
-					const int index(brightness + 255 - i);
+					const int index(255 - i - brightness);
 					if(index >= 0 && index < 256)
 						densities_index[index] = pair.second;
 
@@ -334,13 +334,17 @@ void CAsciiArtDlg::Update(const CString fontName)
 			usedChars += pair.second;
 		}
 
-		static_text_brightness.Format(L"%+d", -brightness);
+		// L"%+d" outputs '+0' for the zero value
+		// \x200B is zero width space (ZWSP)
+		static_text_brightness.Format(L"%c%d", brightness > 0 ? L'+' : L'\x200B', brightness);
+		
 		static_text_info.Format(IDS_STRING_INFO,
 			requested_data2.picture_width / rect_w,
 			requested_data2.picture_height / rect_h,
 			size.cx, size.cy,
 			densities.size(),
 			usedChars);
+
 		UpdateData(false); // write the data
 	}
 }
@@ -361,8 +365,7 @@ void CAsciiArtDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	else
 	if (pScrollBar->GetSafeHwnd() == brightnessSliderCtrl.GetSafeHwnd())
 	{
-		// Brighter values have less density.
-		brightness = -brightnessSliderCtrl.GetPos();
+		brightness = brightnessSliderCtrl.GetPos();
 		Update(fontSelectComboBox.GetSelectedFont());
 	}
 	
