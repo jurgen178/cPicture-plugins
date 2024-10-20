@@ -29,18 +29,24 @@ protected:
 	CStatic	preview_position;
 	CEdit ascii_display;
 	CFont ascii_display_font;
+
 	const vector<picture_data>& picture_data_list;
 	BITMAPINFOHEADER bmiHeader;
+
 	CSliderCtrl fontSizeSliderCtrl;
 	CString static_text_fontsize;
+	
 	int blocksize;
 	CSliderCtrl blockSizeSliderCtrl;
+	
 	int brightness;
 	CSliderCtrl brightnessSliderCtrl;
 	CString static_text_brightness;
+	
 	int contrast;
 	CSliderCtrl contrastSliderCtrl;
 	CString static_text_contrast;
+	
 	CString static_text_info;
 
 protected:

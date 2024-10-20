@@ -72,11 +72,11 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,423,279,50,14
     EDITTEXT        IDC_EDIT_ASCII,215,7,258,262,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
     COMBOBOX        IDC_FONT_SELECT_COMBO,51,195,148,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,213,280,100,12
+    CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,214,280,100,12
     LTEXT           "Schriftart:",IDC_STATIC,7,197,43,8
     PUSHBUTTON      "Kopieren",IDC_BUTTON_COPY,359,279,50,14
     CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,223,100,12
-    LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,318,282,18,8
+    LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,319,282,18,8
     LTEXT           "Static",IDC_STATIC_INFO,7,240,194,53
     CONTROL         "",IDC_SLIDER_BRIGHTNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,156,100,12
     LTEXT           "Helligkeit:",IDC_STATIC,7,158,42,8
@@ -126,7 +126,7 @@ STRINGTABLE
 BEGIN
     IDS_PLUGIN_SHORT_DESC   "Ascii Art"
     IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul Ascii Art"
-    IDS_PLUGIN_INFO         "Funktionszusatzmodul zum Erstellen von Ascii-Art."
+    IDS_PLUGIN_INFO         "Funktionszusatzmodul um ein Bild in ein Buchstabenbild (Ascii Art) zu konvertieren."
     IDS_CHAR_SIZE_ERROR     "Blockgröße konnte nicht berechnet werden. Wählen Sie eine andere Schiftart."
     IDS_CLIPBOARD_COPY_TEXT "Das ASCII-Bild wurde als Text in die Zwischenablage übertragen.\nSie können dann den Text in einem anderen Programm mit dem Befehl ""Einfügen"" übernehmen."
     IDS_STRING_INFO         "Ausgabegröße: %dx%d Zeichen\r\nBlockgröße für ein Zeichen: %dx%d Bildpunkte\r\n%d verwendete Zeichen: %s"
@@ -150,21 +150,26 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_DIALOG_ASCII_ART DIALOGEX 0, 0, 480, 280
+IDD_DIALOG_ASCII_ART DIALOGEX 0, 0, 480, 300
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,192,137
-    DEFPUSHBUTTON   "OK",IDOK,423,259,50,14
-    EDITTEXT        IDC_EDIT_ASCII,215,7,258,241,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
-    COMBOBOX        IDC_FONT_SELECT_COMBO,7,175,166,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,213,259,100,12
-    LTEXT           "Font:",IDC_STATIC,7,164,165,8
-    PUSHBUTTON      "Copy",IDC_BUTTON_COPY,359,259,50,14
-    CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,59,202,100,12
-    LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,318,261,18,8
-    LTEXT           "Block size:",IDC_STATIC,7,204,50,8
-    LTEXT           "Static",IDC_STATIC_INFO,7,220,194,53
+    DEFPUSHBUTTON   "OK",IDOK,423,279,50,14
+    EDITTEXT        IDC_EDIT_ASCII,215,7,258,262,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    COMBOBOX        IDC_FONT_SELECT_COMBO,51,195,148,84,CBS_DROPDOWNLIST | CBS_OWNERDRAWVARIABLE | CBS_SORT | CBS_HASSTRINGS | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_SLIDER_FONTSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,214,280,100,12
+    LTEXT           "Font:",IDC_STATIC,7,197,43,8
+    PUSHBUTTON      "Copy",IDC_BUTTON_COPY,359,279,50,14
+    CONTROL         "",IDC_SLIDER_BLOCKSIZE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,223,100,12
+    LTEXT           "Static",IDC_STATIC_TEXT_FONTSIZE,319,282,18,8
+    LTEXT           "Static",IDC_STATIC_INFO,7,240,194,53
+    CONTROL         "",IDC_SLIDER_BRIGHTNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,156,100,12
+    LTEXT           "Brightness:",IDC_STATIC,7,158,42,8
+    LTEXT           "Static",IDC_STATIC_TEXT_BRIGHTNESS,175,157,18,8
+    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,73,170,100,12
+    LTEXT           "Contrast:",IDC_STATIC,7,172,42,8
+    LTEXT           "Static",IDC_STATIC_TEXT_CONTRAST,175,171,18,8
 END
 
 
@@ -181,7 +186,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 473
         TOPMARGIN, 7
-        BOTTOMMARGIN, 273
+        BOTTOMMARGIN, 293
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -233,12 +238,12 @@ STRINGTABLE
 BEGIN
     IDS_PLUGIN_SHORT_DESC   "Ascii Art"
     IDS_PLUGIN_LONG_DESC    "Function plugin Ascii Art"
-    IDS_PLUGIN_INFO         "Function plugin to create Ascii Art from a picture."
+    IDS_PLUGIN_INFO         "Function plugin to convert a picture into ASCII art."
     IDS_CHAR_SIZE_ERROR     "Blocksize could not be calculated. Choose another font."
     IDS_CLIPBOARD_COPY_TEXT "The ASCII image has been copied to the clipboard as text.\nYou can then paste the text into another program using the Paste command."
     IDS_STRING_INFO         "Output size: %dx%d chars\r\nBlock size for one char: %dx%d pixel\r\n%d used chars: %s"
     IDS_STRING_SINGLE_FILE_ONLY 
-                            "Select only one picture for this function plugin."
+                            "Choose a single image for this function plugin."
 END
 
 #endif    // English (United States) resources

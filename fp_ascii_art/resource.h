@@ -8,7 +8,6 @@
 #define IDS_PLUGIN_INFO                 102
 #define IDS_CHAR_SIZE_ERROR             103
 #define IDS_CLIPBOARD_COPY_TEXT         104
-#define IDS_EMPTY_LIST                  105
 #define IDS_STRING_INFO                 105
 #define IDS_STRING_SINGLE_FILE_ONLY     106
 #define IDD_DIALOG_ASCII_ART            1000
@@ -22,9 +21,8 @@
 #define IDC_STATIC_INFO                 1008
 #define IDC_SLIDER_BRIGHTNESS           1009
 #define IDC_SLIDER_CONTRAST             1010
-#define IDC_STATIC_TEXT_BRIGHTNESS      1018
-#define IDC_STATIC_TEXT_BRIGHTNESS2     1019
-#define IDC_STATIC_TEXT_CONTRAST        1019
+#define IDC_STATIC_TEXT_BRIGHTNESS      1011
+#define IDC_STATIC_TEXT_CONTRAST        1012
 
 // Next default values for new objects
 // 
