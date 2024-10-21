@@ -238,7 +238,7 @@ STRINGTABLE
 BEGIN
     IDS_PLUGIN_SHORT_DESC   "Ascii Art"
     IDS_PLUGIN_LONG_DESC    "Function plugin Ascii Art"
-    IDS_PLUGIN_INFO         "Function plugin to convert a picture into ASCII art."
+    IDS_PLUGIN_INFO         "Function plugin to convert an image into a letter image (Ascii Art)."
     IDS_CHAR_SIZE_ERROR     "Blocksize could not be calculated. Choose another font."
     IDS_CLIPBOARD_COPY_TEXT "The ASCII image has been copied to the clipboard as text.\nYou can then paste the text into another program using the Paste command."
     IDS_STRING_INFO         "Output size: %dx%d chars\r\nBlock size for one char: %dx%d pixel\r\n%d used chars: %s"
