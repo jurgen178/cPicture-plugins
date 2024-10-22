@@ -67,11 +67,14 @@ END
 STRINGTABLE
 BEGIN
     IDS_PLUGIN_SHORT_DESC   "Belichtungsunterschied"
-    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede."
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede der ausgew‰hlten Bilder."
     IDS_PLUGIN_INFO         "Dieses Funktionszusatzmodul berechnet die Belichtungsunterschiede der ausgew‰hlten Bilder mit dem ersten Bild als Referenzbild."
     IDS_MIN_SELECTION       "W‰hlen Sie mindestens zwei Bilder aus."
     IDS_COPY                "\n(Strg+C um die Werte in die Zwischenablage zu kopieren)"
     IDS_NO_EXIF             "Das Bild '%s' hat keine zus‰tzlichen Bildinformationen, die zur Berechnung der Belichtung notwendig sind."
+    IDS_SHUTTERSPEED        "Verschluﬂzeit"
+    IDS_APERTURE            "Blende"
+    IDS_ISO                 "Iso"
 END
 
 #endif    // German (Germany) resources
@@ -119,11 +122,14 @@ END
 STRINGTABLE
 BEGIN
     IDS_PLUGIN_SHORT_DESC   "Exposure Difference"
-    IDS_PLUGIN_LONG_DESC    "Function plugin to calculate the exposure difference."
+    IDS_PLUGIN_LONG_DESC    "Function plugin to calculate the exposure difference of the selected pictures."
     IDS_PLUGIN_INFO         "This function plugin calculate the exposure difference of the selected pictures. The first selected picture is the reference picture."
     IDS_MIN_SELECTION       "Select at least two pictures."
     IDS_COPY                "\n(Ctrl+C to copy the values to the clipboard)"
     IDS_NO_EXIF             "The picture '%s' has no additional information necessary to calculate the exposure."
+    IDS_SHUTTERSPEED        "Shutterspeed"
+    IDS_APERTURE            "Aperture"
+    IDS_ISO                 "Iso"
 END
 
 #endif    // English (United States) resources

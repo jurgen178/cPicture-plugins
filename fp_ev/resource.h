@@ -9,6 +9,9 @@
 #define IDS_MIN_SELECTION               107
 #define IDS_COPY                        108
 #define IDS_NO_EXIF                     109
+#define IDS_SHUTTERSPEED                110
+#define IDS_APERTURE                    111
+#define IDS_ISO                         112
 
 // Next default values for new objects
 // 

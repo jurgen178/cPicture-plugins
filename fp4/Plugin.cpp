@@ -102,7 +102,7 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 			*data = 255 - *data++;	// blue
 
 			//// Or make a grey scale picture.
-			//const BYTE grey(306 * *(data) + 601 * *(data+1) + 117 * *(data + 2) >> 10);
+			//const BYTE grey((306 * *(data) + 601 * *(data + 1) + 117 * *(data + 2)) >> 10);
 			//*data++ = grey;	// red
 			//*data++ = grey;	// green
 			//*data++ = grey;	// blue

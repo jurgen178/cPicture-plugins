@@ -2,6 +2,7 @@
 #include "plugin.h"
 #include "locale.h"
 #include "resource.h"
+#include <functional>
 
 // Example Plugin cpp_fp_ev.
 // Function plugin to calculate the exposure difference.
@@ -32,11 +33,11 @@ const int __stdcall GetPluginInit()
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
 	// Plugin-Fabric: return the one function plugin.
-	return CFunctionPluginSample1::GetInstance;
+	return CFunctionPluginEV::GetInstance;
 }
 
 
-CFunctionPluginSample1::CFunctionPluginSample1()
+CFunctionPluginEV::CFunctionPluginEV()
 	: handle_wnd(NULL),
 	picture_processed(0),
 	pictures(0)
@@ -44,7 +45,7 @@ CFunctionPluginSample1::CFunctionPluginSample1()
 	_wsetlocale(LC_ALL, L".ACP");
 }
 
-struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
+struct PluginData __stdcall CFunctionPluginEV::get_plugin_data()
 {
 	struct PluginData pluginData;
 
@@ -56,7 +57,7 @@ struct PluginData __stdcall CFunctionPluginSample1::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+enum REQUEST_TYPE __stdcall CFunctionPluginEV::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 
@@ -73,18 +74,44 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vecto
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
-bool __stdcall CFunctionPluginSample1::process_picture(const picture_data& picture_data)
+bool __stdcall CFunctionPluginEV::process_picture(const picture_data& picture_data)
 { 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
 
-double log2(double x) 
+double log_2(double x) 
 {
 	return log(x) / log(2.0);
 }
 
-const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<picture_data>& picture_data_list)
+// Aggregate vector to a string.
+template<class T>
+CString JoinString(typename vector<T>::const_iterator begin,
+	typename vector<T>::const_iterator end,
+	const function<CString(typename T)>& toString,
+	const CString& startText,
+	const CString& endText,
+	const CString& separator)
+{
+	CString text(startText);
+
+	for (typename vector<T>::const_iterator it = begin; it != end; ++it)
+	{
+		// Use the lambda to convert the template type data to text.
+		text += toString(*it);
+
+		// Skip separator for last element.
+		if (it != end - 1)
+		{
+			text += separator;
+		}
+	}
+
+	return text + endText;
+}
+
+const vector<update_data>& __stdcall CFunctionPluginEV::end(const vector<picture_data>& picture_data_list)
 {
 	CString list;
 	vector<picture_data>::const_iterator it = picture_data_list.begin();
@@ -99,7 +126,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 		const double apertureA(it->aperture);
 		const double isoA(it->iso);
 
-		if (shutterspeedA < 1.0 || apertureA < 1.0 || isoA < 1.0)
+		if (shutterspeedA < 1.0 && apertureA < 1.0 && isoA < 1.0)
 		{
 			list.Format(IDS_NO_EXIF, nameA);
 		}
@@ -117,21 +144,38 @@ const vector<update_data>& __stdcall CFunctionPluginSample1::end(const vector<pi
 				const double apertureB(it->aperture);
 				const double isoB(it->iso);
 
-				// Diff
-				const double shutterspeedAB(log2(shutterspeedA) - log2(shutterspeedB));
-				const double apertureAB(2 * (log2(apertureA) - log2(apertureB)));
-				const double isoAB(log2(isoB) - log2(isoA));
-
-				const double ev(shutterspeedAB + apertureAB + isoAB);
+				const bool shutterspeedMatch(shutterspeedA >= 1.0 && shutterspeedB >= 1.0);
+				const bool apertureMatch(apertureA >= 1.0 && apertureB >= 1.0);
+				const bool isoMatch(isoA >= 1.0 && isoB >= 1.0);
 
 				CString evStr;
-				if (shutterspeedB < 1.0 || apertureB < 1.0 || isoB < 1.0)
+				vector <unsigned int> matchList;
+
+				if (shutterspeedMatch || apertureMatch || isoMatch)
 				{
-					evStr.Format(L"%s - %s = --EV\n", nameA, nameB);
+					// Diff
+					auto shutterspeedEV([&matchList](double shutterspeedA, double shutterspeedB) { matchList.push_back(IDS_SHUTTERSPEED); return log_2(shutterspeedA) - log_2(shutterspeedB); });
+					const double shutterspeedAB(shutterspeedMatch ? shutterspeedEV(shutterspeedA, shutterspeedB) : 0.0);
+
+					auto apertureEV([&matchList](double apertureA, double apertureB) { matchList.push_back(IDS_APERTURE); return 2 * (log_2(apertureA) - log_2(apertureB)); });
+					const double apertureAB(apertureMatch ? apertureEV(apertureA, apertureB) : 0.0);
+
+					auto isoEV([&matchList](double isoA, double isoB) { matchList.push_back(IDS_ISO); return log_2(isoB) - log_2(isoA); });
+					const double isoAB(isoMatch ? isoEV(isoA, isoB) : 0.0);
+
+					const double ev(shutterspeedAB + apertureAB + isoAB);
+
+					// toString lambda expression
+					auto getText([](auto id) { CString text; text.LoadString(id); return text; });
+
+					// Add list of matched parameter '(p1, p2, p3)'.		
+					const CString matchParameter(JoinString<unsigned int>(matchList.begin(), matchList.end(), getText, L"(", L")", L", "));
+
+					evStr.Format(L"%s - %s = %.2fEV %s\n", nameA, nameB, ev, matchParameter);
 				}
 				else
 				{
-					evStr.Format(L"%s - %s = %.2fEV\n", nameA, nameB, ev);
+					evStr.Format(L"%s - %s = --EV\n", nameA, nameB);
 				}
 
 				list += evStr;

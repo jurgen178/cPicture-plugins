@@ -3,23 +3,22 @@
 #include "FunctionPlugin.h"
 
 
-class CFunctionPluginEV : public CFunctionPlugin
+class CFunctionPluginAsciiArt : public CFunctionPlugin
 {
 protected:
-	CFunctionPluginEV();
+	CFunctionPluginAsciiArt();
+
+public:
+	virtual __stdcall ~CFunctionPluginAsciiArt() { };
 
 protected:
 	HWND handle_wnd;
-	int picture_processed;
-	int pictures;
-
-public:
-	virtual __stdcall ~CFunctionPluginEV() { };
+	CWnd parent_wnd;
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
 	{
-		return new CFunctionPluginEV;
+		return new CFunctionPluginAsciiArt;
 	};
 
 public:
