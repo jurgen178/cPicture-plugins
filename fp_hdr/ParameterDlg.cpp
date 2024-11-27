@@ -40,7 +40,8 @@ ParameterDlg::ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pPare
   : CDialog(ParameterDlg::IDD, pParent),
 	picture_list(picture_list),
 	jpeg_quality(95),
-	finished(false)
+	finished(false),
+	Dpi(pParent)
 {
 }
 
@@ -69,9 +70,10 @@ BOOL ParameterDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	console_font.CreateFont(-12, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS, 
+	console_font.CreateFont(Dpi.Scale(-11), 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
 				  CLIP_CHARACTER_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_SWISS, L"Consolas");
 	console.SetFont(&console_font, FALSE);
+	console.SetLimitText(1024000);
 
 	return TRUE;
 }

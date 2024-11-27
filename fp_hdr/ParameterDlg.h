@@ -3,6 +3,7 @@
 #include "Plugin.h"
 #include "resource.h"
 #include "afxwin.h"
+#include "dpi.h"
 
 
 class CColorEdit : public CEdit
@@ -48,6 +49,7 @@ protected:
 	CFont console_font;
 	CColorEdit console;
 	bool finished;
+	CDPI Dpi;
 
 public:
 	bool CheckFile(const WCHAR* pFile);
