@@ -267,4 +267,10 @@ void CSampleDlg::OnBnClickedButtonSet()
 		update_total();
 		PictureListCtrl.RedrawWindow();
 	}
+	else
+	{
+		CString msg;
+		msg.Format(IDS_SELECT_PRINTS);
+		::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONEXCLAMATION);
+	}
 }

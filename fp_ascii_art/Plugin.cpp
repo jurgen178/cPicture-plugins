@@ -77,7 +77,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 	parent.Attach(handle_wnd);
 
 	vector<picture_data> picture_data_list;
-	CAsciiArtDlg AsciiDlg(picture_data_list, &parent);
+	CAsciiArtDlg AsciiDlg(picture_data_list, &parent, get_plugin_data().desc);
 	
 	AsciiDlg.Create(IDD_DIALOG_ASCII_ART, &parent);
 	parent.Detach();
@@ -126,7 +126,7 @@ const vector<update_data>& __stdcall CFunctionPluginAsciiArt::end(const vector<p
 	CWnd parent;
 	parent.Attach(handle_wnd);
 
-	CAsciiArtDlg AsciiArtDlg(picture_data_list, &parent);
+	CAsciiArtDlg AsciiArtDlg(picture_data_list, &parent, get_plugin_data().desc);
 	AsciiArtDlg.DoModal();
 
 	parent.Detach();

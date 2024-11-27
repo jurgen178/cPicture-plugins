@@ -153,7 +153,10 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 
 	if (Dib == NULL)
 	{
-		AfxMessageBox(IDS_INDEX_TOO_LARGE);
+		CString msg;
+		msg.Format(IDS_INDEX_TOO_LARGE);
+		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+
 		return update_data_list;
 	}
 

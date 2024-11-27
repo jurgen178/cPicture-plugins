@@ -10,7 +10,7 @@
 class CAsciiArtDlg : public CDialog
 {
 public:
-	CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL);   // standard constructor
+	CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL, CString title = L"");   // standard constructor
 	virtual ~CAsciiArtDlg();
 
 	// Dialog Data
@@ -25,6 +25,7 @@ public:
 	CWnd* pParentWnd;
 
 protected:
+	CString title;
 	int index;
 	CStatic	preview_position;
 	CEdit ascii_display;

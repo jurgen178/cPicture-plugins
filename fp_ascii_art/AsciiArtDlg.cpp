@@ -17,14 +17,15 @@ extern BOOL CreateFont2(CFont& font, const CString& fontName, const int fontHeig
 
 // CAsciiArtDlg dialog
 
-CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
+CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/, CString title)
 	: CDialog(CAsciiArtDlg::IDD, pParent),
+	pParentWnd(pParent),
+	title(title),
 	picture_data_list(picture_data_list),
 	index(0),
 	blocksize(72),
 	brightness(0),
-	contrast(0),
-	pParentWnd(pParent)
+	contrast(0)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -150,7 +151,11 @@ void CAsciiArtDlg::Update(const CString fontName)
 		if (!(size.cx > 0 && size.cy > 0))
 		{
 			memDC.SelectObject(pOldFont);
-			AfxMessageBox(IDS_CHAR_SIZE_ERROR, MB_ICONERROR);
+
+			CString msg;
+			msg.Format(IDS_CHAR_SIZE_ERROR);
+			::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONERROR);
+
 			return;
 		}
 
@@ -512,5 +517,7 @@ void CAsciiArtDlg::OnClickedButtonCopy()
 	ascii_display.GetWindowText(text);
 	TextToClipboard(text);
 
-	AfxMessageBox(IDS_CLIPBOARD_COPY_TEXT, MB_ICONINFORMATION);
+	CString msg;
+	msg.Format(IDS_CLIPBOARD_COPY_TEXT);
+	::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
 }

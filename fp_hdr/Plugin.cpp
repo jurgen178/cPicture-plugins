@@ -254,7 +254,7 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<pictur
 		CWnd parent;
 		parent.Attach(handle_wnd);
 
-		ParameterDlg parameterDlg(picture_list, &parent);
+		ParameterDlg parameterDlg(picture_list, &parent, get_plugin_data().desc);
 
 		const CString bild_1(picture_list[0]);
 		const CString bild_n(picture_list[picture_list.size() - 1]);

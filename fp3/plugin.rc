@@ -139,6 +139,7 @@ BEGIN
     IDS_TOTAL_PRICE_FORMAT  "€%.2f"
     IDS_ORDER_CONFIRMATION  "Vielen Dank für Ihre Bestellung!\nBestellübersicht: %1!d! Ausdruck(e) für %2"
     IDS_MAX_PRINTS          "Es können nur 100 Drucke bestellt werden."
+    IDS_SELECT_PRINTS       "Wählen Sie erst ein Bild aus."
 END
 
 #endif    // German (Germany) resources
@@ -247,6 +248,7 @@ BEGIN
     IDS_TOTAL_PRICE_FORMAT  "$%.2f"
     IDS_ORDER_CONFIRMATION  "Thank you for your Order!\nOrder summary: %1!d! print(s) for %2"
     IDS_MAX_PRINTS          "Only 100 prints can be ordered."
+    IDS_SELECT_PRINTS       "Select a picture first."
 END
 
 #endif    // English (United States) resources

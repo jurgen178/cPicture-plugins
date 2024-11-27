@@ -36,8 +36,9 @@ HBRUSH CColorEdit::CtlColor(CDC* pDC, UINT nCtlColor)
 
 // ParameterDlg dialog
 
-ParameterDlg::ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent /*=NULL*/)
+ParameterDlg::ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent /*=NULL*/, CString title)
   : CDialog(ParameterDlg::IDD, pParent),
+	title(title),
 	picture_list(picture_list),
 	jpeg_quality(95),
 	finished(false),
@@ -103,7 +104,10 @@ void ParameterDlg::OnBnClickedOk()
 
 	if(!CheckFile(enfuse_exe_path))
 	{
-		AfxMessageBox(IDS_ENFUSE_MISSING);
+		CString msg;
+		msg.Format(IDS_ENFUSE_MISSING);
+		::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
+
 		OnBnClickedButtonBrowse();
 		//GetDlgItem(IDC_BUTTON_BROWSE)->SetFocus();
 	}
