@@ -488,7 +488,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 			requested_data2.picture_width / rect_w,
 			requested_data2.picture_height / rect_h,
 			size.cx, size.cy,
-			densities.size(),
+			ZxBlockSymbols ? zx_blocks.GetLength() : densities.size(),
 			ZxBlockSymbols ? zx_blocks : usedChars);
 
 		UpdateData(false); // write the data
