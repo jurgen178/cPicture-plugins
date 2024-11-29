@@ -23,6 +23,7 @@
 #define IDC_SLIDER_CONTRAST             1010
 #define IDC_STATIC_TEXT_BRIGHTNESS      1011
 #define IDC_STATIC_TEXT_CONTRAST        1012
+#define IDC_CHECK_ZX_BLOCK_SYMBOLS      1013
 
 // Next default values for new objects
 // 
@@ -30,7 +31,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        110
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

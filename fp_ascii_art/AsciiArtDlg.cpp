@@ -25,7 +25,8 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	index(0),
 	blocksize(72),
 	brightness(0),
-	contrast(0)
+	contrast(0),
+	m_ZxBlockSymbols(false)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -52,6 +53,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STATIC_TEXT_BRIGHTNESS, static_text_brightness);
 	DDX_Text(pDX, IDC_STATIC_TEXT_CONTRAST, static_text_contrast);
 	DDX_Text(pDX, IDC_STATIC_INFO, static_text_info);
+	DDX_Control(pDX, IDC_CHECK_ZX_BLOCK_SYMBOLS, m_ButtonZxBlockSymbols);
 }
 
 
@@ -60,6 +62,7 @@ BEGIN_MESSAGE_MAP(CAsciiArtDlg, CDialog)
 	ON_WM_HSCROLL()
 	ON_MESSAGE(WM_POST_INITDIALOG, &CAsciiArtDlg::OnPostInitDialog)
 	ON_BN_CLICKED(IDC_BUTTON_COPY, &CAsciiArtDlg::OnClickedButtonCopy)
+	ON_BN_CLICKED(IDC_CHECK_ZX_BLOCK_SYMBOLS, &CAsciiArtDlg::OnClickedCheckZxBlockSymbols)
 END_MESSAGE_MAP()
 
 
@@ -356,115 +359,120 @@ void CAsciiArtDlg::Update(const CString& fontName)
 		// Map the segments to the chars.
 		CString ascii_art;
 
-		//// Enumerate all rect segments.
-		//for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
-		//{
-		//	for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
-		//	{
-		//		__int64 grey_sum = 0;
+		// https://en.wikipedia.org/wiki/Block_Elements
+		const CString zx_blocks = L" ▗▖▄▝▐▞▟▘▚▌▙▀▜▛█";
 
-		//		// Read the rect segment at (rect_x, rect_y).
-		//		for (register int y = 0; y < rect_h; y++)
-		//		{
-		//			for (register int x = 0; x < rect_w; x++)
-		//			{
-		//				const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
-		//				const BYTE grey(data[index]);
-		//				grey_sum += grey;
-		//			}
-		//		}
-
-		//		// average grey value mapped to 0..255
-		//		const int density_index((int)(grey_sum / rect_area));
-
-		//		// Add density matching char.
-		//		const WCHAR w(densities_index[density_index]);
-		//		ascii_art += w;
-		//	}
-
-		//	ascii_art += L"\r\n";
-		//}
-
-
-		// Enumerate all rect segments.
-		for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
+		if (m_ZxBlockSymbols)
 		{
-			for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
+			// Enumerate all rect segments.
+			for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
 			{
-				__int64 grey_sum1 = 0;
-				__int64 grey_sum2 = 0;
-				__int64 grey_sum3 = 0;
-				__int64 grey_sum4 = 0;
-
-				// Read the rect segment at (rect_x, rect_y).
-				for (register int y1 = 0; y1 < rect_h / 2; y1++)
+				for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
 				{
-					for (register int x1 = 0; x1 < rect_w / 2; x1++)
+					__int64 grey_sum1 = 0;
+					__int64 grey_sum2 = 0;
+					__int64 grey_sum3 = 0;
+					__int64 grey_sum4 = 0;
+
+					// Read the rect segment at (rect_x, rect_y).
+					for (register int y1 = 0; y1 < rect_h / 2; y1++)
 					{
-						const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x1));
-						const BYTE grey(data[index]);
-						grey_sum1 += grey;
+						for (register int x1 = 0; x1 < rect_w / 2; x1++)
+						{
+							const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x1));
+							const BYTE grey(data[index]);
+							grey_sum1 += grey;
+						}
+						for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
+						{
+							const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x2));
+							const BYTE grey(data[index]);
+							grey_sum2 += grey;
+						}
 					}
-					for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
+					for (register int y2 = rect_h / 2; y2 < rect_h; y2++)
 					{
-						const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x2));
-						const BYTE grey(data[index]);
-						grey_sum2 += grey;
+						for (register int x1 = 0; x1 < rect_w / 2; x1++)
+						{
+							const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x1));
+							const BYTE grey(data[index]);
+							grey_sum3 += grey;
+						}
+						for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
+						{
+							const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x2));
+							const BYTE grey(data[index]);
+							grey_sum4 += grey;
+						}
 					}
+
+					// 12
+					// 34
+					const int rect_area4 = rect_area / 4;
+
+					const bool b1 = ((grey_sum1 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
+					const bool b2 = ((grey_sum2 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
+					const bool b3 = ((grey_sum3 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
+					const bool b4 = ((grey_sum4 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
+
+					const int index = (b1 ? 1 : 0) + (b2 ? 2 : 0) + (b3 ? 4 : 0) + (b4 ? 8 : 0);
+
+					// 1 2 3 4 B
+					// 0 0 0 0 
+					// 0 0 0 1 ▗
+					// 0 0 1 0 ▖
+					// 0 0 1 1 ▄
+					// 0 1 0 0 ▝
+					// 0 1 0 1 ▐
+					// 0 1 1 0 ▞
+					// 0 1 1 1 ▟
+					// 1 0 0 0 ▘
+					// 1 0 0 1 ▚
+					// 1 0 1 0 ▌
+					// 1 0 1 1 ▙
+					// 1 1 0 0 ▀
+					// 1 1 0 1 ▜
+					// 1 1 1 0 ▛
+					// 1 1 1 1 █
+
+					// Add matching block char.
+					const WCHAR w(zx_blocks[index]);
+					ascii_art += w;
 				}
-				for (register int y2 = rect_h /2 ; y2 < rect_h; y2++)
-				{
-					for (register int x1 = 0; x1 < rect_w / 2; x1++)
-					{
-						const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x1));
-						const BYTE grey(data[index]);
-						grey_sum3 += grey;
-					}
-					for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
-					{
-						const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x2));
-						const BYTE grey(data[index]);
-						grey_sum4 += grey;
-					}
-				}
 
-				// 12
-				// 34
-				const int rect_area4 = rect_area / 4;
-				const bool b1 = grey_sum1 / rect_area4 > 127;
-				const bool b2 = grey_sum2 / rect_area4 > 127;
-				const bool b3 = grey_sum3 / rect_area4 > 127;
-				const bool b4 = grey_sum4 / rect_area4 > 127;
-				const int index = (b1 ? 1 : 0) + (b2 ? 2 : 0) + (b3 ? 4 : 0) + (b4 ? 8 : 0);
-
-				// 1 2 3 4 B
-				// 0 0 0 0 
-				// 0 0 0 1 ▗
-				// 0 0 1 0 ▖
-				// 0 0 1 1 ▄
-				// 0 1 0 0 ▝
-				// 0 1 0 1 ▐
-				// 0 1 1 0 ▞
-				// 0 1 1 1 ▟
-				// 1 0 0 0 ▘
-				// 1 0 0 1 ▚
-				// 1 0 1 0 ▌
-				// 1 0 1 1 ▙
-				// 1 1 0 0 ▀
-				// 1 1 0 1 ▜
-				// 1 1 1 0 ▛
-				// 1 1 1 1 █
-
-				// https://en.wikipedia.org/wiki/Block_Elements
-
-				const CString blocks = L" ▗▖▄▝▐▞▟▘▚▌▙▀▜▛█";
-
-				// Add matching block char.
-				const WCHAR w(blocks[index]);
-				ascii_art += w;
+				ascii_art += L"\r\n";
 			}
+		}
+		else
+		{
+			// Enumerate all rect segments.
+			for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
+			{
+				for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
+				{
+					__int64 grey_sum = 0;
 
-			ascii_art += L"\r\n";
+					// Read the rect segment at (rect_x, rect_y).
+					for (register int y = 0; y < rect_h; y++)
+					{
+						for (register int x = 0; x < rect_w; x++)
+						{
+							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+							const BYTE grey(data[index]);
+							grey_sum += grey;
+						}
+					}
+
+					// average grey value mapped to 0..255
+					const int density_index((int)(grey_sum / rect_area));
+
+					// Add density matching char.
+					const WCHAR w(densities_index[density_index]);
+					ascii_art += w;
+				}
+
+				ascii_art += L"\r\n";
+			}
 		}
 
 		ascii_display.SetWindowText(ascii_art);
@@ -485,7 +493,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 			requested_data2.picture_height / rect_h,
 			size.cx, size.cy,
 			densities.size(),
-			usedChars);
+			m_ZxBlockSymbols ? zx_blocks : usedChars);
 
 		UpdateData(false); // write the data
 	}
@@ -602,4 +610,11 @@ void CAsciiArtDlg::OnClickedButtonCopy()
 	CString msg;
 	msg.Format(IDS_CLIPBOARD_COPY_TEXT);
 	::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
+}
+
+
+void CAsciiArtDlg::OnClickedCheckZxBlockSymbols()
+{
+	m_ZxBlockSymbols = m_ButtonZxBlockSymbols.GetCheck() % 2 != 0;
+	Update(fontSelectComboBox.GetSelectedFont());
 }
