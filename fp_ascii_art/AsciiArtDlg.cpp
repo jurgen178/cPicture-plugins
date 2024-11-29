@@ -374,46 +374,42 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					__int64 grey_sum3 = 0;
 					__int64 grey_sum4 = 0;
 
+					// Lambda to calculate the grey value.
+					auto grey_sum = [=](int x, int y) -> BYTE { 
+						const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+						const BYTE grey(data[index]);
+						return grey;
+						};
+
 					// Read the rect segment at (rect_x, rect_y).
 					for (register int y1 = 0; y1 < rect_h / 2; y1++)
 					{
 						for (register int x1 = 0; x1 < rect_w / 2; x1++)
-						{
-							const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x1));
-							const BYTE grey(data[index]);
-							grey_sum1 += grey;
-						}
+							grey_sum1 += grey_sum(x1, y1);
+
 						for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
-						{
-							const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x2));
-							const BYTE grey(data[index]);
-							grey_sum2 += grey;
-						}
+							grey_sum2 += grey_sum(x2, y1);
 					}
 					for (register int y2 = rect_h / 2; y2 < rect_h; y2++)
 					{
 						for (register int x1 = 0; x1 < rect_w / 2; x1++)
-						{
-							const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x1));
-							const BYTE grey(data[index]);
-							grey_sum3 += grey;
-						}
+							grey_sum3 += grey_sum(x1, y2);
+
 						for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
-						{
-							const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x2));
-							const BYTE grey(data[index]);
-							grey_sum4 += grey;
-						}
+							grey_sum4 += grey_sum(x2, y2);
 					}
 
 					// 12
 					// 34
 					const int rect_area4 = rect_area / 4;
 
-					const bool b1 = ((grey_sum1 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
-					const bool b2 = ((grey_sum2 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
-					const bool b3 = ((grey_sum3 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
-					const bool b4 = ((grey_sum4 / rect_area4 - 127) * (100 - contrast) / 100 - brightness + 127) > 127;
+					// Lambda to check if the grey sum exceeds the threshold.
+					auto match = [=] (__int64 grey_sum, int area) -> bool { return ((grey_sum / area - 127) * (100 - contrast) / 100 - brightness + 127) <= 127; };
+
+					const bool b1 = match(grey_sum1, rect_area4);
+					const bool b2 = match(grey_sum2, rect_area4);
+					const bool b3 = match(grey_sum3, rect_area4);
+					const bool b4 = match(grey_sum4, rect_area4);
 
 					const int index = (b1 ? 1 : 0) + (b2 ? 2 : 0) + (b3 ? 4 : 0) + (b4 ? 8 : 0);
 
@@ -616,5 +612,9 @@ void CAsciiArtDlg::OnClickedButtonCopy()
 void CAsciiArtDlg::OnClickedCheckZxBlockSymbols()
 {
 	m_ZxBlockSymbols = m_ButtonZxBlockSymbols.GetCheck() % 2 != 0;
+
+	// Set best font to display the Unicode black chars.
+	fontSelectComboBox.SetFont(m_ZxBlockSymbols ? L"Cascadia mono" : L"Consolas");
+
 	Update(fontSelectComboBox.GetSelectedFont());
 }

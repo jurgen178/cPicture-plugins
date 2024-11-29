@@ -66,7 +66,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vecto
 	CString list;
 	list.Format(L"start event, %d pictures\n------------------------\n", pictures);
 	int i = 0;
-	const int max_pictures(10);
+	constexpr int max_pictures(10);
 
 	// Display the first max_pictures picture names.
 	vector<const WCHAR*>::const_iterator it;
