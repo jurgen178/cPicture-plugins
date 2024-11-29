@@ -146,7 +146,7 @@ HANDLE ParameterDlg::SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputRea
 	si.hStdError  = hStdError;
 	si.wShowWindow = SW_HIDE;						// IMPORTANT: hide subprocess console window
 	
-	const int commandLineCopySize(2048);
+	constexpr int commandLineCopySize(2048);
 	WCHAR commandLineCopy[commandLineCopySize];		// CreateProcess requires a modifiable buffer
 	wcscpy_s(commandLineCopy, commandLineCopySize, commandLine);
 	if (!CreateProcess(	NULL, commandLineCopy, NULL, NULL, TRUE,

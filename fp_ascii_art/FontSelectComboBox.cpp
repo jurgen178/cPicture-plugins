@@ -69,6 +69,15 @@ void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* ob
 	}
 }
 
+void CFontSelectComboBox::SetFont(const CString& fontName)
+{
+	const int index(FindStringExact(-1, fontName));
+	if (index != CB_ERR)
+	{
+		SetCurSel(index);
+	}
+}
+
 BOOL CreateFont2(CFont& font, const CString& fontName, const int fontHeight)
 {
 	return font.CreateFont(

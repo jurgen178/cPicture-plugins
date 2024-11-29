@@ -2,8 +2,8 @@
 
 #include "FunctionPlugin.h"
 
-const int size_x = 160;
-const int size_y = 120;
+constexpr int size_x = 160;
+constexpr int size_y = 120;
 
 class CFunctionPluginSample3 : public CFunctionPlugin
 {

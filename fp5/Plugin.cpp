@@ -12,10 +12,10 @@
 // and the update_data type to create a picture.
 
 
-const int picture_width(360);
-const int picture_height(240);
-const int headline_height(50);
-const int border(10);
+constexpr int picture_width(360);
+constexpr int picture_height(240);
+constexpr int headline_height(50);
+constexpr int border(10);
 
 
 const CString __stdcall GetPluginVersion()

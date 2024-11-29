@@ -1,13 +1,11 @@
-// AsciiDlg.cpp : implementation file
+﻿// AsciiDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "AsciiArtDlg.h"
 #include "vfw.h"
-#include <sys/stat.h>
 #include <map>
 #include "locale.h"
-#include <commctrl.h>
 
 
 extern BOOL CreateFont2(CFont& font, const CString& fontName, const int fontHeight);
@@ -25,7 +23,8 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	index(0),
 	blocksize(72),
 	brightness(0),
-	contrast(0)
+	contrast(0),
+	ZxBlockSymbols(false)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -52,6 +51,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STATIC_TEXT_BRIGHTNESS, static_text_brightness);
 	DDX_Text(pDX, IDC_STATIC_TEXT_CONTRAST, static_text_contrast);
 	DDX_Text(pDX, IDC_STATIC_INFO, static_text_info);
+	DDX_Control(pDX, IDC_CHECK_ZX_BLOCK_SYMBOLS, ButtonZxBlockSymbols);
 }
 
 
@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(CAsciiArtDlg, CDialog)
 	ON_WM_HSCROLL()
 	ON_MESSAGE(WM_POST_INITDIALOG, &CAsciiArtDlg::OnPostInitDialog)
 	ON_BN_CLICKED(IDC_BUTTON_COPY, &CAsciiArtDlg::OnClickedButtonCopy)
+	ON_BN_CLICKED(IDC_CHECK_ZX_BLOCK_SYMBOLS, &CAsciiArtDlg::OnClickedCheckZxBlockSymbols)
 END_MESSAGE_MAP()
 
 
@@ -356,33 +357,118 @@ void CAsciiArtDlg::Update(const CString& fontName)
 		// Map the segments to the chars.
 		CString ascii_art;
 
-		// Enumerate all rect segments.
-		for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
-		{
-			for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
-			{
-				__int64 grey_sum = 0;
+		// https://en.wikipedia.org/wiki/Block_Elements
+		const CString zx_blocks = L" ▗▖▄▝▐▞▟▘▚▌▙▀▜▛█";
 
-				// Read the rect segment at (rect_x, rect_y).
-				for (register int y = 0; y < rect_h; y++)
+		if (ZxBlockSymbols)
+		{
+			// Enumerate all rect segments.
+			for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
+			{
+				for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
 				{
-					for (register int x = 0; x < rect_w; x++)
-					{
+					__int64 grey_sum1 = 0;
+					__int64 grey_sum2 = 0;
+					__int64 grey_sum3 = 0;
+					__int64 grey_sum4 = 0;
+
+					// Lambda to calculate the grey value.
+					auto grey_sum = [=](int x, int y) -> BYTE { 
 						const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
 						const BYTE grey(data[index]);
-						grey_sum += grey;
+						return grey;
+						};
+
+					// Read the rect segment at (rect_x, rect_y).
+					for (register int y1 = 0; y1 < rect_h / 2; y1++)
+					{
+						for (register int x1 = 0; x1 < rect_w / 2; x1++)
+							grey_sum1 += grey_sum(x1, y1);
+
+						for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
+							grey_sum2 += grey_sum(x2, y1);
 					}
+					for (register int y2 = rect_h / 2; y2 < rect_h; y2++)
+					{
+						for (register int x1 = 0; x1 < rect_w / 2; x1++)
+							grey_sum3 += grey_sum(x1, y2);
+
+						for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
+							grey_sum4 += grey_sum(x2, y2);
+					}
+
+					const int rect_area4 = rect_area / 4;
+
+					// Lambda to check if the grey sum exceeds the threshold.
+					auto match = [=] (__int64 grey_sum, int area) -> bool { return ((grey_sum / area - 127) * (100 - contrast) / 100 + brightness + 127) <= 127; };
+
+					// rect area is divided into 4 equal parts
+					// 12
+					// 34
+					const bool b1 = match(grey_sum1, rect_area4);
+					const bool b2 = match(grey_sum2, rect_area4);
+					const bool b3 = match(grey_sum3, rect_area4);
+					const bool b4 = match(grey_sum4, rect_area4);
+
+					const int index = (b1 ? 1 : 0) + (b2 ? 2 : 0) + (b3 ? 4 : 0) + (b4 ? 8 : 0);
+
+					// 1 2 3 4 B
+					// ---------
+					// 0 0 0 0 
+					// 0 0 0 1 ▗
+					// 0 0 1 0 ▖
+					// 0 0 1 1 ▄
+					// 0 1 0 0 ▝
+					// 0 1 0 1 ▐
+					// 0 1 1 0 ▞
+					// 0 1 1 1 ▟
+					// 1 0 0 0 ▘
+					// 1 0 0 1 ▚
+					// 1 0 1 0 ▌
+					// 1 0 1 1 ▙
+					// 1 1 0 0 ▀
+					// 1 1 0 1 ▜
+					// 1 1 1 0 ▛
+					// 1 1 1 1 █
+
+					// Add matching block char.
+					const WCHAR w(zx_blocks[index]);
+					ascii_art += w;
 				}
 
-				// average grey value mapped to 0..255
-				const int density_index((int)(grey_sum / rect_area));
-
-				// Add density matching char.
-				const WCHAR w(densities_index[density_index]);
-				ascii_art += w;
+				ascii_art += L"\r\n";
 			}
+		}
+		else
+		{
+			// Enumerate all rect segments.
+			for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
+			{
+				for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
+				{
+					__int64 grey_sum = 0;
 
-			ascii_art += L"\r\n";
+					// Read the rect segment at (rect_x, rect_y).
+					for (register int y = 0; y < rect_h; y++)
+					{
+						for (register int x = 0; x < rect_w; x++)
+						{
+							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+							const BYTE grey(data[index]);
+							grey_sum += grey;
+						}
+					}
+
+					// average grey value mapped to 0..255
+					const int density_index((int)(grey_sum / rect_area));
+
+					// Add density matching char.
+					const WCHAR w(densities_index[density_index]);
+					ascii_art += w;
+				}
+
+				ascii_art += L"\r\n";
+			}
 		}
 
 		ascii_display.SetWindowText(ascii_art);
@@ -403,7 +489,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 			requested_data2.picture_height / rect_h,
 			size.cx, size.cy,
 			densities.size(),
-			usedChars);
+			ZxBlockSymbols ? zx_blocks : usedChars);
 
 		UpdateData(false); // write the data
 	}
@@ -520,4 +606,15 @@ void CAsciiArtDlg::OnClickedButtonCopy()
 	CString msg;
 	msg.Format(IDS_CLIPBOARD_COPY_TEXT);
 	::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
+}
+
+
+void CAsciiArtDlg::OnClickedCheckZxBlockSymbols()
+{
+	ZxBlockSymbols = ButtonZxBlockSymbols.GetCheck() % 2 != 0;
+
+	// Set best font to display the Unicode black chars.
+	fontSelectComboBox.SetFont(ZxBlockSymbols ? L"Cascadia mono" : L"Consolas");
+
+	Update(fontSelectComboBox.GetSelectedFont());
 }
