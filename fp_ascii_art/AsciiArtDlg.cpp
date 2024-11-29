@@ -4,10 +4,8 @@
 #include "stdafx.h"
 #include "AsciiArtDlg.h"
 #include "vfw.h"
-#include <sys/stat.h>
 #include <map>
 #include "locale.h"
-#include <commctrl.h>
 
 
 extern BOOL CreateFont2(CFont& font, const CString& fontName, const int fontHeight);
@@ -399,13 +397,14 @@ void CAsciiArtDlg::Update(const CString& fontName)
 							grey_sum4 += grey_sum(x2, y2);
 					}
 
-					// 12
-					// 34
 					const int rect_area4 = rect_area / 4;
 
 					// Lambda to check if the grey sum exceeds the threshold.
-					auto match = [=] (__int64 grey_sum, int area) -> bool { return ((grey_sum / area - 127) * (100 - contrast) / 100 - brightness + 127) <= 127; };
+					auto match = [=] (__int64 grey_sum, int area) -> bool { return ((grey_sum / area - 127) * (100 - contrast) / 100 + brightness + 127) <= 127; };
 
+					// rect area is divided into 4 equal parts
+					// 12
+					// 34
 					const bool b1 = match(grey_sum1, rect_area4);
 					const bool b2 = match(grey_sum2, rect_area4);
 					const bool b3 = match(grey_sum3, rect_area4);
@@ -414,6 +413,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					const int index = (b1 ? 1 : 0) + (b2 ? 2 : 0) + (b3 ? 4 : 0) + (b4 ? 8 : 0);
 
 					// 1 2 3 4 B
+					// ---------
 					// 0 0 0 0 
 					// 0 0 0 1 ▗
 					// 0 0 1 0 ▖
