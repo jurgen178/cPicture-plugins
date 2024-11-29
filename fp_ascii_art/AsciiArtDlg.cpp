@@ -145,7 +145,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 		CFont* pOldFont = memDC.SelectObject(&cfont);
 
 		// Character to rasterize. Fixed pitch fonts have the same size for all chars.
-		WCHAR ch = L'A';
+		const WCHAR ch = L'A';
 
 		// Measure the character size.
 		const CSize size(memDC.GetTextExtent(&ch, 1));
@@ -186,7 +186,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 		std::map<double, WCHAR> densities;
 
 		// Get the char densities.
-		WCHAR letters[] = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+		const WCHAR letters[] = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 		for (wchar_t wc : letters)
 		{
 			if (wc == 0)
@@ -348,17 +348,17 @@ void CAsciiArtDlg::Update(const CString& fontName)
 
 
 		// Get the second requested data set (unresized picture resized, 100%).
-		vector<picture_data>::const_iterator it = picture_data_list.begin();
-		vector<requested_data> requested_data_list = it->requested_data_list;
-		requested_data requested_data2 = requested_data_list.back();
+		const vector<picture_data>::const_iterator it = picture_data_list.begin();
+		const vector<requested_data> requested_data_list = it->requested_data_list;
+		const requested_data requested_data2 = requested_data_list.back();
 
-		BYTE* data = requested_data2.data;
+		const BYTE* data = requested_data2.data;
 
 		// Map the segments to the chars.
 		CString ascii_art;
 
 		// https://en.wikipedia.org/wiki/Block_Elements
-		const CString zx_blocks = L" ▗▖▄▝▐▞▟▘▚▌▙▀▜▛█";
+		const WCHAR zx_blocks[] = L" ▗▖▄▝▐▞▟▘▚▌▙▀▜▛█";
 
 		if (ZxBlockSymbols)
 		{
@@ -399,16 +399,16 @@ void CAsciiArtDlg::Update(const CString& fontName)
 
 					const int rect_area4 = rect_area / 4;
 
-					// Lambda to check if the grey sum exceeds the threshold.
-					auto match = [=] (__int64 grey_sum, int area) -> bool { return ((grey_sum / area - 127) * (100 - contrast) / 100 + brightness + 127) <= 127; };
+					// Lambda to check if the contrast and brightness adjusted grey sum exceeds the threshold.
+					auto match = [=] (__int64 grey_sum) -> bool { return ((grey_sum / rect_area4 - 127) * (100 - contrast) / 100 + brightness + 127) <= 127; };
 
 					// rect area is divided into 4 equal parts
 					// 12
 					// 34
-					const bool b1 = match(grey_sum1, rect_area4);
-					const bool b2 = match(grey_sum2, rect_area4);
-					const bool b3 = match(grey_sum3, rect_area4);
-					const bool b4 = match(grey_sum4, rect_area4);
+					const bool b1 = match(grey_sum1);
+					const bool b2 = match(grey_sum2);
+					const bool b3 = match(grey_sum3);
+					const bool b4 = match(grey_sum4);
 
 					const int index = (b1 ? 8 : 0) + (b2 ? 4 : 0) + (b3 ? 2 : 0) + (b4 ? 1 : 0);
 
@@ -488,7 +488,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 			requested_data2.picture_width / rect_w,
 			requested_data2.picture_height / rect_h,
 			size.cx, size.cy,
-			ZxBlockSymbols ? zx_blocks.GetLength() : densities.size(),
+			ZxBlockSymbols ? sizeof(zx_blocks) / sizeof(WCHAR) - 1 : densities.size(),
 			ZxBlockSymbols ? zx_blocks : usedChars);
 
 		UpdateData(false); // write the data
@@ -533,11 +533,11 @@ void CAsciiArtDlg::OnPaint()
 	const int size(static_cast<int>(picture_data_list.size()));
 	if (index >= 0 && index < size)
 	{
-		vector<picture_data>::const_iterator it = picture_data_list.begin() + index;
+		const vector<picture_data>::const_iterator it = picture_data_list.begin() + index;
 
-		vector<requested_data> requested_data_list = it->requested_data_list;
+		const vector<requested_data> requested_data_list = it->requested_data_list;
 		// Get the data for the requested dialog preview picture size.
-		requested_data requested_data1 = requested_data_list.front();
+		const requested_data requested_data1 = requested_data_list.front();
 
 		// Draw the selected picture.
 		bmiHeader.biWidth = requested_data1.picture_width;

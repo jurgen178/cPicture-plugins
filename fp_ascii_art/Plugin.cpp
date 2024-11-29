@@ -100,8 +100,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& picture_data) 
 { 
 	// Get the second requested data set (unresized picture, 100%).
-	requested_data requested_data2 = picture_data.requested_data_list.back();
-
+	const requested_data requested_data2 = picture_data.requested_data_list.back();
 	BYTE* data = requested_data2.data;
 
 	// Modify the picture data.
