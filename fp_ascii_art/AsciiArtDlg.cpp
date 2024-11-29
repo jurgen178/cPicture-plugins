@@ -410,7 +410,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					const bool b3 = match(grey_sum3, rect_area4);
 					const bool b4 = match(grey_sum4, rect_area4);
 
-					const int index = (b1 ? 1 : 0) + (b2 ? 2 : 0) + (b3 ? 4 : 0) + (b4 ? 8 : 0);
+					const int index = (b1 ? 8 : 0) + (b2 ? 4 : 0) + (b3 ? 2 : 0) + (b4 ? 1 : 0);
 
 					// 1 2 3 4 B
 					// ---------
