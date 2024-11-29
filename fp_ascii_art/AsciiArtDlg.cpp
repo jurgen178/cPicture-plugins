@@ -1,4 +1,4 @@
-// AsciiDlg.cpp : implementation file
+﻿// AsciiDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
@@ -356,29 +356,111 @@ void CAsciiArtDlg::Update(const CString& fontName)
 		// Map the segments to the chars.
 		CString ascii_art;
 
+		//// Enumerate all rect segments.
+		//for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
+		//{
+		//	for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
+		//	{
+		//		__int64 grey_sum = 0;
+
+		//		// Read the rect segment at (rect_x, rect_y).
+		//		for (register int y = 0; y < rect_h; y++)
+		//		{
+		//			for (register int x = 0; x < rect_w; x++)
+		//			{
+		//				const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+		//				const BYTE grey(data[index]);
+		//				grey_sum += grey;
+		//			}
+		//		}
+
+		//		// average grey value mapped to 0..255
+		//		const int density_index((int)(grey_sum / rect_area));
+
+		//		// Add density matching char.
+		//		const WCHAR w(densities_index[density_index]);
+		//		ascii_art += w;
+		//	}
+
+		//	ascii_art += L"\r\n";
+		//}
+
+
 		// Enumerate all rect segments.
 		for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
 		{
 			for (register int rect_x = 0; rect_x < requested_data2.picture_width - rect_w; rect_x += rect_w)
 			{
-				__int64 grey_sum = 0;
+				__int64 grey_sum1 = 0;
+				__int64 grey_sum2 = 0;
+				__int64 grey_sum3 = 0;
+				__int64 grey_sum4 = 0;
 
 				// Read the rect segment at (rect_x, rect_y).
-				for (register int y = 0; y < rect_h; y++)
+				for (register int y1 = 0; y1 < rect_h / 2; y1++)
 				{
-					for (register int x = 0; x < rect_w; x++)
+					for (register int x1 = 0; x1 < rect_w / 2; x1++)
 					{
-						const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+						const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x1));
 						const BYTE grey(data[index]);
-						grey_sum += grey;
+						grey_sum1 += grey;
+					}
+					for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
+					{
+						const int index(3 * ((rect_y + y1) * requested_data2.picture_width + rect_x + x2));
+						const BYTE grey(data[index]);
+						grey_sum2 += grey;
+					}
+				}
+				for (register int y2 = rect_h /2 ; y2 < rect_h; y2++)
+				{
+					for (register int x1 = 0; x1 < rect_w / 2; x1++)
+					{
+						const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x1));
+						const BYTE grey(data[index]);
+						grey_sum3 += grey;
+					}
+					for (register int x2 = rect_w / 2; x2 < rect_w; x2++)
+					{
+						const int index(3 * ((rect_y + y2) * requested_data2.picture_width + rect_x + x2));
+						const BYTE grey(data[index]);
+						grey_sum4 += grey;
 					}
 				}
 
-				// average grey value mapped to 0..255
-				const int density_index((int)(grey_sum / rect_area));
+				// 12
+				// 34
+				const int rect_area4 = rect_area / 4;
+				const bool b1 = grey_sum1 / rect_area4 > 127;
+				const bool b2 = grey_sum2 / rect_area4 > 127;
+				const bool b3 = grey_sum3 / rect_area4 > 127;
+				const bool b4 = grey_sum4 / rect_area4 > 127;
+				const int index = (b1 ? 1 : 0) + (b2 ? 2 : 0) + (b3 ? 4 : 0) + (b4 ? 8 : 0);
 
-				// Add density matching char.
-				const WCHAR w(densities_index[density_index]);
+				// 1 2 3 4 B
+				// 0 0 0 0 
+				// 0 0 0 1 ▗
+				// 0 0 1 0 ▖
+				// 0 0 1 1 ▄
+				// 0 1 0 0 ▝
+				// 0 1 0 1 ▐
+				// 0 1 1 0 ▞
+				// 0 1 1 1 ▟
+				// 1 0 0 0 ▘
+				// 1 0 0 1 ▚
+				// 1 0 1 0 ▌
+				// 1 0 1 1 ▙
+				// 1 1 0 0 ▀
+				// 1 1 0 1 ▜
+				// 1 1 1 0 ▛
+				// 1 1 1 1 █
+
+				// https://en.wikipedia.org/wiki/Block_Elements
+
+				const CString blocks = L" ▗▖▄▝▐▞▟▘▚▌▙▀▜▛█";
+
+				// Add matching block char.
+				const WCHAR w(blocks[index]);
 				ascii_art += w;
 			}
 
