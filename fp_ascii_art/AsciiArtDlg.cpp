@@ -24,7 +24,7 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	blocksize(72),
 	brightness(0),
 	contrast(0),
-	m_ZxBlockSymbols(false)
+	ZxBlockSymbols(false)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -51,7 +51,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_STATIC_TEXT_BRIGHTNESS, static_text_brightness);
 	DDX_Text(pDX, IDC_STATIC_TEXT_CONTRAST, static_text_contrast);
 	DDX_Text(pDX, IDC_STATIC_INFO, static_text_info);
-	DDX_Control(pDX, IDC_CHECK_ZX_BLOCK_SYMBOLS, m_ButtonZxBlockSymbols);
+	DDX_Control(pDX, IDC_CHECK_ZX_BLOCK_SYMBOLS, ButtonZxBlockSymbols);
 }
 
 
@@ -360,7 +360,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 		// https://en.wikipedia.org/wiki/Block_Elements
 		const CString zx_blocks = L" ▗▖▄▝▐▞▟▘▚▌▙▀▜▛█";
 
-		if (m_ZxBlockSymbols)
+		if (ZxBlockSymbols)
 		{
 			// Enumerate all rect segments.
 			for (register int rect_y = 0; rect_y < requested_data2.picture_height - rect_h; rect_y += rect_h)
@@ -489,7 +489,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 			requested_data2.picture_height / rect_h,
 			size.cx, size.cy,
 			densities.size(),
-			m_ZxBlockSymbols ? zx_blocks : usedChars);
+			ZxBlockSymbols ? zx_blocks : usedChars);
 
 		UpdateData(false); // write the data
 	}
@@ -611,10 +611,10 @@ void CAsciiArtDlg::OnClickedButtonCopy()
 
 void CAsciiArtDlg::OnClickedCheckZxBlockSymbols()
 {
-	m_ZxBlockSymbols = m_ButtonZxBlockSymbols.GetCheck() % 2 != 0;
+	ZxBlockSymbols = ButtonZxBlockSymbols.GetCheck() % 2 != 0;
 
 	// Set best font to display the Unicode black chars.
-	fontSelectComboBox.SetFont(m_ZxBlockSymbols ? L"Cascadia mono" : L"Consolas");
+	fontSelectComboBox.SetFont(ZxBlockSymbols ? L"Cascadia mono" : L"Consolas");
 
 	Update(fontSelectComboBox.GetSelectedFont());
 }

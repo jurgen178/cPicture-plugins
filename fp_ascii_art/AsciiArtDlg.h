@@ -49,8 +49,8 @@ protected:
 	CString static_text_contrast;
 	
 	CString static_text_info;
-	CButton m_ButtonZxBlockSymbols;
-	bool m_ZxBlockSymbols;
+	CButton ButtonZxBlockSymbols;
+	bool ZxBlockSymbols;
 
 protected:
 	void Update(const CString& fontName);
