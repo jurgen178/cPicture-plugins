@@ -117,7 +117,7 @@ bool CheckFile(const WCHAR* pFile)
 	return false;
 }
 
-bool scanBoolVar(char* Text, const CString SearchTextTemplate, bool def)
+bool scanBoolVar(const char* Text, const CString& SearchTextTemplate, bool def)
 {
 	CString ScanText(Text);
 

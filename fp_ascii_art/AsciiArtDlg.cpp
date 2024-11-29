@@ -110,7 +110,7 @@ LRESULT CAsciiArtDlg::OnPostInitDialog(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-void CAsciiArtDlg::UpdateDisplayFont(const CString fontName, const int fontsize)
+void CAsciiArtDlg::UpdateDisplayFont(const CString& fontName, const int fontsize)
 {
 	// Delete the old font if it exists.
 	if (ascii_display_font.m_hObject)
@@ -125,7 +125,7 @@ void CAsciiArtDlg::UpdateDisplayFont(const CString fontName, const int fontsize)
 	UpdateData(false); // write the data
 }
 
-void CAsciiArtDlg::Update(const CString fontName)
+void CAsciiArtDlg::Update(const CString& fontName)
 {
 	const int pos(fontSizeSliderCtrl.GetPos());
 	UpdateDisplayFont(fontName, pos);
@@ -480,7 +480,7 @@ void CAsciiArtDlg::OnPaint()
 	}
 }
 
-void CAsciiArtDlg::TextToClipboard(CString text)
+void CAsciiArtDlg::TextToClipboard(const CString& text)
 {
 	const int text_lenW = text.GetLength();
 

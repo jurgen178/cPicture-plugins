@@ -51,9 +51,9 @@ protected:
 	CString static_text_info;
 
 protected:
-	void Update(const CString fontName);
-	void UpdateDisplayFont(const CString fontName, const int fontsize);
-	void TextToClipboard(CString text);
+	void Update(const CString& fontName);
+	void UpdateDisplayFont(const CString& fontName, const int fontsize);
+	void TextToClipboard(const CString& text);
 
 protected:
 	virtual BOOL OnInitDialog();

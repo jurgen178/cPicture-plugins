@@ -16,7 +16,7 @@ public:
 	CWnd* pParentWnd;
 
 	// Function pointer to a member function of CAsciiArtDlg.
-	typedef void (CAsciiArtDlg::* CallbackFunc)(const CString fontName);
+	typedef void (CAsciiArtDlg::* CallbackFunc)(const CString& fontName);
 	CallbackFunc callback;
 
 	// Pointer to an instance of CAsciiArtDlg.
