@@ -373,10 +373,11 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					__int64 grey_sum4 = 0;
 
 					// Lambda to calculate the grey value.
-					auto grey_sum = [=](int x, int y) -> BYTE { 
-						const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
-						const BYTE grey(data[index]);
-						return grey;
+					auto grey_sum = [=](int x, int y) -> BYTE
+						{
+							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+							const BYTE grey(data[index]);
+							return grey;
 						};
 
 					// Read the rect segment at (rect_x, rect_y).
@@ -400,7 +401,10 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					const int rect_area4 = rect_area / 4;
 
 					// Lambda to check if the contrast and brightness adjusted grey sum exceeds the threshold.
-					auto match = [=] (__int64 grey_sum) -> bool { return ((grey_sum / rect_area4 - 127) * (100 - contrast) / 100 + brightness + 127) <= 127; };
+					auto match = [=](__int64 grey_sum) -> bool
+						{
+							return ((grey_sum / rect_area4 - 127) * (100 - contrast) / 100 + brightness + 127) <= 127;
+						};
 
 					// rect area is divided into 4 equal parts
 					// 12
