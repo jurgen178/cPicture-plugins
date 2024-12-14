@@ -44,16 +44,13 @@ void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* ob
 	pParentWnd = pParent;
 
 	// Get height of a large text line to be used for the font dropdown using the menu height property.
-	UINT dpiX(96);
-	UINT dpiY(96);
-	HMONITOR hMonitor = MonitorFromWindow(pParentWnd->m_hWnd, MONITOR_DEFAULTTONEAREST);
-	HRESULT hr = ::GetDpiForMonitor(hMonitor, MDT_EFFECTIVE_DPI, &dpiX, &dpiY);
+	UINT dpi = GetDpiForWindow(pParentWnd->m_hWnd);
 
 	// Get the height of the menu for the combo box height.
 	const int lineHeight(::GetSystemMetrics(SM_CYMENU) / 2);
 
 	// Adjust for DPI scaling.
-	ctrlHeight = hr == S_OK ? ctrlHeight = MulDiv(lineHeight, dpiY, 96) : 50;
+	ctrlHeight = ctrlHeight = MulDiv(lineHeight, dpi, 96);
 
 	// Get all fixed pitch fonts.
 	CClientDC dc(this);
