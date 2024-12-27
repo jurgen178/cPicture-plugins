@@ -88,7 +88,7 @@ const int __stdcall GetPluginInit()
 	}
 
 	// Anzahl als Negativwert wenn externe Moduldateien (*.bat, *.ps1) verwendet werden.
-	return -(int)PluginProcArray.size();
+	return -static_cast<int>(PluginProcArray.size());
 }
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)

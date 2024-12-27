@@ -61,7 +61,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample1::start(HWND hwnd, const vecto
 	// Start processing and print the picture names to process.
 
 	handle_wnd = hwnd;
-	pictures = (int)file_list.size();
+	pictures = static_cast<int>(file_list.size());
 
 	CString list;
 	list.Format(L"start event, %d pictures\n------------------------\n", pictures);

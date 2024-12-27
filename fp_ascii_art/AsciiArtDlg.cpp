@@ -229,7 +229,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 #endif
 			}
 
-			densities[(double)ones / area] = wc;
+			densities[static_cast<double>(ones) / area] = wc;
 		}
 
 
@@ -464,7 +464,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					}
 
 					// average grey value mapped to 0..255
-					const int density_index((int)(grey_sum / rect_area));
+					const int density_index(static_cast<int>(grey_sum / rect_area));
 
 					// Add density matching char.
 					const WCHAR w(densities_index[density_index]);
@@ -546,8 +546,8 @@ void CAsciiArtDlg::OnPaint()
 		// Draw the selected picture.
 		bmiHeader.biWidth = requested_data1.picture_width;
 		bmiHeader.biHeight = requested_data1.picture_height;
-		const int left(preview_position_rect.left + (preview_position_rect.Width() - (int)requested_data1.picture_width) / 2);
-		const int top(preview_position_rect.top + (preview_position_rect.Height() - (int)requested_data1.picture_height) / 2);
+		const int left(preview_position_rect.left + (preview_position_rect.Width() - static_cast<int>(requested_data1.picture_width)) / 2);
+		const int top(preview_position_rect.top + (preview_position_rect.Height() - static_cast<int>(requested_data1.picture_height)) / 2);
 
 		HDRAWDIB hdd = DrawDibOpen();
 
@@ -584,7 +584,7 @@ void CAsciiArtDlg::TextToClipboard(const CString& text)
 	// Lock the handle and copy the text to the buffer. 
 	LPWSTR lpwstrCopyW = (WCHAR*)GlobalLock(hglbCopyW);
 	memcpy(lpwstrCopyW, text, text_lenW * sizeof(WCHAR));
-	lpwstrCopyW[text_lenW] = (WCHAR)0;    // null character 
+	lpwstrCopyW[text_lenW] = static_cast<WCHAR>(0);    // null character 
 	GlobalUnlock(hglbCopyW);
 
 	if (::OpenClipboard(NULL))

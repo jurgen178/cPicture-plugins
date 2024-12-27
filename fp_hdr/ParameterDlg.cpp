@@ -30,7 +30,7 @@ HBRUSH CColorEdit::CtlColor(CDC* pDC, UINT nCtlColor)
 	pDC->SetTextColor(RGB(255, 255, 255));
 	pDC->SetBkColor(RGB(0, 0, 0));
 
-	return (HBRUSH)brush;
+	return static_cast<HBRUSH>(brush);
 }
 
 
@@ -275,7 +275,7 @@ bool ParameterDlg::CheckFile(const WCHAR* pFile)
 
 void ParameterDlg::OnClickSyslinkEnfuse(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	PNMLINK pNMLink = (PNMLINK)pNMHDR;
+	PNMLINK pNMLink = reinterpret_cast<PNMLINK>(pNMHDR);
 	LITEM   item = pNMLink->item;
 
 	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);

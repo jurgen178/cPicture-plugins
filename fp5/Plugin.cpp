@@ -171,14 +171,14 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	CPen pen;
 	pen.CreatePen(PS_SOLID, 5, border_color);
 	CPen* pPen = memDC.SelectObject(&pen);
-	HPEN hOldPen = (HPEN)pPen->GetSafeHandle();
+	HPEN hOldPen = static_cast<HPEN>(pPen->GetSafeHandle());
 
 	// Setup the Font to write the Text.
 	CFont headline_font;
 	headline_font.CreateFont(headline_height, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
 		CLIP_CHARACTER_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_SWISS, L"Consolas");
 	CFont* pOldFont = memDC.SelectObject(&headline_font);
-	HFONT hOldFont = (HFONT)pOldFont->GetSafeHandle();
+	HFONT hOldFont = static_cast<HFONT>(pOldFont->GetSafeHandle());
 
 	// Add the Frame.
 	memDC.Rectangle(0, 0, bitmap_width, bitmap_height);

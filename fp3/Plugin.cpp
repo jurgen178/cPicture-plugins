@@ -96,7 +96,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample3::end(const vector<pi
 			CString totalPriceTemplate;
 			totalPriceTemplate.LoadString(IDS_TOTAL_PRICE_FORMAT);
 			CString totalPriceStr;
-			totalPriceStr.Format(totalPriceTemplate, (float)totalPrice / 100);
+			totalPriceStr.Format(totalPriceTemplate, static_cast<float>(totalPrice) / 100);
 			CString orderText;
 			orderText.FormatMessage(IDS_ORDER_CONFIRMATION, numberOfPictures, totalPriceStr);
 

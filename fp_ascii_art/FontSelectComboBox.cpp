@@ -54,7 +54,7 @@ void CFontSelectComboBox::Init(CWnd* pParent, CallbackFunc ptr, CAsciiArtDlg* ob
 
 	// Get all fixed pitch fonts.
 	CClientDC dc(this);
-	EnumFonts(dc, 0, (FONTENUMPROC)EnumFontProc, (LPARAM)this); //Enumerate font
+	EnumFonts(dc, 0, reinterpret_cast<FONTENUMPROC>(EnumFontProc), reinterpret_cast<LPARAM>(this)); //Enumerate font
 
 	SetItemHeight(-1, ctrlHeight);
 
@@ -131,7 +131,7 @@ void CFontSelectComboBox::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 		dc.SetBkMode(TRANSPARENT);
 		dc.FillRect(&item_rect, &brush);
 
-		const HFONT hf = (HFONT)dc.SelectObject(cfont);
+		const HFONT hf = static_cast<HFONT>(dc.SelectObject(cfont));
 
 		const int y((item_rect.Height() - dc.GetTextExtent(fontName).cy) / 2);
 		dc.TextOut(item_rect.left, item_rect.top + y, fontName);
@@ -157,7 +157,7 @@ void CFontSelectComboBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 		// Get max width of the font name.
 		CClientDC dc(this);
-		const HFONT hf = (HFONT)dc.SelectObject(cfont);
+		const HFONT hf = static_cast<HFONT>(dc.SelectObject(cfont));
 		maxFontNameWidth = max(maxFontNameWidth, dc.GetTextExtent(fontName).cx);
 		dc.SelectObject(hf);
 	}

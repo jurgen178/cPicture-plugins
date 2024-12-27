@@ -59,7 +59,7 @@ BOOL CSampleDlg::OnInitDialog()
 	const int size(static_cast<int>(picture_data_list.size()));
 	hImageList = ImageList_Create(size_x, size_y, ILC_COLOR24, 0, size);
 	ImageList_SetImageCount(hImageList, size);
-	::SendMessage(PictureListCtrl.m_hWnd, LVM_SETIMAGELIST, LVSIL_SMALL, (LPARAM)hImageList);
+	::SendMessage(PictureListCtrl.m_hWnd, LVM_SETIMAGELIST, LVSIL_SMALL, reinterpret_cast<LPARAM>(hImageList));
 	PictureListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_FLATSB);
 
 	str = L"";
@@ -166,7 +166,7 @@ void CSampleDlg::update_total()
 	StaticNumberOfPictures.SetWindowText(str);
 	CString fmt;
 	fmt.LoadString(IDS_TOTAL_PRICE_FORMAT);
-	str.Format(fmt, (float)totalPrice / 100);
+	str.Format(fmt, static_cast<float>(totalPrice) / 100);
 	StaticTotalPrice.SetWindowText(str);
 
 	UpdateData(false); // write the data
@@ -232,7 +232,7 @@ void CSampleDlg::OnBnClickedButtonSet()
 
 	if (nHitItem != -1)
 	{
-		PICTURE_FORMAT picture_format((PICTURE_FORMAT)Format.GetCurSel());
+		PICTURE_FORMAT picture_format(static_cast<PICTURE_FORMAT>(Format.GetCurSel()));
 		CString str;
 		Prints.GetWindowText(str);
 

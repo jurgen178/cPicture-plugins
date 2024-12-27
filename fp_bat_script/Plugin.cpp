@@ -63,7 +63,7 @@ const int __stdcall GetPluginInit()
 	}
 
 	// Anzahl als Negativwert wenn externe Moduldateien (*.bat, *.ps1) verwendet werden.
-	return -(int)PluginProcArray.size();
+	return -static_cast<int>(PluginProcArray.size());
 }
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
@@ -118,7 +118,7 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	sequence = 0;
-	max_files = (int)file_list.size();
+	max_files = static_cast<int>(file_list.size());
 	handle_wnd = hwnd;
 
 	const bool bScript(CheckFile(script_file));
