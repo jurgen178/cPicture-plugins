@@ -289,7 +289,7 @@ CString escapeCmdLineJsonData(float value)
 	return data;
 }
 
-CString escapeCmdLineJsonData(__int64 value)
+CString escapeCmdLineJsonData(unsigned __int64 value)
 {
 	CString data;
 	data.Format(L"%llu", value);

@@ -131,7 +131,7 @@ struct picture_data
 	bool video;
 	bool color_profile;
 	CString gps;
-	__int64 exif_time;
+	unsigned __int64 exif_time;
 	float aperture;
 	int shutterspeed;
 	int iso;
