@@ -221,6 +221,12 @@ struct PluginData __stdcall CFunctionPluginHDR::get_plugin_data()
 	return pluginData;
 }
 
+struct arg_count __stdcall CFunctionPluginHDR::get_arg_count()
+{
+	// At least 2 pictures.
+	return arg_count(2, -1);
+}
+
 enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;

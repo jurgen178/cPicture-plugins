@@ -58,6 +58,12 @@ struct PluginData __stdcall CFunctionPluginSample2::get_plugin_data()
 	return pluginData;
 }
 
+struct arg_count __stdcall CFunctionPluginSample2::get_arg_count()
+{
+	// At least one picture.
+	return arg_count(1, -1);
+}
+
 enum REQUEST_TYPE __stdcall CFunctionPluginSample2::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;

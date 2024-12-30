@@ -5,7 +5,6 @@
 
 // Example Plugin cpp_fp3.
 // Simple order form for pictures.
-// Simple rder form for pictures.
 // 
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,
@@ -56,6 +55,12 @@ struct PluginData __stdcall CFunctionPluginSample3::get_plugin_data()
 	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
+}
+
+struct arg_count __stdcall CFunctionPluginSample3::get_arg_count()
+{
+	// At least one picture.
+	return arg_count(1, -1);
 }
 
 enum REQUEST_TYPE __stdcall CFunctionPluginSample3::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)

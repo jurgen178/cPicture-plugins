@@ -171,24 +171,36 @@ public:
 };
 
 
-class CFunctionPlugin
+struct arg_count
 {
-protected:
-	CFunctionPlugin()
+	arg_count(const int arg_min = 1, const int arg_max = -1)
+		: arg_min(arg_min),
+		arg_max(arg_max)
 	{
 	};
 
+	int arg_min;
+	int arg_max;
+};
+
+
+class CFunctionPlugin
+{
+protected:
+	CFunctionPlugin() {};
+
 public:
-	virtual __stdcall ~CFunctionPlugin() { };
+	virtual __stdcall ~CFunctionPlugin() {};
 
 protected:
 	// List of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	// This info will be submitted in the 'end' event.
-	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED));
+	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE_UPDATED));
 	vector<update_data> update_data_list;
 
 public:
 	virtual struct PluginData __stdcall get_plugin_data() = 0;
+	virtual struct arg_count __stdcall get_arg_count() = 0;
 
 public:
 	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_DATA; };
