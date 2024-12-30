@@ -48,9 +48,9 @@ CFunctionPluginCopyCB::~CFunctionPluginCopyCB()
 {
 }
 
-struct PluginData __stdcall CFunctionPluginCopyCB::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginCopyCB::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -60,13 +60,13 @@ struct PluginData __stdcall CFunctionPluginCopyCB::get_plugin_data()
 	return pluginData;
 }
 
-struct arg_count __stdcall CFunctionPluginCopyCB::get_arg_count()
+struct arg_count __stdcall CFunctionPluginCopyCB::get_arg_count() const const
 {
 	// Only one picture.
 	return arg_count(1, 1);
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginCopyCB::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+enum REQUEST_TYPE __stdcall CFunctionPluginCopyCB::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	// Start event.
 

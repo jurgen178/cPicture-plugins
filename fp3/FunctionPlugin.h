@@ -150,10 +150,10 @@ enum PLUGIN_TYPE
 };
 
 
-struct PluginData
+struct plugin_data
 {
 public:
-	PluginData() : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) { };
+	plugin_data() : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) { };
 
 	CString name;
 	CString desc;
@@ -164,7 +164,7 @@ public:
 	enum PLUGIN_TYPE type;
 
 	// Zum Sortieren der Einträge.
-	bool operator < (PluginData& rhs)
+	bool operator < (plugin_data& rhs)
 	{
 		return file_name2 < rhs.file_name2;
 	}
@@ -199,11 +199,11 @@ protected:
 	vector<update_data> update_data_list;
 
 public:
-	virtual struct PluginData __stdcall get_plugin_data() = 0;
-	virtual struct arg_count __stdcall get_arg_count() = 0;
+	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
+	virtual struct arg_count __stdcall get_arg_count() const = 0;
 
 public:
-	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_DATA; };
+	virtual enum REQUEST_TYPE __stdcall start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_DATA; };
 	virtual bool __stdcall process_picture(const picture_data& picture_data) { return true; };
 	virtual const vector<update_data>& __stdcall end(const vector<picture_data>& picture_data_list) { return update_data_list; };
 };

@@ -20,7 +20,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -102,9 +102,9 @@ CFunctionPluginScript::CFunctionPluginScript(const CString& script_file)
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
 
-struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginScript::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.file_name = script_file;
@@ -114,13 +114,13 @@ struct PluginData __stdcall CFunctionPluginScript::get_plugin_data()
 	return pluginData;
 }
 
-struct arg_count __stdcall CFunctionPluginScript::get_arg_count()
+struct arg_count __stdcall CFunctionPluginScript::get_arg_count() const
 {
 	// At least one picture.
 	return arg_count(1, -1);
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	sequence = 0;
 	max_files = static_cast<int>(file_list.size());
