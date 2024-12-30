@@ -20,6 +20,7 @@ public:
 
 public:
 	virtual struct PluginData __stdcall get_plugin_data();
+	virtual struct arg_count __stdcall get_arg_count();
 
 public:
 	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes);
