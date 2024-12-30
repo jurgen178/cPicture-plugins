@@ -60,7 +60,7 @@ struct plugin_data __stdcall CFunctionPluginCopyCB::get_plugin_data() const
 	return pluginData;
 }
 
-struct arg_count __stdcall CFunctionPluginCopyCB::get_arg_count() const const
+struct arg_count __stdcall CFunctionPluginCopyCB::get_arg_count() const
 {
 	// Only one picture.
 	return arg_count(1, 1);

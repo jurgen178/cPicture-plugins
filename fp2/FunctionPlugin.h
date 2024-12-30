@@ -93,7 +93,7 @@ struct update_data
 	const UPDATE_TYPE update_type;
 	const int picture_width;
 	const int picture_height;
-	BYTE* data;
+	const BYTE* data;
 	const DATA_REQUEST_TYPE request_type;
 };
 
@@ -164,7 +164,7 @@ public:
 	enum PLUGIN_TYPE type;
 
 	// Zum Sortieren der Einträge.
-	bool operator < (plugin_data& rhs)
+	bool operator < (const plugin_data& rhs)
 	{
 		return file_name2 < rhs.file_name2;
 	}
@@ -179,8 +179,8 @@ struct arg_count
 	{
 	};
 
-	int arg_min;
-	int arg_max;
+	const int arg_min;
+	const int arg_max;
 };
 
 
