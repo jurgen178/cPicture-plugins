@@ -18,7 +18,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -58,6 +58,12 @@ struct PluginData __stdcall CFunctionPluginCopyCB::get_plugin_data()
 	pluginData.info.LoadString(IDS_PLUGIN_INFO);
 
 	return pluginData;
+}
+
+struct arg_count __stdcall CFunctionPluginCopyCB::get_arg_count()
+{
+	// Only one picture.
+	return arg_count(1, 1);
 }
 
 enum REQUEST_TYPE __stdcall CFunctionPluginCopyCB::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
