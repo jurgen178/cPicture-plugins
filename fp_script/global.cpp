@@ -50,59 +50,6 @@ bool scanBoolVar(const char* Text, const CString& SearchTextTemplate, bool def)
 	return def;
 }
 
-std::wregex GetDescriptionRegex()
-{
-	//<#
-	//.DESCRIPTION
-	//    Example script to print the picture data.
-	//.NOTES
-	//    notes
-	//#>
-
-	return std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
-}
-
-CString scanDescription(char* Text, std::wregex& descriptionRegex)
-{
-	CString ScanText(Text);
-
-	// Check if it is from a Unicode file (UCS-2, not UTF-8).
-	// Only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00
-	if (ScanText.GetLength() <= 3)
-	{
-		// Reload text as Unicode Text (UCS-2).
-		ScanText = (WCHAR*)Text;
-	}
-
-	// Simplify the line break.
-	ScanText.Replace(L"\r", L"");
-
-	// std:regex multiline
-	ScanText.Replace(L"\n", L"\\n");
-
-	//<#
-	//.DESCRIPTION
-	//    Example script to print the picture data.
-	//.NOTES
-	//    notes
-	//#>
-
-	std::wstring input(ScanText);
-	std::wsmatch match;
-
-	if (std::regex_search(input, match, descriptionRegex))
-	{
-		std::wstring r = match[1];
-		CString m(r.c_str());
-		m.Replace(L"\\n", L"\n");
-		m.Trim(L" \n\t");
-
-		return m;
-	}
-
-	return L"";
-}
-
 CString escapeCmdLineJsonData(CString text)
 {
 	// [{"key'1","value"a","key2","value\b\"}]
@@ -197,3 +144,29 @@ CString escapeCmdLineJsonData(__int64 value)
 
 	return data;
 }
+
+#ifdef DEBUG
+CString GetLastErrorStr()
+{
+	DWORD errorCode = GetLastError();
+	LPWSTR errorMsg = NULL;
+	DWORD formatResult = FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		errorCode,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		errorMsg,
+		0,
+		NULL
+	);
+
+	CString str;
+	if (formatResult)
+	{
+		str = errorMsg;
+		LocalFree(errorMsg);
+	}
+
+	return str;
+}
+#endif

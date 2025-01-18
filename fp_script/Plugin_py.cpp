@@ -7,6 +7,54 @@
 // Runs a py script for the selected pictures.
 
 
+std::wregex GetPyDescriptionRegex()
+{
+	//"""
+	//Description: Example script to print the picture data
+	//"""
+
+	return std::wregex(L"\"\"\"(?:\\s|\\\\n)+Description:(?:\\s|\\\\n)+(.+)(?:\\s|\\\\n)+\"\"\"", std::regex::icase);
+}
+
+CString scanPyDescription(char* Text, std::wregex& descriptionRegex)
+{
+	CString ScanText(Text);
+
+	// Check if it is from a Unicode file (UCS-2, not UTF-8).
+	// Only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00
+	if (ScanText.GetLength() <= 3)
+	{
+		// Reload text as Unicode Text (UCS-2).
+		ScanText = (WCHAR*)Text;
+	}
+
+	// Simplify the line break.
+	ScanText.Replace(L"\r", L"");
+
+	// std::regex multiline
+	ScanText.Replace(L"\n", L"\\n");
+
+	//"""
+	//Description: Example script to print the picture data
+	//"""
+
+	std::wstring input(ScanText);
+	std::wsmatch match;
+
+	if (std::regex_search(input, match, descriptionRegex))
+	{
+		std::wstring r = match[1];
+		CString m(r.c_str());
+		m.Replace(L"\\n", L"\n");
+		m.Trim(L" \n\t");
+
+		return m;
+	}
+
+	return L"";
+}
+
+
 CFunctionPluginPyScript::CFunctionPluginPyScript(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	: m_PythonExe(L"Python.exe "),
@@ -14,7 +62,7 @@ CFunctionPluginPyScript::CFunctionPluginPyScript(const script_info script_info)
 	m_script_info(script_info)
 {
 	// Do not set locale to keep decimal point (LC_NUMERIC) for Python.
-	//_wsetlocale(LC_ALL, L".ACP");
+	_wsetlocale(LC_ALL, L".ACP");
 }
 
 struct plugin_data __stdcall CFunctionPluginPyScript::get_plugin_data() const
@@ -108,12 +156,12 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 		fclose(infile);
 	}
 
-	CString script(L"-ExecutionPolicy Unrestricted ");
+	CString script;
 
 	if (noexit)
-		script += L"-noexit ";	// -noexit keeps the powershell console open
+		script += L"-i ";	// -i keeps the python console open
 
-	script += L"-Command \".\\" + m_script_info.script + L" ";
+	script += L"\"" + m_script_info.script + L"\" ";
 
 	// Add picture data as json.
 
@@ -160,37 +208,35 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 	//]
 
 
-	// Begin of array.
-	CString json(L"[");
+	CString json;
 
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
-		// \"\" escapes the quotes in a quoted string.
-		CString cmd_format(L"{\"\"file\"\":\"\"%1\"\",\"\"name\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"errormsg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
+		CString cmd_format(L"{\"file\": \"%1\",\"name\": \"%2\",\"dir\": \"%3\",\"width\": %4!d!,\"height\": %5!d!,\"errormsg\": \"%6\",\"audio\": %7,\"video\": %8,\"colorprofile\": %9,\"gps\": \"%10\",\"aperture\": %11,\"shutterspeed\": %12!d!,\"iso\": %13!d!,\"exifdate\": %14,\"exifdate_str\": \"%15\",\"model\": \"%16\",\"lens\": \"%17\",\"cdata\": \"%18\"}");
 		const int f(it->file_name.ReverseFind(L'\\') + 1);
 		const CString name(it->file_name.Mid(f));
 		const CString dir(it->file_name.Left(f));
 
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			escapeCmdLineJsonData(it->file_name),
-			escapeCmdLineJsonData(name),
-			escapeCmdLineJsonData(dir),
+			it->file_name,
+			name,
+			dir,
 			it->picture_width,
 			it->picture_height,
-			escapeCmdLineJsonData(it->error_msg),
-			escapeCmdLineJsonData(it->audio),
-			escapeCmdLineJsonData(it->video),
-			escapeCmdLineJsonData(it->color_profile),
-			escapeCmdLineJsonData(it->gps),
-			escapeCmdLineJsonData(it->aperture),
+			it->error_msg,
+			it->audio,
+			it->video,
+			it->color_profile,
+			it->gps,
+			it->aperture,
 			it->shutterspeed,
 			it->iso,
-			escapeCmdLineJsonData(it->exif_time),
+			it->exif_time,
 			it->exif_datetime_display,
-			escapeCmdLineJsonData(it->model),
-			escapeCmdLineJsonData(it->lens),
-			escapeCmdLineJsonData(it->cdata)
+			it->model,
+			it->lens,
+			it->cdata
 		);
 
 		// No trailing separator for the last array element.
@@ -202,12 +248,9 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 		json += cmd;
 	}
 
-	// End of array.
-	json += L"]";
-
-	script += L"-picture_data_json '";
+	script += L"\"";
 	script += json;
-	script += L"'\"";
+	script += L"\"";
 
 	SHELLEXECUTEINFO shInfo;
 	memset(&shInfo, 0, sizeof(shInfo));
@@ -219,7 +262,12 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
 	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
-	ShellExecuteEx(&shInfo);
+	const BOOL ret = ShellExecuteEx(&shInfo);
+
+#ifdef DEBUG
+	CString errorMsg = GetLastErrorStr();
+#endif
+
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).

@@ -1,11 +1,7 @@
 ﻿#include "resource.h"		// main symbols
-#include "stdafx.h"
+#include "global.h"
 #include "plugin.h"
-#include <io.h>
 
-#include <regex>
-#include <vector>
-using namespace std;
 
 // Script plugin cpp_script.
 // Runs a script for the selected pictures.
@@ -36,8 +32,6 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 #include "GetInstances_ps1.h"
 #include "GetInstances_py.h"
 
-std::wregex GetDescriptionRegex();
-CString scanDescription(char* Text, std::wregex&);
 
 const int maxscripts(sizeof(GetInstanceBatList) / sizeof(lpfnFunctionGetInstanceProc));
 
@@ -77,7 +71,7 @@ const int __stdcall GetPluginInit()
 	if ((hFile = FindFirstFile(ScriptPS1Mask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
-		std::wregex descriptionRegex(GetDescriptionRegex());
+		std::wregex descriptionRegex(GetPS1DescriptionRegex());
 
 		do
 		{
@@ -96,7 +90,7 @@ const int __stdcall GetPluginInit()
 					const int size(min(textSize, _filelength(_fileno(infile))));
 					fread(Text, sizeof(char), size, infile);
 
-					desc = scanDescription(Text, descriptionRegex);
+					desc = scanPS1Description(Text, descriptionRegex);
 
 					fclose(infile);
 				}
@@ -116,7 +110,7 @@ const int __stdcall GetPluginInit()
 	if ((hFile = FindFirstFile(ScriptPyMask, &c_file)) != INVALID_HANDLE_VALUE)
 	{
 		int i = 0;
-		std::wregex descriptionRegex(GetDescriptionRegex());
+		std::wregex descriptionRegex(GetPyDescriptionRegex());
 
 		do
 		{
@@ -135,7 +129,7 @@ const int __stdcall GetPluginInit()
 					const int size(min(textSize, _filelength(_fileno(infile))));
 					fread(Text, sizeof(char), size, infile);
 
-					desc = scanDescription(Text, descriptionRegex);
+					desc = scanPyDescription(Text, descriptionRegex);
 
 					fclose(infile);
 				}

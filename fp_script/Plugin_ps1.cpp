@@ -7,6 +7,60 @@
 // Runs a pswh script for the selected pictures.
 
 
+std::wregex GetPS1DescriptionRegex()
+{
+	//<#
+	//.DESCRIPTION
+	//    Example script to print the picture data.
+	//.NOTES
+	//    notes
+	//#>
+
+	return std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
+}
+
+CString scanPS1Description(char* Text, std::wregex& descriptionRegex)
+{
+	CString ScanText(Text);
+
+	// Check if it is from a Unicode file (UCS-2, not UTF-8).
+	// Only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00
+	if (ScanText.GetLength() <= 3)
+	{
+		// Reload text as Unicode Text (UCS-2).
+		ScanText = (WCHAR*)Text;
+	}
+
+	// Simplify the line break.
+	ScanText.Replace(L"\r", L"");
+
+	// std::regex multiline
+	ScanText.Replace(L"\n", L"\\n");
+
+	//<#
+	//.DESCRIPTION
+	//    Example script to print the picture data.
+	//.NOTES
+	//    notes
+	//#>
+
+	std::wstring input(ScanText);
+	std::wsmatch match;
+
+	if (std::regex_search(input, match, descriptionRegex))
+	{
+		std::wstring r = match[1];
+		CString m(r.c_str());
+		m.Replace(L"\\n", L"\n");
+		m.Trim(L" \n\t");
+
+		return m;
+	}
+
+	return L"";
+}
+
+
 CFunctionPluginPS1Script::CFunctionPluginPS1Script(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	: m_PowerShellExe(L"pwsh.exe "),
