@@ -67,8 +67,8 @@ CFunctionPluginPS1Script::CFunctionPluginPS1Script(const script_info script_info
 	handle_wnd(NULL),
 	m_script_info(script_info)
 {
-	// Do not set locale to keep decimal point (LC_NUMERIC) for PowerShell.
-	//_wsetlocale(LC_ALL, L".ACP");
+	// Set the locale to "C" to ensure the decimal point is a period.
+	_wsetlocale(LC_NUMERIC, L"C");
 }
 
 struct plugin_data __stdcall CFunctionPluginPS1Script::get_plugin_data() const

@@ -61,8 +61,8 @@ CFunctionPluginPyScript::CFunctionPluginPyScript(const script_info script_info)
 	handle_wnd(NULL),
 	m_script_info(script_info)
 {
-	// Do not set locale to keep decimal point (LC_NUMERIC) for Python.
-	_wsetlocale(LC_ALL, L".ACP");
+	// Set the locale to "C" to ensure the decimal point is a period.
+	_wsetlocale(LC_NUMERIC, L"C");
 }
 
 struct plugin_data __stdcall CFunctionPluginPyScript::get_plugin_data() const
@@ -212,31 +212,31 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
-		CString cmd_format(L"{\"file\": \"%1\",\"name\": \"%2\",\"dir\": \"%3\",\"width\": %4!d!,\"height\": %5!d!,\"errormsg\": \"%6\",\"audio\": %7,\"video\": %8,\"colorprofile\": %9,\"gps\": \"%10\",\"aperture\": %11,\"shutterspeed\": %12!d!,\"iso\": %13!d!,\"exifdate\": %14,\"exifdate_str\": \"%15\",\"model\": \"%16\",\"lens\": \"%17\",\"cdata\": \"%18\"}");
+		CString cmd_format(L"{\"file\": \"%1\",\"name\": \"%2\",\"dir\": \"%3\",\"width\": %4!d!,\"height\": %5!d!,\"errormsg\": \"%6\",\"audio\": %7,\"video\": %8,\"colorprofile\": %9,\"gps\": \"%10\",\"aperture\": %11,\"shutterspeed\": %12!d!,\"iso\": %13!d!,\"exifdate\": %14,\"exifdate_str\": \"%15\",\"model\": \"%16\",\"lens\": \"%17\",\"cdata\": %18}");
 		const int f(it->file_name.ReverseFind(L'\\') + 1);
 		const CString name(it->file_name.Mid(f));
 		const CString dir(it->file_name.Left(f));
 
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			it->file_name,
-			name,
-			dir,
+			escapeCmdLineJsonDataPy(it->file_name),
+			escapeCmdLineJsonDataPy(name),
+			escapeCmdLineJsonDataPy(dir),
 			it->picture_width,
 			it->picture_height,
-			it->error_msg,
+			escapeCmdLineJsonDataPy(it->error_msg),
 			escapeCmdLineJsonData(it->audio),
 			escapeCmdLineJsonData(it->video),
 			escapeCmdLineJsonData(it->color_profile),
-			it->gps,
+			escapeCmdLineJsonDataPy(it->gps),
 			escapeCmdLineJsonData(it->aperture),
 			it->shutterspeed,
 			it->iso,
 			escapeCmdLineJsonData(it->exif_time),
-			it->exif_datetime_display,
-			it->model,
-			it->lens,
-			it->cdata
+			escapeCmdLineJsonDataPy(it->exif_datetime_display),
+			escapeCmdLineJsonDataPy(it->model),
+			escapeCmdLineJsonDataPy(it->lens),
+			escapeCmdLineJsonDataPy(it->cdata)
 		);
 
 		// No trailing separator for the last array element.

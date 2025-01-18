@@ -7,9 +7,9 @@
 // Runs a bat script for the selected pictures.
 
 
-CFunctionPluginBatScript::CFunctionPluginBatScript(const CString& script_file)
+CFunctionPluginBatScript::CFunctionPluginBatScript(const script_info script_info)
 	: handle_wnd(NULL),
-	script_file(script_file),
+	script_file(script_info.script),
 	sequence(0),
 	max_files(0)
 {

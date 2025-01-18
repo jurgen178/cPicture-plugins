@@ -20,7 +20,7 @@ class CFunctionPluginBatScript : public CFunctionPlugin
 {
 protected:
 public:
-	CFunctionPluginBatScript(const CString& script_file);
+	CFunctionPluginBatScript(const script_info script_infoe);
 
 protected:
 	HWND handle_wnd;

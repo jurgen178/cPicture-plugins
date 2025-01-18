@@ -145,10 +145,36 @@ CString escapeCmdLineJsonData(__int64 value)
 	return data;
 }
 
-CString toBase64(const CString& data)
+CString escapeCmdLineJsonDataPy(CString text)
+{
+	text.Replace(L"\\", L"\\\\");	// \ -> \\ 
+
+	return text;
+}
+
+bool toUTF8(const CString& data, unsigned char*& utf8Buffer, int& utf8Length)
+{
+	// Determine the required buffer size for the UTF-8 string.
+	const int bufferSize = WideCharToMultiByte(CP_UTF8, 0, data, -1, NULL, 0, NULL, NULL);
+	if (bufferSize)
+	{
+		// Allocate the buffer for the UTF-8 string.
+		utf8Buffer = new unsigned char[bufferSize];
+
+		// Convert the CString to a UTF-8 encoded buffer.
+		utf8Length = WideCharToMultiByte(CP_UTF8, 0, data, -1, reinterpret_cast<char*>(utf8Buffer), bufferSize, NULL, NULL);
+		if (utf8Length)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+CString toBase64(const unsigned char* data, const int len)
 {
 	CString base64;
-	const int len = data.GetLength();
 	base64.Preallocate(4 * len / 10);
 
 	const int size3 = len - len % 3;
@@ -182,22 +208,35 @@ CString toBase64(const CString& data)
 		return base64;
 	}
 	else
-		if (last_block_size == 2)
-		{
-			const unsigned char c1 = data[size3] >> 2;
-			const unsigned char c2 = ((data[size3] & 0x03) << 4) | (data[size3 + 1] >> 4);
-			const unsigned char c3 = ((data[size3 + 1] & 0x0F) << 2) | (data[size3 + 2] >> 6);
+	if (last_block_size == 2)
+	{
+		const unsigned char c1 = data[size3] >> 2;
+		const unsigned char c2 = ((data[size3] & 0x03) << 4) | (data[size3 + 1] >> 4);
+		const unsigned char c3 = ((data[size3 + 1] & 0x0F) << 2) | (data[size3 + 2] >> 6);
 
-			base64 += base64map[c1];
-			base64 += base64map[c2];
-			base64 += base64map[c3];
+		base64 += base64map[c1];
+		base64 += base64map[c2];
+		base64 += base64map[c3];
 
-			base64 += L"=";
+		base64 += L"=";
 
-			return base64;
-		}
+		return base64;
+	}
 
 	return base64;
+}
+
+CString toBase64(const CString& data)
+{
+	unsigned char* utf8Buffer = NULL;
+	int utf8Length = 0;
+	if(toUTF8(data, utf8Buffer, utf8Length))
+	{
+		const CString base64 = toBase64(utf8Buffer, utf8Length);
+		
+		delete[] utf8Buffer;
+		return base64;
+	}
 }
 
 #ifdef DEBUG
