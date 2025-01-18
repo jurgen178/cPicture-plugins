@@ -225,14 +225,14 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 			it->picture_width,
 			it->picture_height,
 			it->error_msg,
-			it->audio,
-			it->video,
-			it->color_profile,
+			escapeCmdLineJsonData(it->audio),
+			escapeCmdLineJsonData(it->video),
+			escapeCmdLineJsonData(it->color_profile),
 			it->gps,
-			it->aperture,
+			escapeCmdLineJsonData(it->aperture),
 			it->shutterspeed,
 			it->iso,
-			it->exif_time,
+			escapeCmdLineJsonData(it->exif_time),
 			it->exif_datetime_display,
 			it->model,
 			it->lens,
@@ -249,7 +249,7 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 	}
 
 	script += L"\"";
-	script += json;
+	script += toBase64(json);
 	script += L"\"";
 
 	SHELLEXECUTEINFO shInfo;

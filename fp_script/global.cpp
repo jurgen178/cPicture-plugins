@@ -145,6 +145,61 @@ CString escapeCmdLineJsonData(__int64 value)
 	return data;
 }
 
+CString toBase64(const CString& data)
+{
+	CString base64;
+	const int len = data.GetLength();
+	base64.Preallocate(4 * len / 10);
+
+	const int size3 = len - len % 3;
+	const char base64map[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	for (int i = 0; i < size3; i += 3)
+	{
+		const unsigned char c1 = data[i] >> 2;
+		const unsigned char c2 = ((data[i] & 0x03) << 4) | (data[i + 1] >> 4);
+		const unsigned char c3 = ((data[i + 1] & 0x0F) << 2) | (data[i + 2] >> 6);
+		const unsigned char c4 = data[i + 2] & 0x3F;
+
+		base64 += base64map[c1];
+		base64 += base64map[c2];
+		base64 += base64map[c3];
+		base64 += base64map[c4];
+	}
+
+	const int last_block_size = len % 3;
+
+	if (last_block_size == 1)
+	{
+		const unsigned char c1 = data[size3] >> 2;
+		const unsigned char c2 = ((data[size3] & 0x03) << 4) | (data[size3 + 1] >> 4);
+
+		base64 += base64map[c1];
+		base64 += base64map[c2];
+
+		base64 += L"==";
+
+		return base64;
+	}
+	else
+		if (last_block_size == 2)
+		{
+			const unsigned char c1 = data[size3] >> 2;
+			const unsigned char c2 = ((data[size3] & 0x03) << 4) | (data[size3 + 1] >> 4);
+			const unsigned char c3 = ((data[size3 + 1] & 0x0F) << 2) | (data[size3 + 2] >> 6);
+
+			base64 += base64map[c1];
+			base64 += base64map[c2];
+			base64 += base64map[c3];
+
+			base64 += L"=";
+
+			return base64;
+		}
+
+	return base64;
+}
+
 #ifdef DEBUG
 CString GetLastErrorStr()
 {

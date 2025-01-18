@@ -16,6 +16,8 @@ CString escapeCmdLineJsonData(CString text);
 CString escapeCmdLineJsonData(bool expr);
 CString escapeCmdLineJsonData(float value);
 CString escapeCmdLineJsonData(__int64 value);
+CString toBase64(const CString& str);
+
 #ifdef DEBUG
 CString GetLastErrorStr();
 #endif
