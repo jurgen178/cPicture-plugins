@@ -160,6 +160,7 @@ bool toUTF8(const CString& data, unsigned char*& utf8Buffer, int& utf8Length)
 	{
 		// Allocate the buffer for the UTF-8 string.
 		utf8Buffer = new unsigned char[bufferSize];
+		memset(utf8Buffer, 0, bufferSize);
 
 		// Convert the CString to a UTF-8 encoded buffer.
 		utf8Length = WideCharToMultiByte(CP_UTF8, 0, data, -1, reinterpret_cast<char*>(utf8Buffer), bufferSize, NULL, NULL);
