@@ -34,7 +34,15 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 #include <functional>
 
 
-typedef CString(*ScanDescriptionFunc)(char*, std::wregex&);
+typedef CString(*ScanDescriptionFunc)(char*);
+
+// Template function takes an array by reference and returns its size.
+// The size N is deduced at compile time.
+template <typename T, std::size_t N>
+constexpr std::size_t max_elements(T(&)[N])
+{
+	return N;
+}
 
 
 // Each .ps1 file will be set as a plugin.
@@ -43,6 +51,7 @@ const int __stdcall GetPluginInit()
 	ScriptsBat.clear();
 	ScriptsPS1.clear();
 	ScriptsPy.clear();
+
 	PluginProcArray.clear();
 
 	CString desc;
@@ -54,12 +63,13 @@ const int __stdcall GetPluginInit()
 		{
 		};
 
-	// Common lambda for ps1 and py scripts.
-	auto get_ps1_py_script_info = [&](ScanDescriptionFunc fp, std::wregex descriptionRegex) -> void
+	// For both ps1 and py scripts.
+	auto get_ps1_py_script_info = [&](ScanDescriptionFunc scan_description) -> void
 		{
 			// Read the first 4096 chars to get the description text.
 			const int textSize(4096);
 			char Text[textSize] = { 0 };
+			desc = L"";
 
 			FILE* infile = NULL;
 			const errno_t err(_wfopen_s(&infile, c_file.cFileName, L"rb"));
@@ -69,7 +79,7 @@ const int __stdcall GetPluginInit()
 				const int size(min(textSize, _filelength(_fileno(infile))));
 				fread(Text, sizeof(char), size, infile);
 
-				desc = fp(Text, descriptionRegex);
+				desc = scan_description(Text);
 
 				fclose(infile);
 			}
@@ -78,20 +88,20 @@ const int __stdcall GetPluginInit()
 	// Script info for ps1 files.
 	auto get_ps1_script_info = [&]() -> void
 		{
-			get_ps1_py_script_info(scanPS1Description, GetPS1DescriptionRegex());
+			get_ps1_py_script_info(scanPS1Description);
 		};
 
 	// Script info for python files.
 	auto get_py_script_info = [&]() -> void
 		{
-			get_ps1_py_script_info(scanPyDescription, GetPyDescriptionRegex());
+			get_ps1_py_script_info(scanPyDescription);
 		};
 
 	auto register_filetyp = [&](
 		const CString& script_mask,
 		const int maxscripts,
-		vector<script_info>& scripts,
 		lpfnFunctionGetInstanceProc* getInstanceList,
+		vector<script_info>& scripts,
 		std::function<void()> get_script_info
 		)
 		-> void
@@ -110,119 +120,17 @@ const int __stdcall GetPluginInit()
 						scripts.push_back(script_info(script, desc));
 						PluginProcArray.push_back(getInstanceList[i++]);
 					}
-				} while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
+				}
+				while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
 
 				FindClose(hFile);
 			}
 		};
 
-	const int maxscriptsBat(sizeof(GetInstanceBatList) / sizeof(lpfnFunctionGetInstanceProc));
-	register_filetyp(L"*.bat", maxscriptsBat, ScriptsBat, GetInstanceBatList, get_bat_script_info);
 
-	const int maxscriptsPS1(sizeof(GetInstancePS1List) / sizeof(lpfnFunctionGetInstanceProc));
-	register_filetyp(L"*.ps1", maxscriptsPS1, ScriptsPS1, GetInstancePS1List, get_ps1_script_info);
-
-	const int maxscriptsPy(sizeof(GetInstancePyList) / sizeof(lpfnFunctionGetInstanceProc));
-	register_filetyp(L"*.py", maxscriptsPy, ScriptsPy, GetInstancePyList, get_py_script_info);
-
-
-	//// Register all *.bat scripts.
-	//const CString ScriptBatMask(L"*.bat");
-	//if ((hFile = FindFirstFile(ScriptBatMask, &c_file)) != INVALID_HANDLE_VALUE)
-	//{
-	//	int i = 0;
-
-	//	do
-	//	{
-	//		if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
-	//		{
-	//			const CString script(c_file.cFileName);
-	//			ScriptsBat.push_back(script);
-	//			PluginProcArray.push_back(GetInstanceBatList[i++]);
-	//		}
-	//	}
-	//	while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
-
-	//	FindClose(hFile);
-	//}
-
-	//// Register all *.ps1 scripts.
-	//const CString ScriptPS1Mask(L"*.ps1");
-	//if ((hFile = FindFirstFile(ScriptPS1Mask, &c_file)) != INVALID_HANDLE_VALUE)
-	//{
-	//	int i = 0;
-	//	std::wregex descriptionRegex(GetPS1DescriptionRegex());
-
-	//	do
-	//	{
-	//		if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
-	//		{
-	//			// Read the first 4096 chars to get the description text.
-	//			const int textSize(4096);
-	//			char Text[textSize] = { 0 };
-
-	//			FILE* infile = NULL;
-	//			const errno_t err(_wfopen_s(&infile, c_file.cFileName, L"rb"));
-
-	//			CString desc;
-	//			if (err == 0)
-	//			{
-	//				const int size(min(textSize, _filelength(_fileno(infile))));
-	//				fread(Text, sizeof(char), size, infile);
-
-	//				desc = scanPS1Description(Text, descriptionRegex);
-
-	//				fclose(infile);
-	//			}
-
-	//			const CString script(c_file.cFileName);
-	//			ScriptsPS1.push_back(script_info(script, desc));
-	//			PluginProcArray.push_back(GetInstancePS1List[i++]);
-	//		}
-	//	}
-	//	while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
-
-	//	FindClose(hFile);
-	//}
-
-	//// Register all *.py scripts.
-	//const CString ScriptPyMask(L"*.py");
-	//if ((hFile = FindFirstFile(ScriptPyMask, &c_file)) != INVALID_HANDLE_VALUE)
-	//{
-	//	int i = 0;
-	//	std::wregex descriptionRegex(GetPyDescriptionRegex());
-
-	//	do
-	//	{
-	//		if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
-	//		{
-	//			// Read the first 4096 chars to get the description text.
-	//			const int textSize(4096);
-	//			char Text[textSize] = { 0 };
-
-	//			FILE* infile = NULL;
-	//			const errno_t err(_wfopen_s(&infile, c_file.cFileName, L"rb"));
-
-	//			CString desc;
-	//			if (err == 0)
-	//			{
-	//				const int size(min(textSize, _filelength(_fileno(infile))));
-	//				fread(Text, sizeof(char), size, infile);
-
-	//				desc = scanPyDescription(Text, descriptionRegex);
-
-	//				fclose(infile);
-	//			}
-
-	//			const CString script(c_file.cFileName);
-	//			ScriptsPy.push_back(script_info(script, desc));
-	//			PluginProcArray.push_back(GetInstancePyList[i++]);
-	//		}
-	//	}
-	//	while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
-
-	//	FindClose(hFile);
-	//}
+	register_filetyp(L"*.bat", max_elements(GetInstanceBatList), GetInstanceBatList, ScriptsBat, get_bat_script_info);
+	register_filetyp(L"*.ps1", max_elements(GetInstancePS1List), GetInstancePS1List, ScriptsPS1, get_ps1_script_info);
+	register_filetyp(L"*.py", max_elements(GetInstancePyList), GetInstancePyList, ScriptsPy, get_py_script_info);
 
 	// Anzahl als Negativwert wenn externe Moduldateien (*.bat, *.ps1, *.py) verwendet werden.
 	return -static_cast<int>(PluginProcArray.size());

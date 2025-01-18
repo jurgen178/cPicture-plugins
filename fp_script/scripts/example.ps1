@@ -1,6 +1,6 @@
 ﻿<#
 .DESCRIPTION
-    Example script to print the picture data
+    Example PowerShell script to print the picture data
 
 .NOTES
     This example is using the default cPicture custom data template

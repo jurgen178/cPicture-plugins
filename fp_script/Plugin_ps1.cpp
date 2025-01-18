@@ -7,7 +7,7 @@
 // Runs a pswh script for the selected pictures.
 
 
-std::wregex GetPS1DescriptionRegex()
+CString scanPS1Description(char* Text)
 {
 	//<#
 	//.DESCRIPTION
@@ -16,11 +16,8 @@ std::wregex GetPS1DescriptionRegex()
 	//    notes
 	//#>
 
-	return std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
-}
-
-CString scanPS1Description(char* Text, std::wregex& descriptionRegex)
-{
+	static std::wregex& descriptionRegex = std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
+	
 	CString ScanText(Text);
 
 	// Check if it is from a Unicode file (UCS-2, not UTF-8).

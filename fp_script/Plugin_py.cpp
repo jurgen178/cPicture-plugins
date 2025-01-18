@@ -7,17 +7,14 @@
 // Runs a py script for the selected pictures.
 
 
-std::wregex GetPyDescriptionRegex()
+CString scanPyDescription(char* Text)
 {
 	//"""
 	//Description: Example script to print the picture data
 	//"""
-
-	return std::wregex(L"\"\"\"(?:\\s|\\\\n)+Description:(?:\\s|\\\\n)+(.+)(?:\\s|\\\\n)+\"\"\"", std::regex::icase);
-}
-
-CString scanPyDescription(char* Text, std::wregex& descriptionRegex)
-{
+	
+	static std::wregex descriptionRegex = std::wregex(L"\"\"\"(?:\\s|\\\\n)+Description:(?:\\s|\\\\n)+(.+)(?:\\s|\\\\n)+\"\"\"", std::regex::icase);
+	
 	CString ScanText(Text);
 
 	// Check if it is from a Unicode file (UCS-2, not UTF-8).

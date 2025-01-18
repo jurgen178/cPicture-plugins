@@ -8,10 +8,8 @@ using namespace std;
 
 bool CheckFile(const WCHAR* pFile);
 bool scanBoolVar(const char* Text, const CString& SearchTextTemplate, bool def);
-std::wregex GetPS1DescriptionRegex();
-CString scanPS1Description(char* Text, std::wregex& descriptionRegex);
-std::wregex GetPyDescriptionRegex();
-CString scanPyDescription(char* Text, std::wregex& descriptionRegex);
+CString scanPS1Description(char* Text);
+CString scanPyDescription(char* Text);
 CString escapeCmdLineJsonData(CString text);
 CString escapeCmdLineJsonData(bool expr);
 CString escapeCmdLineJsonData(float value);
