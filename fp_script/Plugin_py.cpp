@@ -56,7 +56,6 @@ CString scanPyDescription(char* Text, std::wregex& descriptionRegex)
 
 
 CFunctionPluginPyScript::CFunctionPluginPyScript(const script_info script_info)
-	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	: m_PythonExe(L"Python.exe "),
 	handle_wnd(NULL),
 	m_script_info(script_info)
@@ -208,7 +207,8 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 	//]
 
 
-	CString json;
+	// Begin of array.
+	CString json(L"[");
 
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
@@ -247,6 +247,9 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 
 		json += cmd;
 	}
+
+	// End of array.
+	json += L"]";
 
 	script += L"\"";
 	script += toBase64(json);
