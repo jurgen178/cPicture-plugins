@@ -15,6 +15,19 @@ import json
 import sys
 import base64
 
+def colored_text(text, color):
+    colors = {
+        "red": "\033[31m",
+        "green": "\033[32m",
+        "yellow": "\033[33m",
+        "blue": "\033[34m",
+        "magenta": "\033[35m",
+        "cyan": "\033[36m",
+        "white": "\033[37m",
+        "reset": "\033[0m"
+    }
+    return f"{colors.get(color, colors['reset'])}{text}{colors['reset']}"
+
 # Get the picture data.
 def picture_data(base64_string):
 
@@ -56,9 +69,11 @@ def picture_data(base64_string):
         print(f"    name='{item["name"]}', dir='{item["dir"]}'")
         print()
 
-        print(f"Picture {i}:")
+        print(colored_text(f"Picture {i+1}:", "yellow"))
         for key, value in item.items():
-            print(f"  {key}: {value}")
+            print(colored_text(f"  {key}", "green"), end="")
+            print(": ", end="")
+            print(colored_text(f"{value}", "cyan"))
         print()
 
         # Use specific cdata field.
@@ -74,7 +89,9 @@ def picture_data(base64_string):
             print(f"{len(item['cdata'][0])} elements in cdata")
             for i, cdata_item in enumerate(item['cdata']):
                 for key, value in cdata_item.items():
-                    print(f"  {key}: {value}")     
+                    print(colored_text(f"  {key}", "green"), end="")
+                    print(": ", end="")
+                    print(colored_text(f"{value}", "cyan"))
 
         print("-" * 70)
 
