@@ -12,9 +12,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_bat_script", "fp_bat_sc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_fp_hdr", "fp_hdr\fp_hdr.vcxproj", "{C10391B4-8A40-43AD-B2C0-C72BBB388320}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_ps1_script", "fp_ps1_script\fp_ps1_script.vcxproj", "{BF78946C-5011-4CFF-9D75-B3D2F212AE1B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_script", "fp_script\fp_script.vcxproj", "{BF78946C-5011-4CFF-9D75-B3D2F212AE1B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unit_test_ps1_script", "unit_test_ps1_script\unit_test_ps1_script.vcxproj", "{892530C3-A591-4017-B190-C12232DEEAA2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unit_test_script", "unit_test_script\unit_test_script.vcxproj", "{892530C3-A591-4017-B190-C12232DEEAA2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_fp4", "fp4\fp4.vcxproj", "{98790942-A1FA-4282-BA58-87AA50364923}"
 EndProject
