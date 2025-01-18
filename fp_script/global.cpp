@@ -1,5 +1,6 @@
 ﻿#include "global.h"
 
+
 bool CheckFile(const WCHAR* pFile)
 {
 	if (wcslen(pFile))

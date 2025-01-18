@@ -1,13 +1,10 @@
 ﻿#include "resource.h"		// main symbols
 #include "global.h"
 #include "plugin.h"
-#include <io.h>
 
-#include <vector>
-using namespace std;
 
 // PowerShell script plugin cpp_script.
-// Runs a pswh script for the selected pictures.
+// Runs a bat script for the selected pictures.
 
 
 CFunctionPluginBatScript::CFunctionPluginBatScript(const CString& script_file)
@@ -25,8 +22,8 @@ struct plugin_data __stdcall CFunctionPluginBatScript::get_plugin_data() const
 
 	// Set plugin info.
 	pluginData.file_name = script_file;
-	pluginData.name.FormatMessage(IDS_SCRIPT_BAT_SHORT, script_file);
-	pluginData.desc.FormatMessage(IDS_SCRIPT_BAT_NAME, script_file.Left(script_file.ReverseFind(L'.')));
+	pluginData.name.FormatMessage(IDS_SCRIPT_BAT_NAME, script_file.Left(script_file.ReverseFind(L'.')));
+	pluginData.desc.FormatMessage(IDS_SCRIPT_BAT_SHORT, script_file);
 
 	return pluginData;
 }

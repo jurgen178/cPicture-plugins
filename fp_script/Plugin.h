@@ -71,7 +71,7 @@ public:
 	CFunctionPluginPyScript(const script_info script_info);
 
 protected:
-	const CString m_PowerShellExe;
+	const CString m_PythonExe;
 	HWND handle_wnd;
 	script_info m_script_info;
 

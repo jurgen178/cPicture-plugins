@@ -1,10 +1,7 @@
 ﻿#include "resource.h"		// main symbols
 #include "global.h"
 #include "plugin.h"
-#include <io.h>
 
-#include <vector>
-using namespace std;
 
 // PowerShell script plugin cpp_script.
 // Runs a pswh script for the selected pictures.

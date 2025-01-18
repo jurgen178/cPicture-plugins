@@ -69,7 +69,7 @@ BEGIN
     IDS_ERROR_SCRIPT_MISSING 
                             "Das Skript '%1' ist nicht im\nOrdner '%2' vorhanden."
     IDS_SCRIPT_PS1_NAME     "PowerShell-Skript '%1'"
-    IDS_SCRIPT_BAT_SHORT    "Skript '%1'"
+    IDS_SCRIPT_BAT_SHORT    "Batch-Skript '%1'"
     IDS_SCRIPT_BAT_NAME     "Batch-Skript '%1'"
     IDS_SCRIPT_PY_NAME      "Python-Skript '%1'"
 END
@@ -121,7 +121,7 @@ BEGIN
     IDS_ERROR_SCRIPT_MISSING 
                             "The script '%1' is not present in the folder\n'%2'."
     IDS_SCRIPT_PS1_NAME     "PowerShell script '%1'"
-    IDS_SCRIPT_BAT_SHORT    "Script '%1'"
+    IDS_SCRIPT_BAT_SHORT    "Batch script '%1'"
     IDS_SCRIPT_BAT_NAME     "Batch script '%1'"
     IDS_SCRIPT_PY_NAME      "Python script '%1'"
 END

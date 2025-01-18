@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 
+#include <vector>
 #include <io.h>
 #include <regex>
 using namespace std;

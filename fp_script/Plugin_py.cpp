@@ -1,22 +1,19 @@
 ﻿#include "resource.h"		// main symbols
 #include "global.h"
 #include "plugin.h"
-#include <io.h>
 
-#include <vector>
-using namespace std;
 
 // PowerShell script plugin cpp_script.
-// Runs a pswh script for the selected pictures.
+// Runs a py script for the selected pictures.
 
 
 CFunctionPluginPyScript::CFunctionPluginPyScript(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
-	: m_PowerShellExe(L"pwsh.exe "),
+	: m_PythonExe(L"Python.exe "),
 	handle_wnd(NULL),
 	m_script_info(script_info)
 {
-	// Do not set locale to keep decimal point (LC_NUMERIC) for PowerShell.
+	// Do not set locale to keep decimal point (LC_NUMERIC) for Python.
 	//_wsetlocale(LC_ALL, L".ACP");
 }
 
@@ -217,7 +214,7 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 	shInfo.cbSize = sizeof(shInfo);
 
 	shInfo.hwnd = handle_wnd;
-	shInfo.lpFile = m_PowerShellExe;
+	shInfo.lpFile = m_PythonExe;
 	shInfo.lpParameters = script;
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
 	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
