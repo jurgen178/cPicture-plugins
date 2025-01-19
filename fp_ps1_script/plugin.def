@@ -1,7 +1,0 @@
-LIBRARY      "cpp_ps1_script"
-EXPORTS
-	GetPluginType
-	GetPluginVersion
-	GetPluginInterfaceVersion
-	GetPluginInit
-	GetPluginProc

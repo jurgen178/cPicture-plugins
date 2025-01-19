@@ -1,155 +1,13 @@
 ﻿#include "resource.h"		// main symbols
-#include "stdafx.h"
+#include "global.h"
 #include "plugin.h"
-#include "locale.h"
-#include <io.h>
 
-#include <regex>
-#include <vector>
-using namespace std;
 
-// PowerShell script plugin cpp_ps1_script.
+// PowerShell script plugin cpp_script.
 // Runs a pswh script for the selected pictures.
 
 
-static vector<lpfnFunctionGetInstanceProc> PluginProcArray;
-static vector<script_info> Scripts;
-
-
-const CString __stdcall GetPluginVersion()
-{
-	return L"1.0";
-}
-
-const CString __stdcall GetPluginInterfaceVersion()
-{
-	return L"1.7";
-}
-
-const PLUGIN_TYPE __stdcall GetPluginType()
-{
-	return PLUGIN_TYPE_FUNCTION;
-}
-
-
-#include "GetInstance.h"
-
-std::wregex GetDescriptionRegex();
-CString scanDescription(char* Text, std::wregex&);
-
-const int maxscripts(sizeof(GetInstanceList) / sizeof(lpfnFunctionGetInstanceProc));
-
-// Each .ps1 file will be set as a plugin.
-const int __stdcall GetPluginInit()
-{
-	Scripts.clear();
-	PluginProcArray.clear();
-
-	WIN32_FIND_DATA c_file;
-	HANDLE hFile;
-
-	// Register all *.ps1 scripts.
-	const CString ScriptMask(L"*.ps1");
-	if ((hFile = FindFirstFile(ScriptMask, &c_file)) != INVALID_HANDLE_VALUE)
-	{
-		int i = 0;
-		std::wregex descriptionRegex(GetDescriptionRegex());
-
-		do
-		{
-			if (!(c_file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && wcscmp(c_file.cFileName, L".") && wcscmp(c_file.cFileName, L".."))
-			{
-				// Read the first 4096 chars to get the description text.
-				const int textSize(4096);
-				char Text[textSize] = { 0 };
-
-				FILE* infile = NULL;
-				const errno_t err(_wfopen_s(&infile, c_file.cFileName, L"rb"));
-
-				CString desc;
-				if (err == 0)
-				{
-					const int size(min(textSize, _filelength(_fileno(infile))));
-					fread(Text, sizeof(char), size, infile);
-
-					desc = scanDescription(Text, descriptionRegex);
-
-					fclose(infile);
-				}
-
-				const CString script(c_file.cFileName);
-				Scripts.push_back(script_info(script, desc));
-				PluginProcArray.push_back(GetInstanceList[i++]);
-			}
-		} 
-		while (i < maxscripts && FindNextFile(hFile, &c_file) != 0);
-
-		FindClose(hFile);
-	}
-
-	// Anzahl als Negativwert wenn externe Moduldateien (*.bat, *.ps1) verwendet werden.
-	return -static_cast<int>(PluginProcArray.size());
-}
-
-lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
-{
-	if (k >= 0 && k < PluginProcArray.size())
-		return PluginProcArray[k];
-	else
-		return NULL;
-}
-
-
-bool CheckFile(const WCHAR* pFile)
-{
-	if (wcslen(pFile))
-	{
-		FILE* infile = NULL;
-		const errno_t err(_wfopen_s(&infile, pFile, L"r"));
-
-		if (err == 0)
-		{
-			fclose(infile);
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool scanBoolVar(const char* Text, const CString& SearchTextTemplate, bool def)
-{
-	CString ScanText(Text);
-
-	// Check if it is from a Unicode file (UCS-2, not UTF-8).
-	// Only the Byte Order Mask 'ÿþ' and the first char '<' are readable in ANSI: FF FE 3C 00
-	if (ScanText.GetLength() <= 3)
-	{
-		// Reload text as Unicode Text (UCS-2).
-		ScanText = (WCHAR*)Text;
-	}
-
-	ScanText.Replace(L" ", L"");
-	ScanText.Replace(L"\r", L"");
-
-	CString SearchText;
-
-	SearchText.Format(SearchTextTemplate, L"true");
-	if (ScanText.Find(SearchText) != -1)
-	{
-		return true;
-	}
-
-	SearchText.Format(SearchTextTemplate, L"false");
-	if (ScanText.Find(SearchText) != -1)
-	{
-		return false;
-	}
-
-	return def;
-}
-
-std::wregex GetDescriptionRegex()
+CString scanPS1Description(char* Text)
 {
 	//<#
 	//.DESCRIPTION
@@ -158,11 +16,8 @@ std::wregex GetDescriptionRegex()
 	//    notes
 	//#>
 
-	return std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
-}
-
-CString scanDescription(char* Text, std::wregex& descriptionRegex)
-{
+	static std::wregex& descriptionRegex = std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
+	
 	CString ScanText(Text);
 
 	// Check if it is from a Unicode file (UCS-2, not UTF-8).
@@ -176,7 +31,7 @@ CString scanDescription(char* Text, std::wregex& descriptionRegex)
 	// Simplify the line break.
 	ScanText.Replace(L"\r", L"");
 
-	// std:regex multiline
+	// std::regex multiline
 	ScanText.Replace(L"\n", L"\\n");
 
 	//<#
@@ -202,131 +57,36 @@ CString scanDescription(char* Text, std::wregex& descriptionRegex)
 	return L"";
 }
 
-CString escapeCmdLineJsonData(CString text)
-{
-	// [{"key'1","value"a","key2","value\b\"}]
 
-	text.Replace(L"'", L"''");
-
-	// [{"key''1","value"a","key2","value\b\"}]
-
-	// embedded json data?
-	CString textNoSpaces(text);
-	textNoSpaces.Replace(L" ", L"");
-
-	if (textNoSpaces.Left(2) == L"[{" && textNoSpaces.Right(2) == L"}]")
-	{
-		// Use double group replacement to replace delimiting quotes and inside quotes.
-
-		// [{"key''1","value"a","key2","value\b\"}]
-		text.Replace(L"\\", L"\\\\\\\\");	// \ -> \\\\ 
-
-		// [{"key''1","value"a","key2","value\\\\b\\\\"}]
-		
-		// Escape delimiter quotes using a uncommon letter ⱦ.
-		text.Replace(L"{\"", L"{\\\\ⱦⱦ");	// " -> \\""
-		text.Replace(L":\"", L":\\\\ⱦⱦ");
-		text.Replace(L"\":", L"\\\\ⱦⱦ:");
-		text.Replace(L",\"", L",\\\\ⱦⱦ");
-		text.Replace(L"\",", L"\\\\ⱦⱦ,");
-		text.Replace(L"\"}", L"\\\\ⱦⱦ}");
-
-		// [{\\ⱦⱦkey''1\\ⱦⱦ,\\ⱦⱦvalue"a\\ⱦⱦ,\\ⱦⱦkey2\\ⱦⱦ,\\ⱦⱦvalue\\\\b\\\\\\ⱦⱦ}]
-
-		// All remaining quotes are now quotes inside of a quoted string.
-		// Now escape " inside quoted string -> \\\\\\""
-		text.Replace(L"\"", L"\\\\\\\\\\\\\"\"");	// " -> \\\\\\""
-
-		// [{\\ⱦⱦkey''1\\ⱦⱦ,\\ⱦⱦvalue\\\\\\""a\\ⱦⱦ,\\ⱦⱦkey2\\ⱦⱦ,\\ⱦⱦvalue\\\\b\\\\\\ⱦⱦ}]
-
-		// Replace uncommon letter back to escaped quotes.
-		text.Replace(L"{\\\\ⱦⱦ", L"{\\\\\"\"");
-		text.Replace(L":\\\\ⱦⱦ", L":\\\\\"\"");
-		text.Replace(L"\\\\ⱦⱦ:", L"\\\\\"\":");
-		text.Replace(L",\\\\ⱦⱦ", L",\\\\\"\"");
-		text.Replace(L"\\\\ⱦⱦ,", L"\\\\\"\",");
-		text.Replace(L"\\\\ⱦⱦ}", L"\\\\\"\"}");
-
-		// [{\\""key''1\\"",\\""value\\\\\\""a\\"",\\""key2\\"",\\""value\\\\b\\\\\\""}]
-
-		// trailing \ : "text\"
-		// Add double \ escaped \\ to avoid escaping the following quote when text ends with a \ and followed by a ".
-		text.Replace(L"\\\\\\\\\\\\\"\",", L"\\\\\\\\\\\\\\\\\\\\\"\",");	// \\\\ \\""  -  \\\\ \\\\ \\"" 
-		text.Replace(L"\\\\\\\\\\\\\"\"}", L"\\\\\\\\\\\\\\\\\\\\\"\"}");
-
-		// [{\\""key''1\\"",\\""value\\\\\\""a\\"",\\""key2\\"",\\""value\\\\b\\\\\\\\\\""}]
-	}
-	else
-	{
-		// ab"c'1\ 
-
-		text.Replace(L"\\", L"\\\\");	// \ -> \\ 
-		text.Replace(L"\"", L"\\\\\"\"");	// " -> ""
-
-		// Add double \ to avoid escaping the following quote when text ends with a \.
-		if (text.Right(1) == L"\\")
-			text += L"\\\\";
-
-		// ab\\""c''\\1\\\\ 
-	}
-
-	return text;
-}
-
-CString escapeCmdLineJsonData(bool expr)
-{
-	return expr ? L"true" : L"false";
-}
-
-CString escapeCmdLineJsonData(float value)
-{
-	CString data;
-	if (value)
-		data.Format(L"%.1f", value);
-	else
-		data = L"0";
-
-	return data;
-}
-
-CString escapeCmdLineJsonData(__int64 value)
-{
-	CString data;
-	data.Format(L"%llu", value);
-
-	return data;
-}
-
-
-CFunctionPluginScript::CFunctionPluginScript(const script_info script_info)
+CFunctionPluginPS1Script::CFunctionPluginPS1Script(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
 	: m_PowerShellExe(L"pwsh.exe "),
 	handle_wnd(NULL),
 	m_script_info(script_info)
 {
-	// Do not set locale to keep decimal point (LC_NUMERIC) for PowerShell.
-	//_wsetlocale(LC_ALL, L".ACP");
+	// Set the locale to "C" to ensure the decimal point is a period.
+	_wsetlocale(LC_NUMERIC, L"C");
 }
 
-struct plugin_data __stdcall CFunctionPluginScript::get_plugin_data() const
+struct plugin_data __stdcall CFunctionPluginPS1Script::get_plugin_data() const
 {
 	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.file_name = m_script_info.script;
-	pluginData.name.FormatMessage(IDS_SCRIPT_NAME, m_script_info.script.Left(m_script_info.script.ReverseFind(L'.')));
+	pluginData.name.FormatMessage(IDS_SCRIPT_PS1_NAME, m_script_info.script.Left(m_script_info.script.ReverseFind(L'.')));
 	pluginData.desc = m_script_info.desc.IsEmpty() ? pluginData.name : m_script_info.desc;
 
 	return pluginData;
 }
 
-struct arg_count __stdcall CFunctionPluginScript::get_arg_count() const
+struct arg_count __stdcall CFunctionPluginPS1Script::get_arg_count() const
 {
 	// At least one picture.
 	return arg_count(1, -1);
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+enum REQUEST_TYPE __stdcall CFunctionPluginPS1Script::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 
@@ -348,7 +108,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginScript::start(const HWND hwnd, const 
 	return bScript ? REQUEST_TYPE::REQUEST_TYPE_DATA : REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 }
 
-bool __stdcall CFunctionPluginScript::process_picture(const picture_data& picture_data)
+bool __stdcall CFunctionPluginPS1Script::process_picture(const picture_data& picture_data)
 {
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
@@ -358,7 +118,7 @@ bool __stdcall CFunctionPluginScript::process_picture(const picture_data& pictur
 	return true;
 }
 
-const vector<update_data>& __stdcall CFunctionPluginScript::end(const vector<picture_data>& picture_data_list)
+const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<picture_data>& picture_data_list)
 {
 	//# plugin variables
 	//
@@ -510,7 +270,12 @@ const vector<update_data>& __stdcall CFunctionPluginScript::end(const vector<pic
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
 	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
-	ShellExecuteEx(&shInfo);
+	const BOOL ret = ShellExecuteEx(&shInfo);
+
+#ifdef DEBUG
+	CString errorMsg = GetLastErrorStr();
+#endif
+
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).

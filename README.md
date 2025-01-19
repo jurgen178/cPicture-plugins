@@ -60,7 +60,7 @@ example.bat file:
 -----------------
   
 
-[example-script.ps1](fp_ps1_script/scripts/example-script.ps1)  
+[example.ps1](fp_script/scripts/example.ps1)  
 
 ```
 $picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
@@ -148,8 +148,7 @@ FP2 sample:		0x202000000
 FP3 sample:		0x203000000  
 FP4 sample:		0x204000000  
 FP5 sample:		0x205000000  
-cpp_ps1_script: 0x210000000  
-cpp_bat_script: 0x211000000  
+cpp_script:     0x210000000  
 cpp_fp_hdr:		0x212000000  
 cpp_fp_ev:		0x213000000  
 cpp_ascii_art:  0x214000000  
