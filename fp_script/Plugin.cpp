@@ -45,7 +45,7 @@ constexpr std::size_t max_elements(T(&)[N])
 }
 
 
-// Each .ps1 file will be set as a plugin.
+// Each script file will be set as a plugin.
 const int __stdcall GetPluginInit()
 {
 	ScriptsBat.clear();

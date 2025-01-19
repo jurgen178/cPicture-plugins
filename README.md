@@ -60,7 +60,7 @@ example.bat file:
 -----------------
   
 
-[example-script.ps1](fp_ps1_script/scripts/example-script.ps1)  
+[example.ps1](fp_script/scripts/example.ps1)  
 
 ```
 $picture_data_set = ConvertFrom-Json -InputObject $picture_data_json

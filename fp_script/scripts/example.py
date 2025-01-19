@@ -64,12 +64,13 @@ def picture_data(base64_string):
         # item["lens"]         : 16-50mm f/3,5-6,3 VR f=44mm/66mm
         # item["cdata"]        :  # Configurable with F9
             
+        print(colored_text(f"Picture {i+1}:", "yellow"))
+
         mp = int(item["width"] * item["height"] / 1000000)
-        print(f"  Image '{item["file"]}' ({i+1} of {len(data)}) with {item["width"]}x{item["height"]} pixel ({mp}MP)")   
-        print(f"    name='{item["name"]}', dir='{item["dir"]}'")
+        print(f"Picture '{item["file"]}' ({i+1} of {len(data)}) with {item["width"]}x{item["height"]} pixel ({mp}MP)")   
+        print(f"  name='{item["name"]}', dir='{item["dir"]}'")
         print()
 
-        print(colored_text(f"Picture {i+1}:", "yellow"))
         for key, value in item.items():
             print(colored_text(f"  {key}", "green"), end="")
             print(": ", end="")
