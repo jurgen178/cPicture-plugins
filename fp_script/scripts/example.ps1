@@ -71,6 +71,11 @@ foreach ($picture_data in $picture_data_set) {
     "Picture '{0}' ({4} of {5}) with {1}x{2} pixel ({3}MP)" -f $picture_data.file, $picture_data.width, $picture_data.height, $MP, $i, $size
     "  name='$($picture_data.name)', dir='$($picture_data.dir)'`n"
 
+    # Enumerate all data fields.
+    foreach ($p in $picture_data.PSObject.Properties) {
+        Write-Host "  $($p.Name): $($p.Value)" -ForegroundColor Blue
+    }
+
     <# 
         Use ConvertFrom-Json when cdata is a json array to access the data elements.
         Otherwise cdata is arbitrary text and use $picture_data.cdata as a string, for example: Write-Host $picture_data.cdata
@@ -78,7 +83,6 @@ foreach ($picture_data in $picture_data_set) {
 
     # The default setting for the data is a JSON array matching the tooltip data in cPicture.
     $cdata = ConvertFrom-Json -InputObject $picture_data.cdata
-    $cdata
 
     # Example usage:
 
