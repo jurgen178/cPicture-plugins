@@ -231,7 +231,7 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 			it->shutterspeed,
 			it->iso,
 			escapeCmdLineJsonData(it->exif_time),
-			escapeCmdLineJsonDataPy(it->exif_datetime_display),
+			it->exif_datetime_display,
 			escapeCmdLineJsonDataPy(it->model),
 			escapeCmdLineJsonDataPy(it->lens),
 			escapeCmdLineJsonDataPy(it->cdata)
