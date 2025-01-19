@@ -106,7 +106,12 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 	shInfo.nShow = SW_SHOWNORMAL;
 	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
-	ShellExecuteEx(&shInfo);
+	const BOOL ret = ShellExecuteEx(&shInfo);
+
+#ifdef DEBUG
+	CString errorMsg = GetLastErrorStr();
+#endif
+
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
 	// Signal that the picture could be updated.

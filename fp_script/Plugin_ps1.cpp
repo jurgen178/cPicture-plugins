@@ -270,7 +270,12 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
 	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
-	ShellExecuteEx(&shInfo);
+	const BOOL ret = ShellExecuteEx(&shInfo);
+
+#ifdef DEBUG
+	CString errorMsg = GetLastErrorStr();
+#endif
+
 	WaitForSingleObject(shInfo.hProcess, INFINITE);
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).

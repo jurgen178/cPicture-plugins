@@ -99,7 +99,7 @@ const int __stdcall GetPluginInit()
 
 	auto register_filetyp = [&](
 		const CString& script_mask,
-		const int maxscripts,
+		const size_t maxscripts,
 		lpfnFunctionGetInstanceProc* getInstanceList,
 		vector<script_info>& scripts,
 		std::function<void()> get_script_info

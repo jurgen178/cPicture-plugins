@@ -238,6 +238,8 @@ CString toBase64(const CString& data)
 		delete[] utf8Buffer;
 		return base64;
 	}
+
+	return L"";
 }
 
 #ifdef DEBUG
