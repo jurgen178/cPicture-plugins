@@ -15,18 +15,19 @@ import json
 import sys
 import base64
 
+COLORS = {
+    "red": "\033[31m",
+    "green": "\033[32m",
+    "yellow": "\033[33m",
+    "blue": "\033[34m",
+    "magenta": "\033[35m",
+    "cyan": "\033[36m",
+    "white": "\033[37m",
+    "reset": "\033[0m"
+}
+
 def colored_text(text, color):
-    colors = {
-        "red": "\033[31m",
-        "green": "\033[32m",
-        "yellow": "\033[33m",
-        "blue": "\033[34m",
-        "magenta": "\033[35m",
-        "cyan": "\033[36m",
-        "white": "\033[37m",
-        "reset": "\033[0m"
-    }
-    return f"{colors.get(color, colors['reset'])}{text}{colors['reset']}"
+    return f"{COLORS.get(color, COLORS['reset'])}{text}{COLORS['reset']}"
 
 # Get the picture data.
 def picture_data(base64_string):
