@@ -58,6 +58,7 @@ CFunctionPluginPyScript::CFunctionPluginPyScript(const script_info script_info)
 	m_script_info(script_info)
 {
 	// Set the locale to "C" to ensure the decimal point is a period.
+	// '"aperture" : 4,8,' vs '"aperture" : 4.8,'
 	_wsetlocale(LC_NUMERIC, L"C");
 }
 
