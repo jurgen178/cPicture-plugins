@@ -41,7 +41,7 @@ def picture_data(base64_string):
     print(f"{len(data)} picture(s): {"-" * 15}")
     print()
 
-    # Print the picture data.
+    # Print the picture data for each selected picture.
     for i, item in enumerate(data):
 
         # Example:
@@ -85,7 +85,7 @@ def picture_data(base64_string):
         else:
             print(f"cdata element '{element_name}' not found.")
 
-        # Access and print cdata elements if they exist.
+        # Print cdata elements if they exist.
         if 'cdata' in item:
             print(f"{len(item['cdata'][0])} elements in cdata")
             for i, cdata_item in enumerate(item['cdata']):
