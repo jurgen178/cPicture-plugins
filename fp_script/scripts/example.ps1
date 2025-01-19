@@ -92,7 +92,7 @@ foreach ($picture_data in $picture_data_set) {
     # Enumerate all data fields.
     Write-Host "$($cdata.psobject.properties.Value.Count) elements in `$picture_data.cdata:"
     foreach ($p in $cdata.psobject.properties) {
-        Write-Host "  $($p.Name):$($p.Value)" -ForegroundColor Blue
+        Write-Host "  $($p.Name): $($p.Value)" -ForegroundColor Blue
     }
 
     "-" * 70
