@@ -299,6 +299,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		return NULL;
 	}
 
+	// Scale the PDF to the requested screen size.
 	const int pdf_width = static_cast<int>(FPDF_GetPageWidth(page));
 	const int pdf_height = static_cast<int>(FPDF_GetPageHeight(page));
 
@@ -325,9 +326,9 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	m_OriginalPictureWidth = m_PictureWidth = z * pdf_width / n;
 	m_OriginalPictureHeight = m_PictureHeight = z * pdf_height / n;
 
-	// Setup the bitmap
+	// Setup the bitmap.
 	FPDF_BITMAP bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-	FPDFBitmap_FillRect(bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
+	FPDFBitmap_FillRect(bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
 
 	// Render the PDF to the bitmap.
 	FPDF_RenderPageBitmap(bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
