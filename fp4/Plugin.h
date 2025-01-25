@@ -13,7 +13,7 @@ protected:
 	int picture_processed;
 
 public:
-	virtual __stdcall ~CFunctionPluginSample4() { };
+	virtual ~CFunctionPluginSample4() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()

@@ -9,7 +9,7 @@ protected:
 	CFunctionPluginHDR();
 
 public:
-	virtual __stdcall ~CFunctionPluginHDR() { };
+	virtual ~CFunctionPluginHDR() { };
 
 protected:
 	HWND handle_wnd;

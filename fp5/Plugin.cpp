@@ -53,7 +53,7 @@ CFunctionPluginSample5::CFunctionPluginSample5()
 {
 }
 
-CFunctionPluginSample5::~CFunctionPluginSample5() 
+CFunctionPluginSample5::~CFunctionPluginSample5()
 {
 	::DeleteObject(Dib);
 }

@@ -11,7 +11,7 @@ protected:
 	CFunctionPluginSample3();
 
 public:
-	virtual __stdcall ~CFunctionPluginSample3() { };
+	virtual ~CFunctionPluginSample3() { };
 
 protected:
 	HWND handle_wnd;

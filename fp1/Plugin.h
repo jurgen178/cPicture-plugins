@@ -14,7 +14,7 @@ protected:
 	int pictures;
 
 public:
-	virtual __stdcall ~CFunctionPluginSample1() { };
+	virtual ~CFunctionPluginSample1() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()

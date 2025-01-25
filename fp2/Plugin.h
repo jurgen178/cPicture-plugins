@@ -9,7 +9,7 @@ protected:
 	CFunctionPluginSample2();
 
 public:
-	virtual __stdcall ~CFunctionPluginSample2() { };
+	virtual ~CFunctionPluginSample2() { };
 
 protected:
 	HWND handle_wnd;

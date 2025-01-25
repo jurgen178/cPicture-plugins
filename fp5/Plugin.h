@@ -17,7 +17,7 @@ protected:
 	COLORREF border_color;
 
 public:
-	virtual __stdcall ~CFunctionPluginSample5();
+	virtual ~CFunctionPluginSample5();
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
