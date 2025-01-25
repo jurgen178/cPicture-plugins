@@ -214,6 +214,37 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 }
 
 
+// To support multiple formats, setup a format array in GetPluginInit()
+// and return the instance from the format array in GetPluginProc:
+
+//enum PICTURE_FORMAT
+//{
+//	ABC_FORMAT = 0,
+//	DEF_FORMAT,
+//
+//	FORMAT_SIZE,
+//};
+//
+//static lpfnFormatGetInstanceProc PluginProcArray[FORMAT_SIZE];
+//
+//const int __stdcall GetPluginInit()
+//{
+//	PluginProcArray[ABC_FORMAT] = CAbcFormat::GetInstance;
+//	PluginProcArray[DEF_FORMAT] = CDefFormat::GetInstance;
+//
+//	return FORMAT_SIZE;
+//}
+//
+//lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
+//{
+//	if (k >= 0 && k < FORMAT_SIZE)
+//		return PluginProcArray[k];
+//	else
+//		return NULL;
+//}
+
+
+
 //CString CPdfFormat::m_property_str;
 
 // *** cPicture maintains a property string for this PlugIn
@@ -230,6 +261,15 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 CString __stdcall CPdfFormat::get_ext()
 {
 	return L".pdf";
+}
+
+bool __stdcall CPdfFormat::properties_dlg(HWND hwnd)
+{
+	CString msg;
+	msg.LoadString(IDS_PROPERTY_DLG_PDF_TEXT);
+	::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
+
+	return false;	// false: no reload of the current picture
 }
 
 struct PluginData __stdcall CPdfFormat::get_plugin_data()
@@ -277,6 +317,8 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const bool b_scan)
 {
 	// *** This function loads the picture file and return an RGB array of the (decompressed) picture.
+
+	// https://github.com/bblanchon/pdfium-binaries/blob/master/example/example.c
 
 	FPDF_InitLibrary();
 

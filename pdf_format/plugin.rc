@@ -67,8 +67,10 @@ END
 STRINGTABLE
 BEGIN
     IDS_DATE_TIME_FORMAT_STRING "%s um %s Uhr"
-    IDS_SHORT_DESC     "PDF"
-    IDS_LONG_DESC      "PDF-Bildformat"
+    IDS_SHORT_DESC          "PDF"
+    IDS_LONG_DESC           "PDF-Format"
+    IDS_PROPERTY_DLG_PDF_TEXT 
+                            "PDF-Format:\nFormatzusatzmodul verwendet https://pdfium.googlesource.com/pdfium/"
 END
 
 #endif    // German (Germany) resources
@@ -106,6 +108,21 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_DATE_TIME_FORMAT_STRING "%s at %s"
+    IDS_SHORT_DESC          "PDF"
+    IDS_LONG_DESC           "PDF format"
+    IDS_PROPERTY_DLG_PDF_TEXT 
+                            "PDF format:\nFormat plugin uses https://pdfium.googlesource.com/pdfium/"
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
