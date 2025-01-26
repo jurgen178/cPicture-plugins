@@ -313,16 +313,105 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	FPDF_CloseDocument(document);
 }
 
+//BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
+//	const int abs_size_x, const int abs_size_y,
+//	const int rel_size_z, const int rel_size_n,
+//	const enum scaling_type picture_scaling_type,
+//	const bool b_scan)
+//{
+//	// *** This function loads the picture file and return an RGB array of the (decompressed) picture.
+//
+//	// https://github.com/bblanchon/pdfium-binaries/blob/master/example/example.c
+//
+//	FPDF_InitLibrary();
+//
+//	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
+//	if (!document)
+//	{
+//		return NULL;
+//	}
+//
+//	FPDF_FORMFILLINFO form_callbacks = { 0 };
+//	form_callbacks.version = 2;
+//	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
+//
+//	FPDF_PAGE page = FPDF_LoadPage(document, 0);
+//	if (!page)
+//	{
+//		FPDFDOC_ExitFormFillEnvironment(form);
+//		FPDF_CloseDocument(document);
+//
+//		return NULL;
+//	}
+//
+//	// Scale the PDF to the requested screen size.
+//	const int pdf_width = static_cast<int>(FPDF_GetPageWidth(page));
+//	const int pdf_height = static_cast<int>(FPDF_GetPageHeight(page));
+//
+//	int z = 1, n = 1;
+//	if (abs_size_x && abs_size_y)
+//	{
+//		if (pdf_height * abs_size_x < pdf_width * abs_size_y)
+//		{
+//			z = abs_size_x;
+//			n = pdf_width;
+//		}
+//		else
+//		{
+//			z = abs_size_y;
+//			n = pdf_height;
+//		}
+//	}
+//
+//	m_OriginalPictureWidth = m_PictureWidth = z * pdf_width / n;
+//	m_OriginalPictureHeight = m_PictureHeight = z * pdf_height / n;
+//
+//	// Setup the bitmap.
+//	FPDF_BITMAP bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
+//	FPDFBitmap_FillRect(bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
+//
+//	// Render the PDF to the bitmap.
+//	FPDF_RenderPageBitmap(bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+//	FPDF_FFLDraw(form, bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+//
+//	// Convert bitmap pixels to the RGB-format.
+//	const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
+//	BYTE* pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
+//
+//	if(pvmem)
+//	{
+//		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(bitmap));
+//		BYTE* rgb = pvmem;
+//		register int index = 0;
+//
+//		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; k--)
+//		{
+//			*rgb++ = pixels[index + 2];
+//			*rgb++ = pixels[index + 1];
+//			*rgb++ = pixels[index];
+//
+//			// PDF is RGBA-Layout
+//			index += 4;
+//		}
+//	}
+//
+//	// Clean up.
+//	FPDFDOC_ExitFormFillEnvironment(form);
+//	FPDFBitmap_Destroy(bitmap);
+//	FPDF_ClosePage(page);
+//	FPDF_CloseDocument(document);
+//
+//	m_bIsValid = size && pvmem != NULL;
+//
+//	return pvmem;
+//}
+
 BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const int abs_size_x, const int abs_size_y,
 	const int rel_size_z, const int rel_size_n,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	// *** This function loads the picture file and return an RGB array of the (decompressed) picture.
-
-	// https://github.com/bblanchon/pdfium-binaries/blob/master/example/example.c
-
 	FPDF_InitLibrary();
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
@@ -331,56 +420,87 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		return NULL;
 	}
 
-	FPDF_FORMFILLINFO form_callbacks = { 0 };
-	form_callbacks.version = 2;
-	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
+	int page_count = FPDF_GetPageCount(document);
+	std::vector<FPDF_BITMAP> bitmaps;
+	int max_width = 0;
+	int max_height = 0;
+	const int border_size = 4;
+	const unsigned int border_color = 0xFFFFD800;
 
-	FPDF_PAGE page = FPDF_LoadPage(document, 0);
-	if (!page)
+	for (int i = 0; i < page_count; ++i)
 	{
-		FPDFDOC_ExitFormFillEnvironment(form);
-		FPDF_CloseDocument(document);
+		FPDF_PAGE page = FPDF_LoadPage(document, i);
+		if (!page)
+		{
+			continue;
+		}
 
-		return NULL;
+		int width = static_cast<int>(FPDF_GetPageWidth(page));
+		int height = static_cast<int>(FPDF_GetPageHeight(page));
+
+		if (width + 2 * border_size > max_width) {
+			max_width = width + 2 * border_size;
+		}
+		if (height + 2 * border_size > max_height) {
+			max_height = height + 2 * border_size;
+		}
+
+		FPDF_BITMAP bitmap = FPDFBitmap_Create(width + 2 * border_size, height + 2 * border_size, 0);
+		FPDFBitmap_FillRect(bitmap, 0, 0, width + 2 * border_size, height + 2 * border_size, border_color);
+		FPDF_RenderPageBitmap(bitmap, page, border_size, border_size, width, height, 0, 0);
+
+		bitmaps.push_back(bitmap);
+		FPDF_ClosePage(page);
 	}
 
-	// Scale the PDF to the requested screen size.
-	const int pdf_width = static_cast<int>(FPDF_GetPageWidth(page));
-	const int pdf_height = static_cast<int>(FPDF_GetPageHeight(page));
+	// Calculate the number of rows and columns for the rectangle layout
+	int num_cols = static_cast<int>(sqrt(page_count));
+	if (page_count > 1)
+		num_cols++;
 
-	int z = 1, n = 1;
-	if (abs_size_x && abs_size_y)
+	const int num_rows = (page_count + num_cols - 1) / num_cols;
+
+	// Calculate the total width and height of the combined image
+	const int total_width = num_cols * max_width;
+	const int total_height = num_rows * max_height;
+	m_OriginalPictureWidth = m_PictureWidth = total_width;
+	m_OriginalPictureHeight = m_PictureHeight = total_height;
+
+	// Create a single bitmap with the combined width and height
+	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(total_width, total_height, 0);
+	FPDFBitmap_FillRect(combined_bitmap, 0, 0, total_width, total_height, 0xFFFFFFFF);
+
+	int y_offset = 0;
+	for (int row = 0; row < num_rows; ++row)
 	{
-		if (pdf_height * abs_size_x < pdf_width * abs_size_y)
+		int x_offset = 0;
+		for (int col = 0; col < num_cols; ++col)
 		{
-			z = abs_size_x;
-			n = pdf_width;
+			const int index = row * num_cols + col;
+			if (index < page_count) {
+				FPDF_BITMAP bitmap = bitmaps[index];
+				int width = FPDFBitmap_GetWidth(bitmap);
+				int height = FPDFBitmap_GetHeight(bitmap);
+				unsigned char* src_buffer = (unsigned char*)FPDFBitmap_GetBuffer(bitmap);
+				unsigned char* dest_buffer = (unsigned char*)FPDFBitmap_GetBuffer(combined_bitmap) + y_offset * total_width * 4 + x_offset * 4;
+
+				for (int y = 0; y < height; ++y) {
+					memcpy(dest_buffer + y * total_width * 4, src_buffer + y * width * 4, width * 4);
+				}
+				x_offset += width;
+				FPDFBitmap_Destroy(bitmap);
+			}
 		}
-		else
-		{
-			z = abs_size_y;
-			n = pdf_height;
-		}
+		y_offset += max_height;
 	}
-
-	m_OriginalPictureWidth = m_PictureWidth = z * pdf_width / n;
-	m_OriginalPictureHeight = m_PictureHeight = z * pdf_height / n;
-
-	// Setup the bitmap.
-	FPDF_BITMAP bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-	FPDFBitmap_FillRect(bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
-
-	// Render the PDF to the bitmap.
-	FPDF_RenderPageBitmap(bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
-	FPDF_FFLDraw(form, bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
 
 	// Convert bitmap pixels to the RGB-format.
 	const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
 	BYTE* pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
 
-	if(pvmem)
+	if (pvmem)
 	{
-		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(bitmap));
+		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap));
 		BYTE* rgb = pvmem;
 		register int index = 0;
 
@@ -396,9 +516,8 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	}
 
 	// Clean up.
-	FPDFDOC_ExitFormFillEnvironment(form);
-	FPDFBitmap_Destroy(bitmap);
-	FPDF_ClosePage(page);
+	//FPDFDOC_ExitFormFillEnvironment(form);
+	FPDFBitmap_Destroy(combined_bitmap);
 	FPDF_CloseDocument(document);
 
 	m_bIsValid = size && pvmem != NULL;
