@@ -5,7 +5,11 @@
 class CPdfFormat : public CPictureFormat
 {
 protected:
-	CPdfFormat() {};
+	CPdfFormat()
+		: border_size(10),
+		separator_border_size(10)
+	{
+	};
 
 public:
 	virtual ~CPdfFormat() {};
@@ -29,4 +33,8 @@ public:
 
 	virtual CString __stdcall get_info(const CString& FileName, const enum info_type _info_type);
 	virtual unsigned int __stdcall get_cap() const;
+
+public:
+	int border_size;
+	int separator_border_size;
 };
