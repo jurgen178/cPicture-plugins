@@ -22,6 +22,8 @@ public:
 	virtual void __stdcall get_size(const CString& FileName);
 	virtual CString __stdcall get_ext();
 	virtual struct PluginData __stdcall get_plugin_data();
+
+	virtual void __stdcall set_properties(const CString& property_str);
 	virtual CString __stdcall get_properties();
 	virtual bool __stdcall properties_dlg(const HWND hwnd);
 
@@ -37,6 +39,7 @@ public:
 
 protected:
 	static CString m_property_str;
+	static int m_compression_type;
 
 public:
 	int border_size;
