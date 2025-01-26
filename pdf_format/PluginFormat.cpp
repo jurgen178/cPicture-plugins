@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "pluginformat.h"
+//#include "PdfPropertiesDlg.h"
 #include <sys/stat.h>
 #include "include/fpdfview.h"
 #include "include/fpdf_formfill.h"
@@ -245,17 +246,15 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 
-//CString CPdfFormat::m_property_str;
+CString CPdfFormat::m_property_str;
 
 // *** cPicture maintains a property string for this PlugIn
 //     which can be used for your picture format settings.
-//     For example use _stprintf(...) to create a string in get_properties()
-//     and _stscanf to get the values back in set_properties(...)
 
-//CString __stdcall CPdfFormat::get_properties()
-//{
-//	return m_property_str;
-//}
+CString __stdcall CPdfFormat::get_properties()
+{
+	return m_property_str;
+}
 
 
 CString __stdcall CPdfFormat::get_ext()
@@ -265,9 +264,23 @@ CString __stdcall CPdfFormat::get_ext()
 
 bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 {
-	CString msg;
-	msg.LoadString(IDS_PROPERTY_DLG_PDF_TEXT);
-	::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
+	//CString msg;
+	//msg.LoadString(IDS_PROPERTY_DLG_PDF_TEXT);
+	//::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
+
+	//CWnd Parent;
+	//Parent.Attach(hwnd);
+
+	//CPdfPropertiesDlg pdfPropertiesDlg(&Parent);
+
+	//swscanf_s(m_property_str, L"%d", &pdfPropertiesDlg.m_compression_type);
+
+	//if (pdfPropertiesDlg.DoModal() == IDOK)
+	//	m_property_str.Format(L"%d", pdfPropertiesDlg.m_compression_type);
+
+	//Parent.Detach();
+
+	return false;	// false: no reload of the current picture
 
 	return false;	// false: no reload of the current picture
 }

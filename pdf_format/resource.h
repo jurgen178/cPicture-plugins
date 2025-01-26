@@ -2,10 +2,15 @@
 // Microsoft Visual C++ generated include file.
 // Used by plugin.rc
 //
+#define IDD_DIALOG_PDF_PROPERTIES      101
 #define IDS_DATE_TIME_FORMAT_STRING     102
 #define IDS_SHORT_DESC                  103
 #define IDS_LONG_DESC                   104
 #define IDS_PROPERTY_DLG_PDF_TEXT       105
+#define IDC_RADIO_NONE                  1001
+#define IDC_RADIO_GROUP3                1002
+#define IDC_RADIO_GROUP4                1003
+#define IDC_RADIO_LZW                   1004
 
 // Next default values for new objects
 // 

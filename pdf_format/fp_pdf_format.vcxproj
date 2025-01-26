@@ -242,6 +242,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="PdfPropertiesDlg.cpp" />
     <ClCompile Include="PluginFormat.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -251,6 +252,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PdfPropertiesDlg.h" />
     <ClInclude Include="PictureFormat.h" />
     <ClInclude Include="PluginFormat.h" />
     <ClInclude Include="resource.h" />
