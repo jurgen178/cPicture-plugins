@@ -376,11 +376,11 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 
 	// Convert bitmap pixels to the RGB-format.
 	const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
-	BYTE* pvmem = reinterpret_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
+	BYTE* pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
 
 	if(pvmem)
 	{
-		const BYTE* pixels = reinterpret_cast<BYTE*>(FPDFBitmap_GetBuffer(bitmap));
+		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(bitmap));
 		BYTE* rgb = pvmem;
 		register int index = 0;
 
