@@ -200,7 +200,7 @@ public:
 
 	virtual void __stdcall set_properties(const CString& property_str) {};
 	virtual CString __stdcall get_properties() { return L""; };
-	virtual bool __stdcall properties_dlg(HWND hwnd) { return false; };
+	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
 	virtual bool __stdcall IsPanorama() const
 	{

@@ -18,7 +18,7 @@ public:
 	virtual void __stdcall get_size(const CString& FileName);
 	virtual CString __stdcall get_ext();
 	virtual struct PluginData __stdcall get_plugin_data();
-	virtual bool __stdcall properties_dlg(HWND hwnd);
+	virtual bool __stdcall properties_dlg(const HWND hwnd);
 
 public:
 	virtual BYTE* __stdcall FileToRGB(const CString& FileName,

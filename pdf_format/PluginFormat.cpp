@@ -263,7 +263,7 @@ CString __stdcall CPdfFormat::get_ext()
 	return L".pdf";
 }
 
-bool __stdcall CPdfFormat::properties_dlg(HWND hwnd)
+bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 {
 	CString msg;
 	msg.LoadString(IDS_PROPERTY_DLG_PDF_TEXT);
@@ -304,6 +304,8 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 		{
 			m_OriginalPictureWidth = static_cast<int>(FPDF_GetPageWidth(page));
 			m_OriginalPictureHeight = static_cast<int>(FPDF_GetPageHeight(page));
+
+			m_bIsValid = true;
 		}
 	}
 
