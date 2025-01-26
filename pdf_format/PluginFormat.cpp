@@ -294,6 +294,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
 	// and should be as efficient as possible.
 
+	m_bIsValid = false;
 	FPDF_InitLibrary();
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
