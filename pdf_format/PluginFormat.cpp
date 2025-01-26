@@ -362,11 +362,6 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 			n = pdf_height;
 		}
 	}
-	else
-	{
-		z = rel_size_z;
-		n = rel_size_n;
-	}
 
 	m_OriginalPictureWidth = m_PictureWidth = z * pdf_width / n;
 	m_OriginalPictureHeight = m_PictureHeight = z * pdf_height / n;
