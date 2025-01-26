@@ -406,7 +406,8 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	return pvmem;
 }
 
-/*void convert_pdf_to_single_bitmap(const std::string& pdf_path, const std::string& output_path) {
+/*
+void convert_pdf_to_single_bitmap(const std::string& pdf_path, const std::string& output_path) {
     FPDF_InitLibrary();
 
     FPDF_DOCUMENT document = FPDF_LoadDocument(pdf_path.c_str(), nullptr);
@@ -523,6 +524,154 @@ void convert_pdf_to_single_bitmap(const std::string& pdf_path, const std::string
 		}
 		y_offset += height;
 		FPDFBitmap_Destroy(bitmap);
+	}
+
+	// Save the combined bitmap to file
+	save_bitmap_to_file(combined_bitmap, output_path);
+
+	FPDFBitmap_Destroy(combined_bitmap);
+	FPDF_CloseDocument(document);
+	FPDF_DestroyLibrary();
+}
+
+
+
+void convert_pdf_to_single_bitmap_with_borders(const std::string& pdf_path, const std::string& output_path, int border_size = 10, unsigned int border_color = 0xFF000000) {
+	FPDF_InitLibrary();
+
+	FPDF_DOCUMENT document = FPDF_LoadDocument(pdf_path.c_str(), nullptr);
+	if (!document) {
+		std::cerr << "Failed to open PDF file." << std::endl;
+		FPDF_DestroyLibrary();
+		return;
+	}
+
+	int page_count = FPDF_GetPageCount(document);
+	std::vector<FPDF_BITMAP> bitmaps;
+	int total_height = 0;
+	int max_width = 0;
+
+	for (int i = 0; i < page_count; ++i) {
+		FPDF_PAGE page = FPDF_LoadPage(document, i);
+		if (!page) {
+			std::cerr << "Failed to load page " << i << "." << std::endl;
+			continue;
+		}
+
+		int width = static_cast<int>(FPDF_GetPageWidth(page));
+		int height = static_cast<int>(FPDF_GetPageHeight(page));
+		total_height += height + 2 * border_size;
+		if (width + 2 * border_size > max_width) {
+			max_width = width + 2 * border_size;
+		}
+
+		FPDF_BITMAP bitmap = FPDFBitmap_Create(width + 2 * border_size, height + 2 * border_size, 0);
+		FPDFBitmap_FillRect(bitmap, 0, 0, width + 2 * border_size, height + 2 * border_size, border_color);
+		FPDF_RenderPageBitmap(bitmap, page, border_size, border_size, width, height, 0, 0);
+
+		bitmaps.push_back(bitmap);
+		FPDF_ClosePage(page);
+	}
+
+	// Create a single bitmap with the combined height and max width
+	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(max_width, total_height, 0);
+	FPDFBitmap_FillRect(combined_bitmap, 0, 0, max_width, total_height, 0xFFFFFFFF);
+
+	int y_offset = 0;
+	for (const auto& bitmap : bitmaps) {
+		int width = FPDFBitmap_GetWidth(bitmap);
+		int height = FPDFBitmap_GetHeight(bitmap);
+		unsigned char* src_buffer = (unsigned char*)FPDFBitmap_GetBuffer(bitmap);
+		unsigned char* dest_buffer = (unsigned char*)FPDFBitmap_GetBuffer(combined_bitmap) + y_offset * max_width * 4;
+
+		for (int y = 0; y < height; ++y) {
+			memcpy(dest_buffer + y * max_width * 4, src_buffer + y * width * 4, width * 4);
+		}
+		y_offset += height;
+		FPDFBitmap_Destroy(bitmap);
+	}
+
+	// Save the combined bitmap to file
+	save_bitmap_to_file(combined_bitmap, output_path);
+
+	FPDFBitmap_Destroy(combined_bitmap);
+	FPDF_CloseDocument(document);
+	FPDF_DestroyLibrary();
+}
+
+
+
+void convert_pdf_to_rectangle_bitmap_with_borders(const std::string& pdf_path, const std::string& output_path, int border_size = 10, unsigned int border_color = 0xFF000000) {
+	FPDF_InitLibrary();
+
+	FPDF_DOCUMENT document = FPDF_LoadDocument(pdf_path.c_str(), nullptr);
+	if (!document) {
+		std::cerr << "Failed to open PDF file." << std::endl;
+		FPDF_DestroyLibrary();
+		return;
+	}
+
+	int page_count = FPDF_GetPageCount(document);
+	std::vector<FPDF_BITMAP> bitmaps;
+	int max_width = 0;
+	int max_height = 0;
+
+	for (int i = 0; i < page_count; ++i) {
+		FPDF_PAGE page = FPDF_LoadPage(document, i);
+		if (!page) {
+			std::cerr << "Failed to load page " << i << "." << std::endl;
+			continue;
+		}
+
+		int width = static_cast<int>(FPDF_GetPageWidth(page));
+		int height = static_cast<int>(FPDF_GetPageHeight(page));
+		if (width + 2 * border_size > max_width) {
+			max_width = width + 2 * border_size;
+		}
+		if (height + 2 * border_size > max_height) {
+			max_height = height + 2 * border_size;
+		}
+
+		FPDF_BITMAP bitmap = FPDFBitmap_Create(width + 2 * border_size, height + 2 * border_size, 0);
+		FPDFBitmap_FillRect(bitmap, 0, 0, width + 2 * border_size, height + 2 * border_size, border_color);
+		FPDF_RenderPageBitmap(bitmap, page, border_size, border_size, width, height, 0, 0);
+
+		bitmaps.push_back(bitmap);
+		FPDF_ClosePage(page);
+	}
+
+	// Calculate the number of rows and columns for the rectangle layout
+	int num_cols = static_cast<int>(sqrt(page_count));
+	int num_rows = (page_count + num_cols - 1) / num_cols;
+
+	// Calculate the total width and height of the combined image
+	int total_width = num_cols * max_width;
+	int total_height = num_rows * max_height;
+
+	// Create a single bitmap with the combined width and height
+	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(total_width, total_height, 0);
+	FPDFBitmap_FillRect(combined_bitmap, 0, 0, total_width, total_height, 0xFFFFFFFF);
+
+	int y_offset = 0;
+	for (int row = 0; row < num_rows; ++row) {
+		int x_offset = 0;
+		for (int col = 0; col < num_cols; ++col) {
+			int index = row * num_cols + col;
+			if (index < page_count) {
+				FPDF_BITMAP bitmap = bitmaps[index];
+				int width = FPDFBitmap_GetWidth(bitmap);
+				int height = FPDFBitmap_GetHeight(bitmap);
+				unsigned char* src_buffer = (unsigned char*)FPDFBitmap_GetBuffer(bitmap);
+				unsigned char* dest_buffer = (unsigned char*)FPDFBitmap_GetBuffer(combined_bitmap) + y_offset * total_width * 4 + x_offset * 4;
+
+				for (int y = 0; y < height; ++y) {
+					memcpy(dest_buffer + y * total_width * 4, src_buffer + y * width * 4, width * 4);
+				}
+				x_offset += width;
+				FPDFBitmap_Destroy(bitmap);
+			}
+		}
+		y_offset += max_height;
 	}
 
 	// Save the combined bitmap to file
