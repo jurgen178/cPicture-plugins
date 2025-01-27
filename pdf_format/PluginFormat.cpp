@@ -506,23 +506,23 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 		const int pdf_width = static_cast<int>(FPDF_GetPageWidth(page));
 		const int pdf_height = static_cast<int>(FPDF_GetPageHeight(page));
 
-		int z = 1, n = 1;
+		int scale_z = 2, scale_n = 1;
 		if (abs_size_x && abs_size_y)
 		{
 			if (pdf_height * abs_size_x < pdf_width * abs_size_y)
 			{
-				z = abs_size_x;
-				n = pdf_width;
+				scale_z = abs_size_x;
+				scale_n = pdf_width;
 			}
 			else
 			{
-				z = abs_size_y;
-				n = pdf_height;
+				scale_z = abs_size_y;
+				scale_n = pdf_height;
 			}
 		}
 
-		m_OriginalPictureWidth = m_PictureWidth = z * pdf_width / n;
-		m_OriginalPictureHeight = m_PictureHeight = z * pdf_height / n;
+		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_width / scale_n;
+		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_height / scale_n;
 
 		// Setup the bitmap.
 		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
@@ -573,23 +573,20 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		FPDF_ClosePage(page);
 	}
 
-	//int z = 1, n = 1;
-	//if (abs_size_x && abs_size_y)
-	//{
-	//	if (pdf_height * abs_size_x < pdf_width * abs_size_y)
-	//	{
-	//		z = abs_size_x;
-	//		n = pdf_width;
-	//	}
-	//	else
-	//	{
-	//		z = abs_size_y;
-	//		n = pdf_height;
-	//	}
-	//}
-
-	const int scale_z = 2;
-	const int scale_n = 1;
+	int scale_z = 2, scale_n = 1;
+	if (abs_size_x && abs_size_y)
+	{
+		if (max_height * abs_size_x < max_width * abs_size_y)
+		{
+			scale_z = abs_size_x;
+			scale_n = max_width;
+		}
+		else
+		{
+			scale_z = abs_size_y;
+			scale_n = max_height;
+		}
+	}
 
 	// scale
 	max_width = scale_z * max_width / scale_n;
@@ -756,9 +753,9 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	bool first_page_only = false;
 	FPDF_BITMAP rgba_bitmap = first_page_only
 		?
-		get_first_page(document, form, abs_size_x, abs_size_y)
+		get_first_page(document, form)
 		:
-		get_all_pages(document, form, abs_size_x, abs_size_y)
+		get_all_pages(document, form)
 		;
 
 	// Convert bitmap pixels to the RGB-format.

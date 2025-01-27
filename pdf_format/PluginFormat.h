@@ -45,10 +45,10 @@ protected:
 	CStringA get_file_name(const CString& FileName);
 	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
 		FPDF_FORMHANDLE form,
-		const int abs_size_x, const int abs_size_y);
+		const int abs_size_x = 0, const int abs_size_y = 0);
 	FPDF_BITMAP get_all_pages(FPDF_DOCUMENT document,
 		FPDF_FORMHANDLE form,
-		const int abs_size_x, const int abs_size_y);
+		const int abs_size_x = 0, const int abs_size_y = 0);
 
 public:
 	int border_size;
