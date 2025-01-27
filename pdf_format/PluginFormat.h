@@ -2,6 +2,7 @@
 #include "pictureformat.h"
 #include "include/fpdfview.h"
 #include "include/fpdf_formfill.h"
+//#include "include/fpdf_thumbnail.h"
 
 
 class CPdfFormat : public CPictureFormat

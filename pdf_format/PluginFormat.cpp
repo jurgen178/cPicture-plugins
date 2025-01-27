@@ -575,6 +575,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		FPDF_ClosePage(page);
 	}
 
+	// autosize: abs_size_x == 0 && abs_size_y == 0
 	int scale_z = 2;
 	int scale_n = 1;
 
@@ -625,6 +626,11 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		{
 			continue;
 		}
+
+		//// Experimental API.
+		//// Returns the thumbnail of |page| as a FPDF_BITMAP. Returns a nullptr
+		//// if unable to access the thumbnail's stream.
+		//FPDF_BITMAP bmp = FPDFPage_GetThumbnailAsBitmap(page);
 
 		const int width = scale_z * static_cast<int>(FPDF_GetPageWidth(page)) / scale_n;
 		const int height = scale_z * static_cast<int>(FPDF_GetPageHeight(page)) / scale_n;
