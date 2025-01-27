@@ -84,5 +84,3 @@ ipch/
 !*.[Cc]ache/
 
 !pdf_format/bin
-!pdf_format/include
-!pdf_format/lib
