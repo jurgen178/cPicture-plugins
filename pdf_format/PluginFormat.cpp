@@ -655,7 +655,50 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 
 BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
 {
-	return NULL;
+	FPDF_InitLibrary();
+
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
+	if (!document)
+	{
+		return NULL;
+	}
+
+	FPDF_FORMFILLINFO form_callbacks = { 0 };
+	form_callbacks.version = 2;
+	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
+
+	FPDF_BITMAP rgba_bitmap = get_first_page(document, form, size_x, size_y);
+	size_x = m_OriginalPictureWidth;
+	size_y = m_OriginalPictureHeight;
+
+	// Convert bitmap pixels to the RGB-format.
+	const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
+	BYTE* pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
+
+	if (pvmem)
+	{
+		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
+		BYTE* rgb = pvmem;
+		register int index = 0;
+
+		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
+		{
+			*rgb++ = pixels[index + 2];
+			*rgb++ = pixels[index + 1];
+			*rgb++ = pixels[index];
+
+			// PDF is RGBA-Layout
+			index += 4;
+		}
+	}
+
+	// Clean up.
+	FPDFBitmap_Destroy(rgba_bitmap);
+	FPDFDOC_ExitFormFillEnvironment(form);
+	FPDF_CloseDocument(document);
+	//FPDF_DestroyLibrary();
+
+	return pvmem;
 }
 
 BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
