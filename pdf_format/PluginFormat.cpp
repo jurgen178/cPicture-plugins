@@ -573,6 +573,21 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		FPDF_ClosePage(page);
 	}
 
+	//int z = 1, n = 1;
+	//if (abs_size_x && abs_size_y)
+	//{
+	//	if (pdf_height * abs_size_x < pdf_width * abs_size_y)
+	//	{
+	//		z = abs_size_x;
+	//		n = pdf_width;
+	//	}
+	//	else
+	//	{
+	//		z = abs_size_y;
+	//		n = pdf_height;
+	//	}
+	//}
+
 	const int scale_z = 2;
 	const int scale_n = 1;
 
@@ -667,36 +682,55 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 	form_callbacks.version = 2;
 	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
 
-	FPDF_BITMAP rgba_bitmap = get_first_page(document, form, size_x, size_y);
+	bool first_page_only = false;
+	FPDF_BITMAP rgba_bitmap = first_page_only
+		?
+		get_first_page(document, form, size_x, size_y)
+		:
+		get_all_pages(document, form, size_x, size_y)
+		;
+
 	size_x = m_OriginalPictureWidth;
 	size_y = m_OriginalPictureHeight;
 
 	// Convert bitmap pixels to the RGB-format.
-	const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
-	BYTE* pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
-
-	if (pvmem)
-	{
-		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
-		BYTE* rgb = pvmem;
-		register int index = 0;
-
-		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
-		{
-			*rgb++ = pixels[index + 2];
-			*rgb++ = pixels[index + 1];
-			*rgb++ = pixels[index];
-
-			// PDF is RGBA-Layout
-			index += 4;
-		}
-	}
+	BYTE* pvmem = convert_rgb(rgba_bitmap);
 
 	// Clean up.
 	FPDFBitmap_Destroy(rgba_bitmap);
 	FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
 	//FPDF_DestroyLibrary();
+
+	return pvmem;
+}
+
+BYTE* CPdfFormat::convert_rgb(FPDF_BITMAP rgba_bitmap)
+{
+	BYTE* pvmem = NULL;
+
+	if (rgba_bitmap && m_OriginalPictureWidth && m_OriginalPictureHeight)
+	{
+		const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
+		pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
+
+		if (pvmem)
+		{
+			const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
+			BYTE* rgb = pvmem;
+			register int index = 0;
+
+			for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
+			{
+				*rgb++ = pixels[index + 2];
+				*rgb++ = pixels[index + 1];
+				*rgb++ = pixels[index];
+
+				// PDF is RGBA-Layout
+				index += 4;
+			}
+		}
+	}
 
 	return pvmem;
 }
@@ -728,25 +762,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		;
 
 	// Convert bitmap pixels to the RGB-format.
-	const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
-	BYTE* pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
-
-	if (pvmem)
-	{
-		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
-		BYTE* rgb = pvmem;
-		register int index = 0;
-
-		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
-		{
-			*rgb++ = pixels[index + 2];
-			*rgb++ = pixels[index + 1];
-			*rgb++ = pixels[index];
-
-			// PDF is RGBA-Layout
-			index += 4;
-		}
-	}
+	BYTE* pvmem = convert_rgb(rgba_bitmap);
 
 	// Clean up.
 	FPDFBitmap_Destroy(rgba_bitmap);
@@ -754,7 +770,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	FPDF_CloseDocument(document);
 	//FPDF_DestroyLibrary();
 
-	m_bIsValid = size && pvmem != NULL;
+	m_bIsValid = pvmem != NULL;
 
 	return pvmem;
 }

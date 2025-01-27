@@ -41,6 +41,7 @@ public:
 	virtual unsigned int __stdcall get_cap() const;
 
 protected:
+	BYTE* convert_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_file_name(const CString& FileName);
 	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
 		FPDF_FORMHANDLE form,
