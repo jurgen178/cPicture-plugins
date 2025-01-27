@@ -142,7 +142,7 @@ protected:
 	};
 
 public:
-	virtual ~CPictureFormat() {};
+	virtual ~CPictureFormat() { };
 
 public:
 	int m_PictureWidth;
@@ -198,7 +198,7 @@ public:
 	virtual struct PluginData __stdcall get_plugin_data() = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
 
-	virtual void __stdcall set_properties(const CString& property_str) {};
+	virtual void __stdcall set_properties(const CString& property_str) { };
 	virtual CString __stdcall get_properties() { return L""; };
 	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
@@ -228,7 +228,8 @@ public:
 		const int abs_size_x = 0, const int abs_size_y = 0,
 		const int rel_size_z = 0, const int rel_size_n = 0,
 		const enum scaling_type picture_scaling_type = scaling_type::scaling_type_none,
-		const bool b_scan = true) {
+		const bool b_scan = true)
+	{
 		return NULL;
 	};
 	virtual BYTE* __stdcall FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio = false, const bool bMaxSize = false) { return NULL; };
@@ -236,7 +237,8 @@ public:
 		const int abs_size_x = 0, const int abs_size_y = 0,
 		const int rel_size_z = 0, const int rel_size_n = 0,
 		const enum scaling_type picture_scaling_type = scaling_type::scaling_type_none,
-		const bool b_scan = true) {
+		const bool b_scan = true)
+	{
 		return NULL;
 	};
 
@@ -246,7 +248,8 @@ public:
 		const int height,
 		const int quality_L = -1,
 		const int quality_C = -1,
-		const int jpeg_lossless = -1) {
+		const int jpeg_lossless = -1)
+	{
 		return false;
 	}; // -1: Einstellung verwenden, 0: kein lossless, 1: lossless
 
@@ -261,11 +264,13 @@ public:
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) {
+		const int x, const int y, const int b, const int h)
+	{
 		return false;
 	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) {
+		const int x, const int y, const int b, const int h)
+	{
 		return false;
 	}
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };

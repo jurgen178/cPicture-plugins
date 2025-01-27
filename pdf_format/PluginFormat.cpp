@@ -245,6 +245,17 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 //}
 
 
+CPdfFormat::CPdfFormat()
+	: border_size(10),
+	separator_border_size(10)
+{
+};
+
+CPdfFormat::~CPdfFormat()
+{
+};
+
+
 // *** cPicture maintains a property string for this PlugIn
 //     which can be used for your picture format settings.
 
@@ -336,8 +347,9 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
 	// and should be as efficient as possible.
 
-	m_bIsValid = false;
 	FPDF_InitLibrary();
+
+	m_bIsValid = false;
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
 	FPDF_InitLibrary();
@@ -361,10 +373,12 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 
 			const int width = static_cast<int>(FPDF_GetPageWidth(page));
 			const int height = static_cast<int>(FPDF_GetPageHeight(page));
+
 			if (width > max_width)
 			{
 				max_width = width;
 			}
+			
 			if (height > max_height)
 			{
 				max_height = height;
@@ -374,7 +388,14 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 		}
 
 
-		border_size = min(max_width, max_height) / 40;
+		const int scale_z = 2;
+		const int scale_n = 1;
+
+		// scale
+		max_width = scale_z * max_width / scale_n;
+		max_height = scale_z * max_height / scale_n;
+
+		border_size = page_count > 1 ? min(max_width, max_height) / 40 : 0;
 		separator_border_size = border_size / 2;
 
 		// Calculate the number of rows and columns for the rectangle layout
@@ -394,6 +415,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	}
 
 	FPDF_CloseDocument(document);
+	//FPDF_DestroyLibrary();
 }
 
 //BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
@@ -467,7 +489,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 //		BYTE* rgb = pvmem;
 //		register int index = 0;
 //
-//		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; k--)
+//		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
 //		{
 //			*rgb++ = pixels[index + 2];
 //			*rgb++ = pixels[index + 1];
@@ -520,10 +542,12 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 
 		const int width = static_cast<int>(FPDF_GetPageWidth(page));
 		const int height = static_cast<int>(FPDF_GetPageHeight(page));
+
 		if (width > max_width)
 		{
 			max_width = width;
 		}
+
 		if (height > max_height)
 		{
 			max_height = height;
@@ -532,7 +556,14 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		FPDF_ClosePage(page);
 	}
 
-	border_size = min(max_width, max_height) / 40;
+	const int scale_z = 2;
+	const int scale_n = 1;
+
+	// scale
+	max_width = scale_z * max_width / scale_n;
+	max_height = scale_z * max_height / scale_n;
+
+	border_size = page_count > 1 ? min(max_width, max_height) / 40 : 0;
 	separator_border_size = border_size / 2;
 
 	// Calculate the number of rows and columns for the rectangle layout
@@ -545,6 +576,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	// Calculate the total width and height of the combined image
 	const int total_width = num_cols * (max_width + 2 * (border_size + separator_border_size));
 	const int total_height = num_rows * (max_height + 2 * (border_size + separator_border_size));
+	
 	m_OriginalPictureWidth = m_PictureWidth = total_width;
 	m_OriginalPictureHeight = m_PictureHeight = total_height;
 
@@ -565,8 +597,8 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 			continue;
 		}
 
-		const int width = static_cast<int>(FPDF_GetPageWidth(page));
-		const int height = static_cast<int>(FPDF_GetPageHeight(page));
+		const int width = scale_z * static_cast<int>(FPDF_GetPageWidth(page)) / scale_n;
+		const int height = scale_z * static_cast<int>(FPDF_GetPageHeight(page)) / scale_n;
 
 		// Calculate the position to paste the bordered image in the combined image
 		const int row = i / num_cols;
@@ -616,7 +648,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		BYTE* rgb = pvmem;
 		register int index = 0;
 
-		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; k--)
+		for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
 		{
 			*rgb++ = pixels[index + 2];
 			*rgb++ = pixels[index + 1];
@@ -631,6 +663,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	FPDFDOC_ExitFormFillEnvironment(form);
 	FPDFBitmap_Destroy(combined_bitmap);
 	FPDF_CloseDocument(document);
+	//FPDF_DestroyLibrary();
 
 	m_bIsValid = size && pvmem != NULL;
 

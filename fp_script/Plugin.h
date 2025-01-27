@@ -29,7 +29,7 @@ protected:
 	int max_files;
 
 public:
-	virtual ~CFunctionPluginBatScript() {};
+	virtual ~CFunctionPluginBatScript() { };
 
 public:
 	virtual struct plugin_data __stdcall get_plugin_data() const;
@@ -52,7 +52,7 @@ protected:
 	script_info m_script_info;
 
 public:
-	virtual ~CFunctionPluginPS1Script() {};
+	virtual ~CFunctionPluginPS1Script() { };
 
 public:
 	virtual struct plugin_data __stdcall get_plugin_data() const;
@@ -76,7 +76,7 @@ protected:
 	script_info m_script_info;
 
 public:
-	virtual ~CFunctionPluginPyScript() {};
+	virtual ~CFunctionPluginPyScript() { };
 
 public:
 	virtual struct plugin_data __stdcall get_plugin_data() const;

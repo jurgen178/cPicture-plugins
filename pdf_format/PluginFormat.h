@@ -5,14 +5,10 @@
 class CPdfFormat : public CPictureFormat
 {
 protected:
-	CPdfFormat()
-		: border_size(10),
-		separator_border_size(10)
-	{
-	};
+	CPdfFormat();
 
 public:
-	virtual ~CPdfFormat() {};
+	virtual ~CPdfFormat();
 
 	static CPictureFormat* __stdcall GetInstance()
 	{
