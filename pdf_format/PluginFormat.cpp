@@ -384,7 +384,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	}
 
 	FPDF_CloseDocument(document);
-	//FPDF_DestroyLibrary();
+	FPDF_DestroyLibrary();
 }
 
 //BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
@@ -697,7 +697,7 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 	FPDFBitmap_Destroy(rgba_bitmap);
 	FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
-	//FPDF_DestroyLibrary();
+	FPDF_DestroyLibrary();
 
 	return pvmem;
 }
@@ -765,7 +765,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	FPDFBitmap_Destroy(rgba_bitmap);
 	FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
-	//FPDF_DestroyLibrary();
+	FPDF_DestroyLibrary();
 
 	m_bIsValid = pvmem != NULL;
 
