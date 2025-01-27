@@ -11,7 +11,7 @@ protected:
 
 protected:
 	static CString m_property_str;
-	static int m_compression_type;
+	static enum pdf_display_mode m_pdf_display_mode;
 
 public:
 	virtual ~CPdfFormat();

@@ -1,5 +1,11 @@
 #pragma once
 
+enum pdf_display_mode
+{
+	first_page_only = 0,
+	all_pages = 1
+};
+
 
 // CPdfPropertiesDlg dialog
 
@@ -12,7 +18,7 @@ public:
 	virtual ~CPdfPropertiesDlg();
 
 public:
-	int m_compression_type;
+	int m_pdf_display_mode;
 
 protected:
 

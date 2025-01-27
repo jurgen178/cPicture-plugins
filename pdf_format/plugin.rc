@@ -58,26 +58,52 @@ BEGIN
     END
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_DIALOG_PDF_PROPERTIES DIALOGEX 0, 0, 186, 94
+IDD_DIALOG_PDF_PROPERTIES DIALOGEX 0, 0, 276, 158
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Eigenschaften für PDF-Format"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Komprimierungsmethode:",IDC_STATIC,7,7,172,8
-    CONTROL         "Keine Komprimierung",IDC_RADIO_NONE,"Button",BS_AUTORADIOBUTTON | BS_FLAT | WS_GROUP,7,20,172,10
-    CONTROL         "CCITT Gruppe 3 FAX-Komprimierung",IDC_RADIO_GROUP3,
-                    "Button",BS_AUTORADIOBUTTON | BS_FLAT,7,30,172,10
-    CONTROL         "CCITT Gruppe 4 FAX-Komprimierung",IDC_RADIO_GROUP4,
-                    "Button",BS_AUTORADIOBUTTON | BS_FLAT,7,40,172,10
-    CONTROL         "LZW-Komprimierung",IDC_RADIO_LZW,"Button",BS_AUTORADIOBUTTON | BS_FLAT,7,50,172,10
-    DEFPUSHBUTTON   "OK",IDOK,34,74,50,14,BS_FLAT
-    PUSHBUTTON      "Abbrechen",IDCANCEL,101,74,50,14,BS_FLAT
+    LTEXT           "Anzeige:",IDC_STATIC,7,7,179,8
+    CONTROL         "Nur erste Seite",IDC_RADIO_FIRST_PAGE_ONLY,"Button",BS_AUTORADIOBUTTON | BS_FLAT | WS_GROUP,7,20,269,10
+    CONTROL         "Alle Seiten",IDC_RADIO_ALL_PAGES,"Button",BS_AUTORADIOBUTTON | BS_FLAT,7,84,269,10
+    DEFPUSHBUTTON   "OK",IDOK,80,137,50,14,BS_FLAT
+    PUSHBUTTON      "Abbrechen",IDCANCEL,147,137,50,14,BS_FLAT
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_PDF_PROPERTIES, DIALOG
+    BEGIN
+        RIGHTMARGIN, 186
+        BOTTOMMARGIN, 151
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_PDF_PROPERTIES AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

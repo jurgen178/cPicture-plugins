@@ -258,13 +258,13 @@ CPdfFormat::~CPdfFormat()
 //     which can be used for your picture format settings.
 
 CString CPdfFormat::m_property_str;
-int CPdfFormat::m_compression_type = 3;
+enum pdf_display_mode CPdfFormat::m_pdf_display_mode = pdf_display_mode::first_page_only;
 
 void __stdcall CPdfFormat::set_properties(const CString& property_str)
 {
 	m_property_str = property_str;
 
-	swscanf_s(m_property_str, L"%d", &m_compression_type);
+	swscanf_s(m_property_str, L"%d", &m_pdf_display_mode);
 }
 
 CString __stdcall CPdfFormat::get_properties()
@@ -283,10 +283,10 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	CPdfPropertiesDlg pdfPropertiesDlg(&Parent);
 
-	swscanf_s(m_property_str, L"%d", &pdfPropertiesDlg.m_compression_type);
+	swscanf_s(m_property_str, L"%d", &pdfPropertiesDlg.m_pdf_display_mode);
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
-		m_property_str.Format(L"%d", m_compression_type = pdfPropertiesDlg.m_compression_type);
+		m_property_str.Format(L"%d", m_pdf_display_mode = static_cast<enum pdf_display_mode>(pdfPropertiesDlg.m_pdf_display_mode));
 
 	Parent.Detach();
 
@@ -384,7 +384,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	}
 
 	FPDF_CloseDocument(document);
-	FPDF_DestroyLibrary();
+	//FPDF_DestroyLibrary();
 }
 
 //BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
@@ -506,7 +506,9 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 		const int pdf_width = static_cast<int>(FPDF_GetPageWidth(page));
 		const int pdf_height = static_cast<int>(FPDF_GetPageHeight(page));
 
-		int scale_z = 2, scale_n = 1;
+		int scale_z = 2;
+		int scale_n = 1;
+
 		if (abs_size_x && abs_size_y)
 		{
 			if (pdf_height * abs_size_x < pdf_width * abs_size_y)
@@ -573,7 +575,9 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		FPDF_ClosePage(page);
 	}
 
-	int scale_z = 2, scale_n = 1;
+	int scale_z = 2;
+	int scale_n = 1;
+
 	if (abs_size_x && abs_size_y)
 	{
 		if (max_height * abs_size_x < max_width * abs_size_y)
@@ -697,7 +701,7 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 	FPDFBitmap_Destroy(rgba_bitmap);
 	FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
-	FPDF_DestroyLibrary();
+	//FPDF_DestroyLibrary();
 
 	return pvmem;
 }
@@ -765,7 +769,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	FPDFBitmap_Destroy(rgba_bitmap);
 	FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
-	FPDF_DestroyLibrary();
+	//FPDF_DestroyLibrary();
 
 	m_bIsValid = pvmem != NULL;
 

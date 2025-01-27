@@ -11,7 +11,7 @@
 IMPLEMENT_DYNAMIC(CPdfPropertiesDlg, CDialog)
 CPdfPropertiesDlg::CPdfPropertiesDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPdfPropertiesDlg::IDD, pParent),
-	m_compression_type(3)
+	m_pdf_display_mode(pdf_display_mode::first_page_only)
 {
 }
 
@@ -22,7 +22,7 @@ CPdfPropertiesDlg::~CPdfPropertiesDlg()
 void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Radio(pDX, IDC_RADIO_NONE, m_compression_type);
+	DDX_Radio(pDX, IDC_RADIO_FIRST_PAGE_ONLY, m_pdf_display_mode);
 }
 
 
