@@ -3,8 +3,6 @@
 #include "pluginformat.h"
 #include "PdfPropertiesDlg.h"
 #include <sys/stat.h>
-#include "include/fpdfview.h"
-#include "include/fpdf_formfill.h"
 
 #include <vector>
 using namespace std;
@@ -249,11 +247,11 @@ CPdfFormat::CPdfFormat()
 	: border_size(10),
 	separator_border_size(10)
 {
-};
+}
 
 CPdfFormat::~CPdfFormat()
 {
-};
+}
 
 
 // *** cPicture maintains a property string for this PlugIn
@@ -318,30 +316,6 @@ struct PluginData __stdcall CPdfFormat::get_plugin_data()
 	return pluginData;
 }
 
-//void __stdcall CPdfFormat::get_size(const CString& FileName)
-//{
-//	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
-//	// and should be as efficient as possible.
-//
-//	m_bIsValid = false;
-//	FPDF_InitLibrary();
-//
-//	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
-//	if (document)
-//	{
-//		FPDF_PAGE page = FPDF_LoadPage(document, 0);
-//		if (page)
-//		{
-//			m_OriginalPictureWidth = static_cast<int>(FPDF_GetPageWidth(page));
-//			m_OriginalPictureHeight = static_cast<int>(FPDF_GetPageHeight(page));
-//
-//			m_bIsValid = true;
-//		}
-//	}
-//
-//	FPDF_CloseDocument(document);
-//}
-
 void __stdcall CPdfFormat::get_size(const CString& FileName)
 {
 	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
@@ -366,25 +340,23 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 		for (int i = 0; i < page_count; ++i)
 		{
 			FPDF_PAGE page = FPDF_LoadPage(document, i);
-			if (!page)
+			if (page)
 			{
-				continue;
-			}
+				const int width = static_cast<int>(FPDF_GetPageWidth(page));
+				const int height = static_cast<int>(FPDF_GetPageHeight(page));
 
-			const int width = static_cast<int>(FPDF_GetPageWidth(page));
-			const int height = static_cast<int>(FPDF_GetPageHeight(page));
+				if (width > max_width)
+				{
+					max_width = width;
+				}
 
-			if (width > max_width)
-			{
-				max_width = width;
-			}
-			
-			if (height > max_height)
-			{
-				max_height = height;
-			}
+				if (height > max_height)
+				{
+					max_height = height;
+				}
 
-			FPDF_ClosePage(page);
+				FPDF_ClosePage(page);
+			}
 		}
 
 
@@ -511,20 +483,54 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 //	return pvmem;
 //}
 
-BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
-	const int abs_size_x, const int abs_size_y,
-	const int rel_size_z, const int rel_size_n,
-	const enum scaling_type picture_scaling_type,
-	const bool b_scan)
+FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
+	FPDF_FORMHANDLE form,
+	const int abs_size_x, const int abs_size_y)
 {
-	FPDF_InitLibrary();
-
-	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
-	if (!document)
+	FPDF_BITMAP rgba_bitmap = nullptr;
+	FPDF_PAGE page = FPDF_LoadPage(document, 0);
+	if (page)
 	{
-		return NULL;
+		// Scale the PDF to the requested screen size.
+		const int pdf_width = static_cast<int>(FPDF_GetPageWidth(page));
+		const int pdf_height = static_cast<int>(FPDF_GetPageHeight(page));
+
+		int z = 1, n = 1;
+		if (abs_size_x && abs_size_y)
+		{
+			if (pdf_height * abs_size_x < pdf_width * abs_size_y)
+			{
+				z = abs_size_x;
+				n = pdf_width;
+			}
+			else
+			{
+				z = abs_size_y;
+				n = pdf_height;
+			}
+		}
+
+		m_OriginalPictureWidth = m_PictureWidth = z * pdf_width / n;
+		m_OriginalPictureHeight = m_PictureHeight = z * pdf_height / n;
+
+		// Setup the bitmap.
+		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
+		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
+
+		// Render the PDF to the bitmap.
+		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+		FPDF_FFLDraw(form, rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+
+		FPDF_ClosePage(page);
 	}
 
+	return rgba_bitmap;
+}
+
+FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
+	FPDF_FORMHANDLE form,
+	const int abs_size_x, const int abs_size_y)
+{
 	const int page_count = FPDF_GetPageCount(document);
 	int max_width = 0;
 	int max_height = 0;
@@ -576,17 +582,13 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	// Calculate the total width and height of the combined image
 	const int total_width = num_cols * (max_width + 2 * (border_size + separator_border_size));
 	const int total_height = num_rows * (max_height + 2 * (border_size + separator_border_size));
-	
+
 	m_OriginalPictureWidth = m_PictureWidth = total_width;
 	m_OriginalPictureHeight = m_PictureHeight = total_height;
 
 	// Create a single bitmap with the combined width and height
 	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(total_width, total_height, 0);
 	FPDFBitmap_FillRect(combined_bitmap, 0, 0, total_width, total_height, 0xFFFFFFFF);
-
-	FPDF_FORMFILLINFO form_callbacks = { 0 };
-	form_callbacks.version = 2;
-	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
 
 	// Render each page directly into the combined bitmap
 	for (int i = 0; i < page_count; ++i)
@@ -603,8 +605,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		// Calculate the position to paste the bordered image in the combined image
 		const int row = i / num_cols;
 		const int col = i % num_cols;
-		//int x_offset = col * (max_width + 2 * border_size) + border_size;
-		//int y_offset = row * (max_height + 2 * border_size) + border_size;
+
 		const int x_offset = col * (max_width + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
 		const int y_offset = row * (max_height + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
 
@@ -615,11 +616,11 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		FPDF_FFLDraw(form, page_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
 
 		BYTE* src_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
-		BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + y_offset * total_width * 4 + x_offset * 4;
+		BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * y_offset * total_width + 4 * x_offset;
 
 		for (int y = 0; y < height; ++y)
 		{
-			memcpy(dest_buffer + y * total_width * 4, src_buffer + y * width * 4, width * 4);
+			memcpy(dest_buffer + y * total_width * 4, src_buffer + 4 * y * width, 4 * width);
 		}
 
 		// Draw the border around the page
@@ -638,13 +639,42 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		FPDF_ClosePage(page);
 	}
 
+	return combined_bitmap;
+}
+
+BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
+	const int abs_size_x, const int abs_size_y,
+	const int rel_size_z, const int rel_size_n,
+	const enum scaling_type picture_scaling_type,
+	const bool b_scan)
+{
+	FPDF_InitLibrary();
+
+	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
+	if (!document)
+	{
+		return NULL;
+	}
+
+	FPDF_FORMFILLINFO form_callbacks = { 0 };
+	form_callbacks.version = 2;
+	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
+
+	bool first_page_only = false;
+	FPDF_BITMAP rgba_bitmap = first_page_only
+		?
+		get_first_page(document, form, abs_size_x, abs_size_y)
+		:
+		get_all_pages(document, form, abs_size_x, abs_size_y)
+		;
+
 	// Convert bitmap pixels to the RGB-format.
 	const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
 	BYTE* pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
 
 	if (pvmem)
 	{
-		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap));
+		const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
 		BYTE* rgb = pvmem;
 		register int index = 0;
 
@@ -660,8 +690,8 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	}
 
 	// Clean up.
+	FPDFBitmap_Destroy(rgba_bitmap);
 	FPDFDOC_ExitFormFillEnvironment(form);
-	FPDFBitmap_Destroy(combined_bitmap);
 	FPDF_CloseDocument(document);
 	//FPDF_DestroyLibrary();
 
@@ -677,6 +707,7 @@ unsigned int __stdcall CPdfFormat::get_cap() const
 			//PICTURE_WRITE |	// This plugin can write the picture format.
 								// At least one must be specified. Otherwise 
 								// the plugin will not be loaded.
+								// See PictureFormat.h for the complete list.
 }
 
 vector<CString> info_template;

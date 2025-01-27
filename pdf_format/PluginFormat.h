@@ -1,11 +1,17 @@
 #pragma once
 #include "pictureformat.h"
+#include "include/fpdfview.h"
+#include "include/fpdf_formfill.h"
 
 
 class CPdfFormat : public CPictureFormat
 {
 protected:
 	CPdfFormat();
+
+protected:
+	static CString m_property_str;
+	static int m_compression_type;
 
 public:
 	virtual ~CPdfFormat();
@@ -34,8 +40,12 @@ public:
 	virtual unsigned int __stdcall get_cap() const;
 
 protected:
-	static CString m_property_str;
-	static int m_compression_type;
+	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
+		FPDF_FORMHANDLE form,
+		const int abs_size_x, const int abs_size_y);
+	FPDF_BITMAP get_all_pages(FPDF_DOCUMENT document,
+		FPDF_FORMHANDLE form,
+		const int abs_size_x, const int abs_size_y);
 
 public:
 	int border_size;
