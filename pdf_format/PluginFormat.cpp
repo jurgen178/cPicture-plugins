@@ -325,13 +325,11 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 
 	m_bIsValid = false;
 
-	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
 	FPDF_InitLibrary();
 
 	if (document)
 	{
-		FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
-
 		const int page_count = FPDF_GetPageCount(document);
 		int max_width = 0;
 		int max_height = 0;
@@ -358,7 +356,6 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 				FPDF_ClosePage(page);
 			}
 		}
-
 
 		const int scale_z = 2;
 		const int scale_n = 1;
@@ -482,6 +479,20 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 //
 //	return pvmem;
 //}
+
+CStringA CPdfFormat::get_file_name(const CString& FileName)
+{
+	// FPDF_LoadDocument does not support unicode for filename.
+	// To mitigate the problem, set the working directory to the picture directory
+	// and use the converted filename without the path.
+	const int separator = FileName.ReverseFind(L'\\') + 1;
+	const CString pictureDir = FileName.Left(separator);
+	const CString pictureName = FileName.Mid(separator);
+	_wchdir(pictureDir);
+
+	const CStringA pictureNameA = CW2A(pictureName);
+	return pictureNameA;
+}
 
 FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 	FPDF_FORMHANDLE form,
@@ -642,6 +653,11 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	return combined_bitmap;
 }
 
+BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
+{
+	return NULL;
+}
+
 BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const int abs_size_x, const int abs_size_y,
 	const int rel_size_z, const int rel_size_n,
@@ -650,7 +666,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 {
 	FPDF_InitLibrary();
 
-	FPDF_DOCUMENT document = FPDF_LoadDocument(CW2A(FileName), nullptr);
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
 	if (!document)
 	{
 		return NULL;

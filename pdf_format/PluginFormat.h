@@ -30,6 +30,7 @@ public:
 	virtual bool __stdcall properties_dlg(const HWND hwnd);
 
 public:
+	virtual BYTE* __stdcall FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio = false, const bool bMaxSize = false);
 	virtual BYTE* __stdcall FileToRGB(const CString& FileName,
 		const int abs_size_x = 0, const int abs_size_y = 0,
 		const int rel_size_z = 0, const int rel_size_n = 0,
@@ -40,6 +41,7 @@ public:
 	virtual unsigned int __stdcall get_cap() const;
 
 protected:
+	CStringA get_file_name(const CString& FileName);
 	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
 		FPDF_FORMHANDLE form,
 		const int abs_size_x, const int abs_size_y);
