@@ -42,6 +42,7 @@ public:
 	virtual unsigned int __stdcall get_cap() const;
 
 protected:
+	void get_size(FPDF_DOCUMENT document, int& max_width, int& max_height, int& scale_z, int& scale_n, int& num_cols);
 	BYTE* convert_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_file_name(const CString& FileName);
 	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
