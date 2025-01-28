@@ -336,7 +336,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	{
 		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : FPDF_GetPageCount(document);
 
-		// Calculate the maximum width and height of the pages
+		// Calculate the maximum width and height of the pages.
 		for (int i = 0; i < page_count; ++i)
 		{
 			FPDF_PAGE page = FPDF_LoadPage(document, i);
@@ -359,7 +359,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 			}
 		}
 
-		// Calculate the number of rows and columns for the rectangle layout
+		// Calculate the number of rows and columns for the rectangle layout.
 		int num_cols = static_cast<int>(sqrt(page_count));
 		if (page_count > 1)
 			num_cols++;
@@ -382,7 +382,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 			separator_border_size = 1;
 		}
 
-		// Calculate the total width and height of the combined image
+		// Calculate the total width and height of the combined image.
 		m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
 		m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
 
@@ -516,7 +516,9 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		}
 	}
 
-	// scale to the requested abs_size_x and abs_size_y
+	// Scale to the requested abs_size_x and abs_size_y for faster processing.
+	// Exact scaling that includes the border can't be calculated directly due to the border size check (border size == 0).
+	// This scaling is an approximation, but cPicture will adjust the image to the precise size regardless.
 	pdf_page_width = scale_z * pdf_page_width / scale_n / m;
 	pdf_page_height = scale_z * pdf_page_height / scale_n / m;
 
@@ -529,15 +531,15 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		separator_border_size = 1;
 	}
 
-	// Calculate the total width and height of the combined image
+	// Calculate the total width and height of the combined image.
 	m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
 	m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
 
-	// Create a single bitmap with the combined width and height
+	// Create a single bitmap with the combined width and height.
 	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
 	FPDFBitmap_FillRect(combined_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
 
-	// Render each page directly into the combined bitmap
+	// Render each page directly into the combined bitmap.
 	for (int i = 0; i < page_count; ++i)
 	{
 		FPDF_PAGE page = FPDF_LoadPage(document, i);
@@ -554,14 +556,14 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		const int width = pdf_page_width;
 		const int height = pdf_page_height;
 
-		// Calculate the position to paste the bordered image in the combined image
+		// Calculate the position to paste the bordered image in the combined image.
 		const int row = i / num_cols;
 		const int col = i % num_cols;
 
 		const int x_offset = col * (pdf_page_width + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
 		const int y_offset = row * (pdf_page_height + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
 
-		// Render the page into the combined bitmap
+		// Render the page into the combined bitmap.
 		FPDF_BITMAP page_bitmap = FPDFBitmap_Create(width, height, 0);
 		FPDFBitmap_FillRect(page_bitmap, 0, 0, width, height, 0xFFFFFFFF);
 		FPDF_RenderPageBitmap(page_bitmap, page, 0, 0, width, height, 0, 0);
@@ -575,13 +577,13 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 			memcpy(dest_buffer + y * m_OriginalPictureWidth * 4, src_buffer + 4 * y * width, 4 * width);
 		}
 
-		// Draw the border around the page
+		// Draw the border around the page.
 		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset - border_size, width + 2 * border_size, border_size, border_color); // Top border
 		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset + height, width + 2 * border_size, border_size, border_color); // Bottom border
 		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset, border_size, height, border_color); // Left border
 		FPDFBitmap_FillRect(combined_bitmap, x_offset + width, y_offset, border_size, height, border_color); // Right border
 
-		// Draw the separator border around the border
+		// Draw the separator border around the border.
 		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size - separator_border_size, y_offset - border_size - separator_border_size, width + 2 * border_size + 2 * separator_border_size, separator_border_size, separator_border_color); // Top separator border
 		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size - separator_border_size, y_offset + height + border_size, width + 2 * border_size + 2 * separator_border_size, separator_border_size, separator_border_color); // Bottom separator border
 		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size - separator_border_size, y_offset - separator_border_size, separator_border_size, height + 2 * border_size + 2 * separator_border_size, separator_border_color); // Left separator border
