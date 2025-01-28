@@ -333,19 +333,9 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	int scale_z = 2;
 	int scale_n = 1;
 	int num_cols = 1;
-	get_size(document, pdf_page_width, pdf_page_height, scale_z, scale_n, num_cols);
 
-	FPDF_CloseDocument(document);
-	//FPDF_DestroyLibrary();
-}
-
-void CPdfFormat::get_size(FPDF_DOCUMENT document, int& pdf_page_width, int& pdf_page_height, int& scale_z, int& scale_n, int& num_cols)
-{
 	if (document)
 	{
-		pdf_page_width = 0;
-		pdf_page_height = 0;
-
 		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : FPDF_GetPageCount(document);
 
 		// Calculate the maximum width and height of the pages
@@ -399,6 +389,9 @@ void CPdfFormat::get_size(FPDF_DOCUMENT document, int& pdf_page_width, int& pdf_
 
 		m_bIsValid = true;
 	}
+
+	FPDF_CloseDocument(document);
+	//FPDF_DestroyLibrary();
 }
 
 CStringA CPdfFormat::get_file_name(const CString& FileName)
