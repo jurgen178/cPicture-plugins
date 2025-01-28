@@ -13,6 +13,8 @@ protected:
 protected:
 	static CString m_property_str;
 	static enum pdf_display_mode m_pdf_display_mode;
+	static int border_color;
+	static int separator_border_color;
 
 public:
 	virtual ~CPdfFormat();
@@ -50,8 +52,4 @@ protected:
 	FPDF_BITMAP get_all_pages(FPDF_DOCUMENT document,
 		FPDF_FORMHANDLE form,
 		const int abs_size_x = 0, const int abs_size_y = 0);
-
-public:
-	int border_size;
-	int separator_border_size;
 };

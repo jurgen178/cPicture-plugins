@@ -244,8 +244,6 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CPdfFormat::CPdfFormat()
-	: border_size(10),
-	separator_border_size(10)
 {
 }
 
@@ -259,6 +257,8 @@ CPdfFormat::~CPdfFormat()
 
 CString CPdfFormat::m_property_str;
 enum pdf_display_mode CPdfFormat::m_pdf_display_mode = pdf_display_mode::first_page_only;
+int CPdfFormat::border_color = 0xFFFFD800;
+int CPdfFormat::separator_border_color = 0xFFFFFFFF;
 
 void __stdcall CPdfFormat::set_properties(const CString& property_str)
 {
@@ -288,11 +288,13 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	const pdf_display_mode prev_mode = m_pdf_display_mode;
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
+	{
 		m_property_str.Format(L"%d", m_pdf_display_mode = static_cast<enum pdf_display_mode>(pdfPropertiesDlg.m_pdf_display_mode));
+	}
 
 	Parent.Detach();
 
-	return prev_mode != m_pdf_display_mode;	// false: no reload of the pictures
+	return prev_mode != m_pdf_display_mode;	// true: reload of the pictures
 }
 
 CString __stdcall CPdfFormat::get_ext()
@@ -326,14 +328,10 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 
 	m_bIsValid = false;
 
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
-
 	int pdf_page_width = 0;
 	int pdf_page_height = 0;
-	int scale_z = 2;
-	int scale_n = 1;
-	int num_cols = 1;
 
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
 	if (document)
 	{
 		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : FPDF_GetPageCount(document);
@@ -362,30 +360,31 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 		}
 
 		// Calculate the number of rows and columns for the rectangle layout
-		num_cols = static_cast<int>(sqrt(page_count));
+		int num_cols = static_cast<int>(sqrt(page_count));
 		if (page_count > 1)
 			num_cols++;
 
 		const int num_rows = (page_count + num_cols - 1) / num_cols;
 
-		// Scale grid pictures to have the total size match the requested size
-		const int m = min(num_cols, num_rows);
-
-		scale_z = 2;
-		scale_n = 1;
+		int scale_z = 2;
+		int scale_n = 1;
 
 		// scale
-		pdf_page_width = scale_z * pdf_page_width / scale_n / m;
-		pdf_page_height = scale_z * pdf_page_height / scale_n / m;
+		pdf_page_width = scale_z * pdf_page_width / scale_n;
+		pdf_page_height = scale_z * pdf_page_height / scale_n;
 
-		border_size = page_count > 1 ? min(pdf_page_width, pdf_page_height) / 40 : 0;
-		separator_border_size = border_size / 2;
+		int border_size = page_count > 1 ? min(pdf_page_width, pdf_page_height) / 40 : 0;
+		int separator_border_size = border_size / 2;
+
+		if (page_count > 1 && border_size == 0)
+		{
+			border_size = 1;
+			separator_border_size = 1;
+		}
 
 		// Calculate the total width and height of the combined image
-		const int total_width = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
-		const int total_height = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
-		m_OriginalPictureWidth = m_PictureWidth = total_width;
-		m_OriginalPictureHeight = m_PictureHeight = total_height;
+		m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
+		m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
 
 		m_bIsValid = true;
 	}
@@ -422,7 +421,7 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 
 		int scale_z = 2;
 		int scale_n = 1;
-		int num_cols = 1;
+
 		if (abs_size_x && abs_size_y)
 		{
 			if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
@@ -463,8 +462,6 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	const int page_count = FPDF_GetPageCount(document);
 	int pdf_page_width = 0;
 	int pdf_page_height = 0;
-	const unsigned int border_color = 0xFFFFD800;
-	const unsigned int separator_border_color = 0xFFFFFFFF;
 
 	// Calculate the maximum width and height of the pages
 	for (int i = 0; i < page_count; ++i)
@@ -491,11 +488,6 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		FPDF_ClosePage(page);
 	}
 
-	// autosize: abs_size_x == 0 && abs_size_y == 0
-	int scale_z = 2;
-	int scale_n = 1;
-
-
 	// Calculate the number of rows and columns for the rectangle layout
 	int num_cols = static_cast<int>(sqrt(page_count));
 	if (page_count > 1)
@@ -506,26 +498,30 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	// Scale grid pictures to have the total size match the requested size
 	const int m = min(num_cols, num_rows);
 
+	// autosize: abs_size_x == 0 && abs_size_y == 0
+	int scale_z = 2;
+	int scale_n = 1;
+
 	if (abs_size_x && abs_size_y)
 	{
 		if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
 		{
 			scale_z = abs_size_x;
-			scale_n = pdf_page_width * m;
+			scale_n = pdf_page_width;
 		}
 		else
 		{
 			scale_z = abs_size_y;
-			scale_n = pdf_page_height * m;
+			scale_n = pdf_page_height;
 		}
 	}
 
-	// scale
-	pdf_page_width = scale_z * pdf_page_width / scale_n;
-	pdf_page_height = scale_z * pdf_page_height / scale_n;
+	// scale to the requested abs_size_x and abs_size_y
+	pdf_page_width = scale_z * pdf_page_width / scale_n / m;
+	pdf_page_height = scale_z * pdf_page_height / scale_n / m;
 
-	border_size = page_count > 1 ? min(pdf_page_width, pdf_page_height) / 40 : 0;
-	separator_border_size = border_size / 2;
+	int border_size = page_count > 1 ? min(pdf_page_width, pdf_page_height) / 40 : 0;
+	int separator_border_size = border_size / 2;
 
 	if (page_count > 1 && border_size == 0)
 	{
@@ -534,15 +530,8 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	}
 
 	// Calculate the total width and height of the combined image
-	const int total_width = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
-	const int total_height = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
-
-	m_OriginalPictureWidth = m_PictureWidth = total_width;
-	m_OriginalPictureHeight = m_PictureHeight = total_height;
-
-
-	//get_size(document, pdf_page_width, pdf_page_height, scale_z, scale_n, num_cols);
-
+	m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
+	m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
 
 	// Create a single bitmap with the combined width and height
 	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
