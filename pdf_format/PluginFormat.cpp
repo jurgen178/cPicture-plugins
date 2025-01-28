@@ -328,23 +328,23 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
 
-	int pdf_width = 0;
-	int pdf_height = 0;
+	int pdf_page_width = 0;
+	int pdf_page_height = 0;
 	int scale_z = 2;
 	int scale_n = 1;
 	int num_cols = 1;
-	get_size(document, pdf_width, pdf_height, scale_z, scale_n, num_cols);
+	get_size(document, pdf_page_width, pdf_page_height, scale_z, scale_n, num_cols);
 
 	FPDF_CloseDocument(document);
 	//FPDF_DestroyLibrary();
 }
 
-void CPdfFormat::get_size(FPDF_DOCUMENT document, int& max_width, int& max_height, int& scale_z, int& scale_n, int& num_cols)
+void CPdfFormat::get_size(FPDF_DOCUMENT document, int& pdf_page_width, int& pdf_page_height, int& scale_z, int& scale_n, int& num_cols)
 {
 	if (document)
 	{
-		max_width = 0;
-		max_height = 0;
+		pdf_page_width = 0;
+		pdf_page_height = 0;
 
 		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : FPDF_GetPageCount(document);
 
@@ -357,14 +357,14 @@ void CPdfFormat::get_size(FPDF_DOCUMENT document, int& max_width, int& max_heigh
 				const int width = static_cast<int>(FPDF_GetPageWidth(page));
 				const int height = static_cast<int>(FPDF_GetPageHeight(page));
 
-				if (width > max_width)
+				if (width > pdf_page_width)
 				{
-					max_width = width;
+					pdf_page_width = width;
 				}
 
-				if (height > max_height)
+				if (height > pdf_page_height)
 				{
-					max_height = height;
+					pdf_page_height = height;
 				}
 
 				FPDF_ClosePage(page);
@@ -385,15 +385,15 @@ void CPdfFormat::get_size(FPDF_DOCUMENT document, int& max_width, int& max_heigh
 		scale_n = 1;
 
 		// scale
-		max_width = scale_z * max_width / scale_n / m;
-		max_height = scale_z * max_height / scale_n / m;
+		pdf_page_width = scale_z * pdf_page_width / scale_n / m;
+		pdf_page_height = scale_z * pdf_page_height / scale_n / m;
 
-		border_size = page_count > 1 ? min(max_width, max_height) / 40 : 0;
+		border_size = page_count > 1 ? min(pdf_page_width, pdf_page_height) / 40 : 0;
 		separator_border_size = border_size / 2;
 
 		// Calculate the total width and height of the combined image
-		const int total_width = num_cols * (max_width + 2 * (border_size + separator_border_size));
-		const int total_height = num_rows * (max_height + 2 * (border_size + separator_border_size));
+		const int total_width = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
+		const int total_height = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
 		m_OriginalPictureWidth = m_PictureWidth = total_width;
 		m_OriginalPictureHeight = m_PictureHeight = total_height;
 
@@ -424,32 +424,30 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 	if (page)
 	{
 		// Scale the PDF to the requested screen size.
-		//const int pdf_width = static_cast<int>(FPDF_GetPageWidth(page));
-		//const int pdf_height = static_cast<int>(FPDF_GetPageHeight(page));
+		const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
+		const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
 
-		int pdf_width = 0;
-		int pdf_height = 0;
 		int scale_z = 2;
 		int scale_n = 1;
 		int num_cols = 1;
-		//if (abs_size_x && abs_size_y)
-		//{
-		//	if (pdf_height * abs_size_x < pdf_width * abs_size_y)
-		//	{
-		//		scale_z = abs_size_x;
-		//		scale_n = pdf_width;
-		//	}
-		//	else
-		//	{
-		//		scale_z = abs_size_y;
-		//		scale_n = pdf_height;
-		//	}
-		//}
+		if (abs_size_x && abs_size_y)
+		{
+			if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
+			{
+				scale_z = abs_size_x;
+				scale_n = pdf_page_width;
+			}
+			else
+			{
+				scale_z = abs_size_y;
+				scale_n = pdf_page_height;
+			}
+		}
 
-		//m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_width / scale_n;
-		//m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_height / scale_n;
+		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
+		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
 
-		get_size(document, pdf_width, pdf_height, scale_z, scale_n, num_cols);
+		//get_size(document, pdf_page_width, pdf_page_height, scale_z, scale_n, num_cols);
 
 		// Setup the bitmap.
 		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
@@ -470,89 +468,87 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	const int abs_size_x, const int abs_size_y)
 {
 	const int page_count = FPDF_GetPageCount(document);
-	int max_width = 0;
-	int max_height = 0;
+	int pdf_page_width = 0;
+	int pdf_page_height = 0;
 	const unsigned int border_color = 0xFFFFD800;
 	const unsigned int separator_border_color = 0xFFFFFFFF;
 
-	//// Calculate the maximum width and height of the pages
-	//for (int i = 0; i < page_count; ++i)
-	//{
-	//	FPDF_PAGE page = FPDF_LoadPage(document, i);
-	//	if (!page)
-	//	{
-	//		continue;
-	//	}
+	// Calculate the maximum width and height of the pages
+	for (int i = 0; i < page_count; ++i)
+	{
+		FPDF_PAGE page = FPDF_LoadPage(document, i);
+		if (!page)
+		{
+			continue;
+		}
 
-	//	const int width = static_cast<int>(FPDF_GetPageWidth(page));
-	//	const int height = static_cast<int>(FPDF_GetPageHeight(page));
+		const int width = static_cast<int>(FPDF_GetPageWidth(page));
+		const int height = static_cast<int>(FPDF_GetPageHeight(page));
 
-	//	if (width > max_width)
-	//	{
-	//		max_width = width;
-	//	}
+		if (width > pdf_page_width)
+		{
+			pdf_page_width = width;
+		}
 
-	//	if (height > max_height)
-	//	{
-	//		max_height = height;
-	//	}
+		if (height > pdf_page_height)
+		{
+			pdf_page_height = height;
+		}
 
-	//	FPDF_ClosePage(page);
-	//}
+		FPDF_ClosePage(page);
+	}
 
 	// autosize: abs_size_x == 0 && abs_size_y == 0
 	int scale_z = 2;
 	int scale_n = 1;
-	int num_cols = 1;
 
 
+	// Calculate the number of rows and columns for the rectangle layout
+	int num_cols = static_cast<int>(sqrt(page_count));
+	if (page_count > 1)
+		num_cols++;
 
-	//// Calculate the number of rows and columns for the rectangle layout
-	//int num_cols = static_cast<int>(sqrt(page_count));
-	//if (page_count > 1)
-	//	num_cols++;
+	const int num_rows = (page_count + num_cols - 1) / num_cols;
 
-	//const int num_rows = (page_count + num_cols - 1) / num_cols;
+	// Scale grid pictures to have the total size match the requested size
+	const int m = min(num_cols, num_rows);
 
-	//// Scale grid pictures to have the total size match the requested size
-	//const int m = min(num_cols, num_rows);
+	if (abs_size_x && abs_size_y)
+	{
+		if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
+		{
+			scale_z = abs_size_x;
+			scale_n = pdf_page_width * m;
+		}
+		else
+		{
+			scale_z = abs_size_y;
+			scale_n = pdf_page_height * m;
+		}
+	}
 
-	//if (abs_size_x && abs_size_y)
-	//{
-	//	if (max_height * abs_size_x < max_width * abs_size_y)
-	//	{
-	//		scale_z = abs_size_x;
-	//		scale_n = max_width * m;
-	//	}
-	//	else
-	//	{
-	//		scale_z = abs_size_y;
-	//		scale_n = max_height * m;
-	//	}
-	//}
+	// scale
+	pdf_page_width = scale_z * pdf_page_width / scale_n;
+	pdf_page_height = scale_z * pdf_page_height / scale_n;
 
-	//// scale
-	//max_width = scale_z * max_width / scale_n;
-	//max_height = scale_z * max_height / scale_n;
+	border_size = page_count > 1 ? min(pdf_page_width, pdf_page_height) / 40 : 0;
+	separator_border_size = border_size / 2;
 
-	//border_size = page_count > 1 ? min(max_width, max_height) / 40 : 0;
-	//separator_border_size = border_size / 2;
+	if (page_count > 1 && border_size == 0)
+	{
+		border_size = 1;
+		separator_border_size = 1;
+	}
 
-	//if (page_count > 1 && border_size == 0)
-	//{
-	//	border_size = 1;
-	//	separator_border_size = 1;
-	//}
+	// Calculate the total width and height of the combined image
+	const int total_width = num_cols * (pdf_page_width + 2 * (border_size + separator_border_size));
+	const int total_height = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
 
-	//// Calculate the total width and height of the combined image
-	//const int total_width = num_cols * (max_width + 2 * (border_size + separator_border_size));
-	//const int total_height = num_rows * (max_height + 2 * (border_size + separator_border_size));
-
-	//m_OriginalPictureWidth = m_PictureWidth = total_width;
-	//m_OriginalPictureHeight = m_PictureHeight = total_height;
+	m_OriginalPictureWidth = m_PictureWidth = total_width;
+	m_OriginalPictureHeight = m_PictureHeight = total_height;
 
 
-	get_size(document, max_width, max_height, scale_z, scale_n, num_cols);
+	//get_size(document, pdf_page_width, pdf_page_height, scale_z, scale_n, num_cols);
 
 
 	// Create a single bitmap with the combined width and height
@@ -573,15 +569,15 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		//// if unable to access the thumbnail's stream.
 		//FPDF_BITMAP bmp = FPDFPage_GetThumbnailAsBitmap(page);
 
-		const int width = max_width;
-		const int height = max_height;
+		const int width = pdf_page_width;
+		const int height = pdf_page_height;
 
 		// Calculate the position to paste the bordered image in the combined image
 		const int row = i / num_cols;
 		const int col = i % num_cols;
 
-		const int x_offset = col * (max_width + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
-		const int y_offset = row * (max_height + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
+		const int x_offset = col * (pdf_page_width + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
+		const int y_offset = row * (pdf_page_height + 2 * (border_size + separator_border_size)) + border_size + separator_border_size;
 
 		// Render the page into the combined bitmap
 		FPDF_BITMAP page_bitmap = FPDFBitmap_Create(width, height, 0);
