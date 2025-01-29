@@ -398,7 +398,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	int pdf_page_width = 0;
 	int pdf_page_height = 0;
 
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
 		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : get_page_count(document);
@@ -460,18 +460,30 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	//FPDF_DestroyLibrary();
 }
 
-CStringA CPdfFormat::get_file_name(const CString& FileName)
+CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 {
-	// FPDF_LoadDocument does not support unicode for filename.
-	// To mitigate the problem, set the working directory to the picture directory
-	// and use the converted filename without the path.
-	const int separator = FileName.ReverseFind(L'\\') + 1;
-	const CString pictureDir = FileName.Left(separator);
-	const CString pictureName = FileName.Mid(separator);
-	_wchdir(pictureDir);
+	// FPDF_LoadDocument requires a UTF-8 encoded file name.
 
-	const CStringA pictureNameA = CW2A(pictureName);
-	return pictureNameA;
+	// Determine the required buffer size for the UTF-8 string.
+	const int bufferSize = WideCharToMultiByte(CP_UTF8, 0, FileName, -1, NULL, 0, NULL, NULL);
+	if (bufferSize)
+	{
+		// Allocate the buffer for the UTF-8 string.
+		unsigned char* utf8Buffer = new unsigned char[bufferSize];
+		memset(utf8Buffer, 0, bufferSize);
+
+		// Convert the CString to a UTF-8 encoded buffer.
+		const int utf8Length = WideCharToMultiByte(CP_UTF8, 0, FileName, -1, reinterpret_cast<char*>(utf8Buffer), bufferSize, NULL, NULL);
+		if (utf8Length)
+		{
+			const CStringA pictureNameA = utf8Buffer;
+			delete[] utf8Buffer;
+
+			return pictureNameA;
+		}
+	}
+
+	return L"";
 }
 
 FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
@@ -710,7 +722,7 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 
 	FPDF_InitLibraryWithConfig(&config);
 
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (!document)
 	{
 		return NULL;
@@ -759,7 +771,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 
 	FPDF_InitLibraryWithConfig(&config);
 
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (!document)
 	{
 		return NULL;
