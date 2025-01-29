@@ -372,11 +372,8 @@ struct PluginData __stdcall CPdfFormat::get_plugin_data()
 int CPdfFormat::get_page_count(FPDF_DOCUMENT document)
 {
 	const int page_count = FPDF_GetPageCount(document);
-	if (max_pages > 1 && page_count > max_pages)
-		return max_pages;
-	else
-		return page_count;
-};
+	return (max_pages > 1 && page_count > max_pages) ? max_pages : page_count;
+}
 
 void __stdcall CPdfFormat::get_size(const CString& FileName)
 {
