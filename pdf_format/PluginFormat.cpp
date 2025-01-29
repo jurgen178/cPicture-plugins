@@ -518,8 +518,6 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
 		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
 
-		//get_size(document, pdf_page_width, pdf_page_height, scale_z, scale_n, num_cols);
-
 		// Setup the bitmap.
 		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
 		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
