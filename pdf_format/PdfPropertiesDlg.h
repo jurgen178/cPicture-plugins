@@ -21,6 +21,10 @@ public:
 
 public:
 	int m_pdf_display_mode;
+	int max_x;
+	int max_y;
+	int max_pages;
+	int border_size;
 	COLORREF border_color;
 	CColorStatic m_colorStatic;
 

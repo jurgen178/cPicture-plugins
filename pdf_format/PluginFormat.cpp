@@ -244,6 +244,7 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CPdfFormat::CPdfFormat()
+	: format_property_string(L"%d,%d,%d,%d,%d,%06X")
 {
 }
 
@@ -257,14 +258,26 @@ CPdfFormat::~CPdfFormat()
 
 CString CPdfFormat::m_property_str;
 enum pdf_display_mode CPdfFormat::m_pdf_display_mode = pdf_display_mode::first_page_only;
-int CPdfFormat::border_color = 0xFFFFD800;
-int CPdfFormat::separator_border_color = 0xFFFFFFFF;
+int CPdfFormat::border_size = 25;
+int CPdfFormat::border_color = 0xFFD800;
+int CPdfFormat::separator_border_color = 0xFFFFFF;
+int CPdfFormat::max_x = 8000;
+int CPdfFormat::max_y = 8000;
+int CPdfFormat::max_pages = -1;
+
 
 void __stdcall CPdfFormat::set_properties(const CString& property_str)
 {
 	m_property_str = property_str;
 
-	swscanf_s(m_property_str, L"%d", &m_pdf_display_mode);
+	swscanf_s(m_property_str, format_property_string,
+		&m_pdf_display_mode,
+		&max_x,
+		&max_y,
+		&max_pages,
+		&border_size,
+		&border_color
+	);
 }
 
 CString __stdcall CPdfFormat::get_properties()
@@ -283,18 +296,55 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	CPdfPropertiesDlg pdfPropertiesDlg(&Parent);
 
-	swscanf_s(m_property_str, L"%d", &pdfPropertiesDlg.m_pdf_display_mode);
+	swscanf_s(m_property_str, format_property_string,
+		&pdfPropertiesDlg.m_pdf_display_mode,
+		&pdfPropertiesDlg.max_x,
+		&pdfPropertiesDlg.max_y,
+		&pdfPropertiesDlg.max_pages,
+		&pdfPropertiesDlg.border_size,
+		&pdfPropertiesDlg.border_color
+	);
 
 	const pdf_display_mode prev_mode = m_pdf_display_mode;
+	const COLORREF prev_border_color = border_color;
+	const int prev_border_size = border_size;
+	const int prev_max_x = max_x;
+	const int prev_max_y = max_y;
+	const int prev_max_pages = max_pages;
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
-		m_property_str.Format(L"%d", m_pdf_display_mode = static_cast<enum pdf_display_mode>(pdfPropertiesDlg.m_pdf_display_mode));
+		m_pdf_display_mode = static_cast<enum pdf_display_mode>(pdfPropertiesDlg.m_pdf_display_mode);
+		max_x = max(1000, pdfPropertiesDlg.max_x);
+		max_y = max(1000, pdfPropertiesDlg.max_y);
+		max_pages = pdfPropertiesDlg.max_pages;
+		border_size = min(250, max(1, pdfPropertiesDlg.border_size));
+		border_color = pdfPropertiesDlg.border_color;
+
+		if(max_pages < -1 || max_pages == 0 || max_pages == 1)
+			max_pages = -1;
+
+		m_property_str.Format(format_property_string,
+			m_pdf_display_mode,
+			max_x,
+			max_y,
+			max_pages,
+			border_size,
+			border_color
+		);
 	}
 
 	Parent.Detach();
 
-	return prev_mode != m_pdf_display_mode;	// true: reload of the pictures
+	// true: reload of the pictures
+	return 
+		prev_mode != m_pdf_display_mode ||
+		prev_border_size != border_size ||
+		prev_border_color != border_color ||
+		prev_max_x != max_x ||
+		prev_max_y != max_y ||
+		prev_max_pages != max_pages
+	;
 }
 
 CString __stdcall CPdfFormat::get_ext()
@@ -319,6 +369,15 @@ struct PluginData __stdcall CPdfFormat::get_plugin_data()
 	return pluginData;
 }
 
+int CPdfFormat::get_page_count(FPDF_DOCUMENT document)
+{
+	const int page_count = FPDF_GetPageCount(document);
+	if (max_pages > 1 && page_count > max_pages)
+		return max_pages;
+	else
+		return page_count;
+};
+
 void __stdcall CPdfFormat::get_size(const CString& FileName)
 {
 	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
@@ -334,7 +393,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
 	if (document)
 	{
-		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : FPDF_GetPageCount(document);
+		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : get_page_count(document);
 
 		// Calculate the maximum width and height of the pages.
 		for (int i = 0; i < page_count; ++i)
@@ -459,9 +518,14 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	FPDF_FORMHANDLE form,
 	const int abs_size_x, const int abs_size_y)
 {
-	const int page_count = FPDF_GetPageCount(document);
+	const int page_count = get_page_count(document);
 	int pdf_page_width = 0;
 	int pdf_page_height = 0;
+
+	const BYTE red = GetRValue(border_color);
+	const BYTE green = GetGValue(border_color);
+	const BYTE blue = GetBValue(border_color);
+	const int border_color_bgr = (red << 16) + (green << 8) + (blue);
 
 	// Calculate the maximum width and height of the pages
 	for (int i = 0; i < page_count; ++i)
@@ -578,10 +642,10 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		}
 
 		// Draw the border around the page.
-		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset - border_size, width + 2 * border_size, border_size, border_color); // Top border
-		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset + height, width + 2 * border_size, border_size, border_color); // Bottom border
-		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset, border_size, height, border_color); // Left border
-		FPDFBitmap_FillRect(combined_bitmap, x_offset + width, y_offset, border_size, height, border_color); // Right border
+		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset - border_size, width + 2 * border_size, border_size, border_color_bgr); // Top border
+		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset + height, width + 2 * border_size, border_size, border_color_bgr); // Bottom border
+		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size, y_offset, border_size, height, border_color_bgr); // Left border
+		FPDFBitmap_FillRect(combined_bitmap, x_offset + width, y_offset, border_size, height, border_color_bgr); // Right border
 
 		// Draw the separator border around the border.
 		FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size - separator_border_size, y_offset - border_size - separator_border_size, width + 2 * border_size + 2 * separator_border_size, separator_border_size, separator_border_color); // Top separator border

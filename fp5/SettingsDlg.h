@@ -2,6 +2,7 @@
 
 #include "Plugin.h"
 #include "resource.h"
+#include "ColorStatic.h"
 
 
 // CSettingsDlg dialog
@@ -21,6 +22,7 @@ protected:
 public:
 	CString headline_text;
 	COLORREF border_color;
+	CColorStatic m_colorStatic;
 
 protected:
 	virtual BOOL OnInitDialog();

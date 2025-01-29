@@ -13,8 +13,12 @@ protected:
 protected:
 	static CString m_property_str;
 	static enum pdf_display_mode m_pdf_display_mode;
+	static int border_size;
 	static int border_color;
 	static int separator_border_color;
+	static int max_x;
+	static int max_y;
+	static int max_pages;
 
 public:
 	virtual ~CPdfFormat();
@@ -44,6 +48,10 @@ public:
 	virtual unsigned int __stdcall get_cap() const;
 
 protected:
+	CString format_property_string;
+
+protected:
+	int get_page_count(FPDF_DOCUMENT document);
 	BYTE* convert_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_file_name(const CString& FileName);
 	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,

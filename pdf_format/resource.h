@@ -16,6 +16,10 @@
 #define IDC_EDIT_MAX_PAGES              1007
 #define IDC_STATIC_MAX_PAGES_TEXT       1008
 #define IDC_STATIC_COLOR                1009
+#define IDC_STATIC_MAX_PAGES_TEXT2      1010
+#define IDC_EDIT_BORDER_SIZE            1011
+#define IDC_STATIC_MAX_PAGES_TEXT3      1012
+#define IDC_STATIC_MAX_PAGES_TEXT4      1013
 
 // Next default values for new objects
 // 

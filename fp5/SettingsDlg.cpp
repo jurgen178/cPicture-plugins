@@ -22,6 +22,7 @@ void CSettingsDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_HEADLINE_TEXT, HeadlineEditCtrl);
+	DDX_Control(pDX, IDC_STATIC_COLOR, m_colorStatic);
 }
 
 
@@ -39,6 +40,7 @@ BOOL CSettingsDlg::OnInitDialog()
 	headline.LoadString(IDS_HEADLINE_TEXT);
 
 	HeadlineEditCtrl.SetWindowText(headline);
+	m_colorStatic.SetColor(border_color);
 
 	return TRUE;
 }
@@ -58,5 +60,6 @@ void CSettingsDlg::OnBnClickedButtonBorderColor()
 	if (ColorDialog.DoModal() == IDOK)
 	{
 		border_color = ColorDialog.GetColor();
+		m_colorStatic.SetColor(border_color);
 	}
 }
