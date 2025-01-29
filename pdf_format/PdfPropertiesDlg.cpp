@@ -102,7 +102,7 @@ void CPdfPropertiesDlg::OnClickedButtonBorderColor()
 void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	PNMLINK pNMLink = reinterpret_cast<PNMLINK>(pNMHDR);
-	LITEM   item = pNMLink->item;
+	LITEM item = pNMLink->item;
 
 	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
 
