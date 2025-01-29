@@ -15,7 +15,7 @@ CPdfPropertiesDlg::CPdfPropertiesDlg(CWnd* pParent /*=NULL*/)
 	pdf_display_mode(pdf_display_mode_enum::first_page_only),
 	max_x(8000),
 	max_y(8000),
-	max_pages(-1),
+	max_pages(0),
 	border_size(25),
 	border_color(RGB(255, 216, 0))
 {
