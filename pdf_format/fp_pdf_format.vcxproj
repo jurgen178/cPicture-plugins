@@ -243,6 +243,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorStatic.cpp" />
     <ClCompile Include="PdfPropertiesDlg.cpp" />
     <ClCompile Include="PluginFormat.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -253,6 +254,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorStatic.h" />
     <ClInclude Include="PdfPropertiesDlg.h" />
     <ClInclude Include="PictureFormat.h" />
     <ClInclude Include="PluginFormat.h" />

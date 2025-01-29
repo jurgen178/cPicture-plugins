@@ -1,4 +1,6 @@
 #pragma once
+#include "ColorStatic.h"
+
 
 enum pdf_display_mode
 {
@@ -19,6 +21,8 @@ public:
 
 public:
 	int m_pdf_display_mode;
+	COLORREF border_color;
+	CColorStatic m_colorStatic;
 
 protected:
 
@@ -27,8 +31,12 @@ protected:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	void update();
 
 	DECLARE_MESSAGE_MAP()
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnClickedRadioFirstPageOnly();
+	afx_msg void OnClickedRadioAllPages();
+	afx_msg void OnClickedButtonBorderColor();
 };
