@@ -457,6 +457,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 
 		FPDF_CloseDocument(document);
 	}
+
 	//FPDF_DestroyLibrary();
 }
 
@@ -481,6 +482,8 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 
 			return pictureNameA;
 		}
+
+		delete[] utf8Buffer;
 	}
 
 	return L"";

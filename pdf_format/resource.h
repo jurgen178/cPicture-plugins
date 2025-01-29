@@ -8,18 +8,17 @@
 #define IDS_LONG_DESC                   104
 #define IDC_RADIO_FIRST_PAGE_ONLY       1001
 #define IDC_RADIO_ALL_PAGES             1002
-#define IDC_BUTTON1                     1003
 #define IDC_BUTTON_BORDER_COLOR         1003
-#define IDC_SYSLINK1                    1004
+#define IDC_SYSLINK_PDF                 1004
 #define IDC_EDIT_PDF_MAX_X              1005
 #define IDC_EDIT_PDF_MAX_Y              1006
 #define IDC_EDIT_MAX_PAGES              1007
 #define IDC_STATIC_MAX_PAGES_TEXT       1008
 #define IDC_STATIC_COLOR                1009
-#define IDC_STATIC_MAX_PAGES_TEXT2      1010
+#define IDC_STATIC_MAX_PAGES_TEXT_HELP  1010
 #define IDC_EDIT_BORDER_SIZE            1011
-#define IDC_STATIC_MAX_PAGES_TEXT3      1012
-#define IDC_STATIC_MAX_PAGES_TEXT4      1013
+#define IDC_STATIC_BORDERSIZE           1012
+#define IDC_STATIC_BORDERSIZE_UNIT      1013
 
 // Next default values for new objects
 // 
@@ -27,7 +26,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        105
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

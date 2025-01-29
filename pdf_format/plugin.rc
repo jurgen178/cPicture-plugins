@@ -69,26 +69,26 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Eigenschaften für PDF-Format"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Formatzusatzmodul verwendet",IDC_STATIC,7,7,115,8
-    CONTROL         "<a href=""https://pdfium.googlesource.com/pdfium/"">https://pdfium.googlesource.com/pdfium/</a>",IDC_SYSLINK1,
-                    "SysLink",WS_TABSTOP,7,18,146,14
-    LTEXT           "Max",IDC_STATIC,7,44,17,8
-    EDITTEXT        IDC_EDIT_PDF_MAX_X,25,43,40,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "x",IDC_STATIC,69,44,8,8
-    EDITTEXT        IDC_EDIT_PDF_MAX_Y,77,43,40,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Bildpunkte",IDC_STATIC,122,44,50,8
+    LTEXT           "Formatzusatzmodul verwendet",IDC_STATIC,7,7,224,8
+    CONTROL         "<a href=""https://pdfium.googlesource.com/pdfium/"">https://pdfium.googlesource.com/pdfium/</a>",IDC_SYSLINK_PDF,
+                    "SysLink",WS_TABSTOP,7,18,224,14
+    LTEXT           "Maximal",IDC_STATIC,7,44,30,8
+    EDITTEXT        IDC_EDIT_PDF_MAX_X,38,43,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "x",IDC_STATIC,82,44,8,8
+    EDITTEXT        IDC_EDIT_PDF_MAX_Y,90,43,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Bildpunkte",IDC_STATIC,135,44,96,8
     CONTROL         "Nur erste Seite",IDC_RADIO_FIRST_PAGE_ONLY,"Button",BS_AUTORADIOBUTTON | BS_FLAT | WS_GROUP,7,65,224,10
     CONTROL         "Alle Seiten",IDC_RADIO_ALL_PAGES,"Button",BS_AUTORADIOBUTTON | BS_FLAT,7,80,224,10
-    LTEXT           "Maximale Seitenanzahl:",IDC_STATIC_MAX_PAGES_TEXT,25,96,74,8
+    LTEXT           "Maximale Seitenanzahl:",IDC_STATIC_MAX_PAGES_TEXT,25,96,78,8
     EDITTEXT        IDC_EDIT_MAX_PAGES,104,95,40,14,ES_AUTOHSCROLL | ES_NUMBER
     PUSHBUTTON      "Randfarbe",IDC_BUTTON_BORDER_COLOR,25,121,50,14
     DEFPUSHBUTTON   "OK",IDOK,116,182,50,14,BS_FLAT
     PUSHBUTTON      "Abbrechen",IDCANCEL,181,182,50,14,BS_FLAT
     LTEXT           "Color",IDC_STATIC_COLOR,91,116,24,24
-    LTEXT           "(-1 für alle Seiten)",IDC_STATIC_MAX_PAGES_TEXT2,150,96,81,8
+    LTEXT           "(-1 für alle Seiten)",IDC_STATIC_MAX_PAGES_TEXT_HELP,150,96,81,8
     EDITTEXT        IDC_EDIT_BORDER_SIZE,74,144,40,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Randbreite:",IDC_STATIC_MAX_PAGES_TEXT3,28,145,44,8
-    LTEXT           "‰",IDC_STATIC_MAX_PAGES_TEXT4,119,145,30,8
+    LTEXT           "Randbreite:",IDC_STATIC_BORDERSIZE,28,145,45,8
+    LTEXT           "‰ der Seitengröße",IDC_STATIC_BORDERSIZE_UNIT,119,145,112,8
 END
 
 

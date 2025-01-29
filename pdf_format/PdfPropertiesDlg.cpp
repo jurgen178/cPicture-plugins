@@ -41,6 +41,7 @@ BEGIN_MESSAGE_MAP(CPdfPropertiesDlg, CDialog)
 	ON_BN_CLICKED(IDC_RADIO_FIRST_PAGE_ONLY, &CPdfPropertiesDlg::OnClickedRadioFirstPageOnly)
 	ON_BN_CLICKED(IDC_RADIO_ALL_PAGES, &CPdfPropertiesDlg::OnClickedRadioAllPages)
 	ON_BN_CLICKED(IDC_BUTTON_BORDER_COLOR, &CPdfPropertiesDlg::OnClickedButtonBorderColor)
+	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_PDF, &CPdfPropertiesDlg::OnClickSyslinkPdf)
 END_MESSAGE_MAP()
 
 
@@ -96,4 +97,14 @@ void CPdfPropertiesDlg::OnClickedButtonBorderColor()
 		border_color = ColorDialog.GetColor();
 		m_colorStatic.SetColor(border_color);
 	}
+}
+
+void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	PNMLINK pNMLink = reinterpret_cast<PNMLINK>(pNMHDR);
+	LITEM   item = pNMLink->item;
+
+	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
+
+	*pResult = 0;
 }

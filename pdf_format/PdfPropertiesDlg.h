@@ -43,4 +43,5 @@ protected:
 	afx_msg void OnClickedRadioFirstPageOnly();
 	afx_msg void OnClickedRadioAllPages();
 	afx_msg void OnClickedButtonBorderColor();
+	afx_msg void OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult);
 };
