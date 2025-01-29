@@ -383,7 +383,15 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
 	// and should be as efficient as possible.
 
-	FPDF_InitLibrary();
+	//FPDF_InitLibrary();
+	FPDF_LIBRARY_CONFIG config;
+	config.version = 2;
+	config.m_pUserFontPaths = nullptr;
+	config.m_pIsolate = nullptr;
+	config.m_v8EmbedderSlot = 0;
+	config.m_pPlatform = nullptr;
+
+	FPDF_InitLibraryWithConfig(&config);
 
 	m_bIsValid = false;
 
@@ -446,9 +454,9 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 		m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size + separator_border_size));
 
 		m_bIsValid = true;
-	}
 
-	FPDF_CloseDocument(document);
+		FPDF_CloseDocument(document);
+	}
 	//FPDF_DestroyLibrary();
 }
 
@@ -692,7 +700,15 @@ BYTE* CPdfFormat::convert_rgb(FPDF_BITMAP rgba_bitmap)
 
 BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
 {
-	FPDF_InitLibrary();
+	//FPDF_InitLibrary();
+	FPDF_LIBRARY_CONFIG config;
+	config.version = 2;
+	config.m_pUserFontPaths = nullptr;
+	config.m_pIsolate = nullptr;
+	config.m_v8EmbedderSlot = 0;
+	config.m_pPlatform = nullptr;
+
+	FPDF_InitLibraryWithConfig(&config);
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
 	if (!document)
@@ -733,7 +749,15 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	FPDF_InitLibrary();
+	//FPDF_InitLibrary();
+	FPDF_LIBRARY_CONFIG config;
+	config.version = 2;
+	config.m_pUserFontPaths = nullptr;
+	config.m_pIsolate = nullptr;
+	config.m_v8EmbedderSlot = 0;
+	config.m_pPlatform = nullptr;
+
+	FPDF_InitLibraryWithConfig(&config);
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_file_name(FileName), nullptr);
 	if (!document)
