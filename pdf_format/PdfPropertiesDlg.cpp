@@ -88,7 +88,6 @@ void CPdfPropertiesDlg::OnClickedRadioAllPages()
 	update();
 }
 
-
 void CPdfPropertiesDlg::OnClickedButtonBorderColor()
 {
 	CColorDialog ColorDialog(border_color, CC_ANYCOLOR | CC_FULLOPEN);

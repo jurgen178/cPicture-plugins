@@ -545,7 +545,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	const BYTE blue = GetBValue(border_color);
 	const int border_color_bgr = (red << 16) + (green << 8) + (blue);
 
-	// Calculate the maximum width and height of the pages
+	// Calculate the maximum width and height of the pages.
 	for (int i = 0; i < page_count; ++i)
 	{
 		FPDF_PAGE page = FPDF_LoadPage(document, i);
@@ -570,14 +570,14 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		FPDF_ClosePage(page);
 	}
 
-	// Calculate the number of rows and columns for the rectangle layout
+	// Calculate the number of rows and columns for the rectangle layout.
 	int num_cols = static_cast<int>(sqrt(page_count));
 	if (page_count > 1)
 		num_cols++;
 
 	const int num_rows = (page_count + num_cols - 1) / num_cols;
 
-	// Scale grid pictures to have the total size match the requested size
+	// Scale grid pictures to have the total size match the requested size.
 	const int m = min(num_cols, num_rows);
 
 	// autosize: abs_size_x == 0 && abs_size_y == 0
