@@ -257,7 +257,7 @@ CPdfFormat::~CPdfFormat()
 //     which can be used for your picture format settings.
 
 CString CPdfFormat::m_property_str;
-enum pdf_display_mode CPdfFormat::m_pdf_display_mode = pdf_display_mode::first_page_only;
+enum pdf_display_mode_enum CPdfFormat::pdf_display_mode = pdf_display_mode_enum::first_page_only;
 int CPdfFormat::border_size = 25;
 int CPdfFormat::border_color = 0xFFD800;
 int CPdfFormat::separator_border_color = 0xFFFFFF;
@@ -271,7 +271,7 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 	m_property_str = property_str;
 
 	swscanf_s(m_property_str, format_property_string,
-		&m_pdf_display_mode,
+		&pdf_display_mode,
 		&max_x,
 		&max_y,
 		&max_pages,
@@ -297,7 +297,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	CPdfPropertiesDlg pdfPropertiesDlg(&Parent);
 
 	swscanf_s(m_property_str, format_property_string,
-		&pdfPropertiesDlg.m_pdf_display_mode,
+		&pdfPropertiesDlg.pdf_display_mode,
 		&pdfPropertiesDlg.max_x,
 		&pdfPropertiesDlg.max_y,
 		&pdfPropertiesDlg.max_pages,
@@ -305,7 +305,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		&pdfPropertiesDlg.border_color
 	);
 
-	const pdf_display_mode prev_mode = m_pdf_display_mode;
+	const pdf_display_mode_enum prev_mode = pdf_display_mode;
 	const COLORREF prev_border_color = border_color;
 	const int prev_border_size = border_size;
 	const int prev_max_x = max_x;
@@ -314,7 +314,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
-		m_pdf_display_mode = static_cast<enum pdf_display_mode>(pdfPropertiesDlg.m_pdf_display_mode);
+		pdf_display_mode = static_cast<enum pdf_display_mode_enum>(pdfPropertiesDlg.pdf_display_mode);
 		max_x = max(1000, pdfPropertiesDlg.max_x);
 		max_y = max(1000, pdfPropertiesDlg.max_y);
 		max_pages = pdfPropertiesDlg.max_pages;
@@ -325,7 +325,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 			max_pages = -1;
 
 		m_property_str.Format(format_property_string,
-			m_pdf_display_mode,
+			pdf_display_mode,
 			max_x,
 			max_y,
 			max_pages,
@@ -338,7 +338,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	// true: reload of the pictures
 	return 
-		prev_mode != m_pdf_display_mode ||
+		prev_mode != pdf_display_mode ||
 		prev_border_size != border_size ||
 		prev_border_color != border_color ||
 		prev_max_x != max_x ||
@@ -401,7 +401,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		const int page_count = m_pdf_display_mode == pdf_display_mode::first_page_only ? 1 : get_page_count(document);
+		const int page_count = pdf_display_mode == pdf_display_mode_enum::first_page_only ? 1 : get_page_count(document);
 
 		// Calculate the maximum width and height of the pages.
 		for (int i = 0; i < page_count; ++i)
@@ -737,10 +737,10 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 
 	FPDF_BITMAP rgba_bitmap = NULL;
 
-	if (m_pdf_display_mode == pdf_display_mode::first_page_only)
+	if (pdf_display_mode == pdf_display_mode_enum::first_page_only)
 		rgba_bitmap = get_first_page(document, form, size_x, size_y);
 	else
-	//if (m_pdf_display_mode == pdf_display_mode::all_pages)
+	//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
 		rgba_bitmap = get_all_pages(document, form, size_x, size_y);
 	
 	size_x = m_OriginalPictureWidth;
@@ -786,10 +786,10 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 
 	FPDF_BITMAP rgba_bitmap = NULL;
 
-	if (m_pdf_display_mode == pdf_display_mode::first_page_only)
+	if (pdf_display_mode == pdf_display_mode_enum::first_page_only)
 		rgba_bitmap = get_first_page(document, form);
 	else
-	//if (m_pdf_display_mode == pdf_display_mode::all_pages)
+	//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
 		rgba_bitmap = get_all_pages(document, form);
 
 	// Convert bitmap pixels to the RGB-format.

@@ -12,7 +12,7 @@ protected:
 
 protected:
 	static CString m_property_str;
-	static enum pdf_display_mode m_pdf_display_mode;
+	static enum pdf_display_mode_enum pdf_display_mode;
 	static int border_size;
 	static int border_color;
 	static int separator_border_color;

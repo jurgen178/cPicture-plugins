@@ -2,7 +2,7 @@
 #include "ColorStatic.h"
 
 
-enum pdf_display_mode
+enum pdf_display_mode_enum
 {
 	first_page_only = 0,
 	all_pages = 1
@@ -20,7 +20,7 @@ public:
 	virtual ~CPdfPropertiesDlg();
 
 public:
-	int m_pdf_display_mode;
+	int pdf_display_mode;
 	int max_x;
 	int max_y;
 	int max_pages;

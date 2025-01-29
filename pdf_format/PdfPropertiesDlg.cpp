@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(CPdfPropertiesDlg, CDialog)
 CPdfPropertiesDlg::CPdfPropertiesDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPdfPropertiesDlg::IDD, pParent),
-	m_pdf_display_mode(pdf_display_mode::first_page_only),
+	pdf_display_mode(pdf_display_mode_enum::first_page_only),
 	max_x(8000),
 	max_y(8000),
 	max_pages(-1),
@@ -28,7 +28,7 @@ CPdfPropertiesDlg::~CPdfPropertiesDlg()
 void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Radio(pDX, IDC_RADIO_FIRST_PAGE_ONLY, m_pdf_display_mode);
+	DDX_Radio(pDX, IDC_RADIO_FIRST_PAGE_ONLY, pdf_display_mode);
 	DDX_Control(pDX, IDC_STATIC_COLOR, m_colorStatic);
 	DDX_Text(pDX, IDC_EDIT_PDF_MAX_X, max_x);
 	DDX_Text(pDX, IDC_EDIT_PDF_MAX_Y, max_y);
@@ -71,7 +71,7 @@ void CPdfPropertiesDlg::update()
 {
 	UpdateData(true); // read the data
 
-	const BOOL bAllPages = m_pdf_display_mode == pdf_display_mode::all_pages;
+	const BOOL bAllPages = pdf_display_mode == pdf_display_mode_enum::all_pages;
 
 	GetDlgItem(IDC_EDIT_MAX_PAGES)->EnableWindow(bAllPages);
 	GetDlgItem(IDC_BUTTON_BORDER_COLOR)->EnableWindow(bAllPages);
