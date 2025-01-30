@@ -528,7 +528,7 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 
 		// Setup the bitmap.
 		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
+		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
 
 		// Render the PDF to the bitmap.
 		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
@@ -626,7 +626,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 
 	// Create a single bitmap with the combined width and height.
 	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-	FPDFBitmap_FillRect(combined_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
+	FPDFBitmap_FillRect(combined_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
 
 	// Render each page directly into the combined bitmap.
 	for (int i = 0; i < page_count; ++i)
@@ -654,7 +654,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 
 		// Render the page into the combined bitmap.
 		FPDF_BITMAP page_bitmap = FPDFBitmap_Create(width, height, 0);
-		FPDFBitmap_FillRect(page_bitmap, 0, 0, width, height, 0xFFFFFFFF);
+		FPDFBitmap_FillRect(page_bitmap, 0, 0, width, height, 0xFFFFFF);
 		FPDF_RenderPageBitmap(page_bitmap, page, 0, 0, width, height, 0, 0);
 		//FPDF_FFLDraw(form, page_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
 
@@ -706,7 +706,7 @@ BYTE* CPdfFormat::convert_rgb(FPDF_BITMAP rgba_bitmap)
 				*rgb++ = pixels[index + 1];
 				*rgb++ = pixels[index];
 
-				// PDF is RGBA-Layout
+				// PDF is BGRA-Layout
 				index += 4;
 			}
 		}
