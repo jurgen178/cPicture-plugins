@@ -246,10 +246,19 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 CPdfFormat::CPdfFormat()
 	: format_property_string(L"%d,%d,%d,%d,%d,%06X")
 {
+	FPDF_LIBRARY_CONFIG config;
+	config.version = 2;
+	config.m_pUserFontPaths = nullptr;
+	config.m_pIsolate = nullptr;
+	config.m_v8EmbedderSlot = 0;
+	config.m_pPlatform = nullptr;
+
+	FPDF_InitLibraryWithConfig(&config);
 }
 
 CPdfFormat::~CPdfFormat()
 {
+	//FPDF_DestroyLibrary();
 }
 
 
@@ -381,14 +390,14 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	// and should be as efficient as possible.
 
 	//FPDF_InitLibrary();
-	FPDF_LIBRARY_CONFIG config;
-	config.version = 2;
-	config.m_pUserFontPaths = nullptr;
-	config.m_pIsolate = nullptr;
-	config.m_v8EmbedderSlot = 0;
-	config.m_pPlatform = nullptr;
+	//FPDF_LIBRARY_CONFIG config;
+	//config.version = 2;
+	//config.m_pUserFontPaths = nullptr;
+	//config.m_pIsolate = nullptr;
+	//config.m_v8EmbedderSlot = 0;
+	//config.m_pPlatform = nullptr;
 
-	FPDF_InitLibraryWithConfig(&config);
+	//FPDF_InitLibraryWithConfig(&config);
 
 	m_bIsValid = false;
 
@@ -487,7 +496,6 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 }
 
 FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
-	FPDF_FORMHANDLE form,
 	const int abs_size_x, const int abs_size_y)
 {
 	FPDF_BITMAP rgba_bitmap = nullptr;
@@ -524,7 +532,7 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 
 		// Render the PDF to the bitmap.
 		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
-		FPDF_FFLDraw(form, rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+		//FPDF_FFLDraw(form, rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
 
 		FPDF_ClosePage(page);
 	}
@@ -533,7 +541,6 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 }
 
 FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
-	FPDF_FORMHANDLE form,
 	const int abs_size_x, const int abs_size_y)
 {
 	const int page_count = get_page_count(document);
@@ -649,7 +656,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		FPDF_BITMAP page_bitmap = FPDFBitmap_Create(width, height, 0);
 		FPDFBitmap_FillRect(page_bitmap, 0, 0, width, height, 0xFFFFFFFF);
 		FPDF_RenderPageBitmap(page_bitmap, page, 0, 0, width, height, 0, 0);
-		FPDF_FFLDraw(form, page_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+		//FPDF_FFLDraw(form, page_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
 
 		BYTE* src_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
 		BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * y_offset * m_OriginalPictureWidth + 4 * x_offset;
@@ -711,14 +718,14 @@ BYTE* CPdfFormat::convert_rgb(FPDF_BITMAP rgba_bitmap)
 BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
 {
 	//FPDF_InitLibrary();
-	FPDF_LIBRARY_CONFIG config;
-	config.version = 2;
-	config.m_pUserFontPaths = nullptr;
-	config.m_pIsolate = nullptr;
-	config.m_v8EmbedderSlot = 0;
-	config.m_pPlatform = nullptr;
+	//FPDF_LIBRARY_CONFIG config;
+	//config.version = 2;
+	//config.m_pUserFontPaths = nullptr;
+	//config.m_pIsolate = nullptr;
+	//config.m_v8EmbedderSlot = 0;
+	//config.m_pPlatform = nullptr;
 
-	FPDF_InitLibraryWithConfig(&config);
+	//FPDF_InitLibraryWithConfig(&config);
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (!document)
@@ -726,17 +733,13 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 		return NULL;
 	}
 
-	FPDF_FORMFILLINFO form_callbacks = { 0 };
-	form_callbacks.version = 2;
-	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
-
 	FPDF_BITMAP rgba_bitmap = NULL;
 
 	if (pdf_display_mode == pdf_display_mode_enum::first_page_only)
-		rgba_bitmap = get_first_page(document, form, size_x, size_y);
+		rgba_bitmap = get_first_page(document, size_x, size_y);
 	else
 	//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
-		rgba_bitmap = get_all_pages(document, form, size_x, size_y);
+		rgba_bitmap = get_all_pages(document, size_x, size_y);
 	
 	size_x = m_OriginalPictureWidth;
 	size_y = m_OriginalPictureHeight;
@@ -746,7 +749,7 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 
 	// Clean up.
 	FPDFBitmap_Destroy(rgba_bitmap);
-	FPDFDOC_ExitFormFillEnvironment(form);
+	//FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
 	//FPDF_DestroyLibrary();
 
@@ -760,14 +763,14 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const bool b_scan)
 {
 	//FPDF_InitLibrary();
-	FPDF_LIBRARY_CONFIG config;
-	config.version = 2;
-	config.m_pUserFontPaths = nullptr;
-	config.m_pIsolate = nullptr;
-	config.m_v8EmbedderSlot = 0;
-	config.m_pPlatform = nullptr;
+	//FPDF_LIBRARY_CONFIG config;
+	//config.version = 2;
+	//config.m_pUserFontPaths = nullptr;
+	//config.m_pIsolate = nullptr;
+	//config.m_v8EmbedderSlot = 0;
+	//config.m_pPlatform = nullptr;
 
-	FPDF_InitLibraryWithConfig(&config);
+	//FPDF_InitLibraryWithConfig(&config);
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (!document)
@@ -775,24 +778,20 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 		return NULL;
 	}
 
-	FPDF_FORMFILLINFO form_callbacks = { 0 };
-	form_callbacks.version = 2;
-	FPDF_FORMHANDLE form = FPDFDOC_InitFormFillEnvironment(document, &form_callbacks);
-
 	FPDF_BITMAP rgba_bitmap = NULL;
 
 	if (pdf_display_mode == pdf_display_mode_enum::first_page_only)
-		rgba_bitmap = get_first_page(document, form);
+		rgba_bitmap = get_first_page(document);
 	else
 	//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
-		rgba_bitmap = get_all_pages(document, form);
+		rgba_bitmap = get_all_pages(document);
 
 	// Convert bitmap pixels to the RGB-format.
 	BYTE* pvmem = convert_rgb(rgba_bitmap);
 
 	// Clean up.
 	FPDFBitmap_Destroy(rgba_bitmap);
-	FPDFDOC_ExitFormFillEnvironment(form);
+	//FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
 	//FPDF_DestroyLibrary();
 
