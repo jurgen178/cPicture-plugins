@@ -244,21 +244,11 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CPdfFormat::CPdfFormat()
-	: format_property_string(L"%d,%d,%d,%d,%d,%06X")
 {
-	FPDF_LIBRARY_CONFIG config;
-	config.version = 2;
-	config.m_pUserFontPaths = nullptr;
-	config.m_pIsolate = nullptr;
-	config.m_v8EmbedderSlot = 0;
-	config.m_pPlatform = nullptr;
-
-	FPDF_InitLibraryWithConfig(&config);
 }
 
 CPdfFormat::~CPdfFormat()
 {
-	//FPDF_DestroyLibrary();
 }
 
 
@@ -273,6 +263,8 @@ int CPdfFormat::separator_border_color = 0xFFFFFF;
 int CPdfFormat::max_x = 8000;
 int CPdfFormat::max_y = 8000;
 int CPdfFormat::max_pages = 0;
+
+CString format_property_string(L"%d,%d,%d,%d,%d,%06X");
 
 
 void __stdcall CPdfFormat::set_properties(const CString& property_str)
@@ -404,65 +396,65 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	int pdf_page_width = 0;
 	int pdf_page_height = 0;
 
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
-	if (document)
-	{
-		const int page_count = pdf_display_mode == pdf_display_mode_enum::first_page_only ? 1 : get_page_count(document);
+	//FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
+	//if (document)
+	//{
+	//	const int page_count = pdf_display_mode == pdf_display_mode_enum::first_page_only ? 1 : get_page_count(document);
 
-		// Calculate the maximum width and height of the pages.
-		for (int i = 0; i < page_count; ++i)
-		{
-			FPDF_PAGE page = FPDF_LoadPage(document, i);
-			if (page)
-			{
-				const int width = static_cast<int>(FPDF_GetPageWidth(page));
-				const int height = static_cast<int>(FPDF_GetPageHeight(page));
+	//	// Calculate the maximum width and height of the pages.
+	//	for (int i = 0; i < page_count; ++i)
+	//	{
+	//		FPDF_PAGE page = FPDF_LoadPage(document, i);
+	//		if (page)
+	//		{
+	//			const int width = static_cast<int>(FPDF_GetPageWidth(page));
+	//			const int height = static_cast<int>(FPDF_GetPageHeight(page));
 
-				if (width > pdf_page_width)
-				{
-					pdf_page_width = width;
-				}
+	//			if (width > pdf_page_width)
+	//			{
+	//				pdf_page_width = width;
+	//			}
 
-				if (height > pdf_page_height)
-				{
-					pdf_page_height = height;
-				}
+	//			if (height > pdf_page_height)
+	//			{
+	//				pdf_page_height = height;
+	//			}
 
-				FPDF_ClosePage(page);
-			}
-		}
+	//			FPDF_ClosePage(page);
+	//		}
+	//	}
 
-		// Calculate the number of rows and columns for the rectangle layout.
-		int num_cols = static_cast<int>(sqrt(page_count));
-		if (page_count > 1)
-			num_cols++;
+	//	// Calculate the number of rows and columns for the rectangle layout.
+	//	int num_cols = static_cast<int>(sqrt(page_count));
+	//	if (page_count > 1)
+	//		num_cols++;
 
-		const int num_rows = (page_count + num_cols - 1) / num_cols;
+	//	const int num_rows = (page_count + num_cols - 1) / num_cols;
 
-		int scale_z = 2;
-		int scale_n = 1;
+	//	int scale_z = 2;
+	//	int scale_n = 1;
 
-		// scale
-		pdf_page_width = scale_z * pdf_page_width / scale_n;
-		pdf_page_height = scale_z * pdf_page_height / scale_n;
+	//	// scale
+	//	pdf_page_width = scale_z * pdf_page_width / scale_n;
+	//	pdf_page_height = scale_z * pdf_page_height / scale_n;
 
-		int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
-		int separator_border_size_pdf = border_size_pdf / 2;
+	//	int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
+	//	int separator_border_size_pdf = border_size_pdf / 2;
 
-		if (page_count > 1 && border_size_pdf == 0)
-		{
-			border_size_pdf = 1;
-			separator_border_size_pdf = 1;
-		}
+	//	if (page_count > 1 && border_size_pdf == 0)
+	//	{
+	//		border_size_pdf = 1;
+	//		separator_border_size_pdf = 1;
+	//	}
 
-		// Calculate the total width and height of the combined image.
-		m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
-		m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
+	//	// Calculate the total width and height of the combined image.
+	//	m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
+	//	m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
 
-		m_bIsValid = true;
+	//	m_bIsValid = true;
 
-		FPDF_CloseDocument(document);
-	}
+	//	FPDF_CloseDocument(document);
+	//}
 
 	//FPDF_DestroyLibrary();
 }
@@ -715,17 +707,17 @@ BYTE* CPdfFormat::convert_rgb(FPDF_BITMAP rgba_bitmap)
 	return pvmem;
 }
 
-BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
+BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int size_y)
 {
-	//FPDF_InitLibrary();
-	//FPDF_LIBRARY_CONFIG config;
-	//config.version = 2;
-	//config.m_pUserFontPaths = nullptr;
-	//config.m_pIsolate = nullptr;
-	//config.m_v8EmbedderSlot = 0;
-	//config.m_pPlatform = nullptr;
+	FPDF_InitLibrary();
+	FPDF_LIBRARY_CONFIG config;
+	config.version = 2;
+	config.m_pUserFontPaths = nullptr;
+	config.m_pIsolate = nullptr;
+	config.m_v8EmbedderSlot = 0;
+	config.m_pPlatform = nullptr;
 
-	//FPDF_InitLibraryWithConfig(&config);
+	FPDF_InitLibraryWithConfig(&config);
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (!document)
@@ -738,20 +730,27 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 	if (pdf_display_mode == pdf_display_mode_enum::first_page_only)
 		rgba_bitmap = get_first_page(document, size_x, size_y);
 	else
-	//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
+		//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
 		rgba_bitmap = get_all_pages(document, size_x, size_y);
-	
-	size_x = m_OriginalPictureWidth;
-	size_y = m_OriginalPictureHeight;
 
 	// Convert bitmap pixels to the RGB-format.
 	BYTE* pvmem = convert_rgb(rgba_bitmap);
 
 	// Clean up.
 	FPDFBitmap_Destroy(rgba_bitmap);
-	//FPDFDOC_ExitFormFillEnvironment(form);
 	FPDF_CloseDocument(document);
-	//FPDF_DestroyLibrary();
+	FPDF_DestroyLibrary();
+
+	return pvmem;
+}
+
+BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
+{
+	BYTE* pvmem = ReadFile(FileName, size_x, size_y);
+
+	len = 0;
+	size_x = m_OriginalPictureWidth;
+	size_y = m_OriginalPictureHeight;
 
 	return pvmem;
 }
@@ -762,39 +761,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	//FPDF_InitLibrary();
-	//FPDF_LIBRARY_CONFIG config;
-	//config.version = 2;
-	//config.m_pUserFontPaths = nullptr;
-	//config.m_pIsolate = nullptr;
-	//config.m_v8EmbedderSlot = 0;
-	//config.m_pPlatform = nullptr;
-
-	//FPDF_InitLibraryWithConfig(&config);
-
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
-	if (!document)
-	{
-		return NULL;
-	}
-
-	FPDF_BITMAP rgba_bitmap = NULL;
-
-	if (pdf_display_mode == pdf_display_mode_enum::first_page_only)
-		rgba_bitmap = get_first_page(document);
-	else
-	//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
-		rgba_bitmap = get_all_pages(document);
-
-	// Convert bitmap pixels to the RGB-format.
-	BYTE* pvmem = convert_rgb(rgba_bitmap);
-
-	// Clean up.
-	FPDFBitmap_Destroy(rgba_bitmap);
-	//FPDFDOC_ExitFormFillEnvironment(form);
-	FPDF_CloseDocument(document);
-	//FPDF_DestroyLibrary();
-
+	BYTE* pvmem = NULL;// ReadFile(FileName, abs_size_x, abs_size_y);
 	m_bIsValid = pvmem != NULL;
 
 	return pvmem;

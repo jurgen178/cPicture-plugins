@@ -47,9 +47,7 @@ public:
 	virtual unsigned int __stdcall get_cap() const;
 
 protected:
-	CString format_property_string;
-
-protected:
+	BYTE* ReadFile(const CString& FileName, int size_x, int size_y);
 	int get_page_count(FPDF_DOCUMENT document);
 	BYTE* convert_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_utf8_file_name(const CString& FileName);
