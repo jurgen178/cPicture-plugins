@@ -121,7 +121,7 @@ protected:
 		m_Orientation(-1),
 		m_jpeg_streamsize(0),
 		m_color_space(0),
-		m_bUseExternalLib(true),
+		m_bExternalLibMem(true),
 		m_bIsValid(false),
 		m_bPanDispMode(false),
 		m_low_quality(false),
@@ -159,7 +159,7 @@ public:
 	int m_jpeg_streamsize;
 	int m_color_space;
 	CString m_ErrorMsg;
-	bool m_bUseExternalLib;
+	bool m_bExternalLibMem;
 
 	bool m_bIsValid;
 	bool m_bPanDispMode;

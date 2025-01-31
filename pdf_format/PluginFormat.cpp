@@ -736,7 +736,7 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int si
 		// Convert bitmap pixels to the RGB-format.
 		pvmem = convert_rgb(rgba_bitmap);
 
-		//// Clean up.
+		// Clean up.
 		FPDFBitmap_Destroy(rgba_bitmap);
 		FPDF_CloseDocument(document);
 	}
@@ -750,6 +750,7 @@ BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int
 {
 	//return NULL;
 	BYTE* pvmem = ReadFile(FileName, size_x, size_y);
+	//pvmem = NULL;
 
 	len = 0;
 	size_x = m_OriginalPictureWidth;
@@ -766,7 +767,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 {
 	//BYTE* pvmem = NULL;
 	BYTE* pvmem = ReadFile(FileName, abs_size_x, abs_size_y);
-
+	//pvmem = NULL;
 	m_bIsValid = pvmem != NULL;
 	
 	return pvmem;
