@@ -13,13 +13,13 @@ protected:
 
 protected:
 	static CString m_property_str;
-	static enum pdf_display_mode_enum pdf_display_mode;
 	static int border_size;
 	static int border_color;
 	static int separator_border_color;
 	static int max_picture_x;
 	static int max_picture_y;
-	static int max_pages;
+	static int page_range_from;
+	static int page_range_to;
 
 public:
 	virtual ~CPdfFormat();

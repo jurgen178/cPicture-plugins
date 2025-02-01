@@ -277,13 +277,13 @@ CPdfFormat::~CPdfFormat()
 //     which can be used for your picture format settings.
 
 CString CPdfFormat::m_property_str;
-enum pdf_display_mode_enum CPdfFormat::pdf_display_mode = pdf_display_mode_enum::first_page_only;
 int CPdfFormat::border_size = 25;
 int CPdfFormat::border_color = 0xFFD800;
 int CPdfFormat::separator_border_color = 0xFFFFFFFF;
 int CPdfFormat::max_picture_x = 8000;
 int CPdfFormat::max_picture_y = 8000;
-int CPdfFormat::max_pages = 0;
+int CPdfFormat::page_range_from = 0;
+int CPdfFormat::page_range_to = -1;
 
 CString format_property_string(L"%d,%d,%d,%d,%d,%06X");
 
@@ -293,10 +293,10 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 	m_property_str = property_str;
 
 	swscanf_s(m_property_str, format_property_string,
-		&pdf_display_mode,
 		&max_picture_x,
 		&max_picture_y,
-		&max_pages,
+		&page_range_from,
+		&page_range_to,
 		&border_size,
 		&border_color
 	);
@@ -315,38 +315,35 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	CPdfPropertiesDlg pdfPropertiesDlg(&Parent);
 
 	swscanf_s(m_property_str, format_property_string,
-		&pdfPropertiesDlg.pdf_display_mode,
 		&pdfPropertiesDlg.max_picture_x,
 		&pdfPropertiesDlg.max_picture_y,
-		&pdfPropertiesDlg.max_pages,
+		&pdfPropertiesDlg.page_range_from,
+		&pdfPropertiesDlg.page_range_to,
 		&pdfPropertiesDlg.border_size,
 		&pdfPropertiesDlg.border_color
 	);
 
-	const pdf_display_mode_enum prev_mode = pdf_display_mode;
 	const COLORREF prev_border_color = border_color;
 	const int prev_border_size = border_size;
 	const int prev_max_x = max_picture_x;
 	const int prev_max_y = max_picture_y;
-	const int prev_max_pages = max_pages;
+	const int prev_page_range_from = page_range_from;
+	const int prev_page_range_to = page_range_to;
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
-		pdf_display_mode = static_cast<enum pdf_display_mode_enum>(pdfPropertiesDlg.pdf_display_mode);
 		max_picture_x = max(1000, pdfPropertiesDlg.max_picture_x);
 		max_picture_y = max(1000, pdfPropertiesDlg.max_picture_y);
-		max_pages = pdfPropertiesDlg.max_pages;
+		page_range_from = pdfPropertiesDlg.page_range_from;
+		page_range_to = pdfPropertiesDlg.page_range_to;
 		border_size = min(250, max(1, pdfPropertiesDlg.border_size));
 		border_color = pdfPropertiesDlg.border_color;
 
-		if(max_pages < 2)
-			max_pages = 0;
-
 		m_property_str.Format(format_property_string,
-			pdf_display_mode,
 			max_picture_x,
 			max_picture_y,
-			max_pages,
+			page_range_from,
+			page_range_to,
 			border_size,
 			border_color
 		);
@@ -355,14 +352,13 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	Parent.Detach();
 
 	// true: reload of the pictures
-	return 
-		prev_mode != pdf_display_mode ||
+	return
 		prev_border_size != border_size ||
 		prev_border_color != border_color ||
 		prev_max_x != max_picture_x ||
 		prev_max_y != max_picture_y ||
-		prev_max_pages != max_pages
-	;
+		page_range_to != page_range_to ||
+		page_range_from != page_range_from;
 }
 
 CString __stdcall CPdfFormat::get_ext()
@@ -390,7 +386,8 @@ struct PluginData __stdcall CPdfFormat::get_plugin_data()
 int CPdfFormat::get_page_count(FPDF_DOCUMENT document)
 {
 	const int page_count = FPDF_GetPageCount(document);
-	return (max_pages > 1 && page_count > max_pages) ? max_pages : page_count;
+	return page_count;
+	//return (page_range > 0 && page_count > page_range) ? page_range : page_count;
 }
 
 CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
@@ -509,7 +506,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	const int num_rows = (page_count + num_cols - 1) / num_cols;
 
 	// Calculate the size of the border around the pages.
-	int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
+	int border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
 	int separator_border_size_pdf = border_size_pdf / 2;
 
 	if (page_count > 1 && border_size_pdf == 0)
@@ -521,7 +518,6 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	// Nominal size of the image.
 	int nominal_width = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
 	int nominal_height = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
-
 
 	int scale_z = 1;
 	int scale_n = 1;
@@ -563,11 +559,14 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	nominal_height = scale_z * nominal_height / scale_n;
 
 	// Calculate the new page size from the nominal size.
+	// Each picture has left and right side (border + separator_border),
+	// with separator_border half the size of the border:
+	// Border = 3 * border_size
 	pdf_page_width = 1000 * nominal_width / (num_cols * (1000 + 3 * border_size));
 	pdf_page_height = 1000 * nominal_height / (num_rows * (1000 + 3 * border_size));
 
 	// Calculate the new size of the border around the pages.
-	border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
+	border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
 	separator_border_size_pdf = border_size_pdf / 2;
 
 	if (page_count > 1 && border_size_pdf == 0)
@@ -684,13 +683,7 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int si
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		FPDF_BITMAP rgba_bitmap = NULL;
-
-		if (pdf_display_mode == pdf_display_mode_enum::first_page_only)
-			rgba_bitmap = get_first_page(document, size_x, size_y);
-		else
-			//if (pdf_display_mode == pdf_display_mode_enum::all_pages)
-			rgba_bitmap = get_all_pages(document, size_x, size_y);
+		FPDF_BITMAP rgba_bitmap = get_all_pages(document, size_x, size_y);
 
 		// Convert bitmap pixels to the RGB-format.
 		pvmem = convert_to_rgb(rgba_bitmap);
@@ -743,7 +736,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		const int page_count = pdf_display_mode == pdf_display_mode_enum::first_page_only ? 1 : get_page_count(document);
+		const int page_count = get_page_count(document);
 
 		// Calculate the maximum width and height of the pages.
 		for (int i = 0; i < page_count; ++i)

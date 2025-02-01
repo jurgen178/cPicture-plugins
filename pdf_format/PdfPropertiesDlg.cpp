@@ -5,6 +5,8 @@
 #include "afxdlgs.h"
 #include "resource.h"
 #include "PdfPropertiesDlg.h"
+#include <string>
+#include <regex>
 
 
 // CPdfPropertiesDlg dialog
@@ -12,10 +14,11 @@
 IMPLEMENT_DYNAMIC(CPdfPropertiesDlg, CDialog)
 CPdfPropertiesDlg::CPdfPropertiesDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPdfPropertiesDlg::IDD, pParent),
-	pdf_display_mode(pdf_display_mode_enum::first_page_only),
 	max_picture_x(8000),
 	max_picture_y(8000),
-	max_pages(0),
+	page_range(L"0-"),
+	page_range_from(0),
+	page_range_to(-1),
 	border_size(25),
 	border_color(RGB(255, 216, 0))
 {
@@ -28,18 +31,15 @@ CPdfPropertiesDlg::~CPdfPropertiesDlg()
 void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Radio(pDX, IDC_RADIO_FIRST_PAGE_ONLY, pdf_display_mode);
 	DDX_Control(pDX, IDC_STATIC_COLOR, m_colorStatic);
 	DDX_Text(pDX, IDC_EDIT_PDF_MAX_X, max_picture_x);
 	DDX_Text(pDX, IDC_EDIT_PDF_MAX_Y, max_picture_y);
-	DDX_Text(pDX, IDC_EDIT_MAX_PAGES, max_pages);
+	DDX_Text(pDX, IDC_EDIT_PAGE_RANGE, page_range);
 	DDX_Text(pDX, IDC_EDIT_BORDER_SIZE, border_size);
 }
 
 
 BEGIN_MESSAGE_MAP(CPdfPropertiesDlg, CDialog)
-	ON_BN_CLICKED(IDC_RADIO_FIRST_PAGE_ONLY, &CPdfPropertiesDlg::OnClickedRadioFirstPageOnly)
-	ON_BN_CLICKED(IDC_RADIO_ALL_PAGES, &CPdfPropertiesDlg::OnClickedRadioAllPages)
 	ON_BN_CLICKED(IDC_BUTTON_BORDER_COLOR, &CPdfPropertiesDlg::OnClickedButtonBorderColor)
 	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_PDF, &CPdfPropertiesDlg::OnClickSyslinkPdf)
 END_MESSAGE_MAP()
@@ -47,45 +47,82 @@ END_MESSAGE_MAP()
 
 // CPdfPropertiesDlg message handlers
 
-void CPdfPropertiesDlg::OnOK()
-{
-	UpdateData(true); // read the data
-
-	CDialog::OnOK();
-}
-
 BOOL CPdfPropertiesDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	UpdateData(false); // write the data
+	EnableToolTips(TRUE);
+	m_ToolTip.Create(this);
+	m_ToolTip.SetMaxTipWidth(320);
 
-	update();
+	CString tooltip;
+	tooltip.LoadString(IDS_EDIT_PAGE_RANGE_TOOLTIP);
+	m_ToolTip.AddTool(GetDlgItem(IDC_EDIT_PAGE_RANGE), tooltip);
+
+	page_range.Format(L"%d", page_range_from + 1);
+
+	if (page_range_to >= page_range_from)
+	{
+		CString range;
+		range.Format(L"-%d", page_range_to + 1);
+		page_range += range;
+	}
+	else
+	if (page_range_to == -1)
+	{
+		page_range += L"-";
+	}
+
 	m_colorStatic.SetColor(border_color);
+
+	UpdateData(false); // write the data
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CPdfPropertiesDlg::update()
+BOOL CPdfPropertiesDlg::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_MOUSEMOVE && ::IsWindow(m_ToolTip.m_hWnd))
+		m_ToolTip.RelayEvent(pMsg);
+
+	return __super::PreTranslateMessage(pMsg);
+}
+
+void CPdfPropertiesDlg::OnOK()
 {
 	UpdateData(true); // read the data
 
-	const BOOL bAllPages = pdf_display_mode == pdf_display_mode_enum::all_pages;
+	std::wstring input(page_range);
+	std::wsmatch match;
 
-	GetDlgItem(IDC_EDIT_MAX_PAGES)->EnableWindow(bAllPages);
-	GetDlgItem(IDC_BUTTON_BORDER_COLOR)->EnableWindow(bAllPages);
-	GetDlgItem(IDC_STATIC_MAX_PAGES_TEXT)->EnableWindow(bAllPages);
-}	
+	static std::wregex& rangeRegex = std::wregex(L"(\\d+)?(-)?(\\d+)?");
+	if (std::regex_search(input, match, rangeRegex) && match.size() == 4)
+	{
+		std::wstring m1 = match[1];
+		page_range_from = max(0, _wtoi(m1.c_str()) - 1);
 
-void CPdfPropertiesDlg::OnClickedRadioFirstPageOnly()
-{
-	update();
-}
+		std::wstring m3 = match[3];
+		page_range_to = max(0, _wtoi(m3.c_str()) - 1);
 
-void CPdfPropertiesDlg::OnClickedRadioAllPages()
-{
-	update();
+		// 0-
+		std::wstring m2 = match[2];
+		if (page_range_to == 0 && page_range_from == 0
+			||
+			page_range_to != 0 && page_range_to < page_range_from
+			||
+			page_range_to == 0 && m2 == L"-")
+		{
+			page_range_to = -1;
+		}
+	}
+	else
+	{
+		page_range_from = 0;
+		page_range_to = -1;
+	}
+
+	CDialog::OnOK();
 }
 
 void CPdfPropertiesDlg::OnClickedButtonBorderColor()

@@ -1,12 +1,6 @@
 #pragma once
 #include "ColorStatic.h"
-
-
-enum pdf_display_mode_enum
-{
-	first_page_only = 0,
-	all_pages = 1
-};
+#include "afxcmn.h"
 
 
 // CPdfPropertiesDlg dialog
@@ -20,26 +14,28 @@ public:
 	virtual ~CPdfPropertiesDlg();
 
 public:
-	int pdf_display_mode;
 	int max_picture_x;
 	int max_picture_y;
-	int max_pages;
 	int border_size;
+	int page_range_from;
+	int page_range_to;
 	COLORREF border_color;
 	CColorStatic m_colorStatic;
 
 protected:
+	CString page_range;
+	CToolTipCtrl m_ToolTip;
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_PDF_PROPERTIES };
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	void update();
 
 	DECLARE_MESSAGE_MAP()
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnClickedRadioFirstPageOnly();
 	afx_msg void OnClickedRadioAllPages();
 	afx_msg void OnClickedButtonBorderColor();
