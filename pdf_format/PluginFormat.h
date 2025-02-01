@@ -2,8 +2,6 @@
 #include "pictureformat.h"
 #include "include/fpdfview.h"
 //#include "include/fpdf_thumbnail.h"
-#include <mutex>
-using namespace std;
 
 
 class CPdfFormat : public CPictureFormat
@@ -50,11 +48,11 @@ public:
 
 protected:
 	BYTE* ReadFile(const CString& FileName, int size_x, int size_y);
-	int get_page_count(FPDF_DOCUMENT document);
+	void get_page_range(FPDF_DOCUMENT document, int& start, int& end);
 	BYTE* convert_to_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_utf8_file_name(const CString& FileName);
-	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
-		const int abs_size_x = 0, const int abs_size_y = 0);
-	FPDF_BITMAP get_all_pages(FPDF_DOCUMENT document,
+	//FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
+	//	const int abs_size_x = 0, const int abs_size_y = 0);
+	FPDF_BITMAP get_pages(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0);
 };

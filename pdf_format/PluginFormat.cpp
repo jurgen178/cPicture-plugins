@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 
 #include <vector>
+#include <mutex>
+using namespace std;
 
 enum filetime_type
 {
@@ -357,8 +359,8 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		prev_border_color != border_color ||
 		prev_max_x != max_picture_x ||
 		prev_max_y != max_picture_y ||
-		page_range_to != page_range_to ||
-		page_range_from != page_range_from;
+		prev_page_range_from != page_range_from ||
+		prev_page_range_to != page_range_to;
 }
 
 CString __stdcall CPdfFormat::get_ext()
@@ -383,11 +385,19 @@ struct PluginData __stdcall CPdfFormat::get_plugin_data()
 	return pluginData;
 }
 
-int CPdfFormat::get_page_count(FPDF_DOCUMENT document)
+void CPdfFormat::get_page_range(FPDF_DOCUMENT document, int& start, int& end)
 {
 	const int page_count = FPDF_GetPageCount(document);
-	return page_count;
-	//return (page_range > 0 && page_count > page_range) ? page_range : page_count;
+	
+	start = page_range_from < page_count ? page_range_from : 0;
+	
+	if(page_range_to == 0)
+		end = start;
+	else
+	if (page_range_to == -1)
+		end = page_count - 1;
+	else
+		end = page_range_to;
 }
 
 CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
@@ -418,55 +428,64 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 	return L"";
 }
 
-FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
+//FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
+//	const int abs_size_x, const int abs_size_y)
+//{
+//	FPDF_BITMAP rgba_bitmap = nullptr;
+//
+//	FPDF_PAGE page = FPDF_LoadPage(document, 0);
+//	if (page)
+//	{
+//		// Scale the PDF to the requested screen size.
+//		const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
+//		const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
+//
+//		int scale_z = 2;
+//		int scale_n = 1;
+//
+//		if (abs_size_x && abs_size_y)
+//		{
+//			if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
+//			{
+//				scale_z = abs_size_x;
+//				scale_n = pdf_page_width;
+//			}
+//			else
+//			{
+//				scale_z = abs_size_y;
+//				scale_n = pdf_page_height;
+//			}
+//		}
+//
+//		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
+//		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
+//
+//		// Setup the bitmap.
+//		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
+//		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
+//
+//		// Render the PDF to the bitmap.
+//		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+//
+//		FPDF_ClosePage(page);
+//	}
+//
+//	return rgba_bitmap;
+//}
+
+FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 	const int abs_size_x, const int abs_size_y)
 {
-	FPDF_BITMAP rgba_bitmap = nullptr;
+	int start_page = 0;
+	int end_page = 0;
+	get_page_range(document, start_page, end_page);
+	const int page_count = end_page - start_page + 1;
 
-	FPDF_PAGE page = FPDF_LoadPage(document, 0);
-	if (page)
+	if (page_count == 0)
 	{
-		// Scale the PDF to the requested screen size.
-		const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
-		const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
-
-		int scale_z = 2;
-		int scale_n = 1;
-
-		if (abs_size_x && abs_size_y)
-		{
-			if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
-			{
-				scale_z = abs_size_x;
-				scale_n = pdf_page_width;
-			}
-			else
-			{
-				scale_z = abs_size_y;
-				scale_n = pdf_page_height;
-			}
-		}
-
-		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
-		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
-
-		// Setup the bitmap.
-		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
-
-		// Render the PDF to the bitmap.
-		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
-
-		FPDF_ClosePage(page);
+		return nullptr;
 	}
 
-	return rgba_bitmap;
-}
-
-FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
-	const int abs_size_x, const int abs_size_y)
-{
-	const int page_count = get_page_count(document);
 	int pdf_page_width = 0;
 	int pdf_page_height = 0;
 
@@ -476,7 +495,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	const int border_color_bgr = (red << 16) + (green << 8) + (blue);
 
 	// Calculate the maximum width and height of the pages.
-	for (int i = 0; i < page_count; ++i)
+	for (int i = start_page; i <= end_page; ++i)
 	{
 		FPDF_PAGE page = FPDF_LoadPage(document, i);
 		if (page)
@@ -584,7 +603,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	FPDFBitmap_FillRect(combined_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
 
 	// Render each page directly into the combined bitmap.
-	for (int i = 0; i < page_count; ++i)
+	for (int i = start_page; i <= end_page; ++i)
 	{
 		FPDF_PAGE page = FPDF_LoadPage(document, i);
 		if (page)
@@ -598,8 +617,8 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 			const int height = pdf_page_height;
 
 			// Calculate the position to paste the bordered image in the combined image.
-			const int row = i / num_cols;
-			const int col = i % num_cols;
+			const int row = (i - start_page) / num_cols;
+			const int col = (i - start_page) % num_cols;
 
 			const int x_offset = col * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf)) + border_size_pdf + separator_border_size_pdf;
 			const int y_offset = row * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf)) + border_size_pdf + separator_border_size_pdf;
@@ -683,7 +702,7 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int si
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		FPDF_BITMAP rgba_bitmap = get_all_pages(document, size_x, size_y);
+		FPDF_BITMAP rgba_bitmap = get_pages(document, size_x, size_y);
 
 		// Convert bitmap pixels to the RGB-format.
 		pvmem = convert_to_rgb(rgba_bitmap);
@@ -736,10 +755,19 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		const int page_count = get_page_count(document);
+		int start_page = 0;
+		int page_end = 0;
+		get_page_range(document, start_page, page_end);
+		const int page_count = page_end - start_page + 1;
+
+		if (page_count == 0)
+		{
+			FPDF_CloseDocument(document);
+			return;
+		}
 
 		// Calculate the maximum width and height of the pages.
-		for (int i = 0; i < page_count; ++i)
+		for (int i = start_page; i <= page_end; ++i)
 		{
 			FPDF_PAGE page = FPDF_LoadPage(document, i);
 			if (page)

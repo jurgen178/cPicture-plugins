@@ -61,7 +61,7 @@ BOOL CPdfPropertiesDlg::OnInitDialog()
 
 	page_range.Format(L"%d", page_range_from + 1);
 
-	if (page_range_to >= page_range_from)
+	if (page_range_to > page_range_from)
 	{
 		CString range;
 		range.Format(L"-%d", page_range_to + 1);
@@ -96,20 +96,21 @@ void CPdfPropertiesDlg::OnOK()
 	std::wstring input(page_range);
 	std::wsmatch match;
 
-	static std::wregex& rangeRegex = std::wregex(L"(\\d+)?(-)?(\\d+)?");
+	static std::wregex& rangeRegex = std::wregex(L"\\s*(\\d+)?\\s*(-)?\\s*(\\d+)?");
 	if (std::regex_search(input, match, rangeRegex) && match.size() == 4)
 	{
 		std::wstring m1 = match[1];
 		page_range_from = max(0, _wtoi(m1.c_str()) - 1);
 
+		std::wstring m2 = match[2];
+
 		std::wstring m3 = match[3];
-		page_range_to = max(0, _wtoi(m3.c_str()) - 1);
+		page_range_to = m2.empty() ? 0 : _wtoi(m3.c_str()) - 1;
 
 		// 0-
-		std::wstring m2 = match[2];
-		if (page_range_to == 0 && page_range_from == 0
+		if (page_range_to == 0 && page_range_from == 0 && m2 == L"-"
 			||
-			page_range_to != 0 && page_range_to < page_range_from
+			page_range_to != 0 && page_range_to < page_range_from && m2 == L"-"
 			||
 			page_range_to == 0 && m2 == L"-")
 		{
