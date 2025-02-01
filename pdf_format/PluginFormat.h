@@ -2,6 +2,8 @@
 #include "pictureformat.h"
 #include "include/fpdfview.h"
 //#include "include/fpdf_thumbnail.h"
+#include <mutex>
+using namespace std;
 
 
 class CPdfFormat : public CPictureFormat

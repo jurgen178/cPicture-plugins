@@ -5,7 +5,6 @@
 #include <sys/stat.h>
 
 #include <vector>
-using namespace std;
 
 enum filetime_type
 {
@@ -241,6 +240,9 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 //	else
 //		return NULL;
 //}
+
+
+static std::mutex pdf_lib_mutex;
 
 
 CPdfFormat::CPdfFormat()
@@ -494,37 +496,37 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 	FPDF_PAGE page = FPDF_LoadPage(document, 0);
 	if (page)
 	{
-		//// Scale the PDF to the requested screen size.
-		//const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
-		//const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
+		// Scale the PDF to the requested screen size.
+		const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
+		const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
 
-		//int scale_z = 2;
-		//int scale_n = 1;
+		int scale_z = 2;
+		int scale_n = 1;
 
-		//if (abs_size_x && abs_size_y)
-		//{
-		//	if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
-		//	{
-		//		scale_z = abs_size_x;
-		//		scale_n = pdf_page_width;
-		//	}
-		//	else
-		//	{
-		//		scale_z = abs_size_y;
-		//		scale_n = pdf_page_height;
-		//	}
-		//}
+		if (abs_size_x && abs_size_y)
+		{
+			if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
+			{
+				scale_z = abs_size_x;
+				scale_n = pdf_page_width;
+			}
+			else
+			{
+				scale_z = abs_size_y;
+				scale_n = pdf_page_height;
+			}
+		}
 
-		//m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
-		//m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
+		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
+		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
 
-		//// Setup the bitmap.
-		//rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-		//FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
+		// Setup the bitmap.
+		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
+		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
 
-		//// Render the PDF to the bitmap.
-		//FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
-		////FPDF_FFLDraw(form, rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+		// Render the PDF to the bitmap.
+		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+		//FPDF_FFLDraw(form, rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
 
 		FPDF_ClosePage(page);
 	}
@@ -595,8 +597,6 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		}
 	}
 
-	return NULL;
-
 	// Scale to the requested abs_size_x and abs_size_y for faster processing.
 	pdf_page_width = scale_z * pdf_page_width / scale_n / m;
 	pdf_page_height = scale_z * pdf_page_height / scale_n / m;
@@ -618,61 +618,56 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
 	FPDFBitmap_FillRect(combined_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
 
-	//// Render each page directly into the combined bitmap.
-	//for (int i = 0; i < page_count; ++i)
-	//{
-	//	//FPDF_PAGE page = FPDF_LoadPage(document, i);
-	//	//FPDF_ClosePage(page);
-	//	FPDF_PAGE page;
-	//	continue;
-	//	if (!page)
-	//	{
-	//		continue;
-	//	}
+	// Render each page directly into the combined bitmap.
+	for (int i = 0; i < page_count; ++i)
+	{
+		FPDF_PAGE page = FPDF_LoadPage(document, i);
+		if (page)
+		{
+			//// Experimental API.
+			//// Returns the thumbnail of |page| as a FPDF_BITMAP. Returns a nullptr
+			//// if unable to access the thumbnail's stream.
+			//FPDF_BITMAP bmp = FPDFPage_GetThumbnailAsBitmap(page);
 
-	//	//// Experimental API.
-	//	//// Returns the thumbnail of |page| as a FPDF_BITMAP. Returns a nullptr
-	//	//// if unable to access the thumbnail's stream.
-	//	//FPDF_BITMAP bmp = FPDFPage_GetThumbnailAsBitmap(page);
+			const int width = pdf_page_width;
+			const int height = pdf_page_height;
 
-	//	const int width = pdf_page_width;
-	//	const int height = pdf_page_height;
+			// Calculate the position to paste the bordered image in the combined image.
+			const int row = i / num_cols;
+			const int col = i % num_cols;
 
-	//	// Calculate the position to paste the bordered image in the combined image.
-	//	const int row = i / num_cols;
-	//	const int col = i % num_cols;
+			const int x_offset = col * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf)) + border_size_pdf + separator_border_size_pdf;
+			const int y_offset = row * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf)) + border_size_pdf + separator_border_size_pdf;
 
-	//	const int x_offset = col * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf)) + border_size_pdf + separator_border_size_pdf;
-	//	const int y_offset = row * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf)) + border_size_pdf + separator_border_size_pdf;
+			// Render the page into the combined bitmap.
+			FPDF_BITMAP page_bitmap = FPDFBitmap_Create(width, height, 0);
+			FPDFBitmap_FillRect(page_bitmap, 0, 0, width, height, 0xFFFFFF);
+			FPDF_RenderPageBitmap(page_bitmap, page, 0, 0, width, height, 0, 0);
 
-	//	// Render the page into the combined bitmap.
-	//	FPDF_BITMAP page_bitmap = FPDFBitmap_Create(width, height, 0);
-	//	FPDFBitmap_FillRect(page_bitmap, 0, 0, width, height, 0xFFFFFF);
-	//	FPDF_RenderPageBitmap(page_bitmap, page, 0, 0, width, height, 0, 0);
+			BYTE* src_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
+			BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * y_offset * m_OriginalPictureWidth + 4 * x_offset;
 
-	//	BYTE* src_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
-	//	BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * y_offset * m_OriginalPictureWidth + 4 * x_offset;
+			for (int y = 0; y < height; ++y)
+			{
+				memcpy(dest_buffer + y * m_OriginalPictureWidth * 4, src_buffer + 4 * y * width, 4 * width);
+			}
 
-	//	for (int y = 0; y < height; ++y)
-	//	{
-	//		memcpy(dest_buffer + y * m_OriginalPictureWidth * 4, src_buffer + 4 * y * width, 4 * width);
-	//	}
+			// Draw the border around the page.
+			FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf, y_offset - border_size_pdf, width + 2 * border_size_pdf, border_size_pdf, border_color_bgr); // Top border
+			FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf, y_offset + height, width + 2 * border_size_pdf, border_size_pdf, border_color_bgr); // Bottom border
+			FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf, y_offset, border_size_pdf, height, border_color_bgr); // Left border
+			FPDFBitmap_FillRect(combined_bitmap, x_offset + width, y_offset, border_size_pdf, height, border_color_bgr); // Right border
 
-	//	// Draw the border around the page.
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf, y_offset - border_size_pdf, width + 2 * border_size_pdf, border_size_pdf, border_color_bgr); // Top border
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf, y_offset + height, width + 2 * border_size_pdf, border_size_pdf, border_color_bgr); // Bottom border
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf, y_offset, border_size_pdf, height, border_color_bgr); // Left border
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset + width, y_offset, border_size_pdf, height, border_color_bgr); // Right border
+			// Draw the separator border around the border.
+			FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf - separator_border_size_pdf, y_offset - border_size_pdf - separator_border_size_pdf, width + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_size_pdf, separator_border_color); // Top separator border
+			FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf - separator_border_size_pdf, y_offset + height + border_size_pdf, width + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_size_pdf, separator_border_color); // Bottom separator border
+			FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf - separator_border_size_pdf, y_offset - separator_border_size_pdf, separator_border_size_pdf, height + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_color); // Left separator border
+			FPDFBitmap_FillRect(combined_bitmap, x_offset + width + border_size_pdf, y_offset - separator_border_size_pdf, separator_border_size_pdf, height + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_color); // Right separator border
 
-	//	// Draw the separator border around the border.
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf - separator_border_size_pdf, y_offset - border_size_pdf - separator_border_size_pdf, width + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_size_pdf, separator_border_color); // Top separator border
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf - separator_border_size_pdf, y_offset + height + border_size_pdf, width + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_size_pdf, separator_border_color); // Bottom separator border
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset - border_size_pdf - separator_border_size_pdf, y_offset - separator_border_size_pdf, separator_border_size_pdf, height + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_color); // Left separator border
-	//	FPDFBitmap_FillRect(combined_bitmap, x_offset + width + border_size_pdf, y_offset - separator_border_size_pdf, separator_border_size_pdf, height + 2 * border_size_pdf + 2 * separator_border_size_pdf, separator_border_color); // Right separator border
-
-	//	FPDFBitmap_Destroy(page_bitmap);
-	//	FPDF_ClosePage(page);
-	//}
+			FPDFBitmap_Destroy(page_bitmap);
+			FPDF_ClosePage(page);
+		}
+	}
 
 	return combined_bitmap;
 }
@@ -746,9 +741,9 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int si
 
 BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
 {
-	//return NULL;
+	std::unique_lock<std::mutex> lock(pdf_lib_mutex);
+
 	BYTE* pvmem = ReadFile(FileName, size_x, size_y);
-	//pvmem = NULL;
 
 	len = 0;
 	size_x = m_OriginalPictureWidth;
@@ -763,9 +758,9 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	//BYTE* pvmem = NULL;
+	std::unique_lock<std::mutex> lock(pdf_lib_mutex);
+
 	BYTE* pvmem = ReadFile(FileName, abs_size_x, abs_size_y);
-	pvmem = NULL;
 	m_bIsValid = pvmem != NULL;
 	
 	return pvmem;
