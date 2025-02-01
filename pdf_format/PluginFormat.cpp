@@ -765,7 +765,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 {
 	//BYTE* pvmem = NULL;
 	BYTE* pvmem = ReadFile(FileName, abs_size_x, abs_size_y);
-	//pvmem = NULL;
+	pvmem = NULL;
 	m_bIsValid = pvmem != NULL;
 	
 	return pvmem;
