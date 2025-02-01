@@ -42,6 +42,8 @@ void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CPdfPropertiesDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BORDER_COLOR, &CPdfPropertiesDlg::OnClickedButtonBorderColor)
 	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_PDF, &CPdfPropertiesDlg::OnClickSyslinkPdf)
+	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_X, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxX)
+	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_Y, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxY)
 	ON_EN_KILLFOCUS(IDC_EDIT_BORDER_SIZE, &CPdfPropertiesDlg::OnEnKillfocusEditControlBorderSize)
 END_MESSAGE_MAP()
 
@@ -145,6 +147,28 @@ void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
 	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
 
 	*pResult = 0;
+}
+
+void CPdfPropertiesDlg::OnEnKillfocusEditControlMaxX()
+{
+	CString strValue;
+	GetDlgItem(IDC_EDIT_PDF_MAX_X)->GetWindowText(strValue);
+
+	if (strValue.IsEmpty())
+	{
+		GetDlgItem(IDC_EDIT_PDF_MAX_X)->SetWindowText(_T("8000")); // Set default value
+	}
+}
+
+void CPdfPropertiesDlg::OnEnKillfocusEditControlMaxY()
+{
+	CString strValue;
+	GetDlgItem(IDC_EDIT_PDF_MAX_Y)->GetWindowText(strValue);
+
+	if (strValue.IsEmpty())
+	{
+		GetDlgItem(IDC_EDIT_PDF_MAX_Y)->SetWindowText(_T("8000")); // Set default value
+	}
 }
 
 void CPdfPropertiesDlg::OnEnKillfocusEditControlBorderSize()

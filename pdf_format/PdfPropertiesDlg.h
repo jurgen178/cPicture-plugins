@@ -38,5 +38,7 @@ protected:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnClickedButtonBorderColor();
 	afx_msg void OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnEnKillfocusEditControlMaxX();
+	afx_msg void OnEnKillfocusEditControlMaxY();
 	afx_msg void OnEnKillfocusEditControlBorderSize();
 };
