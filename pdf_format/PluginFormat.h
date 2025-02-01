@@ -49,7 +49,7 @@ public:
 protected:
 	BYTE* ReadFile(const CString& FileName, int size_x, int size_y);
 	int get_page_count(FPDF_DOCUMENT document);
-	BYTE* convert_rgb(FPDF_BITMAP rgba_bitmap);
+	BYTE* convert_to_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_utf8_file_name(const CString& FileName);
 	FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0);

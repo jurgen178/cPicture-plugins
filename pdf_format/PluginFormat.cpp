@@ -494,37 +494,37 @@ FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
 	FPDF_PAGE page = FPDF_LoadPage(document, 0);
 	if (page)
 	{
-		// Scale the PDF to the requested screen size.
-		const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
-		const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
+		//// Scale the PDF to the requested screen size.
+		//const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
+		//const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
 
-		int scale_z = 2;
-		int scale_n = 1;
+		//int scale_z = 2;
+		//int scale_n = 1;
 
-		if (abs_size_x && abs_size_y)
-		{
-			if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
-			{
-				scale_z = abs_size_x;
-				scale_n = pdf_page_width;
-			}
-			else
-			{
-				scale_z = abs_size_y;
-				scale_n = pdf_page_height;
-			}
-		}
+		//if (abs_size_x && abs_size_y)
+		//{
+		//	if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
+		//	{
+		//		scale_z = abs_size_x;
+		//		scale_n = pdf_page_width;
+		//	}
+		//	else
+		//	{
+		//		scale_z = abs_size_y;
+		//		scale_n = pdf_page_height;
+		//	}
+		//}
 
-		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
-		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
+		//m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
+		//m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
 
-		// Setup the bitmap.
-		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
+		//// Setup the bitmap.
+		//rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
+		//FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFF);
 
-		// Render the PDF to the bitmap.
-		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
-		//FPDF_FFLDraw(form, rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+		//// Render the PDF to the bitmap.
+		//FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
+		////FPDF_FFLDraw(form, rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
 
 		FPDF_ClosePage(page);
 	}
@@ -548,25 +548,23 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	for (int i = 0; i < page_count; ++i)
 	{
 		FPDF_PAGE page = FPDF_LoadPage(document, i);
-		if (!page)
+		if (page)
 		{
-			continue;
+			const int width = static_cast<int>(FPDF_GetPageWidth(page));
+			const int height = static_cast<int>(FPDF_GetPageHeight(page));
+
+			if (width > pdf_page_width)
+			{
+				pdf_page_width = width;
+			}
+
+			if (height > pdf_page_height)
+			{
+				pdf_page_height = height;
+			}
+
+			FPDF_ClosePage(page);
 		}
-
-		const int width = static_cast<int>(FPDF_GetPageWidth(page));
-		const int height = static_cast<int>(FPDF_GetPageHeight(page));
-
-		if (width > pdf_page_width)
-		{
-			pdf_page_width = width;
-		}
-
-		if (height > pdf_page_height)
-		{
-			pdf_page_height = height;
-		}
-
-		FPDF_ClosePage(page);
 	}
 
 	// Calculate the number of rows and columns for the rectangle layout.
@@ -597,9 +595,9 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 		}
 	}
 
+	return NULL;
+
 	// Scale to the requested abs_size_x and abs_size_y for faster processing.
-	// Exact scaling that includes the border can't be calculated directly due to the border size check (border size == 0).
-	// This scaling is an approximation, but cPicture will adjust the image to the precise size regardless.
 	pdf_page_width = scale_z * pdf_page_width / scale_n / m;
 	pdf_page_height = scale_z * pdf_page_height / scale_n / m;
 
@@ -679,7 +677,7 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 	return combined_bitmap;
 }
 
-BYTE* CPdfFormat::convert_rgb(FPDF_BITMAP rgba_bitmap)
+BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 {
 	BYTE* pvmem = NULL;
 
@@ -734,13 +732,13 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int si
 			rgba_bitmap = get_all_pages(document, size_x, size_y);
 
 		// Convert bitmap pixels to the RGB-format.
-		pvmem = convert_rgb(rgba_bitmap);
+		pvmem = convert_to_rgb(rgba_bitmap);
 
 		// Clean up.
 		FPDFBitmap_Destroy(rgba_bitmap);
 		FPDF_CloseDocument(document);
 	}
-	
+
 	FPDF_DestroyLibrary();
 
 	return pvmem;
