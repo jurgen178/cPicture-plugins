@@ -107,7 +107,7 @@ void CPdfPropertiesDlg::OnOK()
 		std::wstring m3 = match[3];
 		page_range_to = m2.empty() ? 0 : _wtoi(m3.c_str()) - 1;
 
-		// 0-
+		// validate the range
 		if (page_range_to == 0 && page_range_from == 0 && m2 == L"-"
 			||
 			page_range_to != 0 && page_range_to < page_range_from && m2 == L"-"

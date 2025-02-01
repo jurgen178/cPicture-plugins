@@ -389,7 +389,7 @@ void CPdfFormat::get_page_range(FPDF_DOCUMENT document, int& start, int& end)
 {
 	const int page_count = FPDF_GetPageCount(document);
 	
-	start = page_range_from < page_count ? page_range_from : 0;
+	start = page_range_from < page_count ? page_range_from : page_count - 1;
 	
 	if(page_range_to == 0)
 		end = start;
