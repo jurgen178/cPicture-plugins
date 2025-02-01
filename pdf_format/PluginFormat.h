@@ -17,8 +17,8 @@ protected:
 	static int border_size;
 	static int border_color;
 	static int separator_border_color;
-	static int max_x;
-	static int max_y;
+	static int max_picture_x;
+	static int max_picture_y;
 	static int max_pages;
 
 public:

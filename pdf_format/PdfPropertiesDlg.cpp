@@ -13,8 +13,8 @@ IMPLEMENT_DYNAMIC(CPdfPropertiesDlg, CDialog)
 CPdfPropertiesDlg::CPdfPropertiesDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPdfPropertiesDlg::IDD, pParent),
 	pdf_display_mode(pdf_display_mode_enum::first_page_only),
-	max_x(8000),
-	max_y(8000),
+	max_picture_x(8000),
+	max_picture_y(8000),
 	max_pages(0),
 	border_size(25),
 	border_color(RGB(255, 216, 0))
@@ -30,8 +30,8 @@ void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Radio(pDX, IDC_RADIO_FIRST_PAGE_ONLY, pdf_display_mode);
 	DDX_Control(pDX, IDC_STATIC_COLOR, m_colorStatic);
-	DDX_Text(pDX, IDC_EDIT_PDF_MAX_X, max_x);
-	DDX_Text(pDX, IDC_EDIT_PDF_MAX_Y, max_y);
+	DDX_Text(pDX, IDC_EDIT_PDF_MAX_X, max_picture_x);
+	DDX_Text(pDX, IDC_EDIT_PDF_MAX_Y, max_picture_y);
 	DDX_Text(pDX, IDC_EDIT_MAX_PAGES, max_pages);
 	DDX_Text(pDX, IDC_EDIT_BORDER_SIZE, border_size);
 }

@@ -281,8 +281,8 @@ enum pdf_display_mode_enum CPdfFormat::pdf_display_mode = pdf_display_mode_enum:
 int CPdfFormat::border_size = 25;
 int CPdfFormat::border_color = 0xFFD800;
 int CPdfFormat::separator_border_color = 0xFFFFFFFF;
-int CPdfFormat::max_x = 8000;
-int CPdfFormat::max_y = 8000;
+int CPdfFormat::max_picture_x = 8000;
+int CPdfFormat::max_picture_y = 8000;
 int CPdfFormat::max_pages = 0;
 
 CString format_property_string(L"%d,%d,%d,%d,%d,%06X");
@@ -294,8 +294,8 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 
 	swscanf_s(m_property_str, format_property_string,
 		&pdf_display_mode,
-		&max_x,
-		&max_y,
+		&max_picture_x,
+		&max_picture_y,
 		&max_pages,
 		&border_size,
 		&border_color
@@ -316,8 +316,8 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	swscanf_s(m_property_str, format_property_string,
 		&pdfPropertiesDlg.pdf_display_mode,
-		&pdfPropertiesDlg.max_x,
-		&pdfPropertiesDlg.max_y,
+		&pdfPropertiesDlg.max_picture_x,
+		&pdfPropertiesDlg.max_picture_y,
 		&pdfPropertiesDlg.max_pages,
 		&pdfPropertiesDlg.border_size,
 		&pdfPropertiesDlg.border_color
@@ -326,15 +326,15 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	const pdf_display_mode_enum prev_mode = pdf_display_mode;
 	const COLORREF prev_border_color = border_color;
 	const int prev_border_size = border_size;
-	const int prev_max_x = max_x;
-	const int prev_max_y = max_y;
+	const int prev_max_x = max_picture_x;
+	const int prev_max_y = max_picture_y;
 	const int prev_max_pages = max_pages;
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
 		pdf_display_mode = static_cast<enum pdf_display_mode_enum>(pdfPropertiesDlg.pdf_display_mode);
-		max_x = max(1000, pdfPropertiesDlg.max_x);
-		max_y = max(1000, pdfPropertiesDlg.max_y);
+		max_picture_x = max(1000, pdfPropertiesDlg.max_picture_x);
+		max_picture_y = max(1000, pdfPropertiesDlg.max_picture_y);
 		max_pages = pdfPropertiesDlg.max_pages;
 		border_size = min(250, max(1, pdfPropertiesDlg.border_size));
 		border_color = pdfPropertiesDlg.border_color;
@@ -344,8 +344,8 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 		m_property_str.Format(format_property_string,
 			pdf_display_mode,
-			max_x,
-			max_y,
+			max_picture_x,
+			max_picture_y,
 			max_pages,
 			border_size,
 			border_color
@@ -359,8 +359,8 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		prev_mode != pdf_display_mode ||
 		prev_border_size != border_size ||
 		prev_border_color != border_color ||
-		prev_max_x != max_x ||
-		prev_max_y != max_y ||
+		prev_max_x != max_picture_x ||
+		prev_max_y != max_picture_y ||
 		prev_max_pages != max_pages
 	;
 }
@@ -508,33 +508,67 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 
 	const int num_rows = (page_count + num_cols - 1) / num_cols;
 
-	// Scale grid pictures to have the total size match the requested size.
-	const int m = min(num_cols, num_rows);
+	// Calculate the size of the border around the pages.
+	int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
+	int separator_border_size_pdf = border_size_pdf / 2;
 
-	// autosize: abs_size_x == 0 && abs_size_y == 0
-	int scale_z = 2;
+	if (page_count > 1 && border_size_pdf == 0)
+	{
+		border_size_pdf = 1;
+		separator_border_size_pdf = 1;
+	}
+
+	// Nominal size of the image.
+	int nominal_width = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
+	int nominal_height = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
+
+
+	int scale_z = 1;
 	int scale_n = 1;
 
-	if (abs_size_x && abs_size_y)
+	// autosize: abs_size_x == 0 && abs_size_y == 0
+	// limit to max_picture_x and max_picture_y
+	if (abs_size_x == 0 || abs_size_y == 0)
 	{
-		if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
+		if (nominal_width > max_picture_x || nominal_height > max_picture_y)
+		{
+			if (nominal_height * max_picture_x < nominal_width * max_picture_y)
+			{
+				scale_z = max_picture_x;
+				scale_n = nominal_width;
+			}
+			else
+			{
+				scale_z = max_picture_y;
+				scale_n = nominal_height;
+			}
+		}
+	}
+	else
+	//if (abs_size_x && abs_size_y)
+	{
+		if (nominal_height * abs_size_x < nominal_width * abs_size_y)
 		{
 			scale_z = abs_size_x;
-			scale_n = pdf_page_width;
+			scale_n = nominal_width;
 		}
 		else
 		{
 			scale_z = abs_size_y;
-			scale_n = pdf_page_height;
+			scale_n = nominal_height;
 		}
 	}
 
-	// Scale to the requested abs_size_x and abs_size_y for faster processing.
-	pdf_page_width = scale_z * pdf_page_width / scale_n / m;
-	pdf_page_height = scale_z * pdf_page_height / scale_n / m;
+	nominal_width = scale_z * nominal_width / scale_n;
+	nominal_height = scale_z * nominal_height / scale_n;
 
-	int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
-	int separator_border_size_pdf = border_size_pdf / 2;
+	// Calculate the new page size from the nominal size.
+	pdf_page_width = 1000 * nominal_width / (num_cols * (1000 + 3 * border_size));
+	pdf_page_height = 1000 * nominal_height / (num_rows * (1000 + 3 * border_size));
+
+	// Calculate the new size of the border around the pages.
+	border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
+	separator_border_size_pdf = border_size_pdf / 2;
 
 	if (page_count > 1 && border_size_pdf == 0)
 	{
@@ -671,8 +705,6 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int si
 
 BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
 {
-	//std::unique_lock<std::mutex> lock(pdf_lib_mutex);
-
 	BYTE* pvmem = ReadFile(FileName, size_x, size_y);
 
 	len = 0;
@@ -688,9 +720,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	//std::unique_lock<std::mutex> lock(pdf_lib_mutex);
-
-	BYTE* pvmem = ReadFile(FileName, abs_size_x, abs_size_y);
+	BYTE* pvmem = ReadFile(FileName, 0, 0);	// autosize
 	m_bIsValid = pvmem != NULL;
 	
 	return pvmem;

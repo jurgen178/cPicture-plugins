@@ -21,8 +21,8 @@ public:
 
 public:
 	int pdf_display_mode;
-	int max_x;
-	int max_y;
+	int max_picture_x;
+	int max_picture_y;
 	int max_pages;
 	int border_size;
 	COLORREF border_color;
