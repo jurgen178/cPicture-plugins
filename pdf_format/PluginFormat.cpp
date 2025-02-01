@@ -428,51 +428,6 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 	return L"";
 }
 
-//FPDF_BITMAP CPdfFormat::get_first_page(FPDF_DOCUMENT document,
-//	const int abs_size_x, const int abs_size_y)
-//{
-//	FPDF_BITMAP rgba_bitmap = nullptr;
-//
-//	FPDF_PAGE page = FPDF_LoadPage(document, 0);
-//	if (page)
-//	{
-//		// Scale the PDF to the requested screen size.
-//		const int pdf_page_width = static_cast<int>(FPDF_GetPageWidth(page));
-//		const int pdf_page_height = static_cast<int>(FPDF_GetPageHeight(page));
-//
-//		int scale_z = 2;
-//		int scale_n = 1;
-//
-//		if (abs_size_x && abs_size_y)
-//		{
-//			if (pdf_page_height * abs_size_x < pdf_page_width * abs_size_y)
-//			{
-//				scale_z = abs_size_x;
-//				scale_n = pdf_page_width;
-//			}
-//			else
-//			{
-//				scale_z = abs_size_y;
-//				scale_n = pdf_page_height;
-//			}
-//		}
-//
-//		m_OriginalPictureWidth = m_PictureWidth = scale_z * pdf_page_width / scale_n;
-//		m_OriginalPictureHeight = m_PictureHeight = scale_z * pdf_page_height / scale_n;
-//
-//		// Setup the bitmap.
-//		rgba_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-//		FPDFBitmap_FillRect(rgba_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
-//
-//		// Render the PDF to the bitmap.
-//		FPDF_RenderPageBitmap(rgba_bitmap, page, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0, FPDF_ANNOT);
-//
-//		FPDF_ClosePage(page);
-//	}
-//
-//	return rgba_bitmap;
-//}
-
 FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 	const int abs_size_x, const int abs_size_y)
 {
@@ -481,7 +436,7 @@ FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 	get_page_range(document, start_page, end_page);
 	const int page_count = end_page - start_page + 1;
 
-	if (page_count == 0)
+	if (page_count <= 0)
 	{
 		return nullptr;
 	}
@@ -743,8 +698,6 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
 	// and should be as efficient as possible.
 
-	//std::unique_lock<std::mutex> lock(pdf_lib_mutex);
-
 	PDFiumInit pdfiumInit;
 
 	m_bIsValid = false;
@@ -760,7 +713,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 		get_page_range(document, start_page, page_end);
 		const int page_count = page_end - start_page + 1;
 
-		if (page_count == 0)
+		if (page_count <= 0)
 		{
 			FPDF_CloseDocument(document);
 			return;

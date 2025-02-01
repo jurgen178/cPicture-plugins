@@ -51,8 +51,6 @@ protected:
 	void get_page_range(FPDF_DOCUMENT document, int& start, int& end);
 	BYTE* convert_to_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_utf8_file_name(const CString& FileName);
-	//FPDF_BITMAP get_first_page(FPDF_DOCUMENT document,
-	//	const int abs_size_x = 0, const int abs_size_y = 0);
 	FPDF_BITMAP get_pages(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0);
 };
