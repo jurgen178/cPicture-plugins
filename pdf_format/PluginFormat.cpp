@@ -144,7 +144,7 @@ public:
 	CString version;
 	enum PLUGIN_TYPE type;
 
-	// Zum Sortieren der Einträge.
+	// To sort the entries.
 	bool operator < (PluginData& rhs)
 	{
 		return file_name2 < rhs.file_name2;
@@ -179,9 +179,6 @@ enum info_type operator|=(enum info_type& t1, const enum info_type t2)
 
 
 // Note: Review all sections with "// ***" when implementing a new format
-//		 Copy always PictureFormat.h from the plugin package to your project.
-//       The BMP format (.bmp) is already internally registered with cPicture as write only (24bit color depth).
-//       The Jpeg format (.jpg;.jpeg) is the standard format of cPicture and therefore also internally registered for reading and writing.
 
 
 const CString __stdcall GetPluginVersion()
@@ -245,6 +242,28 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 static std::mutex pdf_lib_mutex;
 
 
+class PDFiumInit
+{
+public:
+	PDFiumInit()
+	{
+		pdf_lib_mutex.lock();
+
+		FPDF_LIBRARY_CONFIG config = { 0 };
+		config.version = 2;
+
+		FPDF_InitLibraryWithConfig(&config);
+	};
+
+	~PDFiumInit()
+	{
+		FPDF_DestroyLibrary();
+
+		pdf_lib_mutex.unlock();
+	}
+};
+
+
 CPdfFormat::CPdfFormat()
 {
 }
@@ -290,10 +309,6 @@ CString __stdcall CPdfFormat::get_properties()
 
 bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 {
-	//CString msg;
-	//msg.LoadString(IDS_PROPERTY_DLG_PDF_TEXT);
-	//::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
-
 	CWnd Parent;
 	Parent.Attach(hwnd);
 
@@ -376,89 +391,6 @@ int CPdfFormat::get_page_count(FPDF_DOCUMENT document)
 {
 	const int page_count = FPDF_GetPageCount(document);
 	return (max_pages > 1 && page_count > max_pages) ? max_pages : page_count;
-}
-
-void __stdcall CPdfFormat::get_size(const CString& FileName)
-{
-	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
-	// and should be as efficient as possible.
-
-	//FPDF_InitLibrary();
-	//FPDF_LIBRARY_CONFIG config;
-	//config.version = 2;
-	//config.m_pUserFontPaths = nullptr;
-	//config.m_pIsolate = nullptr;
-	//config.m_v8EmbedderSlot = 0;
-	//config.m_pPlatform = nullptr;
-
-	//FPDF_InitLibraryWithConfig(&config);
-
-	m_bIsValid = false;
-
-	int pdf_page_width = 0;
-	int pdf_page_height = 0;
-
-	//FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
-	//if (document)
-	//{
-	//	const int page_count = pdf_display_mode == pdf_display_mode_enum::first_page_only ? 1 : get_page_count(document);
-
-	//	// Calculate the maximum width and height of the pages.
-	//	for (int i = 0; i < page_count; ++i)
-	//	{
-	//		FPDF_PAGE page = FPDF_LoadPage(document, i);
-	//		if (page)
-	//		{
-	//			const int width = static_cast<int>(FPDF_GetPageWidth(page));
-	//			const int height = static_cast<int>(FPDF_GetPageHeight(page));
-
-	//			if (width > pdf_page_width)
-	//			{
-	//				pdf_page_width = width;
-	//			}
-
-	//			if (height > pdf_page_height)
-	//			{
-	//				pdf_page_height = height;
-	//			}
-
-	//			FPDF_ClosePage(page);
-	//		}
-	//	}
-
-	//	// Calculate the number of rows and columns for the rectangle layout.
-	//	int num_cols = static_cast<int>(sqrt(page_count));
-	//	if (page_count > 1)
-	//		num_cols++;
-
-	//	const int num_rows = (page_count + num_cols - 1) / num_cols;
-
-	//	int scale_z = 2;
-	//	int scale_n = 1;
-
-	//	// scale
-	//	pdf_page_width = scale_z * pdf_page_width / scale_n;
-	//	pdf_page_height = scale_z * pdf_page_height / scale_n;
-
-	//	int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
-	//	int separator_border_size_pdf = border_size_pdf / 2;
-
-	//	if (page_count > 1 && border_size_pdf == 0)
-	//	{
-	//		border_size_pdf = 1;
-	//		separator_border_size_pdf = 1;
-	//	}
-
-	//	// Calculate the total width and height of the combined image.
-	//	m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
-	//	m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
-
-	//	m_bIsValid = true;
-
-	//	FPDF_CloseDocument(document);
-	//}
-
-	//FPDF_DestroyLibrary();
 }
 
 CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
@@ -644,12 +576,12 @@ FPDF_BITMAP CPdfFormat::get_all_pages(FPDF_DOCUMENT document,
 			FPDFBitmap_FillRect(page_bitmap, 0, 0, width, height, 0xFFFFFF);
 			FPDF_RenderPageBitmap(page_bitmap, page, 0, 0, width, height, 0, 0);
 
-			BYTE* src_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
-			BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * y_offset * m_OriginalPictureWidth + 4 * x_offset;
+			const BYTE* src_buffer = static_cast<const BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
+			BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * (y_offset * m_OriginalPictureWidth + x_offset);
 
 			for (int y = 0; y < height; ++y)
 			{
-				memcpy(dest_buffer + y * m_OriginalPictureWidth * 4, src_buffer + 4 * y * width, 4 * width);
+				memcpy(dest_buffer + 4 * y * m_OriginalPictureWidth, src_buffer + 4 * y * width, 4 * width);
 			}
 
 			// Draw the border around the page.
@@ -679,19 +611,20 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 	if (rgba_bitmap && m_OriginalPictureWidth && m_OriginalPictureHeight)
 	{
 		const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
-		pvmem = static_cast<BYTE*>(VirtualAlloc(reinterpret_cast<LPVOID>(NULL), size, MEM_COMMIT, PAGE_READWRITE));
+		pvmem = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
 
 		if (pvmem)
 		{
-			const BYTE* pixels = static_cast<BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
+			const BYTE* pixels = static_cast<const BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
 			BYTE* rgb = pvmem;
 			register int index = 0;
 
 			for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
 			{
-				*rgb++ = pixels[index + 2];
-				*rgb++ = pixels[index + 1];
-				*rgb++ = pixels[index];
+				// BGR -> RGB
+				*rgb++ = *(pixels + index + 2);
+				*rgb++ = *(pixels + index + 1);
+				*rgb++ = *(pixels + index);
 
 				// PDF is BGRA-Layout
 				index += 4;
@@ -704,14 +637,7 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 
 BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int size_y)
 {
-	FPDF_LIBRARY_CONFIG config = { 0 };
-	config.version = 2;
-	//config.m_pUserFontPaths = nullptr;
-	//config.m_pIsolate = nullptr;
-	//config.m_v8EmbedderSlot = 0;
-	//config.m_pPlatform = nullptr;
-
-	FPDF_InitLibraryWithConfig(&config);
+	PDFiumInit pdfiumInit;
 
 	BYTE* pvmem = NULL;
 
@@ -734,14 +660,12 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int si
 		FPDF_CloseDocument(document);
 	}
 
-	FPDF_DestroyLibrary();
-
 	return pvmem;
 }
 
 BYTE* __stdcall CPdfFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
 {
-	std::unique_lock<std::mutex> lock(pdf_lib_mutex);
+	//std::unique_lock<std::mutex> lock(pdf_lib_mutex);
 
 	BYTE* pvmem = ReadFile(FileName, size_x, size_y);
 
@@ -758,12 +682,87 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	std::unique_lock<std::mutex> lock(pdf_lib_mutex);
+	//std::unique_lock<std::mutex> lock(pdf_lib_mutex);
 
 	BYTE* pvmem = ReadFile(FileName, abs_size_x, abs_size_y);
 	m_bIsValid = pvmem != NULL;
 	
 	return pvmem;
+}
+
+void __stdcall CPdfFormat::get_size(const CString& FileName)
+{
+	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
+	// and should be as efficient as possible.
+
+	//std::unique_lock<std::mutex> lock(pdf_lib_mutex);
+
+	PDFiumInit pdfiumInit;
+
+	m_bIsValid = false;
+
+	int pdf_page_width = 0;
+	int pdf_page_height = 0;
+
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
+	if (document)
+	{
+		const int page_count = pdf_display_mode == pdf_display_mode_enum::first_page_only ? 1 : get_page_count(document);
+
+		// Calculate the maximum width and height of the pages.
+		for (int i = 0; i < page_count; ++i)
+		{
+			FPDF_PAGE page = FPDF_LoadPage(document, i);
+			if (page)
+			{
+				const int width = static_cast<int>(FPDF_GetPageWidth(page));
+				const int height = static_cast<int>(FPDF_GetPageHeight(page));
+
+				if (width > pdf_page_width)
+				{
+					pdf_page_width = width;
+				}
+
+				if (height > pdf_page_height)
+				{
+					pdf_page_height = height;
+				}
+
+				FPDF_ClosePage(page);
+			}
+		}
+
+		// Calculate the number of rows and columns for the rectangle layout.
+		int num_cols = static_cast<int>(sqrt(page_count));
+		if (page_count > 1)
+			num_cols++;
+
+		const int num_rows = (page_count + num_cols - 1) / num_cols;
+
+		int scale_z = 2;
+		int scale_n = 1;
+
+		// scale
+		pdf_page_width = scale_z * pdf_page_width / scale_n;
+		pdf_page_height = scale_z * pdf_page_height / scale_n;
+
+		int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
+		int separator_border_size_pdf = border_size_pdf / 2;
+
+		if (page_count > 1 && border_size_pdf == 0)
+		{
+			border_size_pdf = 1;
+			separator_border_size_pdf = 1;
+		}
+
+		// Calculate the total width and height of the combined image.
+		m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
+		m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
+
+		m_bIsValid = true;
+
+		FPDF_CloseDocument(document);
+	}
 }
 
 unsigned int __stdcall CPdfFormat::get_cap() const
@@ -814,7 +813,7 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 
 		CString msg, info;
 
-		const int info_template_c((int)info_template.size());
+		const size_t info_template_c(info_template.size());
 		if(info_template_c > 8)
 		{
 			const TCHAR* t1 = wcsrchr(FileName, L'\\');
@@ -838,9 +837,9 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 			//Floating-point printf format specifiers — e, E, f, and g — are not supported. 
 			//The workaround is to use the sprintf function to format the floating-point number 
 			//into a temporary buffer, then use that buffer as the insert string. 
-			const float f_mp((float)m_OriginalPictureWidth * m_OriginalPictureHeight / 1000 / 1000);
+			const float f_mp(static_cast<float>(m_OriginalPictureWidth * m_OriginalPictureHeight) / 1000 / 1000);
 			CString mp;
-			mp.Format(L"%.1f", (f_mp<0.1)?0.1:f_mp);
+			mp.Format(L"%.1f", (f_mp < 0.1) ? 0.1 : f_mp);
 
 			info.FormatMessage(info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight, mp);
 			msg += info;
