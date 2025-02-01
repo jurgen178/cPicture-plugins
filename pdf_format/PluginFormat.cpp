@@ -397,7 +397,7 @@ void CPdfFormat::get_page_range(FPDF_DOCUMENT document, int& start, int& end)
 	if (page_range_to == -1)
 		end = page_count - 1;
 	else
-		end = page_range_to;
+		end = min(page_range_to, page_count - 1);
 }
 
 CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
@@ -428,26 +428,21 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 	return L"";
 }
 
-FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
+void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
 	const int abs_size_x, const int abs_size_y)
 {
-	int start_page = 0;
-	int end_page = 0;
+	pdf_page_width = 0;
+	pdf_page_height = 0;
+
+	start_page = 0;
+	end_page = 0;
 	get_page_range(document, start_page, end_page);
-	const int page_count = end_page - start_page + 1;
+	page_count = end_page - start_page + 1;
 
 	if (page_count <= 0)
 	{
-		return nullptr;
+		return;
 	}
-
-	int pdf_page_width = 0;
-	int pdf_page_height = 0;
-
-	const BYTE red = GetRValue(border_color);
-	const BYTE green = GetGValue(border_color);
-	const BYTE blue = GetBValue(border_color);
-	const int border_color_bgr = (red << 16) + (green << 8) + (blue);
 
 	// Calculate the maximum width and height of the pages.
 	for (int i = start_page; i <= end_page; ++i)
@@ -473,15 +468,15 @@ FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 	}
 
 	// Calculate the number of rows and columns for the rectangle layout.
-	int num_cols = static_cast<int>(sqrt(page_count));
+	num_cols = static_cast<int>(sqrt(page_count));
 	if (page_count > 1)
 		num_cols++;
 
-	const int num_rows = (page_count + num_cols - 1) / num_cols;
+	num_rows = (page_count + num_cols - 1) / num_cols;
 
 	// Calculate the size of the border around the pages.
-	int border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
-	int separator_border_size_pdf = border_size_pdf / 2;
+	border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
+	separator_border_size_pdf = border_size_pdf / 2;
 
 	if (page_count > 1 && border_size_pdf == 0)
 	{
@@ -515,7 +510,7 @@ FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 		}
 	}
 	else
-	//if (abs_size_x && abs_size_y)
+		//if (abs_size_x && abs_size_y)
 	{
 		if (nominal_height * abs_size_x < nominal_width * abs_size_y)
 		{
@@ -552,6 +547,22 @@ FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 	// Calculate the total width and height of the combined image.
 	m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
 	m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
+}
+
+FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
+	const int abs_size_x, const int abs_size_y)
+{
+	get_page_sizes(document, abs_size_x, abs_size_y);
+
+	if (page_count <= 0)
+	{
+		return nullptr;
+	}
+
+	const BYTE red = GetRValue(border_color);
+	const BYTE green = GetGValue(border_color);
+	const BYTE blue = GetBValue(border_color);
+	const int border_color_bgr = (red << 16) + (green << 8) + (blue);
 
 	// Create a single bitmap with the combined width and height.
 	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
@@ -702,73 +713,10 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 
 	m_bIsValid = false;
 
-	int pdf_page_width = 0;
-	int pdf_page_height = 0;
-
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		int start_page = 0;
-		int page_end = 0;
-		get_page_range(document, start_page, page_end);
-		const int page_count = page_end - start_page + 1;
-
-		if (page_count <= 0)
-		{
-			FPDF_CloseDocument(document);
-			return;
-		}
-
-		// Calculate the maximum width and height of the pages.
-		for (int i = start_page; i <= page_end; ++i)
-		{
-			FPDF_PAGE page = FPDF_LoadPage(document, i);
-			if (page)
-			{
-				const int width = static_cast<int>(FPDF_GetPageWidth(page));
-				const int height = static_cast<int>(FPDF_GetPageHeight(page));
-
-				if (width > pdf_page_width)
-				{
-					pdf_page_width = width;
-				}
-
-				if (height > pdf_page_height)
-				{
-					pdf_page_height = height;
-				}
-
-				FPDF_ClosePage(page);
-			}
-		}
-
-		// Calculate the number of rows and columns for the rectangle layout.
-		int num_cols = static_cast<int>(sqrt(page_count));
-		if (page_count > 1)
-			num_cols++;
-
-		const int num_rows = (page_count + num_cols - 1) / num_cols;
-
-		int scale_z = 2;
-		int scale_n = 1;
-
-		// scale
-		pdf_page_width = scale_z * pdf_page_width / scale_n;
-		pdf_page_height = scale_z * pdf_page_height / scale_n;
-
-		int border_size_pdf = page_count > 1 ? border_size * min(pdf_page_width, pdf_page_height) / 1000 : 0;
-		int separator_border_size_pdf = border_size_pdf / 2;
-
-		if (page_count > 1 && border_size_pdf == 0)
-		{
-			border_size_pdf = 1;
-			separator_border_size_pdf = 1;
-		}
-
-		// Calculate the total width and height of the combined image.
-		m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
-		m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
-
+		get_page_sizes(document, 0, 0);
 		m_bIsValid = true;
 
 		FPDF_CloseDocument(document);

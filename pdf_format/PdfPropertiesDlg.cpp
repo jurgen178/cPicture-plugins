@@ -42,6 +42,7 @@ void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CPdfPropertiesDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BORDER_COLOR, &CPdfPropertiesDlg::OnClickedButtonBorderColor)
 	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_PDF, &CPdfPropertiesDlg::OnClickSyslinkPdf)
+	ON_EN_KILLFOCUS(IDC_EDIT_BORDER_SIZE, &CPdfPropertiesDlg::OnEnKillfocusEditControlBorderSize)
 END_MESSAGE_MAP()
 
 
@@ -108,7 +109,7 @@ void CPdfPropertiesDlg::OnOK()
 		page_range_to = m2.empty() ? 0 : _wtoi(m3.c_str()) - 1;
 
 		// validate the range
-		if (page_range_to == 0 && page_range_from == 0 && m2 == L"-"
+		if (page_range_to == 0 && page_range_from == 0 && m2.empty()
 			||
 			page_range_to != 0 && page_range_to < page_range_from && m2 == L"-"
 			||
@@ -144,4 +145,15 @@ void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
 	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
 
 	*pResult = 0;
+}
+
+void CPdfPropertiesDlg::OnEnKillfocusEditControlBorderSize()
+{
+	CString strValue;
+	GetDlgItem(IDC_EDIT_BORDER_SIZE)->GetWindowText(strValue);
+
+	if (strValue.IsEmpty())
+	{
+		GetDlgItem(IDC_EDIT_BORDER_SIZE)->SetWindowText(_T("25")); // Set default value
+	}
 }

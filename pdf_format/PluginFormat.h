@@ -19,6 +19,17 @@ protected:
 	static int page_range_from;
 	static int page_range_to;
 
+protected:
+	int start_page;
+	int end_page;
+	int page_count;
+	int pdf_page_width;
+	int pdf_page_height;
+	int num_cols;
+	int num_rows;
+	int border_size_pdf;
+	int separator_border_size_pdf;
+
 public:
 	virtual ~CPdfFormat();
 
@@ -52,5 +63,7 @@ protected:
 	BYTE* convert_to_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_utf8_file_name(const CString& FileName);
 	FPDF_BITMAP get_pages(FPDF_DOCUMENT document,
+		const int abs_size_x = 0, const int abs_size_y = 0);
+	void get_page_sizes(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0);
 };
