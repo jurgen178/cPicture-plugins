@@ -32,7 +32,8 @@ protected:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	DECLARE_MESSAGE_MAP()
+	void SetControl(const int id, CString default) const;
+
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -40,4 +41,5 @@ protected:
 	afx_msg void OnEnKillfocusEditControlMaxX();
 	afx_msg void OnEnKillfocusEditControlMaxY();
 	afx_msg void OnEnKillfocusEditControlBorderSize();
+	DECLARE_MESSAGE_MAP()
 };

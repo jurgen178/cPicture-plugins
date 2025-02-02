@@ -153,35 +153,28 @@ void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CPdfPropertiesDlg::OnEnKillfocusEditControlMaxX()
+void CPdfPropertiesDlg::SetControl(const int id, CString default) const
 {
 	CString strValue;
-	GetDlgItem(IDC_EDIT_PDF_MAX_X)->GetWindowText(strValue);
+	GetDlgItem(id)->GetWindowText(strValue);
 
 	if (strValue.IsEmpty())
 	{
-		GetDlgItem(IDC_EDIT_PDF_MAX_X)->SetWindowText(_T("8000")); // Set default value
+		GetDlgItem(id)->SetWindowText(default); // Set default value
 	}
+}
+
+void CPdfPropertiesDlg::OnEnKillfocusEditControlMaxX()
+{
+	SetControl(IDC_EDIT_PDF_MAX_X, _T("8000"));
 }
 
 void CPdfPropertiesDlg::OnEnKillfocusEditControlMaxY()
 {
-	CString strValue;
-	GetDlgItem(IDC_EDIT_PDF_MAX_Y)->GetWindowText(strValue);
-
-	if (strValue.IsEmpty())
-	{
-		GetDlgItem(IDC_EDIT_PDF_MAX_Y)->SetWindowText(_T("8000")); // Set default value
-	}
+	SetControl(IDC_EDIT_PDF_MAX_Y, _T("8000"));
 }
 
 void CPdfPropertiesDlg::OnEnKillfocusEditControlBorderSize()
 {
-	CString strValue;
-	GetDlgItem(IDC_EDIT_BORDER_SIZE)->GetWindowText(strValue);
-
-	if (strValue.IsEmpty())
-	{
-		GetDlgItem(IDC_EDIT_BORDER_SIZE)->SetWindowText(_T("25")); // Set default value
-	}
+	SetControl(IDC_EDIT_BORDER_SIZE, _T("25"));
 }
