@@ -7,7 +7,11 @@
 #define IDS_SHORT_DESC                  103
 #define IDS_LONG_DESC                   104
 #define IDS_EDIT_PAGE_RANGE_TOOLTIP     105
-#define IDC_BUTTON_BORDER_COLOR         1003
+#define IDS_EDIT_BORDER_SIZE_TOOLTIP    106
+#define IDS_EDIT_PDF_MAX_X_TOOLTIP      107
+#define IDS_EDIT_PDF_MAX_Y_TOOLTIP      108
+#define IDS_STATIC_COLOR_TOOLTIP        109
+#define IDS_PAGE_COUNT                  110
 #define IDC_SYSLINK_PDF                 1004
 #define IDC_EDIT_PDF_MAX_X              1005
 #define IDC_EDIT_PDF_MAX_Y              1006

@@ -338,7 +338,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		max_picture_y = max(1000, pdfPropertiesDlg.max_picture_y);
 		page_range_from = pdfPropertiesDlg.page_range_from;
 		page_range_to = pdfPropertiesDlg.page_range_to;
-		border_size = min(250, max(1, pdfPropertiesDlg.border_size));
+		border_size = min(250, max(0, pdfPropertiesDlg.border_size));
 		border_color = pdfPropertiesDlg.border_color;
 
 		m_property_str.Format(format_property_string,
@@ -475,14 +475,19 @@ void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
 	num_rows = (page_count + num_cols - 1) / num_cols;
 
 	// Calculate the size of the border around the pages.
-	border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
-	separator_border_size_pdf = border_size_pdf / 2;
+	auto set_border_size = [&]()
+		{
+			border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
+			separator_border_size_pdf = border_size_pdf / 2;
 
-	if (page_count > 1 && border_size_pdf == 0)
-	{
-		border_size_pdf = 1;
-		separator_border_size_pdf = 1;
-	}
+			if (page_count > 1 && border_size && border_size_pdf == 0)
+			{
+				border_size_pdf = 1;
+				separator_border_size_pdf = 1;
+			}
+		};
+
+	set_border_size();
 
 	// Nominal size of the image.
 	int nominal_width = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
@@ -535,16 +540,11 @@ void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
 	pdf_page_height = 1000 * nominal_height / (num_rows * (1000 + 3 * border_size));
 
 	// Calculate the new size of the border around the pages.
-	border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
-	separator_border_size_pdf = border_size_pdf / 2;
-
-	if (page_count > 1 && border_size_pdf == 0)
-	{
-		border_size_pdf = 1;
-		separator_border_size_pdf = 1;
-	}
+	set_border_size();
 
 	// Calculate the total width and height of the combined image.
+	// Because of int rounding, m_OriginalPictureWidth is not equal to nominal_width (up to 1%)
+	// if double data type would be used, m_OriginalPictureWidth would be equal to nominal_width
 	m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
 	m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
 }
@@ -748,9 +748,35 @@ void __stdcall SetPluginInfoTemplates(const vector<CString>& _info_template)
 
 CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_type _info_type)
 {
-	if(_info_type & (info_type_std | info_type_size))
+	int page_count = 0;
+
+	//CString pfd_info;
+
 	{
-		get_size(FileName);
+		PDFiumInit pdfiumInit;
+		FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
+		if (document)
+		{
+			page_count = FPDF_GetPageCount(document);
+
+			//char buffer[256];
+			//unsigned long length;
+
+			//// Get the title
+			//FPDF_GetMetaText(document, "Title", buffer, sizeof(buffer));
+			//pfd_info += buffer;
+		}
+		FPDF_CloseDocument(document);
+	}
+
+	if(_info_type & info_type_std)
+	{
+		CString data;
+		if (page_count)
+		{
+			data.Format(IDS_PAGE_COUNT, page_count);
+		}
+		return data;
 	}
 
 	if(_info_type & info_type_short)
@@ -767,13 +793,13 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 		//info_template[8] = Einstellungen:\t
 
 
-		get_size(FileName);
-
 		CString msg, info;
-
 		const size_t info_template_c(info_template.size());
+
 		if(info_template_c > 8)
 		{
+			get_size(FileName);
+
 			const TCHAR* t1 = wcsrchr(FileName, L'\\');
 			if(t1)
 				t1++;
@@ -789,7 +815,16 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 			info.FormatMessage(info_template[7], FileName.Left(FileName.ReverseFind(L'\\') + 1));
 			msg += info;
 			msg += L'\n';
-			
+
+			if (page_count)
+			{
+				CString n;
+				n.Format(IDS_PAGE_COUNT, page_count);
+				info.FormatMessage(info_template[6], n);
+				msg += info;
+				msg += L'\n';
+			}
+
 			//_stprintf(msg, info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight);
 
 			//Floating-point printf format specifiers — e, E, f, and g — are not supported. 

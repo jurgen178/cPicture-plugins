@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "afxdlgs.h"
 #include "resource.h"
 #include "PdfPropertiesDlg.h"
 #include <string>
@@ -16,7 +15,7 @@ CPdfPropertiesDlg::CPdfPropertiesDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CPdfPropertiesDlg::IDD, pParent),
 	max_picture_x(8000),
 	max_picture_y(8000),
-	page_range(L"0-"),
+	page_range(L"1-"),
 	page_range_from(0),
 	page_range_to(-1),
 	border_size(25),
@@ -40,7 +39,6 @@ void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CPdfPropertiesDlg, CDialog)
-	ON_BN_CLICKED(IDC_BUTTON_BORDER_COLOR, &CPdfPropertiesDlg::OnClickedButtonBorderColor)
 	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_PDF, &CPdfPropertiesDlg::OnClickSyslinkPdf)
 	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_X, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxX)
 	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_Y, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxY)
@@ -59,8 +57,20 @@ BOOL CPdfPropertiesDlg::OnInitDialog()
 	m_ToolTip.SetMaxTipWidth(320);
 
 	CString tooltip;
+	tooltip.LoadString(IDS_EDIT_PDF_MAX_X_TOOLTIP);
+	m_ToolTip.AddTool(GetDlgItem(IDC_EDIT_PDF_MAX_X), tooltip);
+
+	tooltip.LoadString(IDS_EDIT_PDF_MAX_Y_TOOLTIP);
+	m_ToolTip.AddTool(GetDlgItem(IDC_EDIT_PDF_MAX_Y), tooltip);
+
 	tooltip.LoadString(IDS_EDIT_PAGE_RANGE_TOOLTIP);
 	m_ToolTip.AddTool(GetDlgItem(IDC_EDIT_PAGE_RANGE), tooltip);
+
+	tooltip.LoadString(IDS_EDIT_BORDER_SIZE_TOOLTIP);
+	m_ToolTip.AddTool(GetDlgItem(IDC_EDIT_BORDER_SIZE), tooltip);
+
+	tooltip.LoadString(IDS_STATIC_COLOR_TOOLTIP);
+	m_ToolTip.AddTool(GetDlgItem(IDC_STATIC_COLOR), tooltip);
 
 	page_range.Format(L"%d", page_range_from + 1);
 
@@ -96,6 +106,8 @@ void CPdfPropertiesDlg::OnOK()
 {
 	UpdateData(true); // read the data
 
+	border_color = m_colorStatic.GetColor();
+
 	std::wstring input(page_range);
 	std::wsmatch match;
 
@@ -111,7 +123,9 @@ void CPdfPropertiesDlg::OnOK()
 		page_range_to = m2.empty() ? 0 : _wtoi(m3.c_str()) - 1;
 
 		// validate the range
-		if (page_range_to == 0 && page_range_from == 0 && m2.empty()
+		if (m1.empty() && m2.empty() && m3.empty()
+			||
+			page_range_to == 0 && page_range_from == 0 && m2.empty() && !m3.empty()
 			||
 			page_range_to != 0 && page_range_to < page_range_from && m2 == L"-"
 			||
@@ -127,16 +141,6 @@ void CPdfPropertiesDlg::OnOK()
 	}
 
 	CDialog::OnOK();
-}
-
-void CPdfPropertiesDlg::OnClickedButtonBorderColor()
-{
-	CColorDialog ColorDialog(border_color, CC_ANYCOLOR | CC_FULLOPEN);
-	if (ColorDialog.DoModal() == IDOK)
-	{
-		border_color = ColorDialog.GetColor();
-		m_colorStatic.SetColor(border_color);
-	}
 }
 
 void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)

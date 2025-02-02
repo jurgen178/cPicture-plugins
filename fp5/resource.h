@@ -11,16 +11,15 @@
 #define IDS_INDEX_TOO_LARGE             105
 #define IDS_HEADLINE_TEXT               106
 #define IDC_EDIT_HEADLINE_TEXT          1000
-#define IDC_BUTTON_BORDER_COLOR         1001
-#define IDC_STATIC_COLOR                1002
+#define IDC_STATIC_COLOR                1001
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_RESOURCE_VALUE        107
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1003
+#define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
