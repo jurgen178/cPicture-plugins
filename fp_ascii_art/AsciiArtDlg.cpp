@@ -453,9 +453,9 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					__int64 grey_sum = 0;
 
 					// Read the rect segment at (rect_x, rect_y).
-					for (register int y = 0; y < rect_h; y++)
+					for (register int y = 0; y < rect_h; ++y)
 					{
-						for (register int x = 0; x < rect_w; x++)
+						for (register int x = 0; x < rect_w; ++x)
 						{
 							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
 							const BYTE grey(data[index]);

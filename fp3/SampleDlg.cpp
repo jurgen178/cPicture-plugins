@@ -121,7 +121,7 @@ BOOL CSampleDlg::OnInitDialog()
 			#define WIDTH_DWORD_ALIGNED(pixel)    ((((pixel * 24) + 31) >> 3) & ~0x03)
 			const UINT WidthBytes = WIDTH_DWORD_ALIGNED(requested_data1.picture_width);
 
-			for(int y = YDest; y < YDest + requested_data1.picture_height; y++)
+			for(int y = YDest; y < YDest + requested_data1.picture_height; ++y)
 			{ 
 				memcpy(draw_buf + index2, requested_data1.data + index, XDest2);
 				index += WidthBytes;

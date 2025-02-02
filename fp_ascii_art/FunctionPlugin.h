@@ -187,10 +187,10 @@ struct arg_count
 class CFunctionPlugin
 {
 protected:
-	CFunctionPlugin() {};
+	CFunctionPlugin() { };
 
 public:
-	virtual __stdcall ~CFunctionPlugin() {};
+	virtual ~CFunctionPlugin() { };
 
 protected:
 	// List of pictures that are updated, added or deleted (enum UPDATE_TYPE).

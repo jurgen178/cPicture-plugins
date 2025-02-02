@@ -98,9 +98,9 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 	BYTE* data = requested_data1.data;
 
 	// Modify the picture data.
-	for (register unsigned int y = requested_data1.picture_height; y != 0; y--)
+	for (register unsigned int y = requested_data1.picture_height; y != 0; --y)
 	{
-		for (register unsigned int x = requested_data1.picture_width; x != 0; x--)
+		for (register unsigned int x = requested_data1.picture_width; x != 0; --x)
 		{
 			// Invert colors.
 			*data = 255 - *data++;	// red
@@ -127,9 +127,9 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 	//// |        |
 	////  --------
 	////
-	//for (register unsigned int y = 20; y < requested_data1.picture_height / 2; y++)
+	//for (register unsigned int y = 20; y < requested_data1.picture_height / 2; ++y)
 	//{
-	//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; x++)
+	//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; ++x)
 	//	{
 	//		const int index(3 * (y * requested_data1.picture_width + x));
 

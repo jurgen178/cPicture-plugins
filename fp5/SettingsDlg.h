@@ -2,6 +2,7 @@
 
 #include "Plugin.h"
 #include "resource.h"
+#include "ColorStatic.h"
 
 
 // CSettingsDlg dialog
@@ -21,12 +22,12 @@ protected:
 public:
 	CString headline_text;
 	COLORREF border_color;
+	CColorStatic m_colorStatic;
 
 protected:
+	virtual void OnOK();
 	virtual BOOL OnInitDialog();
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
-	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedButtonBorderColor();
 };

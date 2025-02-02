@@ -110,9 +110,9 @@ bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& pict
 	BYTE* data = requested_data2.data;
 
 	// Modify the picture data.
-	for (register unsigned int y = requested_data2.picture_height; y != 0; y--)
+	for (register unsigned int y = requested_data2.picture_height; y != 0; --y)
 	{
-		for (register unsigned int x = requested_data2.picture_width; x != 0; x--)
+		for (register unsigned int x = requested_data2.picture_width; x != 0; --x)
 		{
 			// Make a grey scale picture.
 			const BYTE grey((306 * *(data) + 601 * *(data + 1) + 117 * *(data + 2)) >> 10);

@@ -143,6 +143,7 @@ cPicture can supply each picture with additional picture data. This is controlle
 Currently used base addresses:  
 
 cpp_tiff_png:	0x180000000  
+cpp_pdf:    	0x181000000  
 FP1 sample:		0x201000000  
 FP2 sample:		0x202000000  
 FP3 sample:		0x203000000  

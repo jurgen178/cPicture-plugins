@@ -220,6 +220,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorStatic.cpp" />
     <ClCompile Include="Plugin.cpp" />
     <ClCompile Include="SettingsDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -233,6 +234,7 @@
     <None Include="plugin.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorStatic.h" />
     <ClInclude Include="FunctionPlugin.h" />
     <ClInclude Include="Plugin.h" />
     <ClInclude Include="resource.h" />

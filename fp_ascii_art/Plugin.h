@@ -9,7 +9,7 @@ protected:
 	CFunctionPluginAsciiArt();
 
 public:
-	virtual __stdcall ~CFunctionPluginAsciiArt() { };
+	virtual ~CFunctionPluginAsciiArt() { };
 
 protected:
 	HWND handle_wnd;
