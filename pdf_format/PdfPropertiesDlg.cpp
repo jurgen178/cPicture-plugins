@@ -19,6 +19,7 @@ CPdfPropertiesDlg::CPdfPropertiesDlg(CWnd* pParent /*=NULL*/)
 	page_range_from(0),
 	page_range_to(-1),
 	border_size(25),
+	scaling(100),
 	border_color(RGB(255, 216, 0))
 {
 }
@@ -35,6 +36,7 @@ void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_PDF_MAX_Y, max_picture_y);
 	DDX_Text(pDX, IDC_EDIT_PAGE_RANGE, page_range);
 	DDX_Text(pDX, IDC_EDIT_BORDER_SIZE, border_size);
+	DDX_Control(pDX, IDC_COMBO_SCALING, m_comboScaling);
 }
 
 
@@ -86,9 +88,22 @@ BOOL CPdfPropertiesDlg::OnInitDialog()
 		page_range += L"-";
 	}
 
+	UpdateData(false); // write the data
+
 	m_colorStatic.SetColor(border_color);
 
-	UpdateData(false); // write the data
+	// Add specified values to the ComboBox.
+	const int values[] = { 10, 25, 50, 75, 100, 125, 150, 200, 400, 1000 };
+	for (int i = 0; i < sizeof(values) / sizeof(int); ++i)
+	{
+		CString strValue;
+		strValue.Format(_T("%d"), values[i]);
+		m_comboScaling.AddString(strValue);
+	}
+
+	CString strScaling;
+	strScaling.Format(_T("%d"), scaling);
+	m_comboScaling.SetWindowText(strScaling);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -138,6 +153,18 @@ void CPdfPropertiesDlg::OnOK()
 	{
 		page_range_from = 0;
 		page_range_to = -1;
+	}
+
+	// Get the selected value from the ComboBox.
+	CString strValue;
+	m_comboScaling.GetWindowText(strValue);
+	if (strValue.IsEmpty())
+	{
+		scaling = 100;
+	}
+	else
+	{
+		scaling = _wtoi(strValue);
 	}
 
 	CDialog::OnOK();

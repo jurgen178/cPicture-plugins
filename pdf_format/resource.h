@@ -21,6 +21,8 @@
 #define IDC_EDIT_BORDER_SIZE            1011
 #define IDC_STATIC_BORDERSIZE           1012
 #define IDC_STATIC_BORDERSIZE_UNIT      1013
+#define IDC_COMBO_SCALING               1014
+#define IDC_STATIC_BORDERSIZE2          1015
 
 // Next default values for new objects
 // 
@@ -28,7 +30,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        106
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

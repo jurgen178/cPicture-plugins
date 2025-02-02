@@ -38,13 +38,14 @@ public:
 
 protected:
 	static CString m_property_str;
+	static int max_picture_x;
+	static int max_picture_y;
+	static int scaling;
+	static int page_range_from;
+	static int page_range_to;
 	static int border_size;
 	static int border_color;
 	static int separator_border_color;
-	static int max_picture_x;
-	static int max_picture_y;
-	static int page_range_from;
-	static int page_range_to;
 
 protected:
 	int start_page;
@@ -64,6 +65,6 @@ protected:
 	CStringA get_utf8_file_name(const CString& FileName);
 	FPDF_BITMAP get_pages(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0);
-	void get_page_sizes(FPDF_DOCUMENT document,
+	void update_page_sizes(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0);
 };

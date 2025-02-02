@@ -279,15 +279,16 @@ CPdfFormat::~CPdfFormat()
 //     which can be used for your picture format settings.
 
 CString CPdfFormat::m_property_str;
+int CPdfFormat::max_picture_x = 8000;
+int CPdfFormat::max_picture_y = 8000;
+int CPdfFormat::scaling = 100;
+int CPdfFormat::page_range_from = 0;
+int CPdfFormat::page_range_to = -1;
 int CPdfFormat::border_size = 25;
 int CPdfFormat::border_color = 0xFFD800;
 int CPdfFormat::separator_border_color = 0xFFFFFFFF;
-int CPdfFormat::max_picture_x = 8000;
-int CPdfFormat::max_picture_y = 8000;
-int CPdfFormat::page_range_from = 0;
-int CPdfFormat::page_range_to = -1;
 
-CString format_property_string(L"%d,%d,%d,%d,%d,%06X");
+CString format_property_string(L"%d,%d,%d,%d,%d,%d,%06X");
 
 
 void __stdcall CPdfFormat::set_properties(const CString& property_str)
@@ -297,6 +298,7 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 	swscanf_s(m_property_str, format_property_string,
 		&max_picture_x,
 		&max_picture_y,
+		&scaling,
 		&page_range_from,
 		&page_range_to,
 		&border_size,
@@ -319,6 +321,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	swscanf_s(m_property_str, format_property_string,
 		&pdfPropertiesDlg.max_picture_x,
 		&pdfPropertiesDlg.max_picture_y,
+		&pdfPropertiesDlg.scaling,
 		&pdfPropertiesDlg.page_range_from,
 		&pdfPropertiesDlg.page_range_to,
 		&pdfPropertiesDlg.border_size,
@@ -329,6 +332,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	const int prev_border_size = border_size;
 	const int prev_max_x = max_picture_x;
 	const int prev_max_y = max_picture_y;
+	const int prev_scaling = scaling;
 	const int prev_page_range_from = page_range_from;
 	const int prev_page_range_to = page_range_to;
 
@@ -336,6 +340,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	{
 		max_picture_x = max(1000, pdfPropertiesDlg.max_picture_x);
 		max_picture_y = max(1000, pdfPropertiesDlg.max_picture_y);
+		scaling = min(1000, max(10, pdfPropertiesDlg.scaling));
 		page_range_from = pdfPropertiesDlg.page_range_from;
 		page_range_to = pdfPropertiesDlg.page_range_to;
 		border_size = min(250, max(0, pdfPropertiesDlg.border_size));
@@ -344,6 +349,7 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		m_property_str.Format(format_property_string,
 			max_picture_x,
 			max_picture_y,
+			scaling,
 			page_range_from,
 			page_range_to,
 			border_size,
@@ -355,12 +361,13 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	// true: reload of the pictures
 	return
-		prev_border_size != border_size ||
-		prev_border_color != border_color ||
 		prev_max_x != max_picture_x ||
 		prev_max_y != max_picture_y ||
 		prev_page_range_from != page_range_from ||
-		prev_page_range_to != page_range_to;
+		prev_scaling != scaling ||
+		prev_page_range_to != page_range_to ||
+		prev_border_size != border_size ||
+		prev_border_color != border_color;
 }
 
 CString __stdcall CPdfFormat::get_ext()
@@ -428,7 +435,7 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 	return L"";
 }
 
-void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
+void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	const int abs_size_x, const int abs_size_y)
 {
 	pdf_page_width = 0;
@@ -466,6 +473,9 @@ void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
 			FPDF_ClosePage(page);
 		}
 	}
+
+	pdf_page_width = scaling * pdf_page_width / 100;
+	pdf_page_height = scaling * pdf_page_height / 100;
 
 	// Calculate the number of rows and columns for the rectangle layout.
 	num_cols = static_cast<int>(sqrt(page_count));
@@ -553,7 +563,7 @@ void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
 FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 	const int abs_size_x, const int abs_size_y)
 {
-	get_page_sizes(document, abs_size_x, abs_size_y);
+	update_page_sizes(document, abs_size_x, abs_size_y);
 
 	if (page_count <= 0)
 	{
@@ -717,7 +727,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		get_page_sizes(document, 0, 0);
+		update_page_sizes(document, 0, 0);
 		m_bIsValid = true;
 
 		FPDF_CloseDocument(document);

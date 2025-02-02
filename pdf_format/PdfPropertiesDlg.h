@@ -21,6 +21,8 @@ public:
 	int page_range_to;
 	COLORREF border_color;
 	CColorStatic m_colorStatic;
+	CComboBox m_comboScaling;
+	int scaling;
 
 protected:
 	CString page_range;
