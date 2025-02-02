@@ -43,12 +43,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "cpicture@thecloudsite.net"
             VALUE "CompanyName", "http://cPicture.thecloudsite.net/"
-            VALUE "FileDescription", "cPicture plugin PDF"
+            VALUE "FileDescription", "cPicture plugin PDF format"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "cPicture plugin"
             VALUE "LegalCopyright", "Copyright (C)"
             VALUE "OriginalFilename", "cpp_pdf.dll"
-            VALUE "ProductName", "cPicture plugin PDF"
+            VALUE "ProductName", "cPicture plugin PDF format"
             VALUE "ProductVersion", "1.0.0.0"
         END
     END
@@ -150,6 +150,64 @@ END
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_PDF_PROPERTIES DIALOGEX 0, 0, 202, 184
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Properties for PDF format"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Format plugin uses",IDC_STATIC,7,7,188,8
+    CONTROL         "<a href=""https://pdfium.googlesource.com/pdfium/"">https://pdfium.googlesource.com/pdfium/</a>",IDC_SYSLINK_PDF,
+                    "SysLink",WS_TABSTOP,7,18,188,14
+    LTEXT           "Maximum",IDC_STATIC,7,44,36,8
+    EDITTEXT        IDC_EDIT_PDF_MAX_X,43,43,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "x",IDC_STATIC,87,44,8,8
+    EDITTEXT        IDC_EDIT_PDF_MAX_Y,95,43,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Pixel",IDC_STATIC,140,44,55,8
+    LTEXT           "Pages to display:",IDC_STATIC_MAX_PAGES_TEXT,7,70,63,8
+    EDITTEXT        IDC_EDIT_PAGE_RANGE,70,69,40,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,81,163,50,14,BS_FLAT
+    PUSHBUTTON      "Cancel",IDCANCEL,145,163,50,14,BS_FLAT
+    LTEXT           "Color",IDC_STATIC_COLOR,7,121,36,36
+    EDITTEXT        IDC_EDIT_BORDER_SIZE,53,95,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Border size:",IDC_STATIC_BORDERSIZE,7,96,45,8
+    LTEXT           "‰ of the page size",IDC_STATIC_BORDERSIZE_UNIT,98,96,84,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_PDF_PROPERTIES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 195
+        BOTTOMMARGIN, 177
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_PDF_PROPERTIES AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -186,6 +244,16 @@ BEGIN
     IDS_DATE_TIME_FORMAT_STRING "%s at %s"
     IDS_SHORT_DESC          "PDF"
     IDS_LONG_DESC           "PDF format"
+    IDS_EDIT_PAGE_RANGE_TOOLTIP 
+                            "1\tfirst page only\n1-\tall pages\n2-4\tpages 2..4\n-4\tfirst 4 pages\n4-\tfrom the 4th page onwards"
+    IDS_EDIT_BORDER_SIZE_TOOLTIP 
+                            "Border width in ‰ of the page size.\ne.g. 25 is 2.5% of the size of a page"
+    IDS_EDIT_PDF_MAX_X_TOOLTIP 
+                            "Maximum width in pixels.\nDue to the integer size of the individual images and the borders, the value may vary slightly."
+    IDS_EDIT_PDF_MAX_Y_TOOLTIP 
+                            "Maximum height in pixels.\nDue to the integer size of the individual images and the borders, the value may vary slightly."
+    IDS_STATIC_COLOR_TOOLTIP "Change border color"
+    IDS_PAGE_COUNT          "%d pages"
 END
 
 #endif    // English (United States) resources

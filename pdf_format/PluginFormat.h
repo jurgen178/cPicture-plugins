@@ -1,7 +1,6 @@
 #pragma once
 #include "pictureformat.h"
 #include "include/fpdfview.h"
-#include "include/fpdf_doc.h"
 //#include "include/fpdf_thumbnail.h"
 
 
@@ -9,27 +8,6 @@ class CPdfFormat : public CPictureFormat
 {
 protected:
 	CPdfFormat();
-
-protected:
-	static CString m_property_str;
-	static int border_size;
-	static int border_color;
-	static int separator_border_color;
-	static int max_picture_x;
-	static int max_picture_y;
-	static int page_range_from;
-	static int page_range_to;
-
-protected:
-	int start_page;
-	int end_page;
-	int page_count;
-	int pdf_page_width;
-	int pdf_page_height;
-	int num_cols;
-	int num_rows;
-	int border_size_pdf;
-	int separator_border_size_pdf;
 
 public:
 	virtual ~CPdfFormat();
@@ -57,6 +35,27 @@ public:
 
 	virtual CString __stdcall get_info(const CString& FileName, const enum info_type _info_type);
 	virtual unsigned int __stdcall get_cap() const;
+
+protected:
+	static CString m_property_str;
+	static int border_size;
+	static int border_color;
+	static int separator_border_color;
+	static int max_picture_x;
+	static int max_picture_y;
+	static int page_range_from;
+	static int page_range_to;
+
+protected:
+	int start_page;
+	int end_page;
+	int page_count;
+	int pdf_page_width;
+	int pdf_page_height;
+	int num_cols;
+	int num_rows;
+	int border_size_pdf;
+	int separator_border_size_pdf;
 
 protected:
 	BYTE* ReadFile(const CString& FileName, int size_x, int size_y);

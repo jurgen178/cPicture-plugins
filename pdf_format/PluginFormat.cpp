@@ -2,11 +2,11 @@
 #include "resource.h"
 #include "pluginformat.h"
 #include "PdfPropertiesDlg.h"
-#include <sys/stat.h>
 
 #include <vector>
 #include <mutex>
 using namespace std;
+
 
 enum filetime_type
 {
@@ -23,14 +23,14 @@ CString GetSizeStr(const __int64 size)
 
 	if (size < d)
 	{
-		s.Format(L"%d Byte", static_cast<int>(size));
+		s.Format(L"%lld Byte", size);
 		return s;
 	}
 
 	d <<= 10;
 	if (size < d)
 	{
-		s.Format(L"%d KB", static_cast<int>(size / z));
+		s.Format(L"%lld KB", size / z);
 		return s;
 	}
 
@@ -477,7 +477,8 @@ void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
 	// Calculate the size of the border around the pages.
 	auto set_border_size = [&]()
 		{
-			border_size_pdf = page_count > 1 ? border_size * max(pdf_page_width, pdf_page_height) / 1000 : 0;
+			const int average_page_size = (pdf_page_width + pdf_page_height) / 2;
+			border_size_pdf = page_count > 1 ? border_size * average_page_size / 1000 : 0;
 			separator_border_size_pdf = border_size_pdf / 2;
 
 			if (page_count > 1 && border_size && border_size_pdf == 0)
@@ -515,7 +516,7 @@ void CPdfFormat::get_page_sizes(FPDF_DOCUMENT document,
 		}
 	}
 	else
-		//if (abs_size_x && abs_size_y)
+	//if (abs_size_x && abs_size_y)	// size to abs_size_x and abs_size_y
 	{
 		if (nominal_height * abs_size_x < nominal_width * abs_size_y)
 		{
@@ -744,27 +745,24 @@ void __stdcall SetPluginInfoTemplates(const vector<CString>& _info_template)
 	//info_template[1] = File size:\t%1 KB (%2 Bytes)\nCreated on:\t%s\nChanged on:\t%4
 	//info_template[2] = Created on:\t%s
 	//info_template[3] = Picture size:\t%1!d!x%2!d! pixel (%3!s!MP)
+	//info_template[4] = Model:\t\t%1!s!
+	//info_template[5] = Error:\t\t%1!s!
+	//info_template[6] = Contains:\t%1!s!
+	//info_template[7] = Picture folder:\t%1
+	//info_template[8] = Settings:\t
 }
 
 CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_type _info_type)
 {
 	int page_count = 0;
 
-	//CString pfd_info;
-
+	if (_info_type & (info_type_std | info_type_short))
 	{
 		PDFiumInit pdfiumInit;
 		FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 		if (document)
 		{
 			page_count = FPDF_GetPageCount(document);
-
-			//char buffer[256];
-			//unsigned long length;
-
-			//// Get the title
-			//FPDF_GetMetaText(document, "Title", buffer, sizeof(buffer));
-			//pfd_info += buffer;
 		}
 		FPDF_CloseDocument(document);
 	}
@@ -786,7 +784,7 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 	    //info_template[1] = Dateigröße:\t%1 (%2 Bytes)\nGeändert am:\t%3\nDatei geändert am:\t%4
 		//info_template[2] = Erstellt am:\t%1
 		//info_template[3] = Bildgröße:\t%1!d!x%2!d! Bildpunkte (%3!s! MP)
-		//info_template[4] = Model:\t\t%1!s!
+		//info_template[4] = Modell:\t\t%1!s!
 		//info_template[5] = Fehler:\t\t%1!s!
 		//info_template[6] = Enthält:\t%1!s!
 		//info_template[7] = Bildordner:\t%1
@@ -806,7 +804,6 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 			else
 				t1 = FileName;
 
-			//_stprintf(msg, info_template[0], t1);
 			info.FormatMessage(info_template[0], t1);
 			msg += info;
 			msg += L'\n';
@@ -825,10 +822,8 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 				msg += L'\n';
 			}
 
-			//_stprintf(msg, info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight);
-
-			//Floating-point printf format specifiers — e, E, f, and g — are not supported. 
-			//The workaround is to use the sprintf function to format the floating-point number 
+			//Floating-point printf format specifiers — e, E, f, and g — are not supported in FormatMessage. 
+			//The workaround is to use the Format function to format the floating-point number 
 			//into a temporary buffer, then use that buffer as the insert string. 
 			const float f_mp(static_cast<float>(m_OriginalPictureWidth * m_OriginalPictureHeight) / 1000 / 1000);
 			CString mp;
@@ -836,9 +831,6 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 
 			info.FormatMessage(info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight, mp);
 			msg += info;
-
-			//_stprintf(msg, info_template[1], file_size?((file_size >> 10)?(file_size >> 10):1):0,
-			//								 file_size, LongFileDateTime);
 	
 			const __int64 file_size(::GetFileSize64(FileName));
 
