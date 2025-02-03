@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CPdfPropertiesDlg, CDialog)
 	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_X, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxX)
 	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_Y, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxY)
 	ON_EN_KILLFOCUS(IDC_EDIT_BORDER_SIZE, &CPdfPropertiesDlg::OnEnKillfocusEditControlBorderSize)
+	ON_STN_CLICKED(IDC_STATIC_BORDER_COLOR, &CPdfPropertiesDlg::OnStnClickedBorderColorStaticText)
 END_MESSAGE_MAP()
 
 
@@ -53,6 +54,8 @@ END_MESSAGE_MAP()
 BOOL CPdfPropertiesDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
+
+	m_BorderColorStaticText.SubclassDlgItem(IDC_STATIC_BORDER_COLOR, this);
 
 	EnableToolTips(TRUE);
 	m_ToolTip.Create(this);
@@ -73,6 +76,9 @@ BOOL CPdfPropertiesDlg::OnInitDialog()
 
 	tooltip.LoadString(IDS_STATIC_COLOR_TOOLTIP);
 	m_ToolTip.AddTool(GetDlgItem(IDC_STATIC_COLOR), tooltip);
+	
+	tooltip.LoadString(IDS_STATIC_BORDER_COLOR_TEXT_TOOLTIP);
+	m_ToolTip.AddTool(GetDlgItem(IDC_STATIC_BORDER_COLOR), tooltip);
 
 	page_range.Format(L"%d", page_range_from + 1);
 
@@ -178,6 +184,12 @@ void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
 	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
 
 	*pResult = 0;
+}
+
+void CPdfPropertiesDlg::OnStnClickedBorderColorStaticText()
+{
+	border_color = RGB(255, 216, 0);
+	m_colorStatic.SetColor(border_color);
 }
 
 void CPdfPropertiesDlg::SetControl(const int id, CString default) const

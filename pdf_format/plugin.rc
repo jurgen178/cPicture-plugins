@@ -88,7 +88,7 @@ BEGIN
     LTEXT           "Color",IDC_STATIC_COLOR,61,153,36,36
     DEFPUSHBUTTON   "OK",IDOK,92,204,50,14,BS_FLAT
     PUSHBUTTON      "Abbrechen",IDCANCEL,158,204,50,14,BS_FLAT
-    LTEXT           "Randfarbe:",IDC_STATIC_BORDERSIZE2,7,166,54,20
+    LTEXT           "Randfarbe:",IDC_STATIC_BORDER_COLOR,7,166,54,20,SS_NOTIFY
 END
 
 
@@ -142,6 +142,8 @@ BEGIN
                             "Maximale Höhe in Bildpunkten.\nWegen der ganzzahligen Größe der Einzelbilder und der Ränder kann der Wert geringfügig abweichen."
     IDS_STATIC_COLOR_TOOLTIP "Randfarbe ändern"
     IDS_PAGE_COUNT          "%d Seiten"
+    IDS_STATIC_BORDER_COLOR_TEXT_TOOLTIP 
+                            "Klicken Sie auf den Text, um die Standardfarbe zu setzen."
 END
 
 #endif    // German (Germany) resources
@@ -184,7 +186,7 @@ BEGIN
     LTEXT           "Color",IDC_STATIC_COLOR,61,153,36,36
     DEFPUSHBUTTON   "OK",IDOK,92,204,50,14,BS_FLAT
     PUSHBUTTON      "Cancel",IDCANCEL,158,204,50,14,BS_FLAT
-    LTEXT           "Border color:",IDC_STATIC_BORDERSIZE2,7,166,54,20
+    LTEXT           "Border color:",IDC_STATIC_BORDER_COLOR,7,166,54,20,SS_NOTIFY
 END
 
 
@@ -264,6 +266,8 @@ BEGIN
                             "Maximum height in pixels.\nDue to the integer size of the individual images and the borders, the value may vary slightly."
     IDS_STATIC_COLOR_TOOLTIP "Change border color"
     IDS_PAGE_COUNT          "%d pages"
+    IDS_STATIC_BORDER_COLOR_TEXT_TOOLTIP 
+                            "Click the text to set the default color."
 END
 
 #endif    // English (United States) resources

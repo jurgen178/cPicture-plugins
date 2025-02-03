@@ -27,6 +27,7 @@ public:
 protected:
 	CString page_range;
 	CToolTipCtrl m_ToolTip;
+	CStatic m_BorderColorStaticText;
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_PDF_PROPERTIES };
@@ -43,5 +44,6 @@ protected:
 	afx_msg void OnEnKillfocusEditControlMaxX();
 	afx_msg void OnEnKillfocusEditControlMaxY();
 	afx_msg void OnEnKillfocusEditControlBorderSize();
+	afx_msg void OnStnClickedBorderColorStaticText();
 	DECLARE_MESSAGE_MAP()
 };

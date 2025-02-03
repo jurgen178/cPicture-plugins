@@ -12,6 +12,7 @@
 #define IDS_EDIT_PDF_MAX_Y_TOOLTIP      108
 #define IDS_STATIC_COLOR_TOOLTIP        109
 #define IDS_PAGE_COUNT                  110
+#define IDS_STATIC_BORDER_COLOR_TEXT_TOOLTIP 111
 #define IDC_SYSLINK_PDF                 1004
 #define IDC_EDIT_PDF_MAX_X              1005
 #define IDC_EDIT_PDF_MAX_Y              1006
@@ -22,15 +23,15 @@
 #define IDC_STATIC_BORDERSIZE           1012
 #define IDC_STATIC_BORDERSIZE_UNIT      1013
 #define IDC_COMBO_SCALING               1014
-#define IDC_STATIC_BORDERSIZE2          1015
+#define IDC_STATIC_BORDER_COLOR         1015
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        106
+#define _APS_NEXT_RESOURCE_VALUE        112
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
