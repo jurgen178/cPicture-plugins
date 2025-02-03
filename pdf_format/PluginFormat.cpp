@@ -330,8 +330,6 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	CPdfPropertiesDlg pdfPropertiesDlg(&Parent);
 
-	validate_properties();
-
 	pdfPropertiesDlg.max_picture_x = max_picture_x;
 	pdfPropertiesDlg.max_picture_y = max_picture_y;
 	pdfPropertiesDlg.scaling = scaling;
