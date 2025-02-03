@@ -330,13 +330,13 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		&pdfPropertiesDlg.border_color
 	);
 
-	const COLORREF prev_border_color = border_color;
-	const int prev_border_size = border_size;
 	const int prev_max_x = max_picture_x;
 	const int prev_max_y = max_picture_y;
 	const int prev_scaling = scaling;
 	const int prev_page_range_from = page_range_from;
 	const int prev_page_range_to = page_range_to;
+	const int prev_border_size = border_size;
+	const COLORREF prev_border_color = border_color;
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
@@ -510,10 +510,13 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 			border_size_pdf = page_count > 1 ? border_size * average_page_size / 1000 : 0;
 			separator_border_size_pdf = border_size_pdf / 2;
 
-			if (page_count > 1 && border_size && border_size_pdf == 0)
+			if (page_count > 1 && border_size)
 			{
-				border_size_pdf = 1;
-				separator_border_size_pdf = 1;
+				if (border_size_pdf == 0)
+					border_size_pdf = 1;
+
+				if (separator_border_size_pdf == 0)
+					separator_border_size_pdf = 1;
 			}
 		};
 
@@ -566,8 +569,9 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	// Each picture has left and right side (border + separator_border),
 	// with separator_border half the size of the border:
 	// Border = 3 * border_size
-	pdf_page_width = 1000 * nominal_width / (num_cols * (1000 + 3 * border_size));
-	pdf_page_height = 1000 * nominal_height / (num_rows * (1000 + 3 * border_size));
+	const int page_bordersize = page_count > 1 ? border_size : 0;
+	pdf_page_width = 1000 * nominal_width / (num_cols * (1000 + 3 * page_bordersize));
+	pdf_page_height = 1000 * nominal_height / (num_rows * (1000 + 3 * page_bordersize));
 
 	// Calculate the new size of the border around the pages.
 	set_border_size();
@@ -747,7 +751,7 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 	if (document)
 	{
 		update_page_sizes(document, 0, 0);
-		m_bIsValid = true;
+		m_bIsValid = m_OriginalPictureWidth && m_OriginalPictureHeight;
 
 		FPDF_CloseDocument(document);
 	}
