@@ -340,15 +340,15 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	pdfPropertiesDlg.border_size = border_size;
 	pdfPropertiesDlg.border_color = border_color;
 
-	bool modified = false;
+	bool properties_updated = false;
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
-		modified = 
+		properties_updated = 
 			pdfPropertiesDlg.max_picture_x != max_picture_x ||
 			pdfPropertiesDlg.max_picture_y != max_picture_y ||
-			pdfPropertiesDlg.page_range_from != page_range_from ||
 			pdfPropertiesDlg.scaling != scaling ||
+			pdfPropertiesDlg.page_range_from != page_range_from ||
 			pdfPropertiesDlg.page_range_to != page_range_to ||
 			pdfPropertiesDlg.border_size != border_size ||
 			pdfPropertiesDlg.border_color != border_color;
@@ -366,8 +366,8 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	Parent.Detach();
 
-	// true: reload of the pictures
-	return modified;
+	// true: reload pictures
+	return properties_updated;
 }
 
 void CPdfFormat::validate_properties()
@@ -387,6 +387,8 @@ void CPdfFormat::validate_properties()
 
 CString __stdcall CPdfFormat::get_ext()
 {
+	// *** File extensions associated with the new format.
+	// Multiple extensions are separated by ';' (".abc;.defg")
 	return L".pdf";
 }
 
