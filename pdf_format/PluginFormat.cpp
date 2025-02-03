@@ -697,7 +697,7 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 	return pvmem;
 }
 
-BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, int size_x, int size_y)
+BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, const int size_x, const int size_y)
 {
 	PDFiumInit pdfiumInit;
 
