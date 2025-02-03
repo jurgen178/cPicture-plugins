@@ -304,6 +304,8 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 		&border_size,
 		&border_color
 	);
+
+	validate_properties();
 }
 
 CString __stdcall CPdfFormat::get_properties()
@@ -338,13 +340,15 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
-		max_picture_x = max(1000, pdfPropertiesDlg.max_picture_x);
-		max_picture_y = max(1000, pdfPropertiesDlg.max_picture_y);
-		scaling = min(1000, max(10, pdfPropertiesDlg.scaling));
+		max_picture_x = pdfPropertiesDlg.max_picture_x;
+		max_picture_y = pdfPropertiesDlg.max_picture_y;
+		scaling = pdfPropertiesDlg.scaling;
 		page_range_from = pdfPropertiesDlg.page_range_from;
 		page_range_to = pdfPropertiesDlg.page_range_to;
-		border_size = min(250, max(0, pdfPropertiesDlg.border_size));
+		border_size = pdfPropertiesDlg.border_size;
 		border_color = pdfPropertiesDlg.border_color;
+
+		validate_properties();
 
 		m_property_str.Format(format_property_string,
 			max_picture_x,
@@ -368,6 +372,21 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		prev_page_range_to != page_range_to ||
 		prev_border_size != border_size ||
 		prev_border_color != border_color;
+}
+
+void CPdfFormat::validate_properties()
+{
+	max_picture_x = min(65000, max(100, max_picture_x));
+	max_picture_y = min(65000, max(100, max_picture_y));
+	
+	scaling = min(1000, max(10, scaling));
+	
+	page_range_from = max(0, page_range_from);
+	page_range_to = max(-1, page_range_to);
+	if (page_range_to < page_range_from)
+		page_range_to = -1;
+
+	border_size = min(250, max(0, border_size));
 }
 
 CString __stdcall CPdfFormat::get_ext()
@@ -779,12 +798,12 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 
 	if(_info_type & info_type_std)
 	{
-		CString data;
+		CString info;
 		if (page_count)
 		{
-			data.Format(IDS_PAGE_COUNT, page_count);
+			info.Format(IDS_PAGE_COUNT, page_count);
 		}
-		return data;
+		return info;
 	}
 
 	if(_info_type & info_type_short)

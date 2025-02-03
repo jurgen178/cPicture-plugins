@@ -59,6 +59,7 @@ protected:
 	int separator_border_size_pdf;
 
 protected:
+	void validate_properties();
 	BYTE* ReadFile(const CString& FileName, int size_x, int size_y);
 	void get_page_range(FPDF_DOCUMENT document, int& start, int& end);
 	BYTE* convert_to_rgb(FPDF_BITMAP rgba_bitmap);
