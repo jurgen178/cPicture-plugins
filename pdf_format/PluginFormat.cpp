@@ -310,6 +310,16 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 
 CString __stdcall CPdfFormat::get_properties()
 {
+	m_property_str.Format(format_property_string,
+		max_picture_x,
+		max_picture_y,
+		scaling,
+		page_range_from,
+		page_range_to,
+		border_size,
+		border_color
+	);
+
 	return m_property_str;
 }
 
@@ -320,26 +330,29 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	CPdfPropertiesDlg pdfPropertiesDlg(&Parent);
 
-	swscanf_s(m_property_str, format_property_string,
-		&pdfPropertiesDlg.max_picture_x,
-		&pdfPropertiesDlg.max_picture_y,
-		&pdfPropertiesDlg.scaling,
-		&pdfPropertiesDlg.page_range_from,
-		&pdfPropertiesDlg.page_range_to,
-		&pdfPropertiesDlg.border_size,
-		&pdfPropertiesDlg.border_color
-	);
+	validate_properties();
 
-	const int prev_max_x = max_picture_x;
-	const int prev_max_y = max_picture_y;
-	const int prev_scaling = scaling;
-	const int prev_page_range_from = page_range_from;
-	const int prev_page_range_to = page_range_to;
-	const int prev_border_size = border_size;
-	const COLORREF prev_border_color = border_color;
+	pdfPropertiesDlg.max_picture_x = max_picture_x;
+	pdfPropertiesDlg.max_picture_y = max_picture_y;
+	pdfPropertiesDlg.scaling = scaling;
+	pdfPropertiesDlg.page_range_from = page_range_from;
+	pdfPropertiesDlg.page_range_to = page_range_to;
+	pdfPropertiesDlg.border_size = border_size;
+	pdfPropertiesDlg.border_color = border_color;
+
+	bool modified = false;
 
 	if (pdfPropertiesDlg.DoModal() == IDOK)
 	{
+		modified = 
+			pdfPropertiesDlg.max_picture_x != max_picture_x ||
+			pdfPropertiesDlg.max_picture_y != max_picture_y ||
+			pdfPropertiesDlg.page_range_from != page_range_from ||
+			pdfPropertiesDlg.scaling != scaling ||
+			pdfPropertiesDlg.page_range_to != page_range_to ||
+			pdfPropertiesDlg.border_size != border_size ||
+			pdfPropertiesDlg.border_color != border_color;
+
 		max_picture_x = pdfPropertiesDlg.max_picture_x;
 		max_picture_y = pdfPropertiesDlg.max_picture_y;
 		scaling = pdfPropertiesDlg.scaling;
@@ -349,29 +362,12 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 		border_color = pdfPropertiesDlg.border_color;
 
 		validate_properties();
-
-		m_property_str.Format(format_property_string,
-			max_picture_x,
-			max_picture_y,
-			scaling,
-			page_range_from,
-			page_range_to,
-			border_size,
-			border_color
-		);
 	}
 
 	Parent.Detach();
 
 	// true: reload of the pictures
-	return
-		prev_max_x != max_picture_x ||
-		prev_max_y != max_picture_y ||
-		prev_page_range_from != page_range_from ||
-		prev_scaling != scaling ||
-		prev_page_range_to != page_range_to ||
-		prev_border_size != border_size ||
-		prev_border_color != border_color;
+	return modified;
 }
 
 void CPdfFormat::validate_properties()
@@ -564,6 +560,10 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 
 	nominal_width = scale_z * nominal_width / scale_n;
 	nominal_height = scale_z * nominal_height / scale_n;
+	if (nominal_width == 0)
+		nominal_width = 1;
+	if (nominal_height == 0)
+		nominal_height = 1;
 
 	// Calculate the new page size from the nominal size.
 	// Each picture has left and right side (border + separator_border),
@@ -572,6 +572,10 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	const int page_bordersize = page_count > 1 ? border_size : 0;
 	pdf_page_width = 1000 * nominal_width / (num_cols * (1000 + 3 * page_bordersize));
 	pdf_page_height = 1000 * nominal_height / (num_rows * (1000 + 3 * page_bordersize));
+	if (pdf_page_width == 0)
+		pdf_page_width = 1;
+	if (pdf_page_height == 0)
+		pdf_page_height = 1;
 
 	// Calculate the new size of the border around the pages.
 	set_border_size();
