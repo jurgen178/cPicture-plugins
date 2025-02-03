@@ -98,7 +98,7 @@ BOOL CPdfPropertiesDlg::OnInitDialog()
 
 	m_colorStatic.SetColor(border_color);
 
-	// Add specified values to the ComboBox.
+	// Add specific scaling values to the ComboBox.
 	const int values[] = { 10, 25, 50, 75, 100, 125, 150, 200, 400, 1000 };
 	for (int i = 0; i < sizeof(values) / sizeof(int); ++i)
 	{
@@ -178,8 +178,8 @@ void CPdfPropertiesDlg::OnOK()
 
 void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	PNMLINK pNMLink = reinterpret_cast<PNMLINK>(pNMHDR);
-	LITEM item = pNMLink->item;
+	const PNMLINK pNMLink = reinterpret_cast<PNMLINK>(pNMHDR);
+	const LITEM item = pNMLink->item;
 
 	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
 
