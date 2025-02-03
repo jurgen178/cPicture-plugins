@@ -26,7 +26,7 @@ void CColorStatic::SetColor(COLORREF color)
     Invalidate(); // Force the control to repaint
 }
 
-COLORREF CColorStatic::GetColor()
+COLORREF CColorStatic::GetColor() const
 {
     return m_color;
 }

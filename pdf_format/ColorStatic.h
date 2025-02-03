@@ -9,7 +9,7 @@ public:
     virtual ~CColorStatic();
 
     void SetColor(COLORREF color);
-    COLORREF GetColor();
+    COLORREF GetColor() const;
 
 protected:
     afx_msg void OnPaint();
