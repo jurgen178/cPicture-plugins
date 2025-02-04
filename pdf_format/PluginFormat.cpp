@@ -559,8 +559,8 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 		}
 	}
 
-	nominal_width = scale_z * rel_size_z * nominal_width / rel_size_n / scale_n;
-	nominal_height = scale_z * rel_size_z * nominal_height / rel_size_n / scale_n;
+	nominal_width = scale_z * rel_size_z * nominal_width / (rel_size_n * scale_n);
+	nominal_height = scale_z * rel_size_z * nominal_height / (rel_size_n * scale_n);
 	if (nominal_width == 0)
 		nominal_width = 1;
 	if (nominal_height == 0)
