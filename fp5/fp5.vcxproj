@@ -131,7 +131,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>delayimp.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>C:\Projects\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)\..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
       <DelayLoadDLLs>msvfw32.dll;oledlg.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
