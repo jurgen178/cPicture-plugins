@@ -60,12 +60,16 @@ protected:
 
 protected:
 	void validate_properties();
-	BYTE* ReadFile(const CString& FileName, const int size_x, const int size_y);
+	BYTE* ReadFile(const CString& FileName,
+		const int size_x, const int size_y,
+		const int rel_size_z = 1, const int rel_size_n = 1);
 	void get_page_range(FPDF_DOCUMENT document, int& start, int& end);
 	BYTE* convert_to_rgb(FPDF_BITMAP rgba_bitmap);
 	CStringA get_utf8_file_name(const CString& FileName);
 	FPDF_BITMAP get_pages(FPDF_DOCUMENT document,
-		const int abs_size_x = 0, const int abs_size_y = 0);
+		const int abs_size_x = 0, const int abs_size_y = 0,
+		const int rel_size_z = 1, const int rel_size_n = 1);
 	void update_page_sizes(FPDF_DOCUMENT document,
-		const int abs_size_x = 0, const int abs_size_y = 0);
+		const int abs_size_x = 0, const int abs_size_y = 0,
+		const int rel_size_z = 1, const int rel_size_n = 1);
 };

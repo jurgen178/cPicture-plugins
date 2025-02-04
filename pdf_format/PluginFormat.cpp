@@ -451,7 +451,8 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 }
 
 void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
-	const int abs_size_x, const int abs_size_y)
+	const int abs_size_x, const int abs_size_y,
+	const int rel_size_z, const int rel_size_n)
 {
 	pdf_page_width = 0;
 	pdf_page_height = 0;
@@ -558,8 +559,8 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 		}
 	}
 
-	nominal_width = scale_z * nominal_width / scale_n;
-	nominal_height = scale_z * nominal_height / scale_n;
+	nominal_width = scale_z * rel_size_z * nominal_width / rel_size_n / scale_n;
+	nominal_height = scale_z * rel_size_z * nominal_height / rel_size_n / scale_n;
 	if (nominal_width == 0)
 		nominal_width = 1;
 	if (nominal_height == 0)
@@ -581,16 +582,21 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	set_border_size();
 
 	// Calculate the total width and height of the combined image.
-	// Because of int rounding, m_OriginalPictureWidth is not equal to nominal_width (up to 1%)
-	// if double data type would be used, m_OriginalPictureWidth would be equal to nominal_width
-	m_OriginalPictureWidth = m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
-	m_OriginalPictureHeight = m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
+	// Because of int rounding, m_PictureWidth is not equal to nominal_width (up to 1%)
+	// if double data type would be used, m_PictureWidth would be equal to nominal_width
+	m_PictureWidth = num_cols * (pdf_page_width + 2 * (border_size_pdf + separator_border_size_pdf));
+	m_PictureHeight = num_rows * (pdf_page_height + 2 * (border_size_pdf + separator_border_size_pdf));
+
+	// Keep the original size values when using relative resizing.
+	m_OriginalPictureWidth = rel_size_n * m_PictureWidth / rel_size_z;
+	m_OriginalPictureHeight = rel_size_n * m_PictureHeight / rel_size_z;
 }
 
 FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
-	const int abs_size_x, const int abs_size_y)
+	const int abs_size_x, const int abs_size_y,
+	const int rel_size_z, const int rel_size_n)
 {
-	update_page_sizes(document, abs_size_x, abs_size_y);
+	update_page_sizes(document, abs_size_x, abs_size_y, rel_size_z, rel_size_n);
 
 	if (page_count <= 0)
 	{
@@ -603,8 +609,8 @@ FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 	const int border_color_bgr = (red << 16) + (green << 8) + (blue);
 
 	// Create a single bitmap with the combined width and height.
-	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(m_OriginalPictureWidth, m_OriginalPictureHeight, 0);
-	FPDFBitmap_FillRect(combined_bitmap, 0, 0, m_OriginalPictureWidth, m_OriginalPictureHeight, 0xFFFFFFFF);
+	FPDF_BITMAP combined_bitmap = FPDFBitmap_Create(m_PictureWidth, m_PictureHeight, 0);
+	FPDFBitmap_FillRect(combined_bitmap, 0, 0, m_PictureWidth, m_PictureHeight, 0xFFFFFFFF);
 
 	// Render each page directly into the combined bitmap.
 	for (int i = start_page; i <= end_page; ++i)
@@ -633,11 +639,11 @@ FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 			FPDF_RenderPageBitmap(page_bitmap, page, 0, 0, width, height, 0, 0);
 
 			const BYTE* src_buffer = static_cast<const BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
-			BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * (y_offset * m_OriginalPictureWidth + x_offset);
+			BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * (y_offset * m_PictureWidth + x_offset);
 
 			for (int y = 0; y < height; ++y)
 			{
-				memcpy(dest_buffer + 4 * y * m_OriginalPictureWidth, src_buffer + 4 * y * width, 4 * width);
+				memcpy(dest_buffer + 4 * y * m_PictureWidth, src_buffer + 4 * y * width, 4 * width);
 			}
 
 			// Draw the border around the page.
@@ -664,9 +670,9 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 {
 	BYTE* pvmem = NULL;
 
-	if (rgba_bitmap && m_OriginalPictureWidth && m_OriginalPictureHeight)
+	if (rgba_bitmap && m_PictureWidth && m_PictureHeight)
 	{
-		const int size = 3 * m_OriginalPictureWidth * m_OriginalPictureHeight;
+		const int size = 3 * m_PictureWidth * m_PictureHeight;
 		pvmem = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
 
 		if (pvmem)
@@ -675,7 +681,7 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 			BYTE* rgb = pvmem;
 			register int index = 0;
 
-			for (register int k = m_OriginalPictureWidth * m_OriginalPictureHeight; k != 0; --k)
+			for (register int k = m_PictureWidth * m_PictureHeight; k != 0; --k)
 			{
 				// BGR -> RGB
 				*rgb++ = *(pixels + index + 2);
@@ -697,7 +703,9 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 	return pvmem;
 }
 
-BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, const int size_x, const int size_y)
+BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName,
+	const int size_x, const int size_y,
+	const int rel_size_z, const int rel_size_n)
 {
 	PDFiumInit pdfiumInit;
 
@@ -706,7 +714,7 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName, const int size_x, 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 	if (document)
 	{
-		FPDF_BITMAP rgba_bitmap = get_pages(document, size_x, size_y);
+		FPDF_BITMAP rgba_bitmap = get_pages(document, size_x, size_y, rel_size_z, rel_size_n);
 
 		// Convert bitmap pixels to the RGB-format.
 		pvmem = convert_to_rgb(rgba_bitmap);
@@ -736,7 +744,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	BYTE* pvmem = ReadFile(FileName, 0, 0);	// autosize
+	BYTE* pvmem = ReadFile(FileName, 0, 0, rel_size_z, rel_size_n);	// autosize
 	m_bIsValid = pvmem != NULL;
 	
 	return pvmem;
