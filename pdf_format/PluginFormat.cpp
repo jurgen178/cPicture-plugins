@@ -300,7 +300,8 @@ void CPdfFormat::reset_properties()
 	page_range_from = 0;
 	page_range_to = -1;
 	border_size = 25;
-	border_color = 0x00D8FF;
+	border_color = 0x00D8FF;	// RGB(r,g,b) = ((COLORREF)(((BYTE)(r) | ((WORD)((BYTE)(g)) << 8)) | (((DWORD)(BYTE)(b)) << 16)));
+								// 0xbbggrr
 }
 
 void CPdfFormat::validate_properties()
@@ -662,9 +663,17 @@ FPDF_BITMAP CPdfFormat::get_pages(FPDF_DOCUMENT document,
 			const BYTE* src_buffer = static_cast<const BYTE*>(FPDFBitmap_GetBuffer(page_bitmap));
 			BYTE* dest_buffer = static_cast<BYTE*>(FPDFBitmap_GetBuffer(combined_bitmap)) + 4 * (y_offset * m_PictureWidth + x_offset);
 
-			for (int y = 0; y < height; ++y)
+			register int dest_index = 0;
+			const int dest_inc = 4 * m_PictureWidth;
+			register int src_index = 0;
+			const int src_inc = 4 * width;
+			const int size = 4 * width;
+
+			for (register int y = 0; y < height; ++y)
 			{
-				memcpy(dest_buffer + 4 * y * m_PictureWidth, src_buffer + 4 * y * width, 4 * width);
+				memcpy(dest_buffer + dest_index, src_buffer + src_index, size);
+				dest_index += dest_inc;
+				src_index += src_inc;
 			}
 
 			// Draw the border around the page.
@@ -700,14 +709,17 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 		{
 			const BYTE* pixels = static_cast<const BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
 			BYTE* rgb = pvmem;
-			register int index = 0;
+			register int index = 3;
 
 			for (register int k = m_PictureWidth * m_PictureHeight; k != 0; --k)
 			{
 				// BGR -> RGB
-				*rgb++ = *(pixels + index + 2);
-				*rgb++ = *(pixels + index + 1);
-				*rgb++ = *(pixels + index);
+				*rgb = *(pixels + --index);
+				++rgb;
+				*rgb = *(pixels + --index);
+				++rgb;
+				*rgb = *(pixels + --index);
+				++rgb;
 
 				//// BGRA -> RGB
 				//const int alpha = *(pixels + index + 3);
@@ -716,7 +728,7 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 				//*rgb++ = alpha * *(pixels + index) / 255;
 
 				// PDF is BGRA-Layout
-				index += 4;
+				index += 7;
 			}
 		}
 	}
@@ -765,7 +777,7 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	const enum scaling_type picture_scaling_type,
 	const bool b_scan)
 {
-	BYTE* pvmem = ReadFile(FileName, 0, 0, rel_size_z, rel_size_n);	// autosize
+	BYTE* pvmem = ReadFile(FileName, 0, 0, rel_size_z, rel_size_n);	// autosize: abs_size_x == 0 && abs_size_y == 0
 	m_bIsValid = pvmem != NULL;
 	
 	return pvmem;
@@ -793,8 +805,8 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 unsigned int __stdcall CPdfFormat::get_cap() const
 {
 	// *** Capabilities of the plugin.
-	return	PICTURE_READ;		// This plugin can read the picture format.
-			//PICTURE_WRITE |	// This plugin can write the picture format.
+	return PICTURE_READ;		// This plugin can read the picture format.
+		   //PICTURE_WRITE |	// This plugin can write the picture format.
 								// At least one must be specified. Otherwise 
 								// the plugin will not be loaded.
 								// See PictureFormat.h for the complete list.
