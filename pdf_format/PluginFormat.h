@@ -59,6 +59,7 @@ protected:
 	int separator_border_size_pdf;
 
 protected:
+	void reset_properties();
 	void validate_properties();
 	BYTE* ReadFile(const CString& FileName,
 		const int size_x, const int size_y,

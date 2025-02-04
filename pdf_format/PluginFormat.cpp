@@ -279,23 +279,51 @@ CPdfFormat::~CPdfFormat()
 //     which can be used for your picture format settings.
 
 CString CPdfFormat::m_property_str;
-int CPdfFormat::max_picture_x = 8000;
-int CPdfFormat::max_picture_y = 8000;
-int CPdfFormat::scaling = 100;
-int CPdfFormat::page_range_from = 0;
-int CPdfFormat::page_range_to = -1;
-int CPdfFormat::border_size = 25;
-int CPdfFormat::border_color = 0xFFD800;
-int CPdfFormat::separator_border_color = 0xFFFFFFFF;
+int CPdfFormat::max_picture_x;
+int CPdfFormat::max_picture_y;
+int CPdfFormat::scaling;
+int CPdfFormat::page_range_from;
+int CPdfFormat::page_range_to;
+int CPdfFormat::border_size;
+int CPdfFormat::border_color;
+int CPdfFormat::separator_border_color;
 
 CString format_property_string(L"%d,%d,%d,%d,%d,%d,%06X");
+constexpr int format_property_string_elements = 7;
 
+
+void CPdfFormat::reset_properties()
+{
+	max_picture_x = 8000;
+	max_picture_y = 8000;
+	scaling = 100;
+	page_range_from = 0;
+	page_range_to = -1;
+	border_size = 25;
+	border_color = 0x00D8FF;
+	separator_border_color = 0xFFFFFFFF;
+}
+
+void CPdfFormat::validate_properties()
+{
+	max_picture_x = min(65000, max(100, max_picture_x));
+	max_picture_y = min(65000, max(100, max_picture_y));
+
+	scaling = min(1000, max(10, scaling));
+
+	page_range_from = max(0, page_range_from);
+	page_range_to = max(-1, page_range_to);
+	if (page_range_to < page_range_from)
+		page_range_to = -1;
+
+	border_size = min(250, max(0, border_size));
+}
 
 void __stdcall CPdfFormat::set_properties(const CString& property_str)
 {
 	m_property_str = property_str;
 
-	swscanf_s(m_property_str, format_property_string,
+	const int ret = swscanf_s(m_property_str, format_property_string,
 		&max_picture_x,
 		&max_picture_y,
 		&scaling,
@@ -305,7 +333,10 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 		&border_color
 	);
 
-	validate_properties();
+	if (ret == format_property_string_elements)
+		validate_properties();
+	else
+		reset_properties();
 }
 
 CString __stdcall CPdfFormat::get_properties()
@@ -366,21 +397,6 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 
 	// true: reload pictures
 	return properties_updated;
-}
-
-void CPdfFormat::validate_properties()
-{
-	max_picture_x = min(65000, max(100, max_picture_x));
-	max_picture_y = min(65000, max(100, max_picture_y));
-	
-	scaling = min(1000, max(10, scaling));
-	
-	page_range_from = max(0, page_range_from);
-	page_range_to = max(-1, page_range_to);
-	if (page_range_to < page_range_from)
-		page_range_to = -1;
-
-	border_size = min(250, max(0, border_size));
 }
 
 CString __stdcall CPdfFormat::get_ext()
