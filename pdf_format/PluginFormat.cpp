@@ -286,7 +286,7 @@ int CPdfFormat::page_range_from;
 int CPdfFormat::page_range_to;
 int CPdfFormat::border_size;
 int CPdfFormat::border_color;
-int CPdfFormat::separator_border_color;
+int CPdfFormat::separator_border_color = 0xFFFFFFFF;
 
 CString format_property_string(L"%d,%d,%d,%d,%d,%d,%06X");
 constexpr int format_property_string_elements = 7;
@@ -301,7 +301,6 @@ void CPdfFormat::reset_properties()
 	page_range_to = -1;
 	border_size = 25;
 	border_color = 0x00D8FF;
-	separator_border_color = 0xFFFFFFFF;
 }
 
 void CPdfFormat::validate_properties()
