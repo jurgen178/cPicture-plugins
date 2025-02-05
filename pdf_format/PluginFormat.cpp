@@ -300,8 +300,7 @@ void CPdfFormat::reset_properties()
 	page_range_from = 0;
 	page_range_to = -1;
 	border_size = 25;
-	border_color = 0x00D8FF;	// RGB(r,g,b) = ((COLORREF)(((BYTE)(r) | ((WORD)((BYTE)(g)) << 8)) | (((DWORD)(BYTE)(b)) << 16)));
-								// 0xbbggrr
+	border_color = RGB(255, 216, 0);
 }
 
 void CPdfFormat::validate_properties()
@@ -442,6 +441,8 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 {
 	// FPDF_LoadDocument requires a UTF-8 encoded file name.
 
+	CStringA pictureNameUtf8;
+
 	// Determine the required buffer size for the UTF-8 string.
 	const int bufferSize = WideCharToMultiByte(CP_UTF8, 0, FileName, -1, NULL, 0, NULL, NULL);
 	if (bufferSize)
@@ -454,16 +455,13 @@ CStringA CPdfFormat::get_utf8_file_name(const CString& FileName)
 		const int utf8Length = WideCharToMultiByte(CP_UTF8, 0, FileName, -1, reinterpret_cast<char*>(utf8Buffer), bufferSize, NULL, NULL);
 		if (utf8Length)
 		{
-			const CStringA pictureNameA = utf8Buffer;
-			delete[] utf8Buffer;
-
-			return pictureNameA;
+			pictureNameUtf8 = utf8Buffer;
 		}
 
 		delete[] utf8Buffer;
 	}
 
-	return L"";
+	return pictureNameUtf8;
 }
 
 void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
@@ -548,7 +546,9 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	{
 		if (nominal_width > max_picture_x || nominal_height > max_picture_y)
 		{
-			if (nominal_height * max_picture_x < nominal_width * max_picture_y)
+			const unsigned int nhx = nominal_height * max_picture_x;
+			const unsigned int nwy = nominal_width * max_picture_y;
+			if (nhx < nwy)
 			{
 				scale_z = max_picture_x;
 				scale_n = nominal_width;
@@ -563,7 +563,9 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	else
 	//if (abs_size_x && abs_size_y)	// size to abs_size_x and abs_size_y
 	{
-		if (nominal_height * abs_size_x < nominal_width * abs_size_y)
+		const unsigned int nhx = nominal_height * abs_size_x;
+		const unsigned int nwy = nominal_width * abs_size_y;
+		if (nhx < nwy)
 		{
 			scale_z = abs_size_x;
 			scale_n = nominal_width;
@@ -705,7 +707,7 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 
 	if (rgba_bitmap && m_PictureWidth && m_PictureHeight)
 	{
-		const int size = 3 * m_PictureWidth * m_PictureHeight;
+		const unsigned int size = 3 * m_PictureWidth * m_PictureHeight;
 		pvmem = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
 
 		if (pvmem)
@@ -716,7 +718,7 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 			register int index = 3;
 			//register int index = 4;
 
-			for (register int k = m_PictureWidth * m_PictureHeight; k != 0; --k)
+			for (register unsigned int k = m_PictureWidth * m_PictureHeight; k != 0; --k)
 			{
 				// BGR -> RGB
 				*rgb = *(pixels + --index);

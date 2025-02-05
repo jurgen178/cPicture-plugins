@@ -175,7 +175,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 		bitmap.GetBitmap(&bm);
 		const int width = bm.bmWidth;
 		const int height = bm.bmHeight;
-		const int area = width * height;
+		const unsigned int area = width * height;
 		const int sizeBytes = bm.bmWidthBytes * bm.bmHeight;
 		BYTE* pBits = new BYTE[sizeBytes];
 
