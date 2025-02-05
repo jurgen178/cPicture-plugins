@@ -99,7 +99,7 @@ BOOL CPdfPropertiesDlg::OnInitDialog()
 	m_colorStatic.SetColor(border_color);
 
 	// Add specific scaling values to the ComboBox.
-	const int values[] = { 10, 25, 50, 75, 100, 125, 150, 200, 400, 1000 };
+	constexpr int values[] = { 10, 25, 50, 75, 100, 125, 150, 200, 400, 1000 };
 	for (const int value : values)
 	{
 		CString strValue;
