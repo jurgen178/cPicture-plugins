@@ -187,7 +187,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 
 		// Get the char densities.
 		const WCHAR letters[] = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-		for (wchar_t wc : letters)
+		for (const wchar_t wc : letters)
 		{
 			if (wc == 0)
 				continue;
@@ -214,7 +214,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					const bool bit = (pBits[byteIndex] & (1 << bitIndex)) != 0;
 
 					if (bit)
-						ones++;
+						++ones;
 
 #ifdef DEBUG
 					text += bit ? L'1' : L'0';

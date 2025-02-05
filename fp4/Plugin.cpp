@@ -103,15 +103,21 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 		for (register unsigned int x = requested_data1.picture_width; x != 0; --x)
 		{
 			// Invert colors.
-			*data = 255 - *data++;	// red
-			*data = 255 - *data++;	// green
-			*data = 255 - *data++;	// blue
+			*data = 255 - *data;	// red
+			++data;
+			*data = 255 - *data;	// green
+			++data;
+			*data = 255 - *data;	// blue
+			++data;
 
 			//// Or make a grey scale picture.
 			//const BYTE grey((306 * *(data) + 601 * *(data + 1) + 117 * *(data + 2)) >> 10);
-			//*data++ = grey;	// red
-			//*data++ = grey;	// green
-			//*data++ = grey;	// blue
+			//*data = grey;	// red
+			//++data;
+			//*data = grey;	// green
+			//++data;
+			//*data = grey;	// blue
+			//++data;
 		}
 	}
 

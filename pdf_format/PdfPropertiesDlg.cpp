@@ -100,10 +100,10 @@ BOOL CPdfPropertiesDlg::OnInitDialog()
 
 	// Add specific scaling values to the ComboBox.
 	const int values[] = { 10, 25, 50, 75, 100, 125, 150, 200, 400, 1000 };
-	for (int i = 0; i < sizeof(values) / sizeof(int); ++i)
+	for (const int value : values)
 	{
 		CString strValue;
-		strValue.Format(_T("%d"), values[i]);
+		strValue.Format(_T("%d"), value);
 		m_comboScaling.AddString(strValue);
 	}
 

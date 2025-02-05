@@ -512,7 +512,7 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	// Calculate the number of rows and columns for the rectangle layout.
 	num_cols = static_cast<int>(sqrt(page_count));
 	if (page_count > 1)
-		num_cols++;
+		++num_cols;
 
 	num_rows = (page_count + num_cols - 1) / num_cols;
 
@@ -585,6 +585,7 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	
 	if (nominal_width == 0)
 		nominal_width = 1;
+
 	if (nominal_height == 0)
 		nominal_height = 1;
 
@@ -595,8 +596,10 @@ void CPdfFormat::update_page_sizes(FPDF_DOCUMENT document,
 	const int page_bordersize = page_count > 1 ? border_size : 0;
 	pdf_page_width = 1000 * nominal_width / (num_cols * (1000 + 3 * page_bordersize));
 	pdf_page_height = 1000 * nominal_height / (num_rows * (1000 + 3 * page_bordersize));
+	
 	if (pdf_page_width == 0)
 		pdf_page_width = 1;
+
 	if (pdf_page_height == 0)
 		pdf_page_height = 1;
 
@@ -709,7 +712,9 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 		{
 			const BYTE* pixels = static_cast<const BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
 			BYTE* rgb = pvmem;
+			
 			register int index = 3;
+			//register int index = 4;
 
 			for (register int k = m_PictureWidth * m_PictureHeight; k != 0; --k)
 			{
@@ -721,14 +726,18 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 				*rgb = *(pixels + --index);
 				++rgb;
 
-				//// BGRA -> RGB
-				//const int alpha = *(pixels + index + 3);
-				//*rgb++ = alpha * *(pixels + index + 2) / 255;
-				//*rgb++ = alpha * *(pixels + index + 1) / 255;
-				//*rgb++ = alpha * *(pixels + index) / 255;
-
-				// PDF is BGRA-Layout
 				index += 7;
+
+				//// BGRA -> RGB
+				//const int alpha = *(pixels + --index);
+				//*rgb++ = alpha * *(pixels + --index) / 255;
+				//++rgb;
+				//*rgb++ = alpha * *(pixels + --index) / 255;
+				//++rgb;
+				//*rgb++ = alpha * *(pixels + --index) / 255;
+				//++rgb;
+
+				//index += 8;
 			}
 		}
 	}
@@ -878,7 +887,7 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 
 			const TCHAR* t1 = wcsrchr(FileName, L'\\');
 			if(t1)
-				t1++;
+				++t1;
 			else
 				t1 = FileName;
 

@@ -116,9 +116,12 @@ bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& pict
 		{
 			// Make a grey scale picture.
 			const BYTE grey((306 * *(data) + 601 * *(data + 1) + 117 * *(data + 2)) >> 10);
-			*data++ = grey;	// red
-			*data++ = grey;	// green
-			*data++ = grey;	// blue
+			*data = grey;	// red
+			++data;
+			*data = grey;	// green
+			++data;
+			*data = grey;	// blue
+			++data;
 		}
 	}
 
