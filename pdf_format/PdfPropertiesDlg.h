@@ -40,7 +40,6 @@ protected:
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	afx_msg void OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnEnKillfocusEditControlMaxX();
 	afx_msg void OnEnKillfocusEditControlMaxY();
 	afx_msg void OnEnKillfocusEditControlBorderSize();

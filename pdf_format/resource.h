@@ -13,7 +13,6 @@
 #define IDS_STATIC_COLOR_TOOLTIP        109
 #define IDS_PAGE_COUNT                  110
 #define IDS_STATIC_BORDER_COLOR_TEXT_TOOLTIP 111
-#define IDC_SYSLINK_PDF                 1004
 #define IDC_EDIT_PDF_MAX_X              1005
 #define IDC_EDIT_PDF_MAX_Y              1006
 #define IDC_EDIT_PAGE_RANGE             1007

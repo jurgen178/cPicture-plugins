@@ -41,7 +41,6 @@ void CPdfPropertiesDlg::DoDataExchange(CDataExchange* pDX)
 
 
 BEGIN_MESSAGE_MAP(CPdfPropertiesDlg, CDialog)
-	ON_NOTIFY(NM_CLICK, IDC_SYSLINK_PDF, &CPdfPropertiesDlg::OnClickSyslinkPdf)
 	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_X, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxX)
 	ON_EN_KILLFOCUS(IDC_EDIT_PDF_MAX_Y, &CPdfPropertiesDlg::OnEnKillfocusEditControlMaxY)
 	ON_EN_KILLFOCUS(IDC_EDIT_BORDER_SIZE, &CPdfPropertiesDlg::OnEnKillfocusEditControlBorderSize)
@@ -174,16 +173,6 @@ void CPdfPropertiesDlg::OnOK()
 	}
 
 	CDialog::OnOK();
-}
-
-void CPdfPropertiesDlg::OnClickSyslinkPdf(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	const PNMLINK pNMLink = reinterpret_cast<PNMLINK>(pNMHDR);
-	const LITEM item = pNMLink->item;
-
-	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
-
-	*pResult = 0;
 }
 
 void CPdfPropertiesDlg::OnStnClickedBorderColorStaticText()
