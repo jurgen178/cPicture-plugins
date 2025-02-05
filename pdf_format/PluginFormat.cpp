@@ -715,31 +715,32 @@ BYTE* CPdfFormat::convert_to_rgb(FPDF_BITMAP rgba_bitmap)
 			const BYTE* pixels = static_cast<const BYTE*>(FPDFBitmap_GetBuffer(rgba_bitmap));
 			BYTE* rgb = pvmem;
 			
-			register int index = 3;
-			//register int index = 4;
+			register int index = 2;		// BGR -> RGB
+			//register int index = 3;	// BGRA -> RGB
 
 			for (register unsigned int k = m_PictureWidth * m_PictureHeight; k != 0; --k)
 			{
 				// BGR -> RGB
-				*rgb = *(pixels + --index);
-				++rgb;
-				*rgb = *(pixels + --index);
-				++rgb;
-				*rgb = *(pixels + --index);
+				*rgb = *(pixels + index);
+				++rgb; --index;
+				*rgb = *(pixels + index);
+				++rgb; --index;
+				*rgb = *(pixels + index);
 				++rgb;
 
-				index += 7;
+				index += 6;
 
 				//// BGRA -> RGB
-				//const int alpha = *(pixels + --index);
-				//*rgb++ = alpha * *(pixels + --index) / 255;
-				//++rgb;
-				//*rgb++ = alpha * *(pixels + --index) / 255;
-				//++rgb;
-				//*rgb++ = alpha * *(pixels + --index) / 255;
+				//const int alpha = *(pixels + index);
+				//--index;
+				//*rgb = alpha * *(pixels + index) / 255;
+				//++rgb; --index;
+				//*rgb = alpha * *(pixels + index) / 255;
+				//++rgb; --index;
+				//*rgb = alpha * *(pixels + index) / 255;
 				//++rgb;
 
-				//index += 8;
+				//index += 7;
 			}
 		}
 	}
