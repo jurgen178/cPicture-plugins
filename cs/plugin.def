@@ -1,0 +1,7 @@
+LIBRARY      "cpp_cs"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

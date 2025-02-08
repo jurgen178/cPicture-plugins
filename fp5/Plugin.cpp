@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "plugin.h"
-#include "locale.h"
 #include "SettingsDlg.h"
 
 // Example Plugin cpp_fp5.

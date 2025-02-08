@@ -154,5 +154,6 @@ cpp_fp_hdr:		0x212000000
 cpp_fp_ev:		0x213000000  
 cpp_ascii_art:  0x214000000  
 cpp_copy_cb:    0x215000000  
+cpp_cs:         0x216000000  
 
 
