@@ -71,8 +71,12 @@ enum REQUEST_TYPE __stdcall CFunctionPluginCS::start(const HWND hwnd, const vect
 
 	handle_wnd = hwnd;
 
+
+	WCHAR cwd[_MAX_PATH];
+	_wgetcwd(cwd, _MAX_PATH);
+
 	HINSTANCE hinstLib = LoadLibrary(L"CppCli.dll");
-	DWORD error = GetLastError();
+
 	if (hinstLib != NULL)
 	{
 		TransferBytesFunc TransferBytesFromCpp = (TransferBytesFunc)GetProcAddress(hinstLib, "TransferBytesFromCpp");
