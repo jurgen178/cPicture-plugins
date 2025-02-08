@@ -62,9 +62,6 @@ struct arg_count __stdcall CFunctionPluginCS::get_arg_count() const
 }
 
 
-typedef void(__stdcall* TransferBytesFunc)(unsigned char*, int);
-
-
 enum REQUEST_TYPE __stdcall CFunctionPluginCS::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	// Start event.
@@ -72,24 +69,11 @@ enum REQUEST_TYPE __stdcall CFunctionPluginCS::start(const HWND hwnd, const vect
 	handle_wnd = hwnd;
 
 
-	WCHAR cwd[_MAX_PATH];
-	_wgetcwd(cwd, _MAX_PATH);
-
-	HINSTANCE hinstLib = LoadLibrary(L"CppCli.dll");
+	HINSTANCE hinstLib = LoadLibrary(L"cs_test.dll");
 
 	if (hinstLib != NULL)
 	{
-		TransferBytesFunc TransferBytesFromCpp = (TransferBytesFunc)GetProcAddress(hinstLib, "TransferBytesFromCpp");
-		if (TransferBytesFromCpp != NULL)
-		{
-			unsigned char data[] = { 1, 2, 3, 4, 5 };
-			int length = sizeof(data) / sizeof(data[0]);
-			TransferBytesFromCpp(data, length);
-		}
-		else
-		{
-			//std::cerr << "Could not locate the function." << std::endl;
-		}
+
 		FreeLibrary(hinstLib);
 	}
 

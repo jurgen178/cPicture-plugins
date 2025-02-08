@@ -1,16 +1,7 @@
-﻿namespace MyLibrary
+﻿namespace cs_test
 {
-    public class ByteArrayTransfer
+    public class Class1
     {
-        public static void TransferBytes(byte[] data, int length)
-        {
-            // Process the byte array
-            Console.WriteLine("Received byte array of length: " + length);
-            foreach (var b in data)
-            {
-                Console.Write(b + " ");
-            }
-            Console.WriteLine();
-        }
+
     }
 }
