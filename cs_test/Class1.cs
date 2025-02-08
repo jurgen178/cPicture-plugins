@@ -1,32 +1,16 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace cs_test
+﻿namespace MyLibrary
 {
-    public static class MyClass
+    public class ByteArrayTransfer
     {
-        // Import the C++ function using P/Invoke
-        [DllImport("cpp_cs.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Add(int a, int b);
-
-        static void Main()
+        public static void TransferBytes(byte[] data, int length)
         {
-            int result = Add(5, 3);
-            Console.WriteLine("The result is: " + result);
-        }
-
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate void MyCSharpDelegate(byte[] data, int length);
-
-        [DllExport("MyCSharpFunction", CallingConvention = CallingConvention.StdCall)]
-        public static void MyCSharpFunction(byte[] data, int length)
-        {
-            Console.WriteLine("Data from C++: " + BitConverter.ToString(data));
-            // Example: Modify the data
-            for (int i = 0; i < data.Length; i++)
+            // Process the byte array
+            Console.WriteLine("Received byte array of length: " + length);
+            foreach (var b in data)
             {
-                data[i] = (byte)(data[i] + 1);
+                Console.Write(b + " ");
             }
+            Console.WriteLine();
         }
     }
 }

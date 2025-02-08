@@ -61,11 +61,9 @@ struct arg_count __stdcall CFunctionPluginCS::get_arg_count() const
 	return arg_count(1, -1);
 }
 
-extern "C" __declspec(dllexport) int Add(int a, int b) {
-	return a + b;
-}
 
-typedef void(__cdecl* MyCSharpFunction)(unsigned char*, int);
+typedef void(__stdcall* TransferBytesFunc)(unsigned char*, int);
+
 
 enum REQUEST_TYPE __stdcall CFunctionPluginCS::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
@@ -73,29 +71,23 @@ enum REQUEST_TYPE __stdcall CFunctionPluginCS::start(const HWND hwnd, const vect
 
 	handle_wnd = hwnd;
 
-	HINSTANCE hinstLib = LoadLibrary(TEXT("cs_test.dll"));
-	if (hinstLib != NULL) {
-		MyCSharpFunction myCSharpFunction = (MyCSharpFunction)GetProcAddress(hinstLib, "MyCSharpFunction");
-		if (myCSharpFunction != NULL) {
+	HINSTANCE hinstLib = LoadLibrary(L"CppCli.dll");
+	DWORD error = GetLastError();
+	if (hinstLib != NULL)
+	{
+		TransferBytesFunc TransferBytesFromCpp = (TransferBytesFunc)GetProcAddress(hinstLib, "TransferBytesFromCpp");
+		if (TransferBytesFromCpp != NULL)
+		{
 			unsigned char data[] = { 1, 2, 3, 4, 5 };
 			int length = sizeof(data) / sizeof(data[0]);
-			myCSharpFunction(data, length); // Call the C# function with the byte array
-
-			//std::cout << "Modified data from C#: ";
-			//for (int i = 0; i < length; i++) {
-			//	std::cout << (int)data[i] << " ";
-			//}
-			//std::cout << std::endl;
+			TransferBytesFromCpp(data, length);
 		}
-		else {
-			//std::cerr << "Function not found." << std::endl;
+		else
+		{
+			//std::cerr << "Could not locate the function." << std::endl;
 		}
 		FreeLibrary(hinstLib);
 	}
-	else {
-		//std::cerr << "DLL not loaded." << std::endl;
-	}
-
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
