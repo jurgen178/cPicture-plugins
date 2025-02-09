@@ -241,6 +241,7 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 //}
 
 
+// PDFium lib is not thread safe.
 static std::mutex pdf_lib_mutex;
 
 
