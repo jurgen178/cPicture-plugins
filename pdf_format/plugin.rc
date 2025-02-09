@@ -130,7 +130,7 @@ BEGIN
     IDS_SHORT_DESC          "PDF"
     IDS_LONG_DESC           "PDF-Format"
     IDS_EDIT_PAGE_RANGE_TOOLTIP 
-                            "1\tnur erste Seite\n1-\talle Seiten\n2-4\tSeiten 2..4\n-4\tersten 4 Seiten\n4-\tvon der 4. Seite ab"
+                            "Beispiele für Seitenbereiche:\n1\tnur erste Seite\n1-\talle Seiten\n2-4\tSeiten 2..4\n-4\tersten 4 Seiten\n4-\tvon der 4. Seite ab"
     IDS_EDIT_BORDER_SIZE_TOOLTIP 
                             "Randbreite in ‰ der Seitengröße.\nz.B. 25 sind 2.5% der Seitengröße"
     IDS_EDIT_PDF_MAX_X_TOOLTIP 
@@ -251,7 +251,7 @@ BEGIN
     IDS_SHORT_DESC          "PDF"
     IDS_LONG_DESC           "PDF format"
     IDS_EDIT_PAGE_RANGE_TOOLTIP 
-                            "1\tfirst page only\n1-\tall pages\n2-4\tpages 2..4\n-4\tfirst 4 pages\n4-\tfrom the 4th page onwards"
+                            "Examples for page ranges:\n1\tfirst page only\n1-\tall pages\n2-4\tpages 2..4\n-4\tfirst 4 pages\n4-\tfrom the 4th page onwards"
     IDS_EDIT_BORDER_SIZE_TOOLTIP 
                             "Border width in ‰ of the page size.\ne.g. 25 is 2.5% of the page size"
     IDS_EDIT_PDF_MAX_X_TOOLTIP 
