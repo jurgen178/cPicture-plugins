@@ -268,6 +268,15 @@ public:
 
 
 CPdfFormat::CPdfFormat()
+	: start_page(0),
+	end_page(0),
+	page_count(0),
+	pdf_page_width(0),
+	pdf_page_height(0),
+	num_cols(0),
+	num_rows(0),
+	border_size_pdf(0),
+	separator_border_size_pdf(0)
 {
 }
 
@@ -402,8 +411,8 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 CString __stdcall CPdfFormat::get_ext()
 {
 	// *** File extensions associated with the new format.
-	// Multiple extensions are separated by ';' (".abc;.defg")
-	return L".pdf";
+	// Multiple extensions are separated by ';' ("abc;defg")
+	return L"pdf";
 }
 
 struct PluginData __stdcall CPdfFormat::get_plugin_data()
