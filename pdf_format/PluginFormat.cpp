@@ -8,6 +8,12 @@
 using namespace std;
 
 
+// Uses pdfium
+// https://github.com/bblanchon/pdfium-binaries  pdfium-win-x64.tgz
+// https://pdfium.googlesource.com/pdfium/
+
+
+
 enum filetime_type
 {
 	date_modified,	//FILETIME ftLastWriteTime;

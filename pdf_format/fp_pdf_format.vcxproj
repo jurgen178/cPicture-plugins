@@ -159,8 +159,11 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)plugin.lib</ImportLibrary>
-      <OutputFile>$(SolutionDir)\..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)bin\pdfium.dll" "$(SolutionDir)..\cPicture\x64\Debug\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
