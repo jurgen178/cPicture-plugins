@@ -237,6 +237,9 @@
       </ImportLibrary>
       <MapExports>true</MapExports>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y "$(ProjectDir)bin\pdfium.dll" "$(TargetDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="plugin.def" />
