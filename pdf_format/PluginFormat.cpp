@@ -422,7 +422,7 @@ struct PluginData __stdcall CPdfFormat::get_plugin_data()
 	// *** Short description of the new format,
 	// will be used for example in the form: 
 	// "The selected folder "c:\..." does not contain any pictures in [format1, format2 or format3] format."
-	// Example for Tiff: "The selected folder "c:\..." does not contain any pictures in Jpeg or TIFF format."
+	// Example for Tiff: "The selected folder "c:\..." does not contain any pictures in TIFF format."
 	pluginData.name.LoadString(IDS_SHORT_DESC);
 
 	// *** Long description of the new format,
