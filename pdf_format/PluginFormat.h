@@ -14,7 +14,7 @@ public:
 
 public:
 	static const CString type;
-	virtual const CString getType() const
+	virtual const CString __stdcall getType() const
 	{
 		return type;
 	}

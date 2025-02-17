@@ -179,7 +179,7 @@ protected:
 	vector<pair<CString, CString> > m_exiflist;
 
 public:
-	virtual const CString getType() const { return L""; };
+	virtual const CString __stdcall getType() const { return L""; };
 	virtual CString __stdcall get_ext() const = 0;
 	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
