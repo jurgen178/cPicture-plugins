@@ -180,12 +180,12 @@ protected:
 
 public:
 	virtual const CString getType() const { return L""; };
-	virtual CString __stdcall get_ext() = 0;
-	virtual struct plugin_data __stdcall get_plugin_data() = 0;
+	virtual CString __stdcall get_ext() const = 0;
+	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
 
 	virtual void __stdcall set_properties(const CString& property_str) { };
-	virtual CString __stdcall get_properties() { return L""; };
+	virtual CString __stdcall get_properties() const { return L""; };
 	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
 	virtual bool __stdcall IsPanorama() const

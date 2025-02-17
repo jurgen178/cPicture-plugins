@@ -127,8 +127,8 @@ END
 STRINGTABLE
 BEGIN
     IDS_DATE_TIME_FORMAT_STRING "%s um %s Uhr"
-    IDS_SHORT_DESC          "PDF"
-    IDS_LONG_DESC           "PDF-Format"
+    IDS_SHORT_DESC          "Pdf"
+    IDS_LONG_DESC           "Pdf-Format"
     IDS_EDIT_PAGE_RANGE_TOOLTIP 
                             "Beispiele für Seitenbereiche:\n1\tnur erste Seite\n1-\talle Seiten\n2-4\tSeiten 2..4\n-4\tersten 4 Seiten\n4-\tvon der 4. Seite ab"
     IDS_EDIT_BORDER_SIZE_TOOLTIP 
@@ -248,8 +248,8 @@ END
 STRINGTABLE
 BEGIN
     IDS_DATE_TIME_FORMAT_STRING "%s at %s"
-    IDS_SHORT_DESC          "PDF"
-    IDS_LONG_DESC           "PDF format"
+    IDS_SHORT_DESC          "Pdf"
+    IDS_LONG_DESC           "Pdf format"
     IDS_EDIT_PAGE_RANGE_TOOLTIP 
                             "Examples for page ranges:\n1\tfirst page only\n1-\tall pages\n2-4\tpages 2..4\n-4\tfirst 4 pages\n4-\tfrom the 4th page onwards"
     IDS_EDIT_BORDER_SIZE_TOOLTIP 

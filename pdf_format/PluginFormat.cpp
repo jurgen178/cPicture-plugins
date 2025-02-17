@@ -356,7 +356,7 @@ void __stdcall CPdfFormat::set_properties(const CString& property_str)
 		reset_properties();
 }
 
-CString __stdcall CPdfFormat::get_properties()
+CString __stdcall CPdfFormat::get_properties() const
 {
 	m_property_str.Format(format_property_string,
 		max_picture_x,
@@ -416,14 +416,14 @@ bool __stdcall CPdfFormat::properties_dlg(const HWND hwnd)
 	return properties_updated;
 }
 
-CString __stdcall CPdfFormat::get_ext()
+CString __stdcall CPdfFormat::get_ext() const
 {
 	// *** File extensions associated with the new format.
 	// Multiple extensions are separated by ';' ("abc;defg")
 	return L"pdf";
 }
 
-struct plugin_data __stdcall CPdfFormat::get_plugin_data()
+struct plugin_data __stdcall CPdfFormat::get_plugin_data() const
 {
 	struct plugin_data pluginData;
 

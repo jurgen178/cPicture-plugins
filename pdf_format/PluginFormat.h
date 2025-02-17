@@ -25,11 +25,11 @@ public:
 	};
 
 	virtual void __stdcall get_size(const CString& FileName);
-	virtual CString __stdcall get_ext();
-	virtual struct plugin_data __stdcall get_plugin_data();
+	virtual CString __stdcall get_ext() const;
+	virtual struct plugin_data __stdcall get_plugin_data() const;
 
 	virtual void __stdcall set_properties(const CString& property_str);
-	virtual CString __stdcall get_properties();
+	virtual CString __stdcall get_properties() const;
 	virtual bool __stdcall properties_dlg(const HWND hwnd);
 
 public:
