@@ -12,6 +12,13 @@ protected:
 public:
 	virtual ~CPdfFormat();
 
+public:
+	static const CString type;
+	virtual const CString getType() const
+	{
+		return type;
+	}
+
 	static CPictureFormat* __stdcall GetInstance()
 	{
 		return new CPdfFormat;
@@ -19,7 +26,7 @@ public:
 
 	virtual void __stdcall get_size(const CString& FileName);
 	virtual CString __stdcall get_ext();
-	virtual struct PluginData __stdcall get_plugin_data();
+	virtual struct plugin_data __stdcall get_plugin_data();
 
 	virtual void __stdcall set_properties(const CString& property_str);
 	virtual CString __stdcall get_properties();

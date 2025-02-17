@@ -139,10 +139,10 @@ enum PLUGIN_TYPE
 	PLUGIN_TYPE_FUNCTION = 0x0002,
 };
 
-struct PluginData
+struct plugin_data
 {
 public:
-	PluginData() : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) { };
+	plugin_data() : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) {};
 
 	CString name;
 	CString desc;
@@ -152,8 +152,8 @@ public:
 	CString version;
 	enum PLUGIN_TYPE type;
 
-	// To sort the entries.
-	bool operator < (PluginData& rhs)
+	// Zum Sortieren der Einträge.
+	bool operator < (const plugin_data& rhs)
 	{
 		return file_name2 < rhs.file_name2;
 	}
@@ -272,6 +272,8 @@ public:
 	}
 };
 
+
+const CString CPdfFormat::type = "PDF";
 
 CPdfFormat::CPdfFormat()
 	: start_page(0),
@@ -421,9 +423,9 @@ CString __stdcall CPdfFormat::get_ext()
 	return L"pdf";
 }
 
-struct PluginData __stdcall CPdfFormat::get_plugin_data()
+struct plugin_data __stdcall CPdfFormat::get_plugin_data()
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// *** Short description of the new format,
 	// will be used for example in the form: 

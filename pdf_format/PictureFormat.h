@@ -179,8 +179,9 @@ protected:
 	vector<pair<CString, CString> > m_exiflist;
 
 public:
+	virtual const CString getType() const { return L""; };
 	virtual CString __stdcall get_ext() = 0;
-	virtual struct PluginData __stdcall get_plugin_data() = 0;
+	virtual struct plugin_data __stdcall get_plugin_data() = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
 
 	virtual void __stdcall set_properties(const CString& property_str) { };
@@ -233,10 +234,10 @@ public:
 		const int height,
 		const int quality_L = -1,
 		const int quality_C = -1,
-		const int jpeg_lossless = -1)
+		const int jpeg_lossless = -1) // -1: Einstellung verwenden, 0: kein lossless, 1: lossless
 	{
 		return false;
-	}; // -1: Einstellung verwenden, 0: kein lossless, 1: lossless
+	};
 
 	virtual bool __stdcall RotateRight(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall RotateLeft(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
@@ -249,15 +250,9 @@ public:
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h)
-	{
-		return false;
-	};
+		const int x, const int y, const int b, const int h) { return false;	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h)
-	{
-		return false;
-	}
+		const int x, const int y, const int b, const int h) { return false; }
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
 
