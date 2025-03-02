@@ -37,18 +37,19 @@ constexpr unsigned int PICTURE_QUALITY = 0x00000004;		// Plugin supports differe
 constexpr unsigned int PICTURE_AUTO_ROTATE = 0x00000008;	// Plugin supports transformations
 constexpr unsigned int PICTURE_ROTATERIGHT = 0x00000010;
 constexpr unsigned int PICTURE_ROTATELEFT = 0x00000020;
-constexpr unsigned int PICTURE_FLIPH = 0x00000040;
-constexpr unsigned int PICTURE_FLIPV = 0x00000080;
-constexpr unsigned int PICTURE_TRANSPOSE = 0x00000100;
-constexpr unsigned int PICTURE_TRANSVERSE = 0x00000200;
-constexpr unsigned int PICTURE_GRAYSCALE = 0x00000400;
-constexpr unsigned int PICTURE_CROP = 0x00000800;
-constexpr unsigned int PICTURE_EXIF_READ = 0x00001000;		// Plugin can read EXIF
-constexpr unsigned int PICTURE_EXIF_WRITE = 0x00002000;		// Plugin can write EXIF
-constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00004000;	// Plugin supports JPEG structure display
-constexpr unsigned int PICTURE_COMMENT = 0x00008000;		// Plugin supports comments
-constexpr unsigned int PICTURE_ORIENTATION = 0x00010000;	// Plugin supports an orientation flag
-constexpr unsigned int PICTURE_GPS = 0x00020000;			// Plugin supports GPS data
+constexpr unsigned int PICTURE_ROTATE180 = 0x00000040;
+constexpr unsigned int PICTURE_FLIPH = 0x00000080;
+constexpr unsigned int PICTURE_FLIPV = 0x00000100;
+constexpr unsigned int PICTURE_TRANSPOSE = 0x00000200;
+constexpr unsigned int PICTURE_TRANSVERSE = 0x00000400;
+constexpr unsigned int PICTURE_GRAYSCALE = 0x00000800;
+constexpr unsigned int PICTURE_CROP = 0x00001000;
+constexpr unsigned int PICTURE_EXIF_READ = 0x00002000;		// Plugin can read EXIF
+constexpr unsigned int PICTURE_EXIF_WRITE = 0x00004000;		// Plugin can write EXIF
+constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00008000;	// Plugin supports JPEG structure display
+constexpr unsigned int PICTURE_COMMENT = 0x00010000;		// Plugin supports comments
+constexpr unsigned int PICTURE_ORIENTATION = 0x00020000;	// Plugin supports an orientation flag
+constexpr unsigned int PICTURE_GPS = 0x00040000;			// Plugin supports GPS data
 
 
 struct GPSdata
@@ -239,8 +240,9 @@ public:
 		return false;
 	};
 
-	virtual bool __stdcall RotateRight(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall RotateLeft(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
+	virtual bool __stdcall RotateRight(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
+	virtual bool __stdcall Rotate180(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall FlipH(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall FlipV(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall Transpose(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
