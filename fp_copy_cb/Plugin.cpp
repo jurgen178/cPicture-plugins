@@ -132,8 +132,8 @@ const vector<update_data>& __stdcall CFunctionPluginCopyCB::end(const vector<pic
 			{
 				return (((pixel * 24) + 31) >> 3) & ~0x03;
 			};
-		const int size3 = widthDwordAligned(requested_data.picture_width) * requested_data.picture_height;
-		const int dibSize = sizeof(BITMAPINFOHEADER) + size3;
+		const unsigned int size3 = widthDwordAligned(requested_data.picture_width) * requested_data.picture_height;
+		const unsigned int dibSize = sizeof(BITMAPINFOHEADER) + size3;
 
 		// Allocate global memory for the DIB.
 		const HGLOBAL hMem = GlobalAlloc(GHND, dibSize);

@@ -47,7 +47,7 @@ struct requested_data
 		int picture_width = 0,
 		int picture_height = 0,
 		BYTE* data = NULL,
-		unsigned int len = 0
+		__int64 len = 0
 	)
 		: picture_width(picture_width),
 		picture_height(picture_height),
@@ -59,7 +59,7 @@ struct requested_data
 	int picture_width;
 	int picture_height;
 	BYTE* data;
-	unsigned int len;
+	__int64 len;
 };
 
 
