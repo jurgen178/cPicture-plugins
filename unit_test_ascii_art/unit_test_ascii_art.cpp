@@ -169,7 +169,7 @@ namespace unittest
 				if (!densities_index[i])
 					densities_index[i] = densities_index[i - 1];
 
-				i++;
+				++i;
 			}
 
 			//// Brightness shifts the values. Fill the end gaps.

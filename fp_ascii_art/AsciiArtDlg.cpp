@@ -326,7 +326,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 			if (!densities_index[i])
 				densities_index[i] = densities_index[i - 1];
 
-			i++;
+			++i;
 		}
 
 		//// Brightness shifts the values. Fill the end gaps.
@@ -375,7 +375,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					// Lambda to calculate the grey value.
 					auto grey_sum = [=](int x, int y) -> BYTE
 						{
-							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+							const __int64 index(3 * (static_cast<__int64>(rect_y + y) * requested_data2.picture_width + rect_x + x));
 							const BYTE grey(data[index]);
 							return grey;
 						};
@@ -457,7 +457,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 					{
 						for (register int x = 0; x < rect_w; ++x)
 						{
-							const int index(3 * ((rect_y + y) * requested_data2.picture_width + rect_x + x));
+							const __int64 index(3 * (static_cast<__int64>(rect_y + y) * requested_data2.picture_width + rect_x + x));
 							const BYTE grey(data[index]);
 							grey_sum += grey;
 						}

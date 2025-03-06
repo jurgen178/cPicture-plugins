@@ -139,7 +139,7 @@ void CSampleDlg::OnBnClickedButtonNext()
 {
 	if(index < static_cast<int>(picture_data_list.size() - 1))
 	{
-		index++;
+		++index;
 		RedrawWindow();
 		update_button_state();
 	}

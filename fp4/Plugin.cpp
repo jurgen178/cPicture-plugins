@@ -137,7 +137,7 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 	//{
 	//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; ++x)
 	//	{
-	//		const int index(3 * (y * requested_data1.picture_width + x));
+	//		const __int64 index(3 * (static_cast<__int64>(y) * requested_data1.picture_width + x));
 
 	//		const BYTE red(data[index]);
 	//		const BYTE green(data[index + 1]);
@@ -161,7 +161,7 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 		requested_data1.data,
 		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
 
-	picture_processed++;
+	++picture_processed;
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;

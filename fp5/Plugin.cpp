@@ -121,7 +121,7 @@ bool __stdcall CFunctionPluginSample5::process_picture(const picture_data& pictu
 { 
 	// Process picture event.
 
-	picture_processed++;
+	++picture_processed;
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	
