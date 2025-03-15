@@ -35,8 +35,8 @@ constexpr unsigned int PICTURE_WRITE = 0x00000002;			// Plugin can write the pic
 constexpr unsigned int PICTURE_QUALITY = 0x00000004;		// Plugin supports different quality levels (for example, JPEG has quality levels from 0 to 100)
 
 constexpr unsigned int PICTURE_AUTO_ROTATE = 0x00000008;	// Plugin supports transformations
-constexpr unsigned int PICTURE_ROTATERIGHT = 0x00000010;
-constexpr unsigned int PICTURE_ROTATELEFT = 0x00000020;
+constexpr unsigned int PICTURE_ROTATELEFT = 0x00000010;
+constexpr unsigned int PICTURE_ROTATERIGHT = 0x00000020;
 constexpr unsigned int PICTURE_ROTATE180 = 0x00000040;
 constexpr unsigned int PICTURE_FLIPH = 0x00000080;
 constexpr unsigned int PICTURE_FLIPV = 0x00000100;
