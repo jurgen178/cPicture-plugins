@@ -42,7 +42,7 @@ constexpr unsigned int PICTURE_FLIPH = 0x00000080;
 constexpr unsigned int PICTURE_FLIPV = 0x00000100;
 constexpr unsigned int PICTURE_TRANSPOSE = 0x00000200;
 constexpr unsigned int PICTURE_TRANSVERSE = 0x00000400;
-constexpr unsigned int PICTURE_GRAYSCALE = 0x00000800;
+constexpr unsigned int PICTURE_GREYSCALE = 0x00000800;
 constexpr unsigned int PICTURE_CROP = 0x00001000;
 constexpr unsigned int PICTURE_EXIF_READ = 0x00002000;		// Plugin can read EXIF
 constexpr unsigned int PICTURE_EXIF_WRITE = 0x00004000;		// Plugin can write EXIF
@@ -247,7 +247,7 @@ public:
 	virtual bool __stdcall FlipV(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall Transpose(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall Transverse(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
-	virtual bool __stdcall GrayScale(const CString& inFileName, const bool bModifyPreview) { return false; };
+	virtual bool __stdcall GreyScale(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual bool __stdcall AutoRotate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
