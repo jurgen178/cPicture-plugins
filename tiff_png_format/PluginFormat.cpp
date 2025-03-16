@@ -235,8 +235,6 @@ CPluginFormat::CPluginFormat()
 
 CStringA CPluginFormat::get_utf8_file_name(const CString& FileName)
 {
-	// FPDF_LoadDocument requires a UTF-8 encoded file name.
-
 	CStringA pictureNameUtf8;
 
 	// Determine the required buffer size for the UTF-8 string.
