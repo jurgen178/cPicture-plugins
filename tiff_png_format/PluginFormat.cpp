@@ -400,29 +400,15 @@ struct plugin_data __stdcall CTiffFormat::get_plugin_data() const
 	return pluginData;
 }
 
-
-CString CTiffFormat::m_property_str;
-int CTiffFormat::m_compression_type = 3;
 const CString CTiffFormat::type = "TIFF";
 
+CString CTiffFormat::m_property_str;
 
 // *** cPicture maintains a property string for this PlugIn
 //     which can be used for your picture format settings.
 //     For example use _stprintf(...) to create a string in get_properties()
 //     and _stscanf to get the values back in set_properties(...)
 
-
-void __stdcall CTiffFormat::set_properties(const CString& property_str)
-{
-	m_property_str = property_str;
-
-	swscanf_s(m_property_str, L"%d", &m_compression_type);
-}
-
-CString __stdcall CTiffFormat::get_properties() const
-{
-	return m_property_str;
-}
 
 bool __stdcall CTiffFormat::properties_dlg(const HWND hwnd)
 {
@@ -686,109 +672,6 @@ BYTE* __stdcall CTiffFormat::FileToRGB(const CString& FileName,
 	return image;
 }
 
-//BYTE* __stdcall CTiffFormat::FileToPreview(const CString& FileName, int& len, int& size_x, int& size_y, const bool bScanAudio, const bool bMaxSize)
-//{
-//	TIFF* tif = TIFFOpenW(FileName, "r");
-//	if (tif)
-//	{
-//		bool thumbnailFound = false;
-//		uint32_t subfileType;
-//		do
-//		{
-//			if (TIFFGetField(tif, TIFFTAG_SUBFILETYPE, &subfileType) && (subfileType & FILETYPE_REDUCEDIMAGE))
-//			{
-//				thumbnailFound = true;
-//				break;
-//			}
-//		} while (TIFFReadDirectory(tif));
-//
-//		if (!thumbnailFound)
-//		{
-//			//std::cerr << "No thumbnail found in the TIFF file." << std::endl;
-//			TIFFClose(tif);
-//			return NULL;
-//		}
-//
-//		uint32_t thumbWidth;
-//		uint32_t thumbHeight;
-//		TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &thumbWidth);
-//		TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &thumbHeight);
-//
-//		uint32_t thumbSize = thumbWidth * thumbHeight * 3; // 3 bytes per pixel (RGB)
-//		BYTE* thumbnail = static_cast<BYTE*>(VirtualAlloc(NULL, thumbSize, MEM_COMMIT, PAGE_READWRITE));
-//
-//		for (uint32_t row = 0; row < thumbHeight; row++) {
-//			TIFFReadScanline(tif, thumbnail + row * thumbWidth * 3, row);
-//		}
-//
-//		TIFFClose(tif);
-//		return thumbnail;
-//	}
-//
-//	return NULL;
-//
-//
-//	//uint16_t subfileType;
-//	//if (!TIFFGetField(tif, TIFFTAG_SUBFILETYPE, &subfileType) || !(subfileType & FILETYPE_REDUCEDIMAGE)) {
-//	//	//std::cerr << "No thumbnail found in the TIFF file." << std::endl;
-//	//	TIFFClose(tif);
-//	//	return NULL;
-//	//}
-//
-//	//uint32_t thumbWidth;
-//	//uint32_t thumbHeight;
-//
-//	//TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &thumbWidth);
-//	//TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &thumbHeight);
-//
-//	//size_x = thumbWidth;
-//	//size_y = thumbHeight;
-//
-//	//uint32_t thumbSize = size_x * size_y * 3; // 3 bytes per pixel (RGB)
-//	//BYTE* thumbnail = static_cast<BYTE*>(VirtualAlloc(NULL, thumbSize, MEM_COMMIT, PAGE_READWRITE));
-//
-//	//for (uint32_t row = 0; row < size_y; row++) {
-//	//	TIFFReadScanline(tif, thumbnail + row * size_x * 3, row);
-//	//}
-//
-//	//TIFFClose(tif);
-//	//return thumbnail;
-//
-//
-//
-//	//uint32 width, height;
-//	//TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
-//	//TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
-//
-//	//uint32_t tileWidth, tileHeight;
-//	//TIFFGetField(tif, TIFFTAG_TILEWIDTH, &tileWidth);
-//	//TIFFGetField(tif, TIFFTAG_TILELENGTH, &tileHeight);
-//
-//	//size_x = width / 10;
-//	//size_y = height / 10;
-//
-//	//uint32_t thumbSize = size_x * size_y * 3; // 3 bytes per pixel (RGB)
-//	//BYTE* thumbnail = static_cast<BYTE*>(VirtualAlloc(NULL, thumbSize, MEM_COMMIT, PAGE_READWRITE));
-//
-//	//for (uint32_t row = 0; row < size_y; row++) {
-//	//	for (uint32_t col = 0; col < size_x; col++) {
-//	//		uint32_t srcRow = (row * height) / size_y;
-//	//		uint32_t srcCol = (col * width) / size_x;
-//	//		tdata_t buf = _TIFFmalloc(TIFFTileSize(tif));
-//	//		TIFFReadTile(tif, buf, srcCol * tileWidth, srcRow * tileHeight, 0, 0);
-//	//		uint8_t* data = static_cast<uint8_t*>(buf);
-//	//		uint32_t index = (row * size_x + col) * 3;
-//	//		thumbnail[index] = data[0];       // Red
-//	//		thumbnail[index + 1] = data[1];   // Green
-//	//		thumbnail[index + 2] = data[2];   // Blue
-//	//		_TIFFfree(buf);
-//	//	}
-//	//}
-//
-//	//TIFFClose(tif);
-//	//return thumbnail;
-//}
-
 void CTiffFormat::get_size(const CString& FileName)
 {
 	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
@@ -856,75 +739,6 @@ void CTiffFormat::get_size(const CString& FileName)
 
 		TIFFClose(tif);
 	}
-
-	//if(wcslen(FileName))
-	//{
-	//	FILE* infile = NULL;
-	//	if((infile = _wfopen(FileName, L"rb"))) 
-	//	{
-	//		TIFF* tif = TIFFClientOpen(FileName, L"rb",
-	//									(thandle_t)infile,
-	//									_tiffReadProc, _tiffWriteProc, _tiffSeekProc, _tiffCloseProc,
-	//									_tiffSizeProc, _tiffMapProc, _tiffUnmapProc);
-
-	//		if (tif)
-	//		{
-	//			m_bIsValid = true;
-	//			TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &m_OriginalPictureWidth);
-	//			TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &m_OriginalPictureHeight);
-
-	//			//typedef enum {
-	//			//	JCS_UNKNOWN,	/* error/unspecified */
-	//			//	JCS_GRAYSCALE,	/* monochrome */
-	//			//	JCS_RGB,		/* red/green/blue, standard RGB (sRGB) */
-	//			//	JCS_YCbCr,		/* Y/Cb/Cr (also known as YUV), standard YCC */
-	//			//	JCS_CMYK,		/* C/M/Y/K */
-	//			//	JCS_YCCK,		/* Y/Cb/Cr/K */
-	//			//	JCS_BG_RGB,		/* big gamut red/green/blue, bg-sRGB */
-	//			//	JCS_BG_YCC		/* big gamut Y/Cb/Cr, bg-sYCC */
-	//			//} J_COLOR_SPACE;
-	//						
-	//			//The TIFFTAG_IT8COLORSEQUENCE tag in the TIFF image format 
-	//			//is of type TIFF_ASCII.This means it stores its value as a
-	//			//string.The values for this tag are typically sequences of 
-	//			//characters that represent the order of color components,
-	//			//such as:
-	//			//"RGB": Red, Green, Blue
-	//			//"CMYK" : Cyan, Magenta, Yellow, Black
-	//			//"YCbCr" : Luminance, Blue - difference chroma, Red - difference chroma
-	//			//"CMY" : Cyan, Magenta, Yellow
-	//			//"YCC" : Luminance, Chrominance, Chrominance
-
-	//			m_color_space = 0;
-	//			char* color_space_text = nullptr;
-	//			if (TIFFGetField(tif, TIFFTAG_IT8COLORSEQUENCE, &color_space_text)) 
-	//			{
-	//				if (color_space_text != nullptr) 
-	//				{
-	//					if (strcmp(color_space_text, "RGB") == 0)
-	//						m_color_space = 2;
-	//					else
-	//					if (strcmp(color_space_text, "CMYK") == 0)
-	//						m_color_space = 4;
-	//					else
-	//					if (strcmp(color_space_text, "YCbCr") == 0)
-	//						m_color_space = 3;
-	//					else
-	//					if (strcmp(color_space_text, "YCC") == 0)
-	//						m_color_space = 4;
-	//				}
-	//			}
-	//			//else {
-	//			//	// Handle the case where the tag is not found
-	//			//	printf("TIFFTAG_IT8COLORSEQUENCE not found in the TIFF file.\n");
-	//			//}
-
-	//			TIFFClose(tif);
-	//		}
-
-	//		fclose(infile);
-	//	}
-	//}
 }
 
 
@@ -932,6 +746,8 @@ void CTiffFormat::get_size(const CString& FileName)
 
 
 const CString CPngFormat::type = "PNG";
+
+CString CPngFormat::m_property_str;
 
 CString __stdcall CPngFormat::get_ext() const
 {
@@ -945,7 +761,7 @@ struct plugin_data __stdcall CPngFormat::get_plugin_data() const
 	// *** Short description of the new format,
 	// will be used for example in the form: 
 	// "The selected folder "c:\..." does not contain any pictures in [format1, format2 or format3] format."
-	// Example for Tiff: "The selected folder "c:\..." does not contain any pictures in Jpeg or TIFF format."
+	// Example for Png: "The selected folder "c:\..." does not contain any pictures in Jpeg or Png format."
 	pluginData.name.LoadString(IDS_SHORT_DESC_PNG);
 
 	// *** Long description of the new format,
@@ -981,6 +797,7 @@ bool __stdcall CPngFormat::RGBToFile(const CString& FileName,
 	{
 		m_ErrorMsg = L"Error in png_create_write_struct";
 		fclose(fp);
+
 		return false;
 	}
 

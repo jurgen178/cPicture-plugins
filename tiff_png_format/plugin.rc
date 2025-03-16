@@ -58,6 +58,7 @@ BEGIN
     END
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -68,10 +69,10 @@ BEGIN
     IDS_DATE_TIME_FORMAT_STRING "%s um %s Uhr"
     IDS_SHORT_DESC_TIFF     "Tiff"
     IDS_LONG_DESC_TIFF      "Tiff-Bildformat"
-    IDS_PROPERTY_DLG_TIFF_TEXT
+    IDS_PROPERTY_DLG_TIFF_TEXT 
                             "Tiff-Bildformat:\nTiff-Bildformat mit 24bit Farbtiefe"
     IDS_SHORT_DESC_PNG      "Png"
-    IDS_LONG_DESC_PNG       "Png-Bildformat mit 24bit Farbtiefe"
+    IDS_LONG_DESC_PNG       "Png-Bildformat"
     IDS_PROPERTY_DLG_PNG_TEXT 
                             "Png-Bildformat:\nPng-Bildformat mit 24bit Farbtiefe"
 END
@@ -111,6 +112,23 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_DATE_TIME_FORMAT_STRING "%s at %s Uhr"
+    IDS_SHORT_DESC_TIFF     "Tiff"
+    IDS_LONG_DESC_TIFF      "Tiff format"
+    IDS_PROPERTY_DLG_TIFF_TEXT "Tiff format:\nTiff format with 24bit colors"
+    IDS_SHORT_DESC_PNG      "Png"
+    IDS_LONG_DESC_PNG       "Png format"
+    IDS_PROPERTY_DLG_PNG_TEXT "Png format:\nPng format with 24bit colors"
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
