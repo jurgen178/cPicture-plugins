@@ -1,0 +1,9 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/Microsoft Visual Studio/2022/Enterprise/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.30/Modules/BasicConfigVersion-SameMajorVersion.cmake.in
+C:/Program Files/Microsoft Visual Studio/2022/Enterprise/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.30/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/Microsoft Visual Studio/2022/Enterprise/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.30/Modules/WriteBasicConfigVersionFile.cmake
+C:/Projects/libtiff/cmake/TiffConfig.cmake.in
+C:/Projects/libtiff/libtiff/CMakeLists.txt
+C:/Projects/libtiff/libtiff/tif_config.h.cmake.in
+C:/Projects/libtiff/libtiff/tiffconf.h.cmake.in
+C:/Projects/libtiff/libtiff/tiffvers.h.cmake.in
