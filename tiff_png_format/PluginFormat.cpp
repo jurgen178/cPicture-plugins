@@ -274,7 +274,8 @@ unsigned int __stdcall CPluginFormat::get_cap() const
 		PICTURE_FLIPV |
 		PICTURE_TRANSPOSE |
 		PICTURE_TRANSVERSE |
-		PICTURE_GREYSCALE;
+		PICTURE_GREYSCALE | 
+		PICTURE_CROP;
 }
 
 vector<CString> info_template;

@@ -125,7 +125,7 @@ protected:
 	};
 
 public:
-	virtual ~CPictureFormat() { };
+	virtual ~CPictureFormat() {};
 
 public:
 	int m_PictureWidth;
@@ -181,7 +181,7 @@ public:
 	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
 
-	virtual void __stdcall set_properties(const CString& property_str) { };
+	virtual void __stdcall set_properties(const CString& property_str) {};
 	virtual CString __stdcall get_properties() const { return L""; };
 	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
@@ -238,6 +238,7 @@ public:
 
 	virtual bool __stdcall RotateLeft(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall RotateRight(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
+	virtual bool __stdcall Rotate180(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall FlipH(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall FlipV(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall Transpose(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
@@ -247,9 +248,13 @@ public:
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) { return false;	};
+		const int x, const int y, const int b, const int h) {
+		return false;
+	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) { return false; }
+		const int x, const int y, const int b, const int h) {
+		return false;
+	}
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
 
