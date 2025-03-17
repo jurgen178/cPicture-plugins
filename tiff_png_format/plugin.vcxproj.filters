@@ -18,7 +18,6 @@
     <None Include="plugin.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PluginFormat.cpp">

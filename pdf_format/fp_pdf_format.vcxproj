@@ -246,7 +246,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="plugin.def" />
-    <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColorStatic.cpp" />
