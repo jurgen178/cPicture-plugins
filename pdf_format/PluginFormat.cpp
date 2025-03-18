@@ -815,9 +815,6 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 
 void __stdcall CPdfFormat::get_size(const CString& FileName)
 {
-	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
-	// and should be as efficient as possible.
-
 	PDFiumInit pdfiumInit;
 
 	m_bIsValid = false;
@@ -862,6 +859,9 @@ void __stdcall SetPluginInfoTemplates(const vector<CString>& _info_template)
 
 CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_type _info_type)
 {
+	// *** This function gets the picture data and should be as efficient as possible.
+	// For example: do not load and decompress the image just to get the picture dimensions
+
 	int page_count = 0;
 
 	if (_info_type & (info_type_std | info_type_short))

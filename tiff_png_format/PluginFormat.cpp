@@ -294,6 +294,9 @@ void __stdcall SetPluginInfoTemplates(const vector<CString>& _info_template)
 
 CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum info_type _info_type)
 {
+	// *** This function gets the picture data and should be as efficient as possible.
+	// For example: do not load and decompress the image just to get the picture dimensions
+
 	if (_info_type & (info_type_std | info_type_size))
 	{
 		get_size(FileName);
@@ -673,10 +676,6 @@ BYTE* __stdcall CTiffFormat::FileToRGB(const CString& FileName,
 
 void CTiffFormat::get_size(const CString& FileName)
 {
-	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
-	// and should be efficient as possible.
-	// For example: do not load and decompress the image just to get the picture dimensions
-
 	m_bIsValid = false;
 
 	TIFF* tif = TIFFOpenW(FileName, "r");
@@ -968,9 +967,6 @@ BYTE* __stdcall CPngFormat::FileToRGB(const CString& FileName,
 
 void __stdcall CPngFormat::get_size(const CString& FileName)
 {
-	// *** This function sets m_OriginalPictureWidth and m_OriginalPictureHeight with the picture dimensions
-	// and should be as efficient as possible.
-
 	m_bIsValid = false;
 	m_OriginalPictureWidth = m_OriginalPictureHeight = 0;
 
