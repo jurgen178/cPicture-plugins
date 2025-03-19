@@ -146,7 +146,7 @@
       </ImportLibrary>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <OutputFile>$(SolutionDir)\..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
