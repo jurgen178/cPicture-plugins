@@ -293,10 +293,13 @@ CPdfFormat::~CPdfFormat()
 }
 
 
-// *** cPicture maintains a property string for this PlugIn
+// *** cPicture maintains a property string for this Plugin
 //     which can be used for your picture format settings.
+//     For example use a string format to create a string in get_properties()
+//     and to get the values back in set_properties(...)
 
 CString CPdfFormat::m_property_str;
+
 int CPdfFormat::max_picture_x;
 int CPdfFormat::max_picture_y;
 int CPdfFormat::scaling;

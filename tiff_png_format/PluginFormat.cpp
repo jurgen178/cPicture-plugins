@@ -289,6 +289,11 @@ void __stdcall SetPluginInfoTemplates(const vector<CString>& _info_template)
 	//info_template[1] = File size:\t%1 KB (%2 Bytes)\nCreated on:\t%s\nChanged on:\t%4
 	//info_template[2] = Created on:\t%s
 	//info_template[3] = Picture size:\t%1!d!x%2!d! pixel (%3!s!MP)
+	//info_template[4] = Model:\t\t%1!s!
+	//info_template[5] = Error:\t\t%1!s!
+	//info_template[6] = Contains:\t%1!s!
+	//info_template[7] = Picture folder:\t%1
+	//info_template[8] = Settings:\t
 }
 
 
@@ -329,7 +334,6 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 			else
 				t1 = FileName;
 
-			//_stprintf(msg, info_template[0], t1);
 			info.FormatMessage(info_template[0], t1);
 			msg += info;
 			msg += L'\n';
@@ -338,8 +342,6 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 			info.FormatMessage(info_template[7], FileName.Left(FileName.ReverseFind(L'\\') + 1));
 			msg += info;
 			msg += L'\n';
-
-			//_stprintf(msg, info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight);
 
 			//Floating-point printf format specifiers — e, E, f, and g — are not supported. 
 			//The workaround is to use the sprintf function to format the floating-point number 
@@ -350,9 +352,6 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 
 			info.FormatMessage(info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight, mp);
 			msg += info;
-
-			//_stprintf(msg, info_template[1], file_size?((file_size >> 10)?(file_size >> 10):1):0,
-			//								 file_size, LongFileDateTime);
 
 			const __int64 file_size(::GetFileSize64(FileName));
 
@@ -404,12 +403,12 @@ struct plugin_data __stdcall CTiffFormat::get_plugin_data() const
 
 const CString CTiffFormat::type = "TIFF";
 
-CString CTiffFormat::m_property_str;
-
-// *** cPicture maintains a property string for this PlugIn
+// *** cPicture maintains a property string for this Plugin
 //     which can be used for your picture format settings.
-//     For example use _stprintf(...) to create a string in get_properties()
-//     and _stscanf to get the values back in set_properties(...)
+//     For example use a string format to create a string in get_properties()
+//     and to get the values back in set_properties(...)
+
+CString CTiffFormat::m_property_str;
 
 
 bool __stdcall CTiffFormat::properties_dlg(const HWND hwnd)
