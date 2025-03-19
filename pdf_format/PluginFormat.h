@@ -12,6 +12,9 @@ protected:
 public:
 	virtual ~CPdfFormat();
 
+protected:
+	static CString m_property_str;
+
 public:
 	static const CString type;
 	virtual const CString __stdcall getType() const
@@ -44,7 +47,6 @@ public:
 	virtual unsigned int __stdcall get_cap() const;
 
 protected:
-	static CString m_property_str;
 	static int max_picture_x;
 	static int max_picture_y;
 	static int scaling;
