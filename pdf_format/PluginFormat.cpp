@@ -868,11 +868,7 @@ auto rotate_transform = [](FPDF_PAGE page, const int angle) -> void
 		const int current_rotation = FPDFPage_GetRotation(page) * 90;
 
 		// Calculate the new rotation.
-		int new_rotation = (current_rotation + angle) % 360;
-		if (new_rotation < 0)
-		{
-			new_rotation += 360;
-		}
+		const int new_rotation = (current_rotation + angle + 360) % 360;
 
 		// Set the new rotation.
 		FPDFPage_SetRotation(page, new_rotation / 90);
