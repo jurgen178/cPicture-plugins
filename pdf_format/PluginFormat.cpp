@@ -133,20 +133,21 @@ CString GetLongFileDateTime(const TCHAR* pFile, filetime_type type)
 	return GetLongFileDateTime(pFile, filetime, type);
 }
 
-struct FileWriter : public FPDF_FILEWRITE {
+struct FileWriter : public FPDF_FILEWRITE
+{
 	FILE* file = NULL;
 
-	static int WriteBlock(FPDF_FILEWRITE* pThis, const void* data, unsigned long size) {
+	static int WriteBlock(FPDF_FILEWRITE* pThis, const void* data, unsigned long size)
+	{
 		return static_cast<FileWriter*>(pThis)->Write(data, size);
 	}
 
-	bool Open(const WCHAR* path)
+	bool Open(const WCHAR* path) noexcept
 	{
 		const errno_t err(_wfopen_s(&file, path, L"wb"));
-
 		if (err == 0)
 		{
-			version = 1;
+			FPDF_FILEWRITE::version = 1;
 			FPDF_FILEWRITE::WriteBlock = &FileWriter::WriteBlock;
 			return true;
 		}
@@ -154,7 +155,7 @@ struct FileWriter : public FPDF_FILEWRITE {
 		return false;
 	}
 
-	void Close()
+	void Close() const noexcept
 	{
 		if (file)
 		{
@@ -162,13 +163,13 @@ struct FileWriter : public FPDF_FILEWRITE {
 		}
 	}
 
-	int Write(const void* data, unsigned long size)
+	int Write(const void* data, unsigned long size) const noexcept
 	{
 		return fwrite(data, 1, size, file) == size;
 	}
 };
 
-bool FileExist(const WCHAR* pFile)
+bool FileExist(const WCHAR* pFile) noexcept
 {
 	const DWORD file_attr = GetFileAttributes(pFile);
 	return file_attr != INVALID_FILE_ATTRIBUTES && ~file_attr & FILE_ATTRIBUTE_DIRECTORY;
@@ -943,7 +944,7 @@ bool CPdfFormat::Transform(const CString& inFileName, const function<void(FPDF_P
 			// delete original file
 			if (::DeleteFile(inFileName))
 			{
-				// rename original file to .trans file
+				// rename .trans file to original file
 				::MoveFile(outFileName, inFileName);
 			}
 			else

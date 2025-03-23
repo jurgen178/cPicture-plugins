@@ -2,6 +2,7 @@
 #include "pictureformat.h"
 #include "include/fpdfview.h"
 //#include "include/fpdf_thumbnail.h"
+
 #include <functional>
 using namespace std;
 
@@ -90,6 +91,5 @@ protected:
 	void update_page_sizes(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0,
 		const int rel_size_z = 1, const int rel_size_n = 1);
-
 	bool Transform(const CString& inFileName, const function<void(FPDF_PAGE)>& transform_function);
 };
