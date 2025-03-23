@@ -48,7 +48,7 @@ struct requested_data
 		int picture_height = 0,
 		BYTE* data = NULL,
 		__int64 len = 0
-	)
+	) noexcept
 		: picture_width(picture_width),
 		picture_height(picture_height),
 		data(data),
@@ -79,7 +79,7 @@ struct update_data
 		const int picture_width = 0,
 		const int picture_height = 0,
 		BYTE* data = NULL,
-		const DATA_REQUEST_TYPE request_type = DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA)
+		const DATA_REQUEST_TYPE request_type = DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA) noexcept
 		: file_name(file_name),
 		update_type(update_type),
 		picture_width(picture_width),
@@ -100,7 +100,7 @@ struct update_data
 
 struct picture_data
 {
-	picture_data(const CString file_name = L"")
+	picture_data(const CString file_name = L"") noexcept
 		: file_name(file_name),
 		picture_width(0),
 		picture_height(0),
@@ -153,7 +153,7 @@ enum PLUGIN_TYPE
 struct plugin_data
 {
 public:
-	plugin_data() : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) { };
+	plugin_data() noexcept : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) {};
 
 	CString name;
 	CString desc;
@@ -164,7 +164,7 @@ public:
 	enum PLUGIN_TYPE type;
 
 	// Zum Sortieren der Einträge.
-	bool operator < (const plugin_data& rhs)
+	bool operator < (const plugin_data& rhs) noexcept
 	{
 		return file_name2 < rhs.file_name2;
 	}
@@ -173,7 +173,7 @@ public:
 
 struct arg_count
 {
-	arg_count(const int arg_min = 1, const int arg_max = -1)
+	arg_count(const int arg_min = 1, const int arg_max = -1) noexcept
 		: arg_min(arg_min),
 		arg_max(arg_max)
 	{

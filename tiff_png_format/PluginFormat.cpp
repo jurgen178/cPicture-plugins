@@ -126,33 +126,6 @@ CString GetLongFileDateTime(const WCHAR* pFile, filetime_type type)
 }
 
 
-enum PLUGIN_TYPE
-{
-	PLUGIN_TYPE_NONE = 0x0000,
-	PLUGIN_TYPE_FORMAT = 0x0001,
-	PLUGIN_TYPE_FUNCTION = 0x0002,
-};
-
-struct plugin_data
-{
-public:
-	plugin_data() : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) {};
-
-	CString name;
-	CString desc;
-	CString file_name;
-	CString file_name2;
-	CString info;
-	CString version;
-	enum PLUGIN_TYPE type;
-
-	// Zum Sortieren der Einträge.
-	bool operator < (const plugin_data& rhs)
-	{
-		return file_name2 < rhs.file_name2;
-	}
-};
-
 enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
 {
 	return static_cast<enum PLUGIN_TYPE>(static_cast<const unsigned int>(t1) | static_cast<const unsigned int>(t2));
