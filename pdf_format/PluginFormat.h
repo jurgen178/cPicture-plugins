@@ -2,6 +2,8 @@
 #include "pictureformat.h"
 #include "include/fpdfview.h"
 //#include "include/fpdf_thumbnail.h"
+#include <functional>
+using namespace std;
 
 
 class CPdfFormat : public CPictureFormat
@@ -89,6 +91,5 @@ protected:
 		const int abs_size_x = 0, const int abs_size_y = 0,
 		const int rel_size_z = 1, const int rel_size_n = 1);
 
-	bool Rotate(const CString& inFileName, const int angle);
-	bool Mirror(const CString& inFileName, const bool up);
+	bool Transform(const CString& inFileName, const function<void(FPDF_PAGE)>& transform_function);
 };

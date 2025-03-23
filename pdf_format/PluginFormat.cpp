@@ -859,12 +859,51 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	return pvmem;
 }
 
-auto grey_sum = [&]() -> bool
+
+// Lambda for the rotate transform.
+auto rotate_transform = [](FPDF_PAGE page, const int angle) -> void
 	{
-		return true;
+		// Get the current rotation.
+		const int current_rotation = FPDFPage_GetRotation(page) * 90;
+
+		// Calculate the new rotation.
+		int new_rotation = (current_rotation + angle) % 360;
+		if (new_rotation < 0)
+		{
+			new_rotation += 360;
+		}
+
+		// Set the new rotation.
+		FPDFPage_SetRotation(page, new_rotation / 90);
 	};
 
-bool CPdfFormat::Rotate(const CString& inFileName, const int angle)
+
+// Mirror transform renders the pages with black background.
+// Lambda for the mirror transform.
+auto mirror_transform = [](FPDF_PAGE page, const bool mirror_horizontal) -> void
+	{
+		const float width = static_cast<float>(FPDF_GetPageWidth(page));
+		const float height = static_cast<float>(FPDF_GetPageHeight(page));
+
+		// Iterate through each page object.
+		const int object_count = FPDFPage_CountObjects(page);
+		for (int j = 0; j < object_count; ++j)
+		{
+			FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, j);
+			if (page_object)
+			{
+				// Create a transformation matrix for horizontal mirroring.
+				const FS_MATRIX matrix = { -1, 0, 0, 1, width, 0 };
+				FPDFPageObj_Transform(page_object, matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f);
+			}
+		}
+
+		// Regenerate the page content.
+		FPDFPage_GenerateContent(page);
+	};
+
+
+bool CPdfFormat::Transform(const CString& inFileName, const function<void(FPDF_PAGE)>& transform_function)
 {
 	PDFiumInit pdfiumInit;
 
@@ -873,100 +912,22 @@ bool CPdfFormat::Rotate(const CString& inFileName, const int angle)
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(inFileName), nullptr);
 	if (document)
 	{
-		// Get the number of pages
+		// Get the number of pages.
 		const int page_count = FPDF_GetPageCount(document);
 
-		// Rotate each page
+		// Transform each page.
 		for (int i = 0; i < page_count; ++i)
 		{
 			FPDF_PAGE page = FPDF_LoadPage(document, i);
 			if (page)
 			{
-				// Get the current rotation
-				const int current_rotation = FPDFPage_GetRotation(page) * 90;
-
-				// Calculate the new rotation
-				int new_rotation = (current_rotation + angle) % 360;
-				if (new_rotation < 0)
-				{
-					new_rotation += 360;
-				}
-
-				// Apply the new rotation
-				FPDFPage_SetRotation(page, new_rotation / 90);
+				transform_function(page);
 
 				FPDF_ClosePage(page);
 			}
 		}
 
-		// Save the modified document
-		FileWriter file_writer;
-		if (file_writer.Open(outFileName))
-		{
-			FPDF_SaveAsCopy(document, &file_writer, 0);
-			file_writer.Close();
-		}
-
-		// Clean up.
-		FPDF_CloseDocument(document);
-
-		if (FileExist(outFileName))
-		{
-			// delete original file
-			if (::DeleteFile(inFileName))
-			{
-				// rename original file to .trans file
-				::MoveFile(outFileName, inFileName);
-			}
-			else
-			{
-				::DeleteFile(outFileName);
-			}
-		}
-	}
-
-	return true;
-}
-
-bool CPdfFormat::Mirror(const CString& inFileName, const bool up)
-{
-	PDFiumInit pdfiumInit;
-
-	const CString outFileName(inFileName + L".trans");
-
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(inFileName), nullptr);
-	if (document)
-	{
-		// Get the number of pages
-		const int page_count = FPDF_GetPageCount(document);
-
-		// Rotate each page
-		for (int i = 0; i < page_count; ++i)
-		{
-			FPDF_PAGE page = FPDF_LoadPage(document, i);
-			if (page)
-			{
-				double width = FPDF_GetPageWidth(page);
-				double height = FPDF_GetPageHeight(page);
-
-				// Iterate through each page object
-				int object_count = FPDFPage_CountObjects(page);
-				for (int j = 0; j < object_count; ++j)
-				{
-					FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, j);
-					if (page_object)
-					{
-						// Create a transformation matrix for horizontal mirroring
-						FS_MATRIX matrix = { -1, 0, 0, 1, width, 0 };
-						FPDFPageObj_Transform(page_object, matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f);
-					}
-				}
-
-				FPDF_ClosePage(page);
-			}
-		}
-
-		// Save the modified document
+		// Save the modified document.
 		FileWriter file_writer;
 		if (file_writer.Open(outFileName))
 		{
@@ -997,28 +958,52 @@ bool CPdfFormat::Mirror(const CString& inFileName, const bool up)
 
 bool __stdcall CPdfFormat::RotateLeft(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
 {
-	return Rotate(inFileName, -90);
+	auto rotate_left = [](FPDF_PAGE page) -> void
+		{
+			rotate_transform(page, -90);
+		};
+
+	return Transform(inFileName, rotate_left);
 }
 
 bool __stdcall CPdfFormat::RotateRight(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
 {
-	return Rotate(inFileName, 90);
+	auto rotate_right = [](FPDF_PAGE page) -> void
+		{
+			rotate_transform(page, 90);
+		};
+
+	return Transform(inFileName, rotate_right);
+}
+
+bool __stdcall CPdfFormat::Rotate180(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
+{
+	auto rotate_180 = [](FPDF_PAGE page) -> void
+		{
+			rotate_transform(page, 180);
+		};
+
+	return Transform(inFileName, rotate_180);
 }
 
 bool __stdcall CPdfFormat::FlipH(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
 {
-	return Mirror(inFileName, true);
+	auto flipH = [](FPDF_PAGE page) -> void
+		{
+			mirror_transform(page, true);
+		};
+
+	return Transform(inFileName, flipH);
 }
 
 bool __stdcall CPdfFormat::FlipV(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
 {
-	return Mirror(inFileName, false);
-}
+	auto flipV = [](FPDF_PAGE page) -> void
+		{
+			mirror_transform(page, false);
+		};
 
-
-bool __stdcall CPdfFormat::Rotate180(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
-{
-	return Rotate(inFileName, 180);
+	return Transform(inFileName, flipV);
 }
 
 void __stdcall CPdfFormat::get_size(const CString& FileName)
@@ -1050,9 +1035,11 @@ unsigned int __stdcall CPdfFormat::get_cap() const
 								// If not implemented in this plugin, a default implementation will be used.
 		PICTURE_ROTATELEFT |
 		PICTURE_ROTATERIGHT |
-		PICTURE_ROTATE180 |
-		PICTURE_FLIPH |
-		PICTURE_FLIPV;
+		PICTURE_ROTATE180;
+
+		// Mirror transform renders the pages with black background.
+		//PICTURE_FLIPH |
+		//PICTURE_FLIPV;
 }
 
 vector<CString> info_template;
