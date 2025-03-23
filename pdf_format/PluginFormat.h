@@ -58,7 +58,6 @@ public:
 		return new CPdfFormat;
 	};
 
-	virtual void __stdcall get_size(const CString& FileName);
 	virtual CString __stdcall get_ext() const;
 	virtual struct plugin_data __stdcall get_plugin_data() const;
 

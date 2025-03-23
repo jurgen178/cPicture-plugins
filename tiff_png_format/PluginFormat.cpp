@@ -299,7 +299,7 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 
 		CString msg, info;
 
-		const int info_template_c((int)info_template.size());
+		const int info_template_c(static_cast<int>(info_template.size()));
 		if (info_template_c > 8)
 		{
 			const WCHAR* t1 = wcsrchr(FileName, L'\\');

@@ -976,22 +976,6 @@ bool __stdcall CPdfFormat::FlipV(const CString& inFileName, const bool bModifyPr
 	return Transform(inFileName, flipV);
 }
 
-void __stdcall CPdfFormat::get_size(const CString& FileName)
-{
-	PDFiumInit pdfiumInit;
-
-	m_bIsValid = false;
-
-	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
-	if (document)
-	{
-		update_page_sizes(document, 0, 0);
-		m_bIsValid = m_OriginalPictureWidth && m_OriginalPictureHeight;
-
-		FPDF_CloseDocument(document);
-	}
-}
-
 unsigned int __stdcall CPdfFormat::get_cap() const
 {
 	// *** Capabilities of the plugin.
@@ -1044,7 +1028,14 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 		if (document)
 		{
 			page_count = FPDF_GetPageCount(document);
+
+			if (page_count)
+			{
+				update_page_sizes(document, 0, 0);
+				m_bIsValid = m_OriginalPictureWidth && m_OriginalPictureHeight;
+			}
 		}
+
 		FPDF_CloseDocument(document);
 	}
 
@@ -1077,8 +1068,6 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 
 		if(info_template_c > 8)
 		{
-			get_size(FileName);
-
 			const TCHAR* t1 = wcsrchr(FileName, L'\\');
 			if(t1)
 				++t1;
