@@ -43,6 +43,12 @@ public:
 		const enum scaling_type picture_scaling_type = scaling_type::scaling_type_none,
 		const bool b_scan = true);
 
+	virtual bool __stdcall RotateLeft(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly);
+	virtual bool __stdcall RotateRight(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly);
+	virtual bool __stdcall Rotate180(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly);
+	virtual bool __stdcall FlipH(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly);
+	virtual bool __stdcall FlipV(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly);
+
 	virtual CString __stdcall get_info(const CString& FileName, const enum info_type _info_type);
 	virtual unsigned int __stdcall get_cap() const;
 
@@ -82,4 +88,7 @@ protected:
 	void update_page_sizes(FPDF_DOCUMENT document,
 		const int abs_size_x = 0, const int abs_size_y = 0,
 		const int rel_size_z = 1, const int rel_size_n = 1);
+
+	bool Rotate(const CString& inFileName, const int angle);
+	bool Mirror(const CString& inFileName, const bool up);
 };

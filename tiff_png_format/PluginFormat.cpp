@@ -265,6 +265,7 @@ unsigned int __stdcall CPluginFormat::get_cap() const
 		PICTURE_WRITE |			// This plugin can write the picture format.
 								// At least one must be specified. Otherwise 
 								// the plugin will not be loaded.
+								// See PictureFormat.h for the complete list.
 								// 
 								// This plugin supports several transformations.
 								// If not implemented in this plugin, a default implementation will be used.

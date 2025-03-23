@@ -2,6 +2,8 @@
 #include "resource.h"
 #include "pluginformat.h"
 #include "PdfPropertiesDlg.h"
+#include "include/fpdf_edit.h"
+#include "include/fpdf_save.h"
 
 #include <vector>
 #include <mutex>
@@ -129,6 +131,47 @@ CString GetLongFileDateTime(const TCHAR* pFile, filetime_type type)
 	FILETIME filetime = { 0 };
 
 	return GetLongFileDateTime(pFile, filetime, type);
+}
+
+struct FileWriter : public FPDF_FILEWRITE {
+	FILE* file = NULL;
+
+	static int WriteBlock(FPDF_FILEWRITE* pThis, const void* data, unsigned long size) {
+		return static_cast<FileWriter*>(pThis)->Write(data, size);
+	}
+
+	bool Open(const WCHAR* path)
+	{
+		const errno_t err(_wfopen_s(&file, path, L"wb"));
+
+		if (err == 0)
+		{
+			version = 1;
+			FPDF_FILEWRITE::WriteBlock = &FileWriter::WriteBlock;
+			return true;
+		}
+
+		return false;
+	}
+
+	void Close()
+	{
+		if (file)
+		{
+			fclose(file);
+		}
+	}
+
+	int Write(const void* data, unsigned long size)
+	{
+		return fwrite(data, 1, size, file) == size;
+	}
+};
+
+bool FileExist(const WCHAR* pFile)
+{
+	const DWORD file_attr = GetFileAttributes(pFile);
+	return file_attr != INVALID_FILE_ATTRIBUTES && ~file_attr & FILE_ATTRIBUTE_DIRECTORY;
 }
 
 
@@ -816,6 +859,168 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 	return pvmem;
 }
 
+auto grey_sum = [&]() -> bool
+	{
+		return true;
+	};
+
+bool CPdfFormat::Rotate(const CString& inFileName, const int angle)
+{
+	PDFiumInit pdfiumInit;
+
+	const CString outFileName(inFileName + L".trans");
+
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(inFileName), nullptr);
+	if (document)
+	{
+		// Get the number of pages
+		const int page_count = FPDF_GetPageCount(document);
+
+		// Rotate each page
+		for (int i = 0; i < page_count; ++i)
+		{
+			FPDF_PAGE page = FPDF_LoadPage(document, i);
+			if (page)
+			{
+				// Get the current rotation
+				const int current_rotation = FPDFPage_GetRotation(page) * 90;
+
+				// Calculate the new rotation
+				int new_rotation = (current_rotation + angle) % 360;
+				if (new_rotation < 0)
+				{
+					new_rotation += 360;
+				}
+
+				// Apply the new rotation
+				FPDFPage_SetRotation(page, new_rotation / 90);
+
+				FPDF_ClosePage(page);
+			}
+		}
+
+		// Save the modified document
+		FileWriter file_writer;
+		if (file_writer.Open(outFileName))
+		{
+			FPDF_SaveAsCopy(document, &file_writer, 0);
+			file_writer.Close();
+		}
+
+		// Clean up.
+		FPDF_CloseDocument(document);
+
+		if (FileExist(outFileName))
+		{
+			// delete original file
+			if (::DeleteFile(inFileName))
+			{
+				// rename original file to .trans file
+				::MoveFile(outFileName, inFileName);
+			}
+			else
+			{
+				::DeleteFile(outFileName);
+			}
+		}
+	}
+
+	return true;
+}
+
+bool CPdfFormat::Mirror(const CString& inFileName, const bool up)
+{
+	PDFiumInit pdfiumInit;
+
+	const CString outFileName(inFileName + L".trans");
+
+	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(inFileName), nullptr);
+	if (document)
+	{
+		// Get the number of pages
+		const int page_count = FPDF_GetPageCount(document);
+
+		// Rotate each page
+		for (int i = 0; i < page_count; ++i)
+		{
+			FPDF_PAGE page = FPDF_LoadPage(document, i);
+			if (page)
+			{
+				double width = FPDF_GetPageWidth(page);
+				double height = FPDF_GetPageHeight(page);
+
+				// Iterate through each page object
+				int object_count = FPDFPage_CountObjects(page);
+				for (int j = 0; j < object_count; ++j)
+				{
+					FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, j);
+					if (page_object)
+					{
+						// Create a transformation matrix for horizontal mirroring
+						FS_MATRIX matrix = { -1, 0, 0, 1, width, 0 };
+						FPDFPageObj_Transform(page_object, matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f);
+					}
+				}
+
+				FPDF_ClosePage(page);
+			}
+		}
+
+		// Save the modified document
+		FileWriter file_writer;
+		if (file_writer.Open(outFileName))
+		{
+			FPDF_SaveAsCopy(document, &file_writer, 0);
+			file_writer.Close();
+		}
+
+		// Clean up.
+		FPDF_CloseDocument(document);
+
+		if (FileExist(outFileName))
+		{
+			// delete original file
+			if (::DeleteFile(inFileName))
+			{
+				// rename original file to .trans file
+				::MoveFile(outFileName, inFileName);
+			}
+			else
+			{
+				::DeleteFile(outFileName);
+			}
+		}
+	}
+
+	return true;
+}
+
+bool __stdcall CPdfFormat::RotateLeft(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
+{
+	return Rotate(inFileName, -90);
+}
+
+bool __stdcall CPdfFormat::RotateRight(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
+{
+	return Rotate(inFileName, 90);
+}
+
+bool __stdcall CPdfFormat::FlipH(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
+{
+	return Mirror(inFileName, true);
+}
+
+bool __stdcall CPdfFormat::FlipV(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
+{
+	return Mirror(inFileName, false);
+}
+
+
+bool __stdcall CPdfFormat::Rotate180(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
+{
+	return Rotate(inFileName, 180);
+}
+
 void __stdcall CPdfFormat::get_size(const CString& FileName)
 {
 	PDFiumInit pdfiumInit;
@@ -835,11 +1040,19 @@ void __stdcall CPdfFormat::get_size(const CString& FileName)
 unsigned int __stdcall CPdfFormat::get_cap() const
 {
 	// *** Capabilities of the plugin.
-	return PICTURE_READ;		// This plugin can read the picture format.
-		   //PICTURE_WRITE |	// This plugin can write the picture format.
+	return PICTURE_READ |		// This plugin can read the picture format.
+		//PICTURE_WRITE |		// This plugin can write the picture format.
 								// At least one must be specified. Otherwise 
 								// the plugin will not be loaded.
 								// See PictureFormat.h for the complete list.
+								// 
+								// This plugin supports several transformations.
+								// If not implemented in this plugin, a default implementation will be used.
+		PICTURE_ROTATELEFT |
+		PICTURE_ROTATERIGHT |
+		PICTURE_ROTATE180 |
+		PICTURE_FLIPH |
+		PICTURE_FLIPV;
 }
 
 vector<CString> info_template;
