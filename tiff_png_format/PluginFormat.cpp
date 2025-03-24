@@ -276,7 +276,7 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 	// *** This function gets the picture data and should be as efficient as possible.
 	// For example: do not load and decompress the image just to get the picture dimensions
 
-	if (_info_type & (info_type_std | info_type_size))
+	if (_info_type & (info_type_std | info_type_size | info_type_short))
 	{
 		get_size(FileName);
 	}
@@ -293,9 +293,6 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 		//info_template[6] = Enthält:\t%1!s!
 		//info_template[7] = Bildordner:\t%1
 		//info_template[8] = Einstellungen:\t
-
-
-		get_size(FileName);
 
 		CString msg, info;
 
@@ -320,7 +317,7 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 			//Floating-point printf format specifiers — e, E, f, and g — are not supported. 
 			//The workaround is to use the sprintf function to format the floating-point number 
 			//into a temporary buffer, then use that buffer as the insert string. 
-			const float f_mp((float)m_OriginalPictureWidth * m_OriginalPictureHeight / 1000 / 1000);
+			const float f_mp(static_cast<float>(m_OriginalPictureWidth) * m_OriginalPictureHeight / 1000 / 1000);
 			CString mp;
 			mp.Format(L"%.1f", (f_mp < 0.1) ? 0.1 : f_mp);
 
