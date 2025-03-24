@@ -838,6 +838,11 @@ BYTE* __stdcall CPdfFormat::FileToRGB(const CString& FileName,
 auto rotate_transform = [](FPDF_PAGE page, const int angle) -> void
 	{
 		// Get the current rotation.
+		// FPDFPage_GetRotation returns one of the following indicating the page rotation:
+		//   0 - No rotation.
+		//   1 - Rotated 90 degrees clockwise.
+		//   2 - Rotated 180 degrees clockwise.
+		//   3 - Rotated 270 degrees clockwise.
 		const int current_rotation = FPDFPage_GetRotation(page) * 90;
 
 		// Calculate the new rotation.
