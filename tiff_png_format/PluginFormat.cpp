@@ -241,7 +241,7 @@ unsigned int __stdcall CPluginFormat::get_cap() const
 								// See PictureFormat.h for the complete list.
 								// 
 								// This plugin supports several transformations.
-								// If not implemented in this plugin, a default implementation will be used.
+								// If not implemented in this plugin, a default implementation will be used if PICTURE_WRITE is specified.
 		PICTURE_ROTATELEFT |
 		PICTURE_ROTATERIGHT |
 		PICTURE_FLIPH |

@@ -853,7 +853,7 @@ auto rotate_transform = [](FPDF_PAGE page, const int angle) -> void
 	};
 
 
-// Mirror transform renders the pages with black background.
+// Mirror transform renders the pages with a black background.
 // Lambda for the mirror transform.
 auto mirror_transform = [](FPDF_PAGE page, const bool mirror_horizontal) -> void
 	{
@@ -882,8 +882,6 @@ bool CPdfFormat::Transform(const CString& inFileName, const function<void(FPDF_P
 {
 	PDFiumInit pdfiumInit;
 
-	const CString outFileName(inFileName + L".trans");
-
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(inFileName), nullptr);
 	if (document)
 	{
@@ -903,6 +901,8 @@ bool CPdfFormat::Transform(const CString& inFileName, const function<void(FPDF_P
 		}
 
 		// Save the modified document.
+		const CString outFileName(inFileName + L".trans");
+
 		FileWriter file_writer;
 		if (file_writer.Open(outFileName))
 		{
@@ -991,12 +991,12 @@ unsigned int __stdcall CPdfFormat::get_cap() const
 								// See PictureFormat.h for the complete list.
 								// 
 								// This plugin supports several transformations.
-								// If not implemented in this plugin, a default implementation will be used.
+								// If not implemented in this plugin, a default implementation will be used if PICTURE_WRITE is specified.
 		PICTURE_ROTATELEFT |
 		PICTURE_ROTATERIGHT |
 		PICTURE_ROTATE180;
 
-		// Mirror transform renders the pages with black background.
+		// Mirror transform renders the pages with a black background.
 		//PICTURE_FLIPH |
 		//PICTURE_FLIPV;
 }
