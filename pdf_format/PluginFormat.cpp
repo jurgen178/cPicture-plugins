@@ -915,11 +915,11 @@ bool CPdfFormat::Transform(const CString& inFileName, const function<void(FPDF_P
 
 		if (FileExist(outFileName))
 		{
-			// delete original file
+			// delete input file
 			if (::DeleteFile(inFileName))
 			{
-				// rename .trans file to original file
-				::MoveFile(outFileName, inFileName);
+				// rename .trans file to input file
+				return ::MoveFile(outFileName, inFileName) != 0;
 			}
 			else
 			{
@@ -928,7 +928,7 @@ bool CPdfFormat::Transform(const CString& inFileName, const function<void(FPDF_P
 		}
 	}
 
-	return true;
+	return false;
 }
 
 bool __stdcall CPdfFormat::RotateLeft(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly)
