@@ -101,6 +101,7 @@ protected:
 		m_OriginalPictureHeight(0),
 		m_h_samp_factor8(1),
 		m_v_samp_factor8(1),
+		m_QualityLevel(-1),
 		m_Orientation(-1),
 		m_jpeg_streamsize(0),
 		m_color_space(0),
@@ -136,6 +137,7 @@ public:
 
 	int	m_h_samp_factor8;
 	int m_v_samp_factor8;
+	int m_QualityLevel;
 
 	int m_Orientation;
 

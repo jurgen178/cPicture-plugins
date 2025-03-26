@@ -105,6 +105,7 @@ protected:
 		m_OriginalPictureHeight(0),
 		m_h_samp_factor8(1),
 		m_v_samp_factor8(1),
+		m_QualityLevel(-1),
 		m_Orientation(-1),
 		m_jpeg_streamsize(0),
 		m_color_space(0),
@@ -129,7 +130,7 @@ protected:
 	};
 
 public:
-	virtual ~CPictureFormat() { };
+	virtual ~CPictureFormat() {};
 
 public:
 	int m_PictureWidth;
@@ -140,6 +141,7 @@ public:
 
 	int	m_h_samp_factor8;
 	int m_v_samp_factor8;
+	int m_QualityLevel;
 
 	int m_Orientation;
 
@@ -185,7 +187,7 @@ public:
 	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
 
-	virtual void __stdcall set_properties(const CString& property_str) { };
+	virtual void __stdcall set_properties(const CString& property_str) {};
 	virtual CString __stdcall get_properties() const { return L""; };
 	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
@@ -252,9 +254,13 @@ public:
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) { return false;	};
+		const int x, const int y, const int b, const int h) {
+		return false;
+	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) { return false; }
+		const int x, const int y, const int b, const int h) {
+		return false;
+	}
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
 
