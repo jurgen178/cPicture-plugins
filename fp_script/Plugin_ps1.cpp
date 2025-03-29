@@ -175,7 +175,7 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	//		"dir" : "C:\\Bilder\\",
 	//		"width" : 1624,
 	//		"height" : 812,
-	//		"errormsg" : "",
+	//		"error_msg" : "",
 	//		"audio" : false,
 	//		"video" : false,
 	//		"colorprofile" : true,
@@ -194,7 +194,7 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	//		"dir" : "C:\\Bilder\\",
 	//		"width" : 5568,
 	//		"height" : 3712,
-	//		"errormsg" : "",
+	//		"error_msg" : "",
 	//		"audio" : false,
 	//		"video" : false,
 	//		"colorprofile" : true,
@@ -217,7 +217,7 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 	{
 		// \"\" escapes the quotes in a quoted string.
-		CString cmd_format(L"{\"\"file\"\":\"\"%1\"\",\"\"name\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"errormsg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
+		CString cmd_format(L"{\"\"file\"\":\"\"%1\"\",\"\"name\"\":\"\"%2\"\",\"\"dir\"\":\"\"%3\"\",\"\"width\"\":%4!d!,\"\"height\"\":%5!d!,\"\"error_msg\"\":\"\"%6\"\",\"\"audio\"\":%7,\"\"video\"\":%8,\"\"colorprofile\"\":%9,\"\"gps\"\":\"\"%10\"\",\"\"aperture\"\":%11,\"\"shutterspeed\"\":%12!d!,\"\"iso\"\":%13!d!,\"\"exifdate\"\":%14,\"\"exifdate_str\"\":\"\"%15\"\",\"\"model\"\":\"\"%16\"\",\"\"lens\"\":\"\"%17\"\",\"\"cdata\"\":\"\"%18\"\"}");
 		const int f(it->file_name.ReverseFind(L'\\') + 1);
 		const CString name(it->file_name.Mid(f));
 		const CString dir(it->file_name.Left(f));
