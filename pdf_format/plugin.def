@@ -1,4 +1,4 @@
-LIBRARY      "cpp_pdf"
+LIBRARY      "cpf_pdf"
 EXPORTS
 	GetPluginType
 	GetPluginVersion

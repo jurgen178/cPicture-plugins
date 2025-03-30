@@ -47,7 +47,7 @@ BEGIN
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "cPicture plugin"
             VALUE "LegalCopyright", "Copyright (C)"
-            VALUE "OriginalFilename", "cpp_tiff_png.dll"
+            VALUE "OriginalFilename", "cpf_tiff_png.dll"
             VALUE "ProductName", "cPicture plugin TIFF/PNG"
             VALUE "ProductVersion", "1.0.0.0"
         END

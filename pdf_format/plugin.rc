@@ -47,7 +47,7 @@ BEGIN
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "cPicture plugin"
             VALUE "LegalCopyright", "Copyright (C)"
-            VALUE "OriginalFilename", "cpp_pdf.dll"
+            VALUE "OriginalFilename", "cpf_pdf.dll"
             VALUE "ProductName", "cPicture plugin PDF format"
             VALUE "ProductVersion", "1.0.0.0"
         END
