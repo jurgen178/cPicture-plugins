@@ -41,8 +41,8 @@ BEGIN
     BEGIN
         BLOCK "040704b0"
         BEGIN
-            VALUE "Comments", "cpicture@thecloudsite.net"
-            VALUE "CompanyName", "http://cPicture.thecloudsite.net/"
+            VALUE "Comments", "cpicture@bitfabrik.io"
+            VALUE "CompanyName", "http://bitfabrik.io/cPicture/"
             VALUE "FileDescription", "cPicture plugin TIFF/PNG"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "cPicture plugin"
