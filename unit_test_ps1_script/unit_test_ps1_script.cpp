@@ -135,5 +135,15 @@ namespace unittest
 			// ab\\""c''\\1\\\\ 
 			Assert::AreEqual(L"ab\\\\\"\"c''\\\\1\\\\\\\\", escapedText);
 		}
+
+		TEST_METHOD(TestEscapeCmdLinePyData1)
+		{
+			// [{"key'1","value"a","key2","value\b\"}]
+			CString text(L"[{\"key\'\'1\":\"value\"a\\\",\"key2\":\"value\b\\\"}]");
+
+			CString escapedPy = escapeCmdLineJsonDataPy(text);
+
+			Assert::AreEqual(L"[{\"key\'\'1\":\"value\\\"a\\\\\",\"key2\":\"value\b\\\\\"}]", escapedPy);
+		}
 	};
 }

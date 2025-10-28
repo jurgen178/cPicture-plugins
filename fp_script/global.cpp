@@ -147,7 +147,53 @@ CString escapeCmdLineJsonData(__int64 value)
 
 CString escapeCmdLineJsonDataPy(CString text)
 {
-	text.Replace(L"\\", L"\\\\");	// \ -> \\ 
+	// embedded json data?
+	CString textNoSpaces(text);
+	textNoSpaces.Replace(L" ", L"");
+
+	if (textNoSpaces.Left(2) == L"[{" && textNoSpaces.Right(2) == L"}]")
+	{
+		// Use double group replacement to replace delimiting quotes and inside quotes.
+
+		// [{"key''1\":"value\"a","key2" : "value\b\\"}]
+		text.Replace(L"\\", L"\\\\");	// \ -> \\
+
+		// Escape delimiter quotes using a uncommon letter ⱦ.
+		text.Replace(L"{\"", L"{\\\\ⱦⱦ");
+		text.Replace(L":\"", L":\\\\ⱦⱦ");
+		text.Replace(L"\":", L"\\\\ⱦⱦ:");
+		text.Replace(L",\"", L",\\\\ⱦⱦ");
+		text.Replace(L"\",", L"\\\\ⱦⱦ,");
+		text.Replace(L"\"}", L"\\\\ⱦⱦ}");
+
+		// [{\\ⱦⱦkey''1\\ⱦⱦ,\\ⱦⱦvalue"a\\ⱦⱦ,\\ⱦⱦkey2\\ⱦⱦ,\\ⱦⱦvalue\\\\b\\\\\\ⱦⱦ}]
+
+		// All remaining quotes are now quotes inside of a quoted string.
+		// Now escape " inside quoted string -> \"
+		text.Replace(L"\"", L"\\\"");	// " -> \"
+
+		// Replace uncommon letter back to escaped quotes.
+		text.Replace(L"{\\\\ⱦⱦ", L"{\"");
+		text.Replace(L":\\\\ⱦⱦ", L":\"");
+		text.Replace(L"\\\\ⱦⱦ:", L"\":");
+		text.Replace(L",\\\\ⱦⱦ", L",\"");
+		text.Replace(L"\\\\ⱦⱦ,", L"\",");
+		text.Replace(L"\\\\ⱦⱦ}", L"\"}");
+	}
+	else
+	{
+		// ab"c'1\ 
+
+		text.Replace(L"\\", L"\\\\");	// \ -> \\ 
+
+		text.Replace(L"\"", L"\\\"");	// " -> \"
+
+		// Add double \ to avoid escaping the following quote when text ends with a \.
+		if (text.Right(1) == L"\\")
+			text += L"\\\\";
+
+		// ab\\""c''\\1\\\\ 
+	}
 
 	return text;
 }
