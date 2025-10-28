@@ -224,24 +224,24 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			escapeCmdLineJsonData(it->file_name),
-			escapeCmdLineJsonData(name),
-			escapeCmdLineJsonData(dir),
+			escapeCmdLineJsonDataPS1Str(it->file_name),
+			escapeCmdLineJsonDataPS1Str(name),
+			escapeCmdLineJsonDataPS1Str(dir),
 			it->picture_width,
 			it->picture_height,
-			escapeCmdLineJsonData(it->error_msg),
+			escapeCmdLineJsonDataPS1Str(it->error_msg),
 			escapeCmdLineJsonData(it->audio),
 			escapeCmdLineJsonData(it->video),
 			escapeCmdLineJsonData(it->color_profile),
-			escapeCmdLineJsonData(it->gps),
+			escapeCmdLineJsonDataPS1Str(it->gps),
 			escapeCmdLineJsonData(it->aperture),
 			it->shutterspeed,
 			it->iso,
 			escapeCmdLineJsonData(it->exif_time),
 			it->exif_datetime_display,
-			escapeCmdLineJsonData(it->model),
-			escapeCmdLineJsonData(it->lens),
-			escapeCmdLineJsonData(it->cdata)
+			escapeCmdLineJsonDataPS1Str(it->model),
+			escapeCmdLineJsonDataPS1Str(it->lens),
+			escapeCmdLineJsonDataPS1Str(it->cdata)
 		);
 
 		// No trailing separator for the last array element.

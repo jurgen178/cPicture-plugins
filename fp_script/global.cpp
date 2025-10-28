@@ -50,7 +50,7 @@ bool scanBoolVar(const char* Text, const CString& SearchTextTemplate, bool def)
 	return def;
 }
 
-CString escapeCmdLineJsonData(CString text)
+CString escapeCmdLineJsonDataPS1Str(CString text)
 {
 	// [{"key'1","value"a","key2","value\b\"}]
 
@@ -145,7 +145,7 @@ CString escapeCmdLineJsonData(__int64 value)
 	return data;
 }
 
-CString escapeCmdLineJsonDataPy(CString text)
+CString escapeCmdLineJsonDataPyStr(CString text)
 {
 	// embedded json data?
 	CString textNoSpaces(text);

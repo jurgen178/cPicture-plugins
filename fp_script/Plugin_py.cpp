@@ -217,24 +217,24 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 
 		CString cmd;
 		cmd.FormatMessage(cmd_format,
-			escapeCmdLineJsonDataPy(it->file_name),
-			escapeCmdLineJsonDataPy(name),
-			escapeCmdLineJsonDataPy(dir),
+			escapeCmdLineJsonDataPyStr(it->file_name),
+			escapeCmdLineJsonDataPyStr(name),
+			escapeCmdLineJsonDataPyStr(dir),
 			it->picture_width,
 			it->picture_height,
-			escapeCmdLineJsonDataPy(it->error_msg),
+			escapeCmdLineJsonDataPyStr(it->error_msg),
 			escapeCmdLineJsonData(it->audio),
 			escapeCmdLineJsonData(it->video),
 			escapeCmdLineJsonData(it->color_profile),
-			escapeCmdLineJsonDataPy(it->gps),
+			escapeCmdLineJsonDataPyStr(it->gps),
 			escapeCmdLineJsonData(it->aperture),
 			it->shutterspeed,
 			it->iso,
 			escapeCmdLineJsonData(it->exif_time),
 			it->exif_datetime_display,
-			escapeCmdLineJsonDataPy(it->model),
-			escapeCmdLineJsonDataPy(it->lens),
-			escapeCmdLineJsonDataPy(it->cdata)
+			escapeCmdLineJsonDataPyStr(it->model),
+			escapeCmdLineJsonDataPyStr(it->lens),
+			escapeCmdLineJsonDataPyStr(it->cdata)
 		);
 
 		// No trailing separator for the last array element.

@@ -119,7 +119,7 @@ namespace unittest
 			// [{"key'1","value"a","key2","value\b\"}]
 			CString text(L"[{\"key'1\",\"value\"a\",\"key2\",\"value\\b\\\"}]");
 
-			CString escapedJson = escapeCmdLineJsonData(text);
+			CString escapedJson = escapeCmdLineJsonDataPS1Str(text);
 
 			// [{\\""key''1\\"",\\""value\\\\\\""a\\"",\\""key2\\"",\\""value\\\\b\\\\\\\\\\""}]
 			Assert::AreEqual(L"[{\\\\\"\"key''1\\\\\"\",\\\\\"\"value\\\\\\\\\\\\\"\"a\\\\\"\",\\\\\"\"key2\\\\\"\",\\\\\"\"value\\\\\\\\b\\\\\\\\\\\\\\\\\\\\\"\"}]", escapedJson);
@@ -130,7 +130,7 @@ namespace unittest
 			// ab"c'1\ 
 			CString text(L"ab\"c'\\1\\");
 
-			CString escapedText = escapeCmdLineJsonData(text);
+			CString escapedText = escapeCmdLineJsonDataPS1Str(text);
 
 			// ab\\""c''\\1\\\\ 
 			Assert::AreEqual(L"ab\\\\\"\"c''\\\\1\\\\\\\\", escapedText);
@@ -141,7 +141,7 @@ namespace unittest
 			// [{"key'1","value"a","key2","value\b\"}]
 			CString text(L"[{\"key\'\'1\":\"value\"a\\\",\"key2\":\"value\b\\\"}]");
 
-			CString escapedPy = escapeCmdLineJsonDataPy(text);
+			CString escapedPy = escapeCmdLineJsonDataPyStr(text);
 
 			Assert::AreEqual(L"[{\"key\'\'1\":\"value\\\"a\\\\\",\"key2\":\"value\b\\\\\"}]", escapedPy);
 		}
