@@ -249,12 +249,12 @@ public:
 	virtual bool __stdcall AutoRotate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
-	virtual bool __stdcall Crop(const CString& inFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) {
+	virtual bool __stdcall Crop(const CString& inFileName, const int cropmode, const bool bModifyPreview,
+		const int codec, const int x, const int y, const int b, const int h) {
 		return false;
 	};
-	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const bool bModifyPreview,
-		const int x, const int y, const int b, const int h) {
+	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const int cropmode, const bool bModifyPreview,
+		const int codec, const int x, const int y, const int b, const int h) {
 		return false;
 	}
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
