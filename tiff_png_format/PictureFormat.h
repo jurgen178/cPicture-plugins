@@ -34,9 +34,9 @@ enum scaling_type
 enum scaling_type operator|(const enum scaling_type t1, const enum scaling_type t2);
 enum scaling_type operator&(const enum scaling_type t1, const enum scaling_type t2);
 
-constexpr unsigned int PICTURE_READ = 0x00000001;	// Plugin can read the picture format
-constexpr unsigned int PICTURE_WRITE = 0x00000002;	// Plugin can write the picture format
-constexpr unsigned int PICTURE_QUALITY = 0x00000004;	// Picture format supports different quality levels (for example, JPEG has quality levels from 0 to 100)
+constexpr unsigned int PICTURE_READ = 0x00000001;			// Plugin can read the picture format
+constexpr unsigned int PICTURE_WRITE = 0x00000002;			// Plugin can write the picture format
+constexpr unsigned int PICTURE_QUALITY = 0x00000004;		// Plugin supports different quality levels (for example, JPEG has quality levels from 0 to 100)
 
 constexpr unsigned int PICTURE_AUTO_ROTATE = 0x00000008;	// Plugin supports transformations
 constexpr unsigned int PICTURE_ROTATELEFT = 0x00000010;
@@ -47,13 +47,14 @@ constexpr unsigned int PICTURE_FLIPV = 0x00000100;
 constexpr unsigned int PICTURE_TRANSPOSE = 0x00000200;
 constexpr unsigned int PICTURE_TRANSVERSE = 0x00000400;
 constexpr unsigned int PICTURE_GREYSCALE = 0x00000800;
-constexpr unsigned int PICTURE_CROP = 0x00001000;
-constexpr unsigned int PICTURE_EXIF_READ = 0x00002000;		// Plugin can read EXIF
-constexpr unsigned int PICTURE_EXIF_WRITE = 0x00004000;		// Plugin can write EXIF
-constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00008000;	// Plugin supports JPEG structure display
-constexpr unsigned int PICTURE_COMMENT = 0x00010000;		// Plugin supports comments
-constexpr unsigned int PICTURE_ORIENTATION = 0x00020000;	// Plugin supports an orientation flag
-constexpr unsigned int PICTURE_GPS = 0x00040000;			// Plugin supports GPS data
+constexpr unsigned int PICTURE_NEGATE = 0x00001000;
+constexpr unsigned int PICTURE_CROP = 0x00002000;
+constexpr unsigned int PICTURE_EXIF_READ = 0x00004000;		// Plugin can read EXIF
+constexpr unsigned int PICTURE_EXIF_WRITE = 0x00008000;		// Plugin can write EXIF
+constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00010000;	// Plugin supports JPEG structure display
+constexpr unsigned int PICTURE_COMMENT = 0x00020000;		// Plugin supports comments
+constexpr unsigned int PICTURE_ORIENTATION = 0x00040000;	// Plugin supports an orientation flag
+constexpr unsigned int PICTURE_GPS = 0x00080000;			// Plugin supports GPS data
 
 
 struct GPSdata
