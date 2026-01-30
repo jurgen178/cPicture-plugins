@@ -58,9 +58,6 @@
     <ClInclude Include="tif_config.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="libtiff.def" />
   </ItemGroup>
   <ItemGroup>
