@@ -1,13 +1,8 @@
 #pragma once
-#include "stdafx.h"
 
 #include "vector"
 using namespace std;
 
-
-//#define WIDTH_DWORD_ALIGNED(bits)    (((bits) + 31) / 32 * 4)
-#define WIDTH_DWORD_ALIGNED(pixel)    (((((pixel) * 24) + 31) >> 3) & ~0x03)
-#define MAKETRANSPARENT(color) (min((static_cast<int>(color)) + 100, 255))
 
 enum info_type
 {
@@ -16,6 +11,12 @@ enum info_type
 	info_type_date = 0x0004,
 	info_type_size = 0x0008,
 	info_type_detail = 0x0010,
+	//info_type_comment =					0x0020,
+	info_type_quicksearch = 0x0040,
+	info_type_quicksearch_scan_data = 0x0080,
+	info_type_quicksearch_audio = 0x0100,
+	info_type_quicksearch_scan_gps = 0x0200,
+	info_type_quicksearch_scan_exifdate = 0x0400,
 };
 
 enum info_type operator|(const enum info_type t1, const enum info_type t2);
@@ -34,6 +35,7 @@ enum scaling_type
 enum scaling_type operator|(const enum scaling_type t1, const enum scaling_type t2);
 enum scaling_type operator&(const enum scaling_type t1, const enum scaling_type t2);
 
+
 constexpr unsigned int PICTURE_READ = 0x00000001;			// Plugin can read the picture format
 constexpr unsigned int PICTURE_WRITE = 0x00000002;			// Plugin can write the picture format
 constexpr unsigned int PICTURE_QUALITY = 0x00000004;		// Plugin supports different quality levels (for example, JPEG has quality levels from 0 to 100)
@@ -48,13 +50,14 @@ constexpr unsigned int PICTURE_TRANSPOSE = 0x00000200;
 constexpr unsigned int PICTURE_TRANSVERSE = 0x00000400;
 constexpr unsigned int PICTURE_GREYSCALE = 0x00000800;
 constexpr unsigned int PICTURE_NEGATE = 0x00001000;
-constexpr unsigned int PICTURE_CROP = 0x00002000;
-constexpr unsigned int PICTURE_EXIF_READ = 0x00004000;		// Plugin can read EXIF
-constexpr unsigned int PICTURE_EXIF_WRITE = 0x00008000;		// Plugin can write EXIF
-constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00010000;	// Plugin supports JPEG structure display
-constexpr unsigned int PICTURE_COMMENT = 0x00020000;		// Plugin supports comments
-constexpr unsigned int PICTURE_ORIENTATION = 0x00040000;	// Plugin supports an orientation flag
-constexpr unsigned int PICTURE_GPS = 0x00080000;			// Plugin supports GPS data
+constexpr unsigned int PICTURE_EXPOSURE_CONTRAST = 0x00002000;
+constexpr unsigned int PICTURE_CROP = 0x00004000;
+constexpr unsigned int PICTURE_EXIF_READ = 0x00008000;		// Plugin can read EXIF
+constexpr unsigned int PICTURE_EXIF_WRITE = 0x00010000;		// Plugin can write EXIF
+constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00020000;	// Plugin supports JPEG structure display
+constexpr unsigned int PICTURE_COMMENT = 0x00040000;		// Plugin supports comments
+constexpr unsigned int PICTURE_ORIENTATION = 0x00080000;	// Plugin supports an orientation flag
+constexpr unsigned int PICTURE_GPS = 0x00100000;			// Plugin supports GPS data
 
 
 struct GPSdata
@@ -72,6 +75,16 @@ struct GPSdata
 	bool Parse(CString data, bool bShowError = true);
 	bool Parse(const unsigned int gpsdata[32]);
 	CString ToString();
+
+	const double latitudeValidate(double value);
+	const double longitudeValidate(double value);
+	void SetLatitude(const double _fLat);
+	void SetLongitude(const double _fLong);
+	void SetLatitude(const WCHAR _LatRef, const double _fLat);
+	void SetLongitude(const WCHAR _LongRef, const double _fLong);
+	void SetLatitude(const WCHAR _LatRef, const CString& _Lat);
+	void SetLongitude(const WCHAR _LongRef, const CString& _Long);
+	void SetAltitude(const CString& _Altitude);
 
 	bool empty() const
 	{
@@ -118,7 +131,7 @@ protected:
 		m_bCFlag(false),
 		m_bJFXX(true),
 		m_bUseColorProfile(false),
-		m_fAperture(0.0),
+		m_fAperture(0.0f),
 		m_Shutterspeed(0),
 		m_ISO(0),
 		m_bLossless(false)
@@ -127,7 +140,7 @@ protected:
 	};
 
 public:
-	virtual ~CPictureFormat() {};
+	virtual ~CPictureFormat() { };
 
 public:
 	int m_PictureWidth;
@@ -184,7 +197,7 @@ public:
 	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
 
-	virtual void __stdcall set_properties(const CString& property_str) {};
+	virtual void __stdcall set_properties(const CString& property_str) { };
 	virtual CString __stdcall get_properties() const { return L""; };
 	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
@@ -247,19 +260,16 @@ public:
 	virtual bool __stdcall Transpose(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall Transverse(const CString& inFileName, const bool bModifyPreview, const bool bModifyPreviewOnly) { return false; };
 	virtual bool __stdcall GreyScale(const CString& inFileName, const bool bModifyPreview) { return false; };
+	virtual bool __stdcall Negate(const CString& inFileName, const bool bModifyPreview) { return false; };
+	virtual bool __stdcall ExposureAndContrast(const CString& inFileName, const bool bModifyPreview, const double exposure, const double contrastDC, const double contrastLow, const double contrastMid, const double contrastHigh) { return false; };
 	virtual bool __stdcall AutoRotate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h) {
-		return false;
-	};
+		const int codec, const int x, const int y, const int b, const int h) { return false;	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h) {
-		return false;
-	}
+		const int codec, const int x, const int y, const int b, const int h) { return false; }
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
-
 
 typedef CPictureFormat* (__stdcall *lpfnFormatGetInstanceProc)();
