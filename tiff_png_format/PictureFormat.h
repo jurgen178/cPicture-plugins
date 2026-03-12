@@ -262,6 +262,17 @@ public:
 	virtual bool __stdcall GreyScale(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual bool __stdcall Negate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual bool __stdcall ExposureAndContrast(const CString& inFileName, const bool bModifyPreview, const double exposure, const double contrastDC, const double contrastLow, const double contrastMid, const double contrastHigh) { return false; };
+	virtual bool __stdcall ArtEffects(const CString& inFileName, const bool bModifyPreview,
+		const double requantStrength, const int sparsifyThreshold,
+		const double bandStopLow, const double bandStopHigh, const double bandStopAtten,
+		const double bandPassLow, const double bandPassHigh, const double bandPassAtten,
+		const double filmgrainAmount,
+		const double dctMosaicAmount,
+		const double dctMosaicSize,
+		const double dctFocusAmount,
+		const double dctFocusBias) {
+		return false;
+	};
 	virtual bool __stdcall AutoRotate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
