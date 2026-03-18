@@ -48,16 +48,17 @@ constexpr unsigned int PICTURE_FLIPH = 0x00000080;
 constexpr unsigned int PICTURE_FLIPV = 0x00000100;
 constexpr unsigned int PICTURE_TRANSPOSE = 0x00000200;
 constexpr unsigned int PICTURE_TRANSVERSE = 0x00000400;
-constexpr unsigned int PICTURE_GREYSCALE = 0x00000800;
-constexpr unsigned int PICTURE_NEGATE = 0x00001000;
-constexpr unsigned int PICTURE_EXPOSURE_CONTRAST = 0x00002000;
-constexpr unsigned int PICTURE_CROP = 0x00004000;
-constexpr unsigned int PICTURE_EXIF_READ = 0x00008000;		// Plugin can read EXIF
-constexpr unsigned int PICTURE_EXIF_WRITE = 0x00010000;		// Plugin can write EXIF
-constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00020000;	// Plugin supports JPEG structure display
-constexpr unsigned int PICTURE_COMMENT = 0x00040000;		// Plugin supports comments
-constexpr unsigned int PICTURE_ORIENTATION = 0x00080000;	// Plugin supports an orientation flag
-constexpr unsigned int PICTURE_GPS = 0x00100000;			// Plugin supports GPS data
+constexpr unsigned int PICTURE_GREYSCALE = 0x00000800;			// Plugin supports greyscale conversion
+constexpr unsigned int PICTURE_CROP = 0x00001000;				// Plugin supports cropping
+constexpr unsigned int PICTURE_NEGATE = 0x00002000;				// Plugin supports negative effect
+constexpr unsigned int PICTURE_EXPOSURE_CONTRAST = 0x00004000;	// Plugin supports exposure and contrast adjustments
+constexpr unsigned int PICTURE_ART_EFFECTS = 0x00008000;		// Plugin supports artistic DCT-domain effects
+constexpr unsigned int PICTURE_EXIF_READ = 0x00010000;			// Plugin can read EXIF
+constexpr unsigned int PICTURE_EXIF_WRITE = 0x00020000;			// Plugin can write EXIF
+constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00040000;		// Plugin supports JPEG structure display
+constexpr unsigned int PICTURE_COMMENT = 0x00080000;			// Plugin supports comments
+constexpr unsigned int PICTURE_ORIENTATION = 0x00100000;		// Plugin supports an orientation flag
+constexpr unsigned int PICTURE_GPS = 0x00200000;				// Plugin supports GPS data
 
 
 struct GPSdata
@@ -270,16 +271,14 @@ public:
 		const double dctMosaicAmount,
 		const double dctMosaicSize,
 		const double dctFocusAmount,
-		const double dctFocusBias) {
-		return false;
-	};
+		const double dctFocusBias) { return false; };
 	virtual bool __stdcall AutoRotate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h) { return false;	};
+		const int codec, const int x, const int y, const int b, const int h, const int color = -1) { return false;	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h) { return false; }
+		const int codec, const int x, const int y, const int b, const int h, const int color = -1) { return false; }
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
 
