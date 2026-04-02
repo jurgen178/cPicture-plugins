@@ -1,0 +1,263 @@
+#include "stdafx.h"
+#include "Plugin.h"
+#include "locale.h"
+#include "QrCodeDlg.h"
+
+// Plugin cpp_qrcode.
+// Overlays a QR code onto the selected pictures at a chosen corner.
+//
+// Settings (shown once before processing):
+//   - Corner : Top-Left / Top-Right / Bottom-Left / Bottom-Right
+//   - Text   : content that will be encoded in the QR code (used by the real
+//               QR library when it replaces the placeholder below)
+//   - Size   : QR code width/height as a percentage of the shorter image side (5..50 %)
+//
+// NOTE: DrawFakeQRCode() is a placeholder that draws a recognisable frame.
+//       Replace it with a real QR-code renderer when ready.
+
+
+// -------------------------------------------------------------------------
+//  Fake QR-code drawing helpers (placeholder – replace with real encoder)
+// -------------------------------------------------------------------------
+
+// RGB data is stored packed (stride = width * 3), top-to-bottom, R-G-B byte order.
+
+static inline void SetPixelRGB(BYTE* data, int img_width, int img_height,
+	int x, int y, BYTE r, BYTE g, BYTE b)
+{
+	if (x < 0 || x >= img_width || y < 0 || y >= img_height)
+		return;
+	BYTE* p = data + (y * img_width + x) * 3;
+	p[0] = r;
+	p[1] = g;
+	p[2] = b;
+}
+
+static void FillRectRGB(BYTE* data, int img_width, int img_height,
+	int rx, int ry, int rw, int rh, BYTE r, BYTE g, BYTE b)
+{
+	for (int y = ry; y < ry + rh; ++y)
+		for (int x = rx; x < rx + rw; ++x)
+			SetPixelRGB(data, img_width, img_height, x, y, r, g, b);
+}
+
+// Draws one "finder pattern" square (the three corner squares of a real QR code).
+// Position (fx, fy), total size fs x fs pixels.
+// Pattern: black outer ring, white gap (1/7th), black inner square (3/7th).
+static void DrawFinderPattern(BYTE* data, int img_width, int img_height,
+	int fx, int fy, int fs)
+{
+	if (fs < 7) return;
+
+	// Black outer square
+	FillRectRGB(data, img_width, img_height, fx, fy, fs, fs, 0, 0, 0);
+
+	// White inner (leave 1 cell border around the edge; cell = fs/7)
+	const int cell = max(1, fs / 7);
+	FillRectRGB(data, img_width, img_height,
+		fx + cell, fy + cell, fs - 2 * cell, fs - 2 * cell,
+		255, 255, 255);
+
+	// Black inner core (3 cells from each side)
+	const int core = cell * 2;
+	FillRectRGB(data, img_width, img_height,
+		fx + core, fy + core, fs - 2 * core, fs - 2 * core,
+		0, 0, 0);
+}
+
+// Draws the fake (placeholder) QR code onto the RGB image.
+// corner: 0=Top-Left, 1=Top-Right, 2=Bottom-Left, 3=Bottom-Right
+static void DrawFakeQRCode(BYTE* data, int img_width, int img_height,
+	int corner, int qr_size)
+{
+	const int margin = max(2, qr_size / 20);
+
+	int qr_x, qr_y;
+	switch (corner)
+	{
+	case 0:  qr_x = margin;                       qr_y = margin;                       break; // Top-Left
+	case 1:  qr_x = img_width  - qr_size - margin; qr_y = margin;                       break; // Top-Right
+	case 2:  qr_x = margin;                       qr_y = img_height - qr_size - margin; break; // Bottom-Left
+	default: qr_x = img_width  - qr_size - margin; qr_y = img_height - qr_size - margin; break; // Bottom-Right
+	}
+
+	// White background
+	FillRectRGB(data, img_width, img_height, qr_x, qr_y, qr_size, qr_size, 255, 255, 255);
+
+	// Black outer frame
+	const int bw = max(2, qr_size / 20); // border width
+	FillRectRGB(data, img_width, img_height, qr_x,               qr_y,               qr_size, bw,      0, 0, 0); // top
+	FillRectRGB(data, img_width, img_height, qr_x,               qr_y + qr_size - bw, qr_size, bw,      0, 0, 0); // bottom
+	FillRectRGB(data, img_width, img_height, qr_x,               qr_y,               bw,      qr_size, 0, 0, 0); // left
+	FillRectRGB(data, img_width, img_height, qr_x + qr_size - bw, qr_y,               bw,      qr_size, 0, 0, 0); // right
+
+	// Three finder patterns (top-left, top-right, bottom-left of the QR area)
+	const int fp = max(7, qr_size / 4); // finder pattern size
+	const int fp_off = bw + 2;          // offset from inner edge
+
+	DrawFinderPattern(data, img_width, img_height,
+		qr_x + fp_off,               qr_y + fp_off,               fp); // TL
+	DrawFinderPattern(data, img_width, img_height,
+		qr_x + qr_size - fp_off - fp, qr_y + fp_off,               fp); // TR
+	DrawFinderPattern(data, img_width, img_height,
+		qr_x + fp_off,               qr_y + qr_size - fp_off - fp, fp); // BL
+}
+
+
+// -------------------------------------------------------------------------
+//  DLL entry points
+// -------------------------------------------------------------------------
+
+const CString __stdcall GetPluginVersion()
+{
+	return L"1.0";
+}
+
+const CString __stdcall GetPluginInterfaceVersion()
+{
+	return L"1.7";
+}
+
+const PLUGIN_TYPE __stdcall GetPluginType()
+{
+	return PLUGIN_TYPE_FUNCTION;
+}
+
+const int __stdcall GetPluginInit()
+{
+	return 1;
+}
+
+lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
+{
+	return CFunctionPluginQRCode::GetInstance;
+}
+
+
+// -------------------------------------------------------------------------
+//  Plugin implementation
+// -------------------------------------------------------------------------
+
+CFunctionPluginQRCode::CFunctionPluginQRCode()
+	: handle_wnd(NULL),
+	  qr_corner(3),
+	  qr_text(L""),
+	  qr_relative_size(20)
+{
+	_wsetlocale(LC_ALL, L".ACP");
+}
+
+struct plugin_data __stdcall CFunctionPluginQRCode::get_plugin_data() const
+{
+	struct plugin_data pluginData;
+	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
+	pluginData.desc.LoadString(IDS_PLUGIN_LONG_DESC);
+	pluginData.info.LoadString(IDS_PLUGIN_INFO);
+	return pluginData;
+}
+
+struct arg_count __stdcall CFunctionPluginQRCode::get_arg_count() const
+{
+	// At least one picture; no upper limit.
+	return arg_count(1, -1);
+}
+
+enum REQUEST_TYPE __stdcall CFunctionPluginQRCode::start(
+	const HWND hwnd,
+	const vector<const WCHAR*>& file_list,
+	vector<request_data_size>& request_data_sizes)
+{
+	handle_wnd = hwnd;
+
+	// Show settings dialog before loading any picture data.
+	CWnd parent;
+	parent.Attach(handle_wnd);
+
+	CQrCodeDlg dlg(&parent);
+	// Pre-fill with current (default) values.
+	dlg.corner        = qr_corner;
+	dlg.text          = qr_text;
+	dlg.relative_size = qr_relative_size;
+
+	if (dlg.DoModal() != IDOK)
+	{
+		parent.Detach();
+		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
+	}
+
+	// Store chosen settings – used for every picture in end().
+	qr_corner        = dlg.corner;
+	qr_text          = dlg.text;
+	qr_relative_size = dlg.relative_size;
+
+	parent.Detach();
+
+	// Request full-size RGB data for every picture.
+	// Negative values are relative: -100 = 100 % of original size.
+	request_data_sizes.push_back(
+		request_data_size(-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+
+	return REQUEST_TYPE::REQUEST_TYPE_DATA;
+}
+
+bool __stdcall CFunctionPluginQRCode::process_picture(const picture_data& picture_data)
+{
+	// Nothing to do per-picture; all work is done in end().
+	// Return true to continue loading the next picture.
+	return true;
+}
+
+const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
+	const vector<picture_data>& picture_data_list)
+{
+	constexpr int MIN_QR_SIZE = 32; // pixels – skip pictures whose QR would be smaller
+
+	CString skipped;
+
+	for (const picture_data& pd : picture_data_list)
+	{
+		if (pd.requested_data_list.empty())
+			continue;
+
+		const requested_data& rd = pd.requested_data_list[0];
+
+		if (rd.data == nullptr || rd.picture_width == 0 || rd.picture_height == 0)
+			continue;
+
+		// Calculate QR code size in pixels.
+		const int shorter_side = min(rd.picture_width, rd.picture_height);
+		const int qr_size      = (shorter_side * qr_relative_size) / 100;
+
+		if (qr_size < MIN_QR_SIZE)
+		{
+			// Picture too small – collect name and skip.
+			skipped += pd.file_name + L"\n";
+			continue;
+		}
+
+		// Draw the fake QR code directly onto the pixel buffer.
+		// rd.data is BYTE* (non-const through the struct member), so bytes are writable.
+		DrawFakeQRCode(rd.data, rd.picture_width, rd.picture_height,
+			qr_corner, qr_size);
+
+		// Signal that this picture was updated.
+		update_data_list.push_back(update_data(
+			pd.file_name,
+			UPDATE_TYPE::UPDATE_TYPE_UPDATED,
+			rd.picture_width,
+			rd.picture_height,
+			rd.data,
+			DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+	}
+
+	// Inform the user about any skipped pictures.
+	if (!skipped.IsEmpty())
+	{
+		CString msg;
+		msg.LoadString(IDS_TOO_SMALL);
+		msg += L"\n\n" + skipped;
+		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+	}
+
+	return update_data_list;
+}
