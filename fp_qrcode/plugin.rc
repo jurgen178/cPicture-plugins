@@ -1,5 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
+#pragma code_page(65001)
+
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -13,11 +15,10 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
+// German (Germany) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -39,22 +40,22 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904b0"
+        BLOCK "040704b0"
         BEGIN
-            VALUE "Comments",         "QR code function plugin for cPicture"
-            VALUE "CompanyName",      "cPicture"
-            VALUE "FileDescription",  "cPicture function plugin"
-            VALUE "FileVersion",      "1.0.0.0"
-            VALUE "InternalName",     "cPicture function plugin"
-            VALUE "LegalCopyright",   "Copyright (C)"
+            VALUE "Comments", "QR-Code-Funktionszusatzmodul für cPicture"
+            VALUE "CompanyName", "cPicture"
+            VALUE "FileDescription", "cPicture Funktionszusatzmodul"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "cPicture Funktionszusatzmodul"
+            VALUE "LegalCopyright", "Copyright (C)"
             VALUE "OriginalFilename", "cpp_qrcode.dll"
-            VALUE "ProductName",      "cPicture function plugin"
-            VALUE "ProductVersion",   "1.0.0.0"
+            VALUE "ProductName", "cPicture Funktionszusatzmodul"
+            VALUE "ProductVersion", "1.0.0.0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x409, 1200
+        VALUE "Translation", 0x407, 1200
     END
 END
 
@@ -64,19 +65,31 @@ END
 // Dialog
 //
 
-IDD_DIALOG_QRCODE DIALOGEX 0, 0, 220, 135
+IDD_DIALOG_QRCODE DIALOGEX 0, 0, 280, 248
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "QR Code"
+CAPTION "QR-Code"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Corner:",IDC_STATIC,7,7,40,8
-    COMBOBOX        IDC_COMBO_CORNER,7,18,150,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Text:",IDC_STATIC,7,42,40,8
-    EDITTEXT        IDC_EDIT_TEXT,7,52,206,14,ES_AUTOHSCROLL
-    LTEXT           "Relative size (%):",IDC_STATIC,7,76,90,8
-    EDITTEXT        IDC_EDIT_SIZE,100,74,40,14,ES_AUTOHSCROLL | ES_NUMBER
-    DEFPUSHBUTTON   "OK",IDOK,62,114,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,116,114,50,14
+    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,265,145
+    LTEXT           "Ecke:",IDC_STATIC,7,172,40,8
+    COMBOBOX        IDC_COMBO_CORNER,50,171,150,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Text:",IDC_STATIC,7,187,40,8
+    EDITTEXT        IDC_EDIT_TEXT,50,185,222,36,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Größe (%):",IDC_STATIC,7,228,43,8
+    EDITTEXT        IDC_EDIT_SIZE,50,226,30,14,ES_AUTOHSCROLL | ES_NUMBER
+    DEFPUSHBUTTON   "OK",IDOK,162,229,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,218,229,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_QRCODE AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 
@@ -90,13 +103,58 @@ GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG_QRCODE, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 213
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 128
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "QR-Code"
+    IDS_PLUGIN_LONG_DESC    "QR-Code zu Bild hinzufügen"
+    IDS_PLUGIN_INFO         "Fügt den ausgewählten Bildern einen QR-Code in der gewählten Ecke hinzu."
+    IDS_TOO_SMALL           "Die folgenden Bilder waren für die gewählte QR-Code-Größe zu klein und wurden übersprungen:"
+    IDS_CORNER_TOP_LEFT     "Oben links"
+    IDS_CORNER_TOP_RIGHT    "Oben rechts"
+    IDS_CORNER_BOTTOM_LEFT  "Unten links"
+    IDS_CORNER_BOTTOM_RIGHT "Unten rechts"
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_QRCODE DIALOGEX 0, 0, 280, 248
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "QR Code"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKRECT | NOT WS_VISIBLE,7,7,265,145
+    LTEXT           "Corner:",IDC_STATIC,7,172,40,8
+    COMBOBOX        IDC_COMBO_CORNER,50,171,150,64,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Text:",IDC_STATIC,7,187,40,8
+    EDITTEXT        IDC_EDIT_TEXT,50,185,222,36,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Size (%):",IDC_STATIC,7,228,43,8
+    EDITTEXT        IDC_EDIT_SIZE,50,226,30,14,ES_AUTOHSCROLL | ES_NUMBER
+    DEFPUSHBUTTON   "OK",IDOK,162,229,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,218,229,50,14
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,6 +166,51 @@ IDD_DIALOG_QRCODE AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_QRCODE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 273
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 241
+    END
+END
+#endif    // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -128,3 +231,17 @@ BEGIN
 END
 
 #endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

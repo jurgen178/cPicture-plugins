@@ -75,10 +75,22 @@ static void DrawFakeQRCode(BYTE* data, int img_width, int img_height,
 	int qr_x, qr_y;
 	switch (corner)
 	{
-	case 0:  qr_x = margin;                       qr_y = margin;                       break; // Top-Left
-	case 1:  qr_x = img_width  - qr_size - margin; qr_y = margin;                       break; // Top-Right
-	case 2:  qr_x = margin;                       qr_y = img_height - qr_size - margin; break; // Bottom-Left
-	default: qr_x = img_width  - qr_size - margin; qr_y = img_height - qr_size - margin; break; // Bottom-Right
+	case 0: // Top-Left
+		qr_x = margin;
+		qr_y = margin;
+		break;
+	case 1: // Top-Right
+		qr_x = img_width - qr_size - margin;
+		qr_y = margin;
+		break;
+	case 2: // Bottom-Left
+		qr_x = margin;
+		qr_y = img_height - qr_size - margin;
+		break;
+	default: // Bottom-Right
+		qr_x = img_width - qr_size - margin;
+		qr_y = img_height - qr_size - margin;
+		break;
 	}
 
 	// White background
@@ -86,21 +98,21 @@ static void DrawFakeQRCode(BYTE* data, int img_width, int img_height,
 
 	// Black outer frame
 	const int bw = max(2, qr_size / 20); // border width
-	FillRectRGB(data, img_width, img_height, qr_x,               qr_y,               qr_size, bw,      0, 0, 0); // top
-	FillRectRGB(data, img_width, img_height, qr_x,               qr_y + qr_size - bw, qr_size, bw,      0, 0, 0); // bottom
-	FillRectRGB(data, img_width, img_height, qr_x,               qr_y,               bw,      qr_size, 0, 0, 0); // left
-	FillRectRGB(data, img_width, img_height, qr_x + qr_size - bw, qr_y,               bw,      qr_size, 0, 0, 0); // right
+	FillRectRGB(data, img_width, img_height, qr_x, qr_y, qr_size, bw, 0, 0, 0); // top
+	FillRectRGB(data, img_width, img_height, qr_x, qr_y + qr_size - bw, qr_size, bw, 0, 0, 0); // bottom
+	FillRectRGB(data, img_width, img_height, qr_x, qr_y, bw, qr_size, 0, 0, 0); // left
+	FillRectRGB(data, img_width, img_height, qr_x + qr_size - bw, qr_y, bw, qr_size, 0, 0, 0); // right
 
 	// Three finder patterns (top-left, top-right, bottom-left of the QR area)
 	const int fp = max(7, qr_size / 4); // finder pattern size
-	const int fp_off = bw + 2;          // offset from inner edge
+	const int fp_off = bw + 2; // offset from inner edge
 
 	DrawFinderPattern(data, img_width, img_height,
-		qr_x + fp_off,               qr_y + fp_off,               fp); // TL
+		qr_x + fp_off, qr_y + fp_off, fp); // TL
 	DrawFinderPattern(data, img_width, img_height,
-		qr_x + qr_size - fp_off - fp, qr_y + fp_off,               fp); // TR
+		qr_x + qr_size - fp_off - fp, qr_y + fp_off, fp); // TR
 	DrawFinderPattern(data, img_width, img_height,
-		qr_x + fp_off,               qr_y + qr_size - fp_off - fp, fp); // BL
+		qr_x + fp_off, qr_y + qr_size - fp_off - fp, fp); // BL
 }
 
 
@@ -169,31 +181,23 @@ enum REQUEST_TYPE __stdcall CFunctionPluginQRCode::start(
 {
 	handle_wnd = hwnd;
 
-	// Show settings dialog before loading any picture data.
 	CWnd parent;
 	parent.Attach(handle_wnd);
 
-	CQrCodeDlg dlg(&parent);
-	// Pre-fill with current (default) values.
-	dlg.corner        = qr_corner;
-	dlg.text          = qr_text;
-	dlg.relative_size = qr_relative_size;
-
-	if (dlg.DoModal() != IDOK)
-	{
-		parent.Detach();
-		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
-	}
-
-	// Store chosen settings – used for every picture in end().
-	qr_corner        = dlg.corner;
-	qr_text          = dlg.text;
-	qr_relative_size = dlg.relative_size;
+	// Create the dialog temporarily just to measure the preview rect, then destroy it.
+	vector<picture_data> empty_list;
+	CQrCodeDlg tempDlg(empty_list, &parent);
+	tempDlg.Create(IDD_DIALOG_QRCODE, &parent);
+	const CRect previewRect = tempDlg.preview_rect;
+	tempDlg.DestroyWindow();
 
 	parent.Detach();
 
-	// Request full-size RGB data for every picture.
-	// Negative values are relative: -100 = 100 % of original size.
+	// Request [0]: preview-sized BGR display data (first picture only, shown in the dialog).
+	// Request [1]: full-size RGB data for the actual modification of every picture.
+	request_data_sizes.push_back(
+		request_data_size(previewRect.Width(), previewRect.Height(),
+			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY));
 	request_data_sizes.push_back(
 		request_data_size(-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
 
@@ -210,6 +214,27 @@ bool __stdcall CFunctionPluginQRCode::process_picture(const picture_data& pictur
 const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 	const vector<picture_data>& picture_data_list)
 {
+	// Show the settings dialog with a live preview of the first picture.
+	CWnd parent;
+	parent.Attach(handle_wnd);
+
+	CQrCodeDlg dlg(picture_data_list, &parent);
+	dlg.corner = qr_corner;
+	dlg.text = qr_text;
+	dlg.relative_size = qr_relative_size;
+
+	if (dlg.DoModal() != IDOK)
+	{
+		parent.Detach();
+		return update_data_list;
+	}
+
+	qr_corner = dlg.corner;
+	qr_text = dlg.text;
+	qr_relative_size = dlg.relative_size;
+
+	parent.Detach();
+
 	constexpr int MIN_QR_SIZE = 32; // pixels – skip pictures whose QR would be smaller
 
 	CString skipped;
@@ -219,7 +244,10 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 		if (pd.requested_data_list.empty())
 			continue;
 
-		const requested_data& rd = pd.requested_data_list[0];
+		// Index 1 is the full-size RGB data requested in start().
+		if (pd.requested_data_list.size() < 2)
+			continue;
+		const requested_data& rd = pd.requested_data_list[1];
 
 		if (rd.data == nullptr || rd.picture_width == 0 || rd.picture_height == 0)
 			continue;

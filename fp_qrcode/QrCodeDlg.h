@@ -12,21 +12,31 @@
 class CQrCodeDlg : public CDialog
 {
 public:
-	CQrCodeDlg(CWnd* pParent = NULL);
+	CQrCodeDlg(const vector<picture_data>& picture_data_list, CWnd* pParent = NULL);
 	virtual ~CQrCodeDlg();
 
 	enum { IDD = IDD_DIALOG_QRCODE };
 
 public:
-	// Results read by Plugin after DoModal() == IDOK.
-	int    corner;         // 0 = Top-Left, 1 = Top-Right, 2 = Bottom-Left, 3 = Bottom-Right
-	CString text;          // text content for the QR code (used later by real QR implementation)
-	int    relative_size;  // QR size as percentage of the shorter image side (5..50)
+	// Settings - pre-fill before DoModal(), read back after IDOK.
+	int corner; // 0 = Top-Left, 1 = Top-Right, 2 = Bottom-Left, 3 = Bottom-Right
+	CString text; // text content for the QR code
+	int relative_size; // QR size as percentage of the shorter image side (5..50)
+	// Set during Create() - used by Plugin to size the data request.
+	CRect preview_rect;
+
+protected:
+	const vector<picture_data>& picture_data_list;
+	BITMAPINFOHEADER bmiHeader;
 
 protected:
 	CComboBox m_comboCorner;
-	CEdit     m_editText;
-	CEdit     m_editSize;
+	CEdit m_editText;
+	CEdit m_editSize;
+	CStatic m_preview;
+
+protected:
+	void DrawPreview(CDC& dc);
 
 protected:
 	virtual BOOL OnInitDialog();
@@ -34,4 +44,6 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
 
 	DECLARE_MESSAGE_MAP()
+	afx_msg void OnPaint();
+	afx_msg void OnChanged();
 };
