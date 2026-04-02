@@ -151,8 +151,8 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 		CString sizeStr;
 		m_editSize.GetWindowText(sizeStr);
 		const int v = _wtoi(sizeStr);
-		if (v >= 5 && v <= 50)
-			cur_size = v;
+		if (v >= 5)
+			cur_size = min(v, 50);
 	}
 
 	// Calculate QR size in preview image coordinates.
