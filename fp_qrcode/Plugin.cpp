@@ -6,32 +6,8 @@
 
 // Plugin cpp_qrcode.
 // Overlays a QR code onto the selected pictures at a chosen corner.
-//
-// Settings (shown once before processing):
-//   - Corner : Top-Left / Top-Right / Bottom-Left / Bottom-Right
-//   - Text   : content that will be encoded in the QR code (used by the real
-//               QR library when it replaces the placeholder below)
-//   - Size   : QR code width/height as a percentage of the shorter image side (5..50 %)
-//
-// NOTE: DrawFakeQRCode() is a placeholder that draws a recognisable frame.
-//       Replace it with a real QR-code renderer when ready.
-
-
-// -------------------------------------------------------------------------
-//  Real QR-code drawing
-// -------------------------------------------------------------------------
 
 // RGB data is stored packed (stride = width * 3), top-to-bottom, R-G-B byte order.
-
-static std::string CStringToUTF8(const CString& ws)
-{
-	if (ws.IsEmpty()) return {};
-	int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
-	if (len <= 1) return {};
-	std::string result(len - 1, '\0');
-	WideCharToMultiByte(CP_UTF8, 0, ws, -1, &result[0], len, nullptr, nullptr);
-	return result;
-}
 
 static void DrawRealQRCode(BYTE* data, int img_width, int img_height,
 	int corner, int qr_size_px, int margin_px, const CString& text)

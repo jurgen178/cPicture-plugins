@@ -184,16 +184,8 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	if (m_editText.GetSafeHwnd())
 		m_editText.GetWindowText(cur_text);
 
-	// Generate real QR code.
-	std::string utf8;
-	{
-		const int len = WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, nullptr, 0, nullptr, nullptr);
-		if (len > 1)
-		{
-			utf8.resize(len - 1);
-			WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, &utf8[0], len, nullptr, nullptr);
-		}
-	}
+	// Generate QR code.
+	const std::string utf8 = CStringToUTF8(cur_text);
 
 	std::vector<bool> qrBitmap;
 	int modules = 0;
