@@ -13,6 +13,7 @@
 #define IDS_TOTAL_PRICE_FORMAT          112
 #define IDS_ORDER_CONFIRMATION          113
 #define IDS_MAX_PRINTS                  114
+#define IDS_SELECT_PRINTS               115
 #define IDD_DIALOG_SAMPLE3              1000
 #define IDC_PICTURE_LIST                1001
 #define IDC_COMBO_FORMAT                1002

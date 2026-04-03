@@ -30,17 +30,19 @@ HBRUSH CColorEdit::CtlColor(CDC* pDC, UINT nCtlColor)
 	pDC->SetTextColor(RGB(255, 255, 255));
 	pDC->SetBkColor(RGB(0, 0, 0));
 
-	return (HBRUSH)brush;
+	return static_cast<HBRUSH>(brush);
 }
 
 
 // ParameterDlg dialog
 
-ParameterDlg::ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent /*=NULL*/)
+ParameterDlg::ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent /*=NULL*/, CString title)
   : CDialog(ParameterDlg::IDD, pParent),
+	title(title),
 	picture_list(picture_list),
 	jpeg_quality(95),
-	finished(false)
+	finished(false),
+	Dpi(pParent)
 {
 }
 
@@ -69,9 +71,10 @@ BOOL ParameterDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	console_font.CreateFont(-12, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS, 
+	console_font.CreateFont(Dpi.Scale(-11), 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
 				  CLIP_CHARACTER_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_SWISS, L"Consolas");
 	console.SetFont(&console_font, FALSE);
+	console.SetLimitText(1024000);
 
 	return TRUE;
 }
@@ -101,7 +104,10 @@ void ParameterDlg::OnBnClickedOk()
 
 	if(!CheckFile(enfuse_exe_path))
 	{
-		AfxMessageBox(IDS_ENFUSE_MISSING);
+		CString msg;
+		msg.Format(IDS_ENFUSE_MISSING);
+		::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
+
 		OnBnClickedButtonBrowse();
 		//GetDlgItem(IDC_BUTTON_BROWSE)->SetFocus();
 	}
@@ -140,7 +146,7 @@ HANDLE ParameterDlg::SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputRea
 	si.hStdError  = hStdError;
 	si.wShowWindow = SW_HIDE;						// IMPORTANT: hide subprocess console window
 	
-	const int commandLineCopySize(2048);
+	constexpr int commandLineCopySize(2048);
 	WCHAR commandLineCopy[commandLineCopySize];		// CreateProcess requires a modifiable buffer
 	wcscpy_s(commandLineCopy, commandLineCopySize, commandLine);
 	if (!CreateProcess(	NULL, commandLineCopy, NULL, NULL, TRUE,
@@ -269,7 +275,7 @@ bool ParameterDlg::CheckFile(const WCHAR* pFile)
 
 void ParameterDlg::OnClickSyslinkEnfuse(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	PNMLINK pNMLink = (PNMLINK)pNMHDR;
+	PNMLINK pNMLink = reinterpret_cast<PNMLINK>(pNMHDR);
 	LITEM   item = pNMLink->item;
 
 	ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);

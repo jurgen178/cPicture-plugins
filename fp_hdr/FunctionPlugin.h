@@ -27,7 +27,7 @@ struct request_data_size
 	request_data_size(
 		const int picture_width,
 		const int picture_height,
-		const enum DATA_REQUEST_TYPE data_request_type)
+		const enum DATA_REQUEST_TYPE data_request_type)	noexcept
 		: picture_width(picture_width),
 		picture_height(picture_height),
 		data_request_type(data_request_type)
@@ -47,8 +47,8 @@ struct requested_data
 		int picture_width = 0,
 		int picture_height = 0,
 		BYTE* data = NULL,
-		int len = 0
-	)
+		__int64 len = 0
+	) noexcept
 		: picture_width(picture_width),
 		picture_height(picture_height),
 		data(data),
@@ -59,7 +59,7 @@ struct requested_data
 	int picture_width;
 	int picture_height;
 	BYTE* data;
-	int len;
+	__int64 len;
 };
 
 
@@ -79,7 +79,7 @@ struct update_data
 		const int picture_width = 0,
 		const int picture_height = 0,
 		BYTE* data = NULL,
-		const DATA_REQUEST_TYPE request_type = DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA)
+		const DATA_REQUEST_TYPE request_type = DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA) noexcept
 		: file_name(file_name),
 		update_type(update_type),
 		picture_width(picture_width),
@@ -93,14 +93,14 @@ struct update_data
 	const UPDATE_TYPE update_type;
 	const int picture_width;
 	const int picture_height;
-	BYTE* data;
+	const BYTE* data;
 	const DATA_REQUEST_TYPE request_type;
 };
 
 
 struct picture_data
 {
-	picture_data(const CString file_name = L"")
+	picture_data(const CString file_name = L"") noexcept
 		: file_name(file_name),
 		picture_width(0),
 		picture_height(0),
@@ -150,10 +150,10 @@ enum PLUGIN_TYPE
 };
 
 
-struct PluginData
+struct plugin_data
 {
 public:
-	PluginData() : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) { };
+	plugin_data() noexcept : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) {};
 
 	CString name;
 	CString desc;
@@ -164,34 +164,46 @@ public:
 	enum PLUGIN_TYPE type;
 
 	// Zum Sortieren der Einträge.
-	bool operator < (PluginData& rhs)
+	bool operator < (const plugin_data& rhs) noexcept
 	{
 		return file_name2 < rhs.file_name2;
 	}
 };
 
 
-class CFunctionPlugin
+struct arg_count
 {
-protected:
-	CFunctionPlugin()
+	arg_count(const int arg_min = 1, const int arg_max = -1) noexcept
+		: arg_min(arg_min),
+		arg_max(arg_max)
 	{
 	};
 
+	const int arg_min;
+	const int arg_max;
+};
+
+
+class CFunctionPlugin
+{
+protected:
+	CFunctionPlugin() { };
+
 public:
-	virtual __stdcall ~CFunctionPlugin() { };
+	virtual ~CFunctionPlugin() { };
 
 protected:
 	// List of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	// This info will be submitted in the 'end' event.
-	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED));
+	// update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE_UPDATED));
 	vector<update_data> update_data_list;
 
 public:
-	virtual struct PluginData __stdcall get_plugin_data() = 0;
+	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
+	virtual struct arg_count __stdcall get_arg_count() const = 0;
 
 public:
-	virtual enum REQUEST_TYPE __stdcall start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_DATA; };
+	virtual enum REQUEST_TYPE __stdcall start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes) { return REQUEST_TYPE::REQUEST_TYPE_DATA; };
 	virtual bool __stdcall process_picture(const picture_data& picture_data) { return true; };
 	virtual const vector<update_data>& __stdcall end(const vector<picture_data>& picture_data_list) { return update_data_list; };
 };

@@ -129,9 +129,9 @@
       <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>delayimp.lib;vfw32.lib;Shcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>delayimp.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>oleacc.dll;winspool.drv;shlwapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>msvfw32.dll;shell32.dll;gdi32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;gdiplus.dll;oleaut32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;advapi32.dll;winspool.drv;msimg32.dll%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -140,7 +140,7 @@
       <ImportLibrary>
       </ImportLibrary>
       <BaseAddress>0x214000000</BaseAddress>
-      <OutputFile>C:\Projects\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -203,7 +203,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>oleacc.dll;winspool.drv;oleaut32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>msvfw32.dll;shell32.dll;gdi32.dll;oledlg.dll;winmm.dll;imm32.dll;oleacc.dll;gdiplus.dll;oleaut32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;advapi32.dll;winspool.drv;msimg32.dll%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

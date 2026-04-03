@@ -111,8 +111,8 @@ void CSampleDlg::OnPaint()
 		// Draw the selected picture.
 		bmiHeader.biWidth = requested_data1.picture_width;
 		bmiHeader.biHeight = requested_data1.picture_height;
-		const int left(preview_position_rect.left + (preview_position_rect.Width() - (int)requested_data1.picture_width) / 2);
-		const int top(preview_position_rect.top + (preview_position_rect.Height() - (int)requested_data1.picture_height) / 2);
+		const int left(preview_position_rect.left + (preview_position_rect.Width() - static_cast<int>(requested_data1.picture_width)) / 2);
+		const int top(preview_position_rect.top + (preview_position_rect.Height() - static_cast<int>(requested_data1.picture_height)) / 2);
 
 		HDRAWDIB hdd = DrawDibOpen();
 
@@ -137,9 +137,9 @@ void CSampleDlg::OnPaint()
 
 void CSampleDlg::OnBnClickedButtonNext()
 {
-	if(index < (int)picture_data_list.size() - 1)
+	if(index < static_cast<int>(picture_data_list.size() - 1))
 	{
-		index++;
+		++index;
 		RedrawWindow();
 		update_button_state();
 	}
@@ -158,5 +158,5 @@ void CSampleDlg::OnBnClickedButtonPrev()
 void CSampleDlg::update_button_state()
 {
 	GetDlgItem(IDC_BUTTON_PREV)->EnableWindow(index > 0);
-	GetDlgItem(IDC_BUTTON_NEXT)->EnableWindow(index < (int)picture_data_list.size() - 1);
+	GetDlgItem(IDC_BUTTON_NEXT)->EnableWindow(index < static_cast<int>(picture_data_list.size() - 1));
 }

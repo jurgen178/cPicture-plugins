@@ -1,0 +1,7 @@
+LIBRARY      "cpp_copy_cb"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

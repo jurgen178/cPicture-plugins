@@ -115,7 +115,7 @@ namespace unittest
 			const WCHAR largestDensityChar(densities.rbegin()->second);
 
 			int brightness = 0;
-			int contrast = -86;
+			int contrast = 06;
 
 			for (int i = 0; i < 256; ++i)
 			{
@@ -134,7 +134,7 @@ namespace unittest
 						index = (index - 127) * (100 - contrast) / 100 + 127;
 
 						// Brightness.
-						index = index - brightness;
+						index -= brightness;
 
 						if (index >= 0 && index < 256)
 							densities_index[index] = pair.second;
@@ -169,7 +169,7 @@ namespace unittest
 				if (!densities_index[i])
 					densities_index[i] = densities_index[i - 1];
 
-				i++;
+				++i;
 			}
 
 			//// Brightness shifts the values. Fill the end gaps.

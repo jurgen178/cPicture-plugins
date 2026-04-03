@@ -16,7 +16,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -45,9 +45,9 @@ CFunctionPluginEV::CFunctionPluginEV()
 	_wsetlocale(LC_ALL, L".ACP");
 }
 
-struct PluginData __stdcall CFunctionPluginEV::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginEV::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -57,7 +57,13 @@ struct PluginData __stdcall CFunctionPluginEV::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginEV::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+struct arg_count __stdcall CFunctionPluginEV::get_arg_count() const
+{
+	// At least one picture.
+	return arg_count(1, -1);
+}
+
+enum REQUEST_TYPE __stdcall CFunctionPluginEV::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 

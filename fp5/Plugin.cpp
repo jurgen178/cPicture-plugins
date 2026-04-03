@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "plugin.h"
-#include "locale.h"
 #include "SettingsDlg.h"
 
 // Example Plugin cpp_fp5.
@@ -12,10 +11,10 @@
 // and the update_data type to create a picture.
 
 
-const int picture_width(360);
-const int picture_height(240);
-const int headline_height(50);
-const int border(10);
+constexpr int picture_width(360);
+constexpr int picture_height(240);
+constexpr int headline_height(50);
+constexpr int border(10);
 
 
 const CString __stdcall GetPluginVersion()
@@ -25,7 +24,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -53,14 +52,14 @@ CFunctionPluginSample5::CFunctionPluginSample5()
 {
 }
 
-CFunctionPluginSample5::~CFunctionPluginSample5() 
+CFunctionPluginSample5::~CFunctionPluginSample5()
 {
 	::DeleteObject(Dib);
 }
 
-struct PluginData __stdcall CFunctionPluginSample5::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginSample5::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -70,7 +69,13 @@ struct PluginData __stdcall CFunctionPluginSample5::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+struct arg_count __stdcall CFunctionPluginSample5::get_arg_count() const
+{
+	// Only two pictures.
+	return arg_count(2, 2);
+}
+
+enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	// Start event.
 
@@ -116,7 +121,7 @@ bool __stdcall CFunctionPluginSample5::process_picture(const picture_data& pictu
 { 
 	// Process picture event.
 
-	picture_processed++;
+	++picture_processed;
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	
@@ -153,7 +158,10 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 
 	if (Dib == NULL)
 	{
-		AfxMessageBox(IDS_INDEX_TOO_LARGE);
+		CString msg;
+		msg.Format(IDS_INDEX_TOO_LARGE);
+		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+
 		return update_data_list;
 	}
 
@@ -168,14 +176,14 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	CPen pen;
 	pen.CreatePen(PS_SOLID, 5, border_color);
 	CPen* pPen = memDC.SelectObject(&pen);
-	HPEN hOldPen = (HPEN)pPen->GetSafeHandle();
+	HPEN hOldPen = static_cast<HPEN>(pPen->GetSafeHandle());
 
 	// Setup the Font to write the Text.
 	CFont headline_font;
 	headline_font.CreateFont(headline_height, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEVICE_PRECIS,
 		CLIP_CHARACTER_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_SWISS, L"Consolas");
 	CFont* pOldFont = memDC.SelectObject(&headline_font);
-	HFONT hOldFont = (HFONT)pOldFont->GetSafeHandle();
+	HFONT hOldFont = static_cast<HFONT>(pOldFont->GetSafeHandle());
 
 	// Add the Frame.
 	memDC.Rectangle(0, 0, bitmap_width, bitmap_height);

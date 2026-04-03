@@ -19,7 +19,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -46,9 +46,9 @@ CFunctionPluginSample4::CFunctionPluginSample4()
 {
 }
 
-struct PluginData __stdcall CFunctionPluginSample4::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginSample4::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -58,7 +58,13 @@ struct PluginData __stdcall CFunctionPluginSample4::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginSample4::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+struct arg_count __stdcall CFunctionPluginSample4::get_arg_count() const
+{
+	// At least one picture.
+	return arg_count(1, -1);
+}
+
+enum REQUEST_TYPE __stdcall CFunctionPluginSample4::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	// Start event.
 
@@ -92,20 +98,26 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 	BYTE* data = requested_data1.data;
 
 	// Modify the picture data.
-	for (register unsigned int y = requested_data1.picture_height; y != 0; y--)
+	for (register unsigned int y = requested_data1.picture_height; y != 0; --y)
 	{
-		for (register unsigned int x = requested_data1.picture_width; x != 0; x--)
+		for (register unsigned int x = requested_data1.picture_width; x != 0; --x)
 		{
 			// Invert colors.
-			*data = 255 - *data++;	// red
-			*data = 255 - *data++;	// green
-			*data = 255 - *data++;	// blue
+			*data = 255 - *data;	// red
+			++data;
+			*data = 255 - *data;	// green
+			++data;
+			*data = 255 - *data;	// blue
+			++data;
 
 			//// Or make a grey scale picture.
 			//const BYTE grey((306 * *(data) + 601 * *(data + 1) + 117 * *(data + 2)) >> 10);
-			//*data++ = grey;	// red
-			//*data++ = grey;	// green
-			//*data++ = grey;	// blue
+			//*data = grey;	// red
+			//++data;
+			//*data = grey;	// green
+			//++data;
+			//*data = grey;	// blue
+			//++data;
 		}
 	}
 
@@ -121,11 +133,11 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 	//// |        |
 	////  --------
 	////
-	//for (register unsigned int y = 20; y < requested_data1.picture_height / 2; y++)
+	//for (register unsigned int y = 20; y < requested_data1.picture_height / 2; ++y)
 	//{
-	//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; x++)
+	//	for (register unsigned int x = 20; x < requested_data1.picture_width / 2; ++x)
 	//	{
-	//		const int index(3 * (y * requested_data1.picture_width + x));
+	//		const __int64 index(3 * (static_cast<__int64>(y) * requested_data1.picture_width + x));
 
 	//		const BYTE red(data[index]);
 	//		const BYTE green(data[index + 1]);
@@ -149,7 +161,7 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 		requested_data1.data,
 		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
 
-	picture_processed++;
+	++picture_processed;
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;

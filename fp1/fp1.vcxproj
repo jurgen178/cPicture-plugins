@@ -131,9 +131,9 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>C:\Projects\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(SolutionDir)..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>oleacc.dll;winspool.drv;shlwapi.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>oledlg.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x201000000</BaseAddress>
@@ -205,7 +205,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>oleacc.dll;winspool.drv;oleaut32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>oledlg.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

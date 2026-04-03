@@ -1,0 +1,8 @@
+LIBRARY      "cpf_tiff_png"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginProc
+	GetPluginInit
+	SetPluginInfoTemplates

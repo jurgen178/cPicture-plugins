@@ -1,0 +1,8 @@
+LIBRARY      "cpf_pdf"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginProc
+	GetPluginInit
+	SetPluginInfoTemplates

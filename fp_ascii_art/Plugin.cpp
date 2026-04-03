@@ -18,7 +18,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -46,9 +46,9 @@ CFunctionPluginAsciiArt::CFunctionPluginAsciiArt()
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
 
-struct PluginData __stdcall CFunctionPluginAsciiArt::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginAsciiArt::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -58,7 +58,13 @@ struct PluginData __stdcall CFunctionPluginAsciiArt::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+struct arg_count __stdcall CFunctionPluginAsciiArt::get_arg_count() const
+{
+	// Only one picture.
+	return arg_count(1, 1);
+}
+
+enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 
@@ -77,7 +83,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 	parent.Attach(handle_wnd);
 
 	vector<picture_data> picture_data_list;
-	CAsciiArtDlg AsciiDlg(picture_data_list, &parent);
+	CAsciiArtDlg AsciiDlg(picture_data_list, &parent, get_plugin_data().desc);
 	
 	AsciiDlg.Create(IDD_DIALOG_ASCII_ART, &parent);
 	parent.Detach();
@@ -100,20 +106,22 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(HWND hwnd, const vect
 bool __stdcall CFunctionPluginAsciiArt::process_picture(const picture_data& picture_data) 
 { 
 	// Get the second requested data set (unresized picture, 100%).
-	requested_data requested_data2 = picture_data.requested_data_list.back();
-
+	const requested_data requested_data2 = picture_data.requested_data_list.back();
 	BYTE* data = requested_data2.data;
 
 	// Modify the picture data.
-	for (register unsigned int y = requested_data2.picture_height; y != 0; y--)
+	for (register unsigned int y = requested_data2.picture_height; y != 0; --y)
 	{
-		for (register unsigned int x = requested_data2.picture_width; x != 0; x--)
+		for (register unsigned int x = requested_data2.picture_width; x != 0; --x)
 		{
 			// Make a grey scale picture.
 			const BYTE grey((306 * *(data) + 601 * *(data + 1) + 117 * *(data + 2)) >> 10);
-			*data++ = grey;	// red
-			*data++ = grey;	// green
-			*data++ = grey;	// blue
+			*data = grey;	// red
+			++data;
+			*data = grey;	// green
+			++data;
+			*data = grey;	// blue
+			++data;
 		}
 	}
 
@@ -126,7 +134,7 @@ const vector<update_data>& __stdcall CFunctionPluginAsciiArt::end(const vector<p
 	CWnd parent;
 	parent.Attach(handle_wnd);
 
-	CAsciiArtDlg AsciiArtDlg(picture_data_list, &parent);
+	CAsciiArtDlg AsciiArtDlg(picture_data_list, &parent, get_plugin_data().desc);
 	AsciiArtDlg.DoModal();
 
 	parent.Detach();

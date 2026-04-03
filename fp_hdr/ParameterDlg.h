@@ -3,6 +3,7 @@
 #include "Plugin.h"
 #include "resource.h"
 #include "afxwin.h"
+#include "dpi.h"
 
 
 class CColorEdit : public CEdit
@@ -32,7 +33,7 @@ protected:
 class ParameterDlg : public CDialog
 {
 public:
-	ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent = NULL);   // standard constructor
+	ParameterDlg(const vector<const WCHAR*>& picture_list, CWnd* pParent = NULL, CString title = L"");   // standard constructor
 	virtual ~ParameterDlg();
 
 // Dialog Data
@@ -44,10 +45,12 @@ public:
 	UINT jpeg_quality;
 
 protected:
+	CString title;
 	const vector<const WCHAR*>& picture_list;
 	CFont console_font;
 	CColorEdit console;
 	bool finished;
+	CDPI Dpi;
 
 public:
 	bool CheckFile(const WCHAR* pFile);

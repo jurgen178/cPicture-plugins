@@ -182,7 +182,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -209,9 +209,9 @@ CFunctionPluginHDR::CFunctionPluginHDR()
 	_wsetlocale(LC_ALL, L".ACP");
 }
 
-struct PluginData __stdcall CFunctionPluginHDR::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginHDR::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -221,7 +221,13 @@ struct PluginData __stdcall CFunctionPluginHDR::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+struct arg_count __stdcall CFunctionPluginHDR::get_arg_count() const
+{
+	// At least 2 pictures.
+	return arg_count(2, -1);
+}
+
+enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 
@@ -254,7 +260,7 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<pictur
 		CWnd parent;
 		parent.Attach(handle_wnd);
 
-		ParameterDlg parameterDlg(picture_list, &parent);
+		ParameterDlg parameterDlg(picture_list, &parent, get_plugin_data().desc);
 
 		const CString bild_1(picture_list[0]);
 		const CString bild_n(picture_list[picture_list.size() - 1]);

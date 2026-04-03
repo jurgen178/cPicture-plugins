@@ -5,7 +5,6 @@
 
 // Example Plugin cpp_fp3.
 // Simple order form for pictures.
-// Simple rder form for pictures.
 // 
 // This example uses the REQUEST_TYPE::REQUEST_TYPE_DATA,
 // request_data_size type to get resized picture data,
@@ -20,7 +19,7 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
-	return L"1.6";
+	return L"1.7";
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -46,9 +45,9 @@ CFunctionPluginSample3::CFunctionPluginSample3()
 	_wsetlocale(LC_ALL, L".ACP"); 
 }
 
-struct PluginData __stdcall CFunctionPluginSample3::get_plugin_data()
+struct plugin_data __stdcall CFunctionPluginSample3::get_plugin_data() const
 {
-	struct PluginData pluginData;
+	struct plugin_data pluginData;
 
 	// Set plugin info.
 	pluginData.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -58,7 +57,13 @@ struct PluginData __stdcall CFunctionPluginSample3::get_plugin_data()
 	return pluginData;
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginSample3::start(HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
+struct arg_count __stdcall CFunctionPluginSample3::get_arg_count() const
+{
+	// At least one picture.
+	return arg_count(1, -1);
+}
+
+enum REQUEST_TYPE __stdcall CFunctionPluginSample3::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
 
@@ -96,7 +101,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample3::end(const vector<pi
 			CString totalPriceTemplate;
 			totalPriceTemplate.LoadString(IDS_TOTAL_PRICE_FORMAT);
 			CString totalPriceStr;
-			totalPriceStr.Format(totalPriceTemplate, (float)totalPrice / 100);
+			totalPriceStr.Format(totalPriceTemplate, static_cast<float>(totalPrice) / 100);
 			CString orderText;
 			orderText.FormatMessage(IDS_ORDER_CONFIRMATION, numberOfPictures, totalPriceStr);
 

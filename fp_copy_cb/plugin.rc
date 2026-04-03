@@ -1,0 +1,158 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "Comments", "Clipboard copy function plugin for cPicture"
+            VALUE "CompanyName", "cPicture"
+            VALUE "FileDescription", "cPicture function plugin"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "cPicture function plugin"
+            VALUE "LegalCopyright", "Copyright (C)"
+            VALUE "OriginalFilename", "cpp_copy_cb.dll"
+            VALUE "ProductName", "cPicture function plugin"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Zwischenablage"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul um das Bild in die Zwischenablage zu kopieren."
+    IDS_PLUGIN_INFO         "Kopiert das ausgewählte Bild in die Zwischenablage."
+    IDS_STRING_SINGLE_FILE_ONLY 
+                            "Wählen Sie für dieses Funktionszusatzmodul nur ein Bild aus."
+    IDS_CLIPBOARD_PICTURE   "Das Bild wurde in die Zwischenablage kopiert."
+    IDS_CLIPBOARD_PICTURE_ERROR 
+                            "Das Bild konnte nicht in die Zwischenablage kopiert werden."
+END
+
+#endif    // German (Germany) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_SAMPLE5 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Clipboard"
+    IDS_PLUGIN_LONG_DESC    "Function plugin to copy the picture to the clipboard."
+    IDS_PLUGIN_INFO         "Copy the selected picture to the clipboard."
+    IDS_STRING_SINGLE_FILE_ONLY 
+                            "Choose a single image for this function plugin."
+    IDS_CLIPBOARD_PICTURE   "The picture was copied to the clipboard."
+    IDS_CLIPBOARD_PICTURE_ERROR 
+                            "The picture could not be copied to the clipboard."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

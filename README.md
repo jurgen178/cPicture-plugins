@@ -1,7 +1,7 @@
 # cPicture-plugins
 Plugins for the cPicture App
 
-[cPicture](http://cpicture.thecloudsite.net/) supports function plug-ins to process/display selected pictures.  
+[cPicture](https://bitfabrik.io/cpicture/) supports function plug-ins to process/display selected pictures.  
 The Plug-In is a DLL-File located in the same folder as cPicture and starts with 'cpp_'. For example 'cpp_fp1.dll'.  
 Click the function plug-ins button in the menu ribbon to display all installed plug-ins.
 
@@ -60,7 +60,7 @@ example.bat file:
 -----------------
   
 
-[example-script.ps1](fp_ps1_script/scripts/example-script.ps1)  
+[example.ps1](fp_script/scripts/example.ps1)  
 
 ```
 $picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
@@ -142,16 +142,18 @@ cPicture can supply each picture with additional picture data. This is controlle
 
 Currently used base addresses:  
 
-cpp_tiff_png:	0x180000000  
-FP1 sample:		0x201000000  
-FP2 sample:		0x202000000  
-FP3 sample:		0x203000000  
-FP4 sample:		0x204000000  
-FP5 sample:		0x205000000  
-cpp_ps1_script: 0x210000000  
-cpp_bat_script: 0x211000000  
+cpf_tiff_png:	0x180000000  
+cpf_pdf:    	0x181000000  
+cpp_fp1:		0x201000000  
+cpp_fp2:		0x202000000  
+cpp_fp3:		0x203000000  
+cpp_fp4:		0x204000000  
+cpp_fp5:		0x205000000  
+cpp_script:     0x210000000  
 cpp_fp_hdr:		0x212000000  
 cpp_fp_ev:		0x213000000  
 cpp_ascii_art:  0x214000000  
+cpp_copy_cb:    0x215000000  
+cpp_qrcode:     0x216000000  
 
 
