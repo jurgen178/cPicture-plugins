@@ -179,7 +179,7 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 
 	const int margin = max(0, shorter_side * cur_margin / 100);
 
-	// Read current text for real QR generation.
+	// Read current text for QR generation.
 	CString cur_text = text;
 	if (m_editText.GetSafeHwnd())
 		m_editText.GetWindowText(cur_text);
@@ -196,25 +196,7 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 
 	// Anchor position: use drawSize so the QR code always touches the margin edge.
 	int qr_x, qr_y;
-	switch (cur_corner)
-	{
-	case 0: // Top-Left
-		qr_x = margin;
-		qr_y = margin;
-		break;
-	case 1: // Top-Right
-		qr_x = rd.picture_width - drawSize - margin;
-		qr_y = margin;
-		break;
-	case 2: // Bottom-Left
-		qr_x = margin;
-		qr_y = rd.picture_height - drawSize - margin;
-		break;
-	default: // Bottom-Right
-		qr_x = rd.picture_width - drawSize - margin;
-		qr_y = rd.picture_height - drawSize - margin;
-		break;
-	}
+	CalcQRPosition(cur_corner, rd.picture_width, rd.picture_height, drawSize, margin, qr_x, qr_y);
 
 	// Offset to dialog coordinates.
 	qr_x += left;

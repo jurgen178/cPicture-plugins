@@ -9,11 +9,12 @@
 
 // RGB data is stored packed (stride = width * 3), top-to-bottom, R-G-B byte order.
 
-static void DrawRealQRCode(BYTE* data, int img_width, int img_height,
+static void DrawQRCode(BYTE* data, int img_width, int img_height,
 	int corner, int qr_size_px, int margin_px, const CString& text)
 {
 	const std::string utf8 = CStringToUTF8(text);
-	if (utf8.empty()) return;
+	if (utf8.empty())
+		return;
 
 	std::vector<bool> bitmap;
 	int modules = 0;
@@ -24,13 +25,7 @@ static void DrawRealQRCode(BYTE* data, int img_width, int img_height,
 	const int drawSize = modules * modulePx;
 
 	int qr_x, qr_y;
-	switch (corner)
-	{
-	case 0: qr_x = margin_px;                         qr_y = margin_px; break;
-	case 1: qr_x = img_width  - drawSize - margin_px; qr_y = margin_px; break;
-	case 2: qr_x = margin_px;                         qr_y = img_height - drawSize - margin_px; break;
-	default: qr_x = img_width - drawSize - margin_px; qr_y = img_height - drawSize - margin_px; break;
-	}
+	CalcQRPosition(corner, img_width, img_height, drawSize, margin_px, qr_x, qr_y);
 
 	for (int my = 0; my < modules; my++)
 	{
@@ -42,112 +37,19 @@ static void DrawRealQRCode(BYTE* data, int img_width, int img_height,
 			for (int dy = 0; dy < modulePx; dy++)
 			{
 				const int py = py0 + dy;
-				if (py < 0 || py >= img_height) continue;
+				if (py < 0 || py >= img_height)
+					continue;
 				for (int dx = 0; dx < modulePx; dx++)
 				{
 					const int px = px0 + dx;
-					if (px < 0 || px >= img_width) continue;
+					if (px < 0 || px >= img_width)
+						continue;
 					BYTE* p = data + (py * img_width + px) * 3;
 					p[0] = p[1] = p[2] = c;
 				}
 			}
 		}
 	}
-}
-
-// Fake QR helpers kept for reference (no longer called):
-
-static inline void SetPixelRGB(BYTE* data, int img_width, int img_height,
-	int x, int y, BYTE r, BYTE g, BYTE b)
-{
-	if (x < 0 || x >= img_width || y < 0 || y >= img_height)
-		return;
-	BYTE* p = data + (y * img_width + x) * 3;
-	p[0] = r;
-	p[1] = g;
-	p[2] = b;
-}
-
-static void FillRectRGB(BYTE* data, int img_width, int img_height,
-	int rx, int ry, int rw, int rh, BYTE r, BYTE g, BYTE b)
-{
-	for (int y = ry; y < ry + rh; ++y)
-		for (int x = rx; x < rx + rw; ++x)
-			SetPixelRGB(data, img_width, img_height, x, y, r, g, b);
-}
-
-// Draws one "finder pattern" square (the three corner squares of a real QR code).
-// Position (fx, fy), total size fs x fs pixels.
-// Pattern: black outer ring, white gap (1/7th), black inner square (3/7th).
-static void DrawFinderPattern(BYTE* data, int img_width, int img_height,
-	int fx, int fy, int fs)
-{
-	if (fs < 7) return;
-
-	// Black outer square
-	FillRectRGB(data, img_width, img_height, fx, fy, fs, fs, 0, 0, 0);
-
-	// White inner (leave 1 cell border around the edge; cell = fs/7)
-	const int cell = max(1, fs / 7);
-	FillRectRGB(data, img_width, img_height,
-		fx + cell, fy + cell, fs - 2 * cell, fs - 2 * cell,
-		255, 255, 255);
-
-	// Black inner core (3 cells from each side)
-	const int core = cell * 2;
-	FillRectRGB(data, img_width, img_height,
-		fx + core, fy + core, fs - 2 * core, fs - 2 * core,
-		0, 0, 0);
-}
-
-// Draws the fake (placeholder) QR code onto the RGB image.
-// corner: 0=Top-Left, 1=Top-Right, 2=Bottom-Left, 3=Bottom-Right
-static void DrawFakeQRCode(BYTE* data, int img_width, int img_height,
-	int corner, int qr_size, int margin_px)
-{
-	const int margin = max(1, margin_px);
-
-	int qr_x, qr_y;
-	switch (corner)
-	{
-	case 0: // Top-Left
-		qr_x = margin;
-		qr_y = margin;
-		break;
-	case 1: // Top-Right
-		qr_x = img_width - qr_size - margin;
-		qr_y = margin;
-		break;
-	case 2: // Bottom-Left
-		qr_x = margin;
-		qr_y = img_height - qr_size - margin;
-		break;
-	default: // Bottom-Right
-		qr_x = img_width - qr_size - margin;
-		qr_y = img_height - qr_size - margin;
-		break;
-	}
-
-	// White background
-	FillRectRGB(data, img_width, img_height, qr_x, qr_y, qr_size, qr_size, 255, 255, 255);
-
-	// Black outer frame
-	const int bw = max(2, qr_size / 20); // border width
-	FillRectRGB(data, img_width, img_height, qr_x, qr_y, qr_size, bw, 0, 0, 0); // top
-	FillRectRGB(data, img_width, img_height, qr_x, qr_y + qr_size - bw, qr_size, bw, 0, 0, 0); // bottom
-	FillRectRGB(data, img_width, img_height, qr_x, qr_y, bw, qr_size, 0, 0, 0); // left
-	FillRectRGB(data, img_width, img_height, qr_x + qr_size - bw, qr_y, bw, qr_size, 0, 0, 0); // right
-
-	// Three finder patterns (top-left, top-right, bottom-left of the QR area)
-	const int fp = max(7, qr_size / 4); // finder pattern size
-	const int fp_off = bw + 2; // offset from inner edge
-
-	DrawFinderPattern(data, img_width, img_height,
-		qr_x + fp_off, qr_y + fp_off, fp); // TL
-	DrawFinderPattern(data, img_width, img_height,
-		qr_x + qr_size - fp_off - fp, qr_y + fp_off, fp); // TR
-	DrawFinderPattern(data, img_width, img_height,
-		qr_x + fp_off, qr_y + qr_size - fp_off - fp, fp); // BL
 }
 
 
@@ -266,12 +168,15 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 		return update_data_list;
 	}
 
+	parent.Detach();
+
+	if (dlg.text.IsEmpty())
+		return update_data_list;
+
 	qr_corner = dlg.corner;
 	qr_text = dlg.text;
 	qr_relative_size = dlg.relative_size;
 	qr_margin_percent = dlg.margin_percent;
-
-	parent.Detach();
 
 	constexpr int MIN_QR_SIZE = 32; // pixels – skip pictures whose QR would be smaller
 
@@ -303,9 +208,9 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 
 		const int margin_px = max(1, shorter_side * qr_margin_percent / 100);
 
-		// Draw the fake QR code directly onto the pixel buffer.
+		// Draw the QR code directly onto the pixel buffer.
 		// rd.data is BYTE* (non-const through the struct member), so bytes are writable.
-		DrawRealQRCode(rd.data, rd.picture_width, rd.picture_height,
+		DrawQRCode(rd.data, rd.picture_width, rd.picture_height,
 			qr_corner, qr_size, margin_px, qr_text);
 
 		// Signal that this picture was updated.

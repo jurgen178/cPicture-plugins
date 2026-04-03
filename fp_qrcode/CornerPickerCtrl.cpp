@@ -95,7 +95,7 @@ void CCornerPickerCtrl::DrawQrCell(CDC& dc, int index)
 		};
 
 	drawFinder(ox, oy);           // TL
-	drawFinder(ox + sz - fp, oy);           // TR
+	drawFinder(ox + sz - fp, oy); // TR
 	drawFinder(ox, oy + sz - fp); // BL
 
 	// ---- Data modules (scattered dots to look QR-like) ----
