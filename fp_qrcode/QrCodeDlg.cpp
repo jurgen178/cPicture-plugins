@@ -103,7 +103,35 @@ void CQrCodeDlg::OnOK()
 void CQrCodeDlg::OnPaint()
 {
 	CPaintDC dc(this);
-	DrawPreview(dc);
+
+	const int w = preview_rect.Width();
+	const int h = preview_rect.Height();
+	if (w <= 0 || h <= 0)
+		return;
+
+	// Double buffering: alle Zeichenoperationen gehen in einen Off-Screen-Puffer.
+	// Dadurch wird verhindert, dass der Nutzer Zwischenzustände sieht (kein Flackern).
+	CDC memDC;
+	memDC.CreateCompatibleDC(&dc);
+	CBitmap bmp;
+	bmp.CreateCompatibleBitmap(&dc, w, h);  // Puffer in Bildschirmgröße der preview_rect
+	CBitmap* oldBmp = memDC.SelectObject(&bmp);
+
+	// Hintergrund mit Dialog-Farbe füllen, damit Bereiche außerhalb des Bildes
+	// nicht schwarz erscheinen (CBitmap wird mit 0/schwarz initialisiert).
+	CRect localRect(0, 0, w, h);
+	memDC.FillSolidRect(&localRect, GetSysColor(COLOR_BTNFACE));
+
+	// DrawPreview verwendet absolute Dialog-Koordinaten (preview_rect.left/top).
+	// SetViewportOrg verschiebt das Koordinatensystem, so dass DrawPreview
+	// unverändert bleiben kann.
+	memDC.SetViewportOrg(-preview_rect.left, -preview_rect.top);
+	DrawPreview(memDC);
+	memDC.SetViewportOrg(0, 0);
+
+	// Fertiges Bild in einem einzigen Schritt auf den Bildschirm kopieren.
+	dc.BitBlt(preview_rect.left, preview_rect.top, w, h, &memDC, 0, 0, SRCCOPY);
+	memDC.SelectObject(oldBmp);
 }
 
 
