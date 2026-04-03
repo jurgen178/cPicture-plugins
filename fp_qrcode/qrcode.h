@@ -1,3 +1,6 @@
+// qrcode.h
+// C++ port of github.com/AlexEidt/qr (pure-Go QR code library).
+
 #pragma once
 #include <string>
 #include <vector>
