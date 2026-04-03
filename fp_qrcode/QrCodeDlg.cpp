@@ -33,8 +33,10 @@ void CQrCodeDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CORNER_PICKER, m_cornerPicker);
 	DDX_Control(pDX, IDC_EDIT_TEXT, m_editText);
-	DDX_Control(pDX, IDC_EDIT_SIZE, m_editSize);
-	DDX_Control(pDX, IDC_EDIT_MARGIN, m_editMargin);
+	DDX_Control(pDX, IDC_SLIDER_SIZE, m_sliderSize);
+	DDX_Control(pDX, IDC_SLIDER_MARGIN, m_sliderMargin);
+	DDX_Control(pDX, IDC_STATIC_SIZE_VAL, m_staticSizeVal);
+	DDX_Control(pDX, IDC_STATIC_MARGIN_VAL, m_staticMarginVal);
 	DDX_Control(pDX, IDC_PREVIEW, m_preview);
 }
 
@@ -43,8 +45,7 @@ BEGIN_MESSAGE_MAP(CQrCodeDlg, CDialog)
 	ON_WM_PAINT()
 	ON_BN_CLICKED(IDC_CORNER_PICKER, OnChanged)
 	ON_EN_CHANGE(IDC_EDIT_TEXT, OnChanged)
-	ON_EN_CHANGE(IDC_EDIT_SIZE, OnChanged)
-	ON_EN_CHANGE(IDC_EDIT_MARGIN, OnChanged)
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -61,16 +62,21 @@ BOOL CQrCodeDlg::OnInitDialog()
 	// Set text edit.
 	m_editText.SetWindowText(text);
 
-	// Set size edit (show default percentage).
+	// Set size slider (range 5..50, default relative_size).
+	relative_size = max(5, min(relative_size, 50));
+	m_sliderSize.SetRange(5, 50);
+	m_sliderSize.SetPos(relative_size);
 	CString sizeStr;
 	sizeStr.Format(L"%d", relative_size);
-	m_editSize.SetWindowText(sizeStr);
+	m_staticSizeVal.SetWindowText(sizeStr);
 
-	// Set margin edit.
+	// Set margin slider (range 0..25, default margin_percent).
 	margin_percent = max(0, min(margin_percent, 25));
+	m_sliderMargin.SetRange(0, 25);
+	m_sliderMargin.SetPos(margin_percent);
 	CString marginStr;
 	marginStr.Format(L"%d", margin_percent);
-	m_editMargin.SetWindowText(marginStr);
+	m_staticMarginVal.SetWindowText(marginStr);
 
 	return TRUE;
 }
@@ -84,23 +90,11 @@ void CQrCodeDlg::OnOK()
 	// Read text.
 	m_editText.GetWindowText(text);
 
-	// Read and validate relative size.
-	CString sizeStr;
-	m_editSize.GetWindowText(sizeStr);
-	relative_size = _wtoi(sizeStr);
-	if (relative_size < 5)
-		relative_size = 5;
-	if (relative_size > 50)
-		relative_size = 50;
+	// Read size from slider.
+	relative_size = m_sliderSize.GetPos();
 
-	// Read and validate margin.
-	CString marginStr;
-	m_editMargin.GetWindowText(marginStr);
-	margin_percent = _wtoi(marginStr);
-	if (margin_percent < 0)
-		margin_percent = 0;
-	if (margin_percent > 25)
-		margin_percent = 25;
+	// Read margin from slider.
+	margin_percent = m_sliderMargin.GetPos();
 
 	CDialog::OnOK();
 }
@@ -116,6 +110,25 @@ void CQrCodeDlg::OnPaint()
 void CQrCodeDlg::OnChanged()
 {
 	Invalidate(FALSE);
+}
+
+void CQrCodeDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	// Update value labels when either slider moves.
+	if (m_sliderSize.GetSafeHwnd())
+	{
+		CString s;
+		s.Format(L"%d", m_sliderSize.GetPos());
+		m_staticSizeVal.SetWindowText(s);
+	}
+	if (m_sliderMargin.GetSafeHwnd())
+	{
+		CString s;
+		s.Format(L"%d", m_sliderMargin.GetPos());
+		m_staticMarginVal.SetWindowText(s);
+	}
+	Invalidate(FALSE);
+	CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 
@@ -153,20 +166,10 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	int cur_margin = margin_percent;
 	if (m_cornerPicker.GetSafeHwnd())
 		cur_corner = m_cornerPicker.GetCorner();
-	if (m_editSize.GetSafeHwnd())
-	{
-		CString sizeStr;
-		m_editSize.GetWindowText(sizeStr);
-		const int v = _wtoi(sizeStr);
-		if (v >= 5)
-			cur_size = min(v, 50);
-	}
-	if (m_editMargin.GetSafeHwnd())
-	{
-		CString marginStr;
-		m_editMargin.GetWindowText(marginStr);
-		cur_margin = max(0, min(_wtoi(marginStr), 25));
-	}
+	if (m_sliderSize.GetSafeHwnd())
+		cur_size = m_sliderSize.GetPos();
+	if (m_sliderMargin.GetSafeHwnd())
+		cur_margin = m_sliderMargin.GetPos();
 
 	// Calculate QR size in preview image coordinates.
 	const int shorter_side = min(rd.picture_width, rd.picture_height);
@@ -232,7 +235,12 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	}
 	else
 	{
-		// Fallback: white placeholder when text is empty.
-		dc.FillSolidRect(qr_x, qr_y, qr_size, qr_size, RGB(255, 255, 255));
+		// Fallback: dashed gray border shows where the QR code will appear.
+		CPen pen(PS_DASH, 1, RGB(160, 160, 160));
+		CPen* oldPen = dc.SelectObject(&pen);
+		CBrush* oldBrush = (CBrush*)dc.SelectStockObject(NULL_BRUSH);
+		dc.Rectangle(qr_x, qr_y, qr_x + qr_size, qr_y + qr_size);
+		dc.SelectObject(oldBrush);
+		dc.SelectObject(oldPen);
 	}
 }

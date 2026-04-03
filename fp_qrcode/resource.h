@@ -14,9 +14,11 @@
 #define IDS_CORNER_BOTTOM_RIGHT         108
 #define IDC_PREVIEW                     1003
 #define IDC_EDIT_TEXT                   1001
-#define IDC_EDIT_SIZE                   1002
+#define IDC_SLIDER_SIZE                 1002
 #define IDC_CORNER_PICKER               1004
-#define IDC_EDIT_MARGIN                 1005
+#define IDC_SLIDER_MARGIN               1005
+#define IDC_STATIC_SIZE_VAL             1006
+#define IDC_STATIC_MARGIN_VAL           1007
 
 // Next default values for new objects
 //
@@ -24,7 +26,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_CONTROL_VALUE         1008
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

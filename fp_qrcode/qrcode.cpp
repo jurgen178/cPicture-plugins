@@ -256,7 +256,8 @@ static const int kNumPolys = (int)(sizeof(kPolys)/sizeof(kPolys[0]));
 
 static const PolyEntry* findPoly(int ecw) {
     for (int i = 0; i < kNumPolys; i++)
-        if (kPolys[i].ecw == ecw) return &kPolys[i];
+        if (kPolys[i].ecw == ecw)
+            return &kPolys[i];
     return nullptr;
 }
 
@@ -344,8 +345,10 @@ public:
     }
     void set(int x, int y, bool v) {
         int i = y * m_w + x;
-        if (v) m_data[i / 64] |=  (uint64_t(1) << (i & 63));
-        else   m_data[i / 64] &= ~(uint64_t(1) << (i & 63));
+        if (v)
+            m_data[i / 64] |=  (uint64_t(1) << (i & 63));
+        else
+            m_data[i / 64] &= ~(uint64_t(1) << (i & 63));
     }
     void fill(int x, int y, int w, int h, bool v) {
         for (int r = y; r < y+h; r++)
@@ -378,7 +381,12 @@ static int findMode(const std::string& d) {
         if (c < '0' || c > '9') isNum = false;
         if (!isAlpha) continue;
         bool found = false;
-        for (int i = 0; kA[i]; i++) if ((unsigned char)kA[i] == c) { found=true; break; }
+        for (int i = 0; kA[i]; i++) {
+            if ((unsigned char)kA[i] == c) {
+                found = true;
+                break;
+            }
+        }
         if (!found) isAlpha = false;
     }
     return isNum ? 1 : (isAlpha ? 2 : 4);
@@ -386,11 +394,23 @@ static int findMode(const std::string& d) {
 
 static int lengthBits(int version, int mode) {
     if (version < 10) {
-        if (mode == 1) return 10; if (mode == 2) return 9; return 8;
+        if (mode == 1)
+            return 10;
+        if (mode == 2)
+            return 9;
+        return 8;
     } else if (version < 27) {
-        if (mode == 1) return 12; if (mode == 2) return 11; return 16;
+        if (mode == 1)
+            return 12;
+        if (mode == 2)
+            return 11;
+        return 16;
     } else {
-        if (mode == 1) return 14; if (mode == 2) return 13; return 16;
+        if (mode == 1)
+            return 14;
+        if (mode == 2)
+            return 13;
+        return 16;
     }
 }
 
@@ -431,7 +451,10 @@ struct QRCode {
         case 2: // AlphaNum
             for (int i = 0; i < (int)data.size(); i += 2) {
                 auto idx = [&](char c) -> int {
-                    for (int k = 0; kAN[k]; k++) if (kAN[k]==c) return k; return 0;
+                    for (int k = 0; kAN[k]; k++)
+                        if (kAN[k] == c)
+                            return k;
+                    return 0;
                 };
                 if (i+1 < (int)data.size())
                     buf.add(idx(data[i])*45 + idx(data[i+1]), 11);
@@ -478,11 +501,13 @@ struct QRCode {
             uint8_t coeff = rs[offset];
             rs[offset] = 0;
             offset++;
-            if (coeff == 0) continue;
+            if (coeff == 0)
+                continue;
             int alpExp = kLog[coeff];
             for (int g = 0; g < poly->len; g++) {
                 int v = alpExp + poly->coeff[g];
-                if (v > 255) v %= 255;
+                if (v > 255)
+                    v %= 255;
                 rs[offset + g] ^= (uint8_t)kExp[v];
             }
         }
@@ -495,22 +520,31 @@ struct QRCode {
     // --- functional patterns ---
     void addPositionPatterns() {
         // Top-Left
-        qr.fill(0,0,7,7,true);  qr.fill(1,1,5,5,false); qr.fill(2,2,3,3,true);
+        qr.fill(0, 0, 7, 7, true);
+        qr.fill(1, 1, 5, 5, false);
+        qr.fill(2, 2, 3, 3, true);
         // Bottom-Left
-        qr.fill(0,size-7,7,7,true); qr.fill(1,size-6,5,5,false); qr.fill(2,size-5,3,3,true);
+        qr.fill(0, size-7, 7, 7, true);
+        qr.fill(1, size-6, 5, 5, false);
+        qr.fill(2, size-5, 3, 3, true);
         // Top-Right
-        qr.fill(size-7,0,7,7,true); qr.fill(size-6,1,5,5,false); qr.fill(size-5,2,3,3,true);
+        qr.fill(size-7, 0, 7, 7, true);
+        qr.fill(size-6, 1, 5, 5, false);
+        qr.fill(size-5, 2, 3, 3, true);
 
-        mask_bmp.fill(0,0,9,9,true);
-        mask_bmp.fill(0,size-8,9,8,true);
-        mask_bmp.fill(size-8,0,8,9,true);
+        mask_bmp.fill(0, 0, 9, 9, true);
+        mask_bmp.fill(0, size-8, 9, 8, true);
+        mask_bmp.fill(size-8, 0, 8, 9, true);
     }
 
     void addTimingPatterns() {
         for (int i = 8; i < size-8; i += 2) {
-            qr.set(i,6,true); qr.set(6,i,true);
-            mask_bmp.set(i,6,true);   mask_bmp.set(i+1,6,true);
-            mask_bmp.set(6,i,true);   mask_bmp.set(6,i+1,true);
+            qr.set(i, 6, true);
+            qr.set(6, i, true);
+            mask_bmp.set(i, 6, true);
+            mask_bmp.set(i+1, 6, true);
+            mask_bmp.set(6, i, true);
+            mask_bmp.set(6, i+1, true);
         }
     }
 
@@ -519,7 +553,8 @@ struct QRCode {
         for (int i = 0; i < al.n; i++) {
             for (int j = 0; j < al.n; j++) {
                 // Skip corners that would overlap finder patterns
-                if ((i==0&&j==0)||(i==al.n-1&&j==0)||(i==0&&j==al.n-1)) continue;
+                if ((i==0&&j==0)||(i==al.n-1&&j==0)||(i==0&&j==al.n-1))
+                    continue;
                 int x = al.pos[i]-2, y = al.pos[j]-2;
                 qr.fill(x,y,5,5,true);
                 qr.fill(x+1,y+1,3,3,false);
@@ -552,11 +587,13 @@ struct QRCode {
 
         int index = 0;
         for (int y = 0; y < 9; y++) {
-            if (y == 6) continue;
+            if (y == 6)
+                continue;
             qr.set(8, y, (fmt & (1<<index++)) != 0);
         }
         for (int x = 7; x >= 0; x--) {
-            if (x == 6) continue;
+            if (x == 6)
+                continue;
             qr.set(x, 8, (fmt & (1<<index++)) != 0);
         }
         index = 0;
@@ -572,7 +609,8 @@ struct QRCode {
         int inc = -1, row = size-1, bitIdx = 0;
         int c = size - 1;
         while (c > 0) {
-            if (c == 6) c--;  // skip timing column
+            if (c == 6)
+                c--;  // skip timing column
             int col = c;
             for (;;) {
                 for (int i = col; i > col-2; i--) {
@@ -580,13 +618,16 @@ struct QRCode {
                         bool dark = false;
                         if (bitIdx < (int)bitstream.size())
                             dark = bitstream[bitIdx++] == '1';
-                        if (applyMask(maskNum, i, row)) dark = !dark;
+                        if (applyMask(maskNum, i, row))
+                            dark = !dark;
                         bmp.set(i, row, dark);
                     }
                 }
                 row += inc;
                 if (row < 0 || size <= row) {
-                    row -= inc; inc = -inc; break;
+                    row -= inc;
+                    inc = -inc;
+                    break;
                 }
             }
             c -= 2;
@@ -603,20 +644,34 @@ struct QRCode {
             bool prev = bmp.at(0, y);
             for (int x = 1; x < size; x++) {
                 bool curr = bmp.at(x, y);
-                if (curr == prev) { count++; }
-                else { if (count >= 5) score += count - 5 + 3; count = 1; prev = curr; }
+                if (curr == prev) {
+                    count++;
+                } else {
+                    if (count >= 5)
+                        score += count - 5 + 3;
+                    count = 1;
+                    prev = curr;
+                }
             }
-            if (count >= 5) score += count - 5 + 3;
+            if (count >= 5)
+                score += count - 5 + 3;
         }
         for (int x = 0; x < size; x++) {
             int count = 1;
             bool prev = bmp.at(x, 0);
             for (int y = 1; y < size; y++) {
                 bool curr = bmp.at(x, y);
-                if (curr == prev) { count++; }
-                else { if (count >= 5) score += count - 5 + 3; count = 1; prev = curr; }
+                if (curr == prev) {
+                    count++;
+                } else {
+                    if (count >= 5)
+                        score += count - 5 + 3;
+                    count = 1;
+                    prev = curr;
+                }
             }
-            if (count >= 5) score += count - 5 + 3;
+            if (count >= 5)
+                score += count - 5 + 3;
         }
 
         // Rule 2: 2x2 blocks
@@ -632,18 +687,23 @@ struct QRCode {
             for (int x = 0; x < size-7; x++) {
                 int pat = 0b1011101, cr=0, cc=0;
                 for (int i = 0; i < 7; i++) {
-                    if (bmp.at(x+i,y) == ((pat&(1<<i))!=0)) cr++;
-                    if (bmp.at(x,y+i) == ((pat&(1<<i))!=0)) cc++;
+                    if (bmp.at(x+i, y) == ((pat & (1<<i)) != 0))
+                        cr++;
+                    if (bmp.at(x, y+i) == ((pat & (1<<i)) != 0))
+                        cc++;
                 }
-                if (cr==7) score+=40;
-                if (cc==7) score+=40;
+                if (cr == 7)
+                    score += 40;
+                if (cc == 7)
+                    score += 40;
             }
 
         // Rule 4: dark/light ratio
         int dark = 0;
         for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)
-                if (bmp.at(x,y)) dark++;
+                if (bmp.at(x, y))
+                    dark++;
         double ratio = (double)dark / (double)(size*size) * 100.0 - 50.0;
         score += (int)((double)qr_abs((int)ratio) / 5.0 * 10.0);
 
@@ -657,7 +717,10 @@ struct QRCode {
             QRBitmap tmp = qr.copy();
             placeBits(tmp, bitstream, m);
             int s = scoreMask(tmp);
-            if (m == 0 || s < bestScore) { bestScore = s; best = m; }
+            if (m == 0 || s < bestScore) {
+                bestScore = s;
+                best = m;
+            }
         }
         return best;
     }
@@ -747,12 +810,13 @@ bool GenerateQRCode(const std::string& data,
     qr.addFormatInformation(bestMask);
     qr.placeBits(qr.qr, bitstream, bestMask);
 
-    // ---- Add 4-module quiet zone ----
-    QRBitmap final_bmp(qr.size+8, qr.size+8);
-    final_bmp.place(4, 4, qr.qr);
+    // ---- Add 1-module quiet zone ----
+    const int qz = 1;
+    QRBitmap final_bmp(qr.size + 2 * qz, qr.size + 2 * qz);
+    final_bmp.place(qz, qz, qr.qr);
 
     // ---- Export ----
-    outSize = qr.size + 8;
+    outSize = qr.size + 2 * qz;
     outBitmap.resize(outSize * outSize);
     for (int y = 0; y < outSize; y++)
         for (int x = 0; x < outSize; x++)

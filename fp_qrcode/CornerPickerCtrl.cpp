@@ -97,8 +97,8 @@ drawFinder(ox,           oy + sz - fp); // BL
 
 // ---- Data modules (scattered dots to look QR-like) ----
 const int dot  = max(1, sz / 14);
-const int da   = fp + dot + 1;          // data area offset from ox/oy
-const int de   = sz - 2;               // data area right/bottom limit
+const int da = fp + dot + 1;   // data area offset from ox/oy
+const int de = sz - 2;         // data area right/bottom limit
 const int step = max(dot + 1, (de - da) / 5);
 
 // Fixed 6x5 sparse dot pattern

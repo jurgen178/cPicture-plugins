@@ -34,8 +34,10 @@ protected:
 protected:
 	CCornerPickerCtrl m_cornerPicker;
 	CEdit m_editText;
-	CEdit m_editSize;
-	CEdit m_editMargin;
+	CSliderCtrl m_sliderSize;
+	CSliderCtrl m_sliderMargin;
+	CStatic m_staticSizeVal;
+	CStatic m_staticMarginVal;
 	CStatic m_preview;
 
 protected:
@@ -49,4 +51,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();
 	afx_msg void OnChanged();
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };
