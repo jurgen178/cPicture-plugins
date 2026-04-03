@@ -187,16 +187,20 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	// Generate real QR code.
 	std::string utf8;
 	{
-		int len = WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, nullptr, 0, nullptr, nullptr);
-		if (len > 1) { utf8.resize(len - 1); WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, &utf8[0], len, nullptr, nullptr); }
+		const int len = WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, nullptr, 0, nullptr, nullptr);
+		if (len > 1)
+		{
+			utf8.resize(len - 1);
+			WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, &utf8[0], len, nullptr, nullptr);
+		}
 	}
 
 	std::vector<bool> qrBitmap;
 	int modules = 0;
 	bool qrOk = !utf8.empty() && GenerateQRCode(utf8, QRErrorLevel::M, qrBitmap, modules) && modules > 0;
 
-	const int modulePx  = qrOk ? max(1, qr_size / modules) : 1;
-	const int drawSize  = qrOk ? modules * modulePx : qr_size;
+	const int modulePx = qrOk ? max(1, qr_size / modules) : 1;
+	const int drawSize = qrOk ? modules * modulePx : qr_size;
 
 	// Anchor position: use drawSize so the QR code always touches the margin edge.
 	int qr_x, qr_y;
