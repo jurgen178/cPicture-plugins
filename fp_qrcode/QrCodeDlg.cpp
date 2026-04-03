@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "QrCodeDlg.h"
+#include "CornerPickerCtrl.h"
+#include "qrcode.h"
 
 
 // CQrCodeDlg dialog
@@ -12,7 +14,8 @@ CQrCodeDlg::CQrCodeDlg(const vector<picture_data>& picture_data_list, CWnd* pPar
 	  picture_data_list(picture_data_list),
 	  corner(3),
 	  text(L""),
-	  relative_size(20)
+	  relative_size(20),
+	  margin_percent(2)
 {
 	memset(&bmiHeader, 0, sizeof(BITMAPINFOHEADER));
 	bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -28,17 +31,20 @@ CQrCodeDlg::~CQrCodeDlg()
 void CQrCodeDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_COMBO_CORNER, m_comboCorner);
+	DDX_Control(pDX, IDC_CORNER_PICKER, m_cornerPicker);
 	DDX_Control(pDX, IDC_EDIT_TEXT, m_editText);
 	DDX_Control(pDX, IDC_EDIT_SIZE, m_editSize);
+	DDX_Control(pDX, IDC_EDIT_MARGIN, m_editMargin);
 	DDX_Control(pDX, IDC_PREVIEW, m_preview);
 }
 
 
 BEGIN_MESSAGE_MAP(CQrCodeDlg, CDialog)
 	ON_WM_PAINT()
-	ON_CBN_SELCHANGE(IDC_COMBO_CORNER, OnChanged)
+	ON_BN_CLICKED(IDC_CORNER_PICKER, OnChanged)
+	ON_EN_CHANGE(IDC_EDIT_TEXT, OnChanged)
 	ON_EN_CHANGE(IDC_EDIT_SIZE, OnChanged)
+	ON_EN_CHANGE(IDC_EDIT_MARGIN, OnChanged)
 END_MESSAGE_MAP()
 
 
@@ -50,16 +56,7 @@ BOOL CQrCodeDlg::OnInitDialog()
 	m_preview.GetClientRect(&preview_rect);
 	m_preview.MapWindowPoints(this, &preview_rect);
 
-	CString str;
-	str.LoadString(IDS_CORNER_TOP_LEFT);
-	m_comboCorner.AddString(str);
-	str.LoadString(IDS_CORNER_TOP_RIGHT);
-	m_comboCorner.AddString(str);
-	str.LoadString(IDS_CORNER_BOTTOM_LEFT);
-	m_comboCorner.AddString(str);
-	str.LoadString(IDS_CORNER_BOTTOM_RIGHT);
-	m_comboCorner.AddString(str);
-	m_comboCorner.SetCurSel(corner);
+	m_cornerPicker.SetCorner(corner);
 
 	// Set text edit.
 	m_editText.SetWindowText(text);
@@ -69,6 +66,12 @@ BOOL CQrCodeDlg::OnInitDialog()
 	sizeStr.Format(L"%d", relative_size);
 	m_editSize.SetWindowText(sizeStr);
 
+	// Set margin edit.
+	margin_percent = max(0, min(margin_percent, 25));
+	CString marginStr;
+	marginStr.Format(L"%d", margin_percent);
+	m_editMargin.SetWindowText(marginStr);
+
 	return TRUE;
 }
 
@@ -76,9 +79,7 @@ BOOL CQrCodeDlg::OnInitDialog()
 void CQrCodeDlg::OnOK()
 {
 	// Read corner selection.
-	corner = m_comboCorner.GetCurSel();
-	if (corner < 0)
-		corner = 3; // fallback: Bottom-Right
+	corner = m_cornerPicker.GetCorner();
 
 	// Read text.
 	m_editText.GetWindowText(text);
@@ -91,6 +92,15 @@ void CQrCodeDlg::OnOK()
 		relative_size = 5;
 	if (relative_size > 50)
 		relative_size = 50;
+
+	// Read and validate margin.
+	CString marginStr;
+	m_editMargin.GetWindowText(marginStr);
+	margin_percent = _wtoi(marginStr);
+	if (margin_percent < 0)
+		margin_percent = 0;
+	if (margin_percent > 25)
+		margin_percent = 25;
 
 	CDialog::OnOK();
 }
@@ -140,12 +150,9 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	// Read current settings from controls for live preview.
 	int cur_corner = corner;
 	int cur_size = relative_size;
-	if (m_comboCorner.GetSafeHwnd())
-	{
-		const int sel = m_comboCorner.GetCurSel();
-		if (sel >= 0)
-			cur_corner = sel;
-	}
+	int cur_margin = margin_percent;
+	if (m_cornerPicker.GetSafeHwnd())
+		cur_corner = m_cornerPicker.GetCorner();
 	if (m_editSize.GetSafeHwnd())
 	{
 		CString sizeStr;
@@ -154,6 +161,12 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 		if (v >= 5)
 			cur_size = min(v, 50);
 	}
+	if (m_editMargin.GetSafeHwnd())
+	{
+		CString marginStr;
+		m_editMargin.GetWindowText(marginStr);
+		cur_margin = max(0, min(_wtoi(marginStr), 25));
+	}
 
 	// Calculate QR size in preview image coordinates.
 	const int shorter_side = min(rd.picture_width, rd.picture_height);
@@ -161,7 +174,28 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	if (qr_size < 8)
 		return;
 
-	const int margin = max(1, qr_size / 20);
+	const int margin = max(0, shorter_side * cur_margin / 100);
+
+	// Read current text for real QR generation.
+	CString cur_text = text;
+	if (m_editText.GetSafeHwnd())
+		m_editText.GetWindowText(cur_text);
+
+	// Generate real QR code.
+	std::string utf8;
+	{
+		int len = WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, nullptr, 0, nullptr, nullptr);
+		if (len > 1) { utf8.resize(len - 1); WideCharToMultiByte(CP_UTF8, 0, cur_text, -1, &utf8[0], len, nullptr, nullptr); }
+	}
+
+	std::vector<bool> qrBitmap;
+	int modules = 0;
+	bool qrOk = !utf8.empty() && GenerateQRCode(utf8, QRErrorLevel::M, qrBitmap, modules) && modules > 0;
+
+	const int modulePx  = qrOk ? max(1, qr_size / modules) : 1;
+	const int drawSize  = qrOk ? modules * modulePx : qr_size;
+
+	// Anchor position: use drawSize so the QR code always touches the margin edge.
 	int qr_x, qr_y;
 	switch (cur_corner)
 	{
@@ -170,16 +204,16 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 		qr_y = margin;
 		break;
 	case 1: // Top-Right
-		qr_x = rd.picture_width - qr_size - margin;
+		qr_x = rd.picture_width - drawSize - margin;
 		qr_y = margin;
 		break;
 	case 2: // Bottom-Left
 		qr_x = margin;
-		qr_y = rd.picture_height - qr_size - margin;
+		qr_y = rd.picture_height - drawSize - margin;
 		break;
 	default: // Bottom-Right
-		qr_x = rd.picture_width - qr_size - margin;
-		qr_y = rd.picture_height - qr_size - margin;
+		qr_x = rd.picture_width - drawSize - margin;
+		qr_y = rd.picture_height - drawSize - margin;
 		break;
 	}
 
@@ -187,30 +221,18 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	qr_x += left;
 	qr_y += top;
 
-	// Draw white QR background.
-	dc.FillSolidRect(qr_x, qr_y, qr_size, qr_size, RGB(255, 255, 255));
-
-	// Draw black outer frame.
-	const int bw = max(1, qr_size / 20);
-	dc.FillSolidRect(qr_x, qr_y, qr_size, bw, RGB(0, 0, 0)); // top
-	dc.FillSolidRect(qr_x, qr_y + qr_size - bw, qr_size, bw, RGB(0, 0, 0)); // bottom
-	dc.FillSolidRect(qr_x, qr_y, bw, qr_size, RGB(0, 0, 0)); // left
-	dc.FillSolidRect(qr_x + qr_size - bw, qr_y, bw, qr_size, RGB(0, 0, 0)); // right
-
-	// Draw three finder pattern squares (TL, TR, BL of QR area).
-	const int fp = max(5, qr_size / 4);
-	const int fp_off = bw + 1;
-	auto drawFinder = [&](int fx, int fy)
+	if (qrOk)
 	{
-		if (fp < 5)
-			return;
-		const int cell = max(1, fp / 7);
-		const int core = cell * 2;
-		dc.FillSolidRect(fx, fy, fp, fp, RGB(0, 0, 0));
-		dc.FillSolidRect(fx + cell, fy + cell, fp - 2 * cell, fp - 2 * cell, RGB(255, 255, 255));
-		dc.FillSolidRect(fx + core, fy + core, fp - 2 * core, fp - 2 * core, RGB(0, 0, 0));
-	};
-	drawFinder(qr_x + fp_off, qr_y + fp_off); // TL
-	drawFinder(qr_x + qr_size - fp_off - fp, qr_y + fp_off); // TR
-	drawFinder(qr_x + fp_off, qr_y + qr_size - fp_off - fp); // BL
+		for (int my = 0; my < modules; my++)
+			for (int mx = 0; mx < modules; mx++)
+			{
+				COLORREF c = qrBitmap[my * modules + mx] ? RGB(0, 0, 0) : RGB(255, 255, 255);
+				dc.FillSolidRect(qr_x + mx * modulePx, qr_y + my * modulePx, modulePx, modulePx, c);
+			}
+	}
+	else
+	{
+		// Fallback: white placeholder when text is empty.
+		dc.FillSolidRect(qr_x, qr_y, qr_size, qr_size, RGB(255, 255, 255));
+	}
 }

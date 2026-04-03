@@ -136,7 +136,7 @@
       <DelayLoadDLLs>msvfw32.dll;oledlg.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <BaseAddress>0x206000000</BaseAddress>
+      <BaseAddress>0x216000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -210,7 +210,7 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <BaseAddress>0x206000000</BaseAddress>
+      <BaseAddress>0x216000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -221,7 +221,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Plugin.cpp" />
+    <ClCompile Include="CornerPickerCtrl.cpp" />
     <ClCompile Include="QrCodeDlg.cpp" />
+    <ClCompile Include="qrcode.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -235,7 +237,9 @@
   <ItemGroup>
     <ClInclude Include="FunctionPlugin.h" />
     <ClInclude Include="Plugin.h" />
+    <ClInclude Include="CornerPickerCtrl.h" />
     <ClInclude Include="QrCodeDlg.h" />
+    <ClInclude Include="qrcode.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

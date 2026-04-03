@@ -2,6 +2,7 @@
 #include "Plugin.h"
 #include "locale.h"
 #include "QrCodeDlg.h"
+#include "qrcode.h"
 
 // Plugin cpp_qrcode.
 // Overlays a QR code onto the selected pictures at a chosen corner.
@@ -17,10 +18,68 @@
 
 
 // -------------------------------------------------------------------------
-//  Fake QR-code drawing helpers (placeholder – replace with real encoder)
+//  Real QR-code drawing
 // -------------------------------------------------------------------------
 
 // RGB data is stored packed (stride = width * 3), top-to-bottom, R-G-B byte order.
+
+static std::string CStringToUTF8(const CString& ws)
+{
+	if (ws.IsEmpty()) return {};
+	int len = WideCharToMultiByte(CP_UTF8, 0, ws, -1, nullptr, 0, nullptr, nullptr);
+	if (len <= 1) return {};
+	std::string result(len - 1, '\0');
+	WideCharToMultiByte(CP_UTF8, 0, ws, -1, &result[0], len, nullptr, nullptr);
+	return result;
+}
+
+static void DrawRealQRCode(BYTE* data, int img_width, int img_height,
+	int corner, int qr_size_px, int margin_px, const CString& text)
+{
+	const std::string utf8 = CStringToUTF8(text);
+	if (utf8.empty()) return;
+
+	std::vector<bool> bitmap;
+	int modules = 0;
+	if (!GenerateQRCode(utf8, QRErrorLevel::M, bitmap, modules) || modules == 0)
+		return;
+
+	const int modulePx = max(1, qr_size_px / modules);
+	const int drawSize = modules * modulePx;
+
+	int qr_x, qr_y;
+	switch (corner)
+	{
+	case 0: qr_x = margin_px;                         qr_y = margin_px; break;
+	case 1: qr_x = img_width  - drawSize - margin_px; qr_y = margin_px; break;
+	case 2: qr_x = margin_px;                         qr_y = img_height - drawSize - margin_px; break;
+	default: qr_x = img_width - drawSize - margin_px; qr_y = img_height - drawSize - margin_px; break;
+	}
+
+	for (int my = 0; my < modules; my++)
+	{
+		for (int mx = 0; mx < modules; mx++)
+		{
+			const BYTE c = bitmap[my * modules + mx] ? 0 : 255;
+			const int px0 = qr_x + mx * modulePx;
+			const int py0 = qr_y + my * modulePx;
+			for (int dy = 0; dy < modulePx; dy++)
+			{
+				const int py = py0 + dy;
+				if (py < 0 || py >= img_height) continue;
+				for (int dx = 0; dx < modulePx; dx++)
+				{
+					const int px = px0 + dx;
+					if (px < 0 || px >= img_width) continue;
+					BYTE* p = data + (py * img_width + px) * 3;
+					p[0] = p[1] = p[2] = c;
+				}
+			}
+		}
+	}
+}
+
+// Fake QR helpers kept for reference (no longer called):
 
 static inline void SetPixelRGB(BYTE* data, int img_width, int img_height,
 	int x, int y, BYTE r, BYTE g, BYTE b)
@@ -68,9 +127,9 @@ static void DrawFinderPattern(BYTE* data, int img_width, int img_height,
 // Draws the fake (placeholder) QR code onto the RGB image.
 // corner: 0=Top-Left, 1=Top-Right, 2=Bottom-Left, 3=Bottom-Right
 static void DrawFakeQRCode(BYTE* data, int img_width, int img_height,
-	int corner, int qr_size)
+	int corner, int qr_size, int margin_px)
 {
-	const int margin = max(2, qr_size / 20);
+	const int margin = max(1, margin_px);
 
 	int qr_x, qr_y;
 	switch (corner)
@@ -154,7 +213,8 @@ CFunctionPluginQRCode::CFunctionPluginQRCode()
 	: handle_wnd(NULL),
 	  qr_corner(3),
 	  qr_text(L""),
-	  qr_relative_size(20)
+	  qr_relative_size(20),
+	  qr_margin_percent(2)
 {
 	_wsetlocale(LC_ALL, L".ACP");
 }
@@ -222,6 +282,7 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 	dlg.corner = qr_corner;
 	dlg.text = qr_text;
 	dlg.relative_size = qr_relative_size;
+	dlg.margin_percent = qr_margin_percent;
 
 	if (dlg.DoModal() != IDOK)
 	{
@@ -232,6 +293,7 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 	qr_corner = dlg.corner;
 	qr_text = dlg.text;
 	qr_relative_size = dlg.relative_size;
+	qr_margin_percent = dlg.margin_percent;
 
 	parent.Detach();
 
@@ -263,10 +325,12 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 			continue;
 		}
 
+		const int margin_px = max(1, shorter_side * qr_margin_percent / 100);
+
 		// Draw the fake QR code directly onto the pixel buffer.
 		// rd.data is BYTE* (non-const through the struct member), so bytes are writable.
-		DrawFakeQRCode(rd.data, rd.picture_width, rd.picture_height,
-			qr_corner, qr_size);
+		DrawRealQRCode(rd.data, rd.picture_width, rd.picture_height,
+			qr_corner, qr_size, margin_px, qr_text);
 
 		// Signal that this picture was updated.
 		update_data_list.push_back(update_data(

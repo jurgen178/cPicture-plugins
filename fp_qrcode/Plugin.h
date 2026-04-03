@@ -16,6 +16,7 @@ protected:
 	int qr_corner; // 0=Top-Left, 1=Top-Right, 2=Bottom-Left, 3=Bottom-Right
 	CString qr_text; // text content for the QR code
 	int qr_relative_size; // QR size as percentage of the shorter image side (5..50)
+	int qr_margin_percent; // gap between QR and image edge as % of shorter side (0..25)
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
