@@ -154,7 +154,7 @@ void CAsciiArtDlg::Update(const CString& fontName)
 			memDC.SelectObject(pOldFont);
 
 			CString msg;
-			msg.Format(IDS_CHAR_SIZE_ERROR);
+			msg.LoadString(IDS_CHAR_SIZE_ERROR);
 			::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONERROR);
 
 			return;
@@ -608,7 +608,7 @@ void CAsciiArtDlg::OnClickedButtonCopy()
 	TextToClipboard(text);
 
 	CString msg;
-	msg.Format(IDS_CLIPBOARD_COPY_TEXT);
+	msg.LoadString(IDS_CLIPBOARD_COPY_TEXT);
 	::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
 }
 

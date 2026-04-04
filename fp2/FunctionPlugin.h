@@ -27,7 +27,7 @@ struct request_data_size
 	request_data_size(
 		const int picture_width,
 		const int picture_height,
-		const enum DATA_REQUEST_TYPE data_request_type)
+		const enum DATA_REQUEST_TYPE data_request_type) noexcept
 		: picture_width(picture_width),
 		picture_height(picture_height),
 		data_request_type(data_request_type)
@@ -163,7 +163,7 @@ public:
 	CString version;
 	enum PLUGIN_TYPE type;
 
-	// Zum Sortieren der Eintr‰ge.
+	// Zum Sortieren der Eintr√§ge.
 	bool operator < (const plugin_data& rhs) noexcept
 	{
 		return file_name2 < rhs.file_name2;

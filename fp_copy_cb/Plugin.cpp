@@ -44,10 +44,6 @@ CFunctionPluginCopyCB::CFunctionPluginCopyCB()
 {
 }
 
-CFunctionPluginCopyCB::~CFunctionPluginCopyCB() 
-{
-}
-
 struct plugin_data __stdcall CFunctionPluginCopyCB::get_plugin_data() const
 {
 	struct plugin_data pluginData;
@@ -76,7 +72,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginCopyCB::start(const HWND hwnd, const 
 	if (file_list.size() != 1)
 	{
 		CString msg;
-		msg.Format(IDS_STRING_SINGLE_FILE_ONLY);
+		msg.LoadString(IDS_STRING_SINGLE_FILE_ONLY);
 		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
@@ -159,7 +155,7 @@ const vector<update_data>& __stdcall CFunctionPluginCopyCB::end(const vector<pic
 				::CloseClipboard();
 
 				CString msg;
-				msg.Format(IDS_CLIPBOARD_PICTURE);
+				msg.LoadString(IDS_CLIPBOARD_PICTURE);
 				::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 
 				bSuccess = true;
@@ -174,7 +170,7 @@ const vector<update_data>& __stdcall CFunctionPluginCopyCB::end(const vector<pic
 	if (!bSuccess)
 	{
 		CString msg;
-		msg.Format(IDS_CLIPBOARD_PICTURE_ERROR);
+		msg.LoadString(IDS_CLIPBOARD_PICTURE_ERROR);
 		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONERROR);
 	}
 

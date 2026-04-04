@@ -250,7 +250,7 @@ void CSampleDlg::OnBnClickedButtonSet()
 		if (number_of_prints > 100)
 		{
 			CString msg;
-			msg.Format(IDS_MAX_PRINTS);
+			msg.LoadString(IDS_MAX_PRINTS);
 			::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
 
 			return;
@@ -270,7 +270,7 @@ void CSampleDlg::OnBnClickedButtonSet()
 	else
 	{
 		CString msg;
-		msg.Format(IDS_SELECT_PRINTS);
+		msg.LoadString(IDS_SELECT_PRINTS);
 		::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONEXCLAMATION);
 	}
 }

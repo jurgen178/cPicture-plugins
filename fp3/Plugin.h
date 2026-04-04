@@ -10,12 +10,11 @@ class CFunctionPluginSample3 : public CFunctionPlugin
 protected:
 	CFunctionPluginSample3();
 
-public:
-	virtual ~CFunctionPluginSample3() { };
-
 protected:
 	HWND handle_wnd;
-	CWnd parent_wnd;
+
+public:
+	virtual ~CFunctionPluginSample3() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()

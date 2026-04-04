@@ -8,15 +8,12 @@ class CFunctionPluginHDR : public CFunctionPlugin
 protected:
 	CFunctionPluginHDR();
 
-public:
-	virtual ~CFunctionPluginHDR() { };
-
 protected:
 	HWND handle_wnd;
-	CWnd parent_wnd;
 	vector<const WCHAR*> picture_list;
 
-protected:
+public:
+	virtual ~CFunctionPluginHDR() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()

@@ -71,7 +71,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginEV::start(const HWND hwnd, const vect
 	if (file_list.size() < 2)
 	{
 		CString msg;
-		msg.Format(IDS_MIN_SELECTION);
+		msg.LoadString(IDS_MIN_SELECTION);
 		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;

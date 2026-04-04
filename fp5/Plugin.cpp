@@ -85,7 +85,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(const HWND hwnd, const
 	if (file_list.size() != 2)
 	{
 		CString msg;
-		msg.Format(IDS_MIN_SELECTION);
+		msg.LoadString(IDS_MIN_SELECTION);
 		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
@@ -159,7 +159,7 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	if (Dib == NULL)
 	{
 		CString msg;
-		msg.Format(IDS_INDEX_TOO_LARGE);
+		msg.LoadString(IDS_INDEX_TOO_LARGE);
 		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 
 		return update_data_list;

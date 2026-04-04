@@ -35,12 +35,13 @@ const int __stdcall GetPluginInit()
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 {
+	// Plugin-Fabric: return the one function plugin.
 	return CFunctionPluginSample3::GetInstance;
 }
 
 
 CFunctionPluginSample3::CFunctionPluginSample3()
-  : handle_wnd(NULL)
+	: handle_wnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP"); 
 }

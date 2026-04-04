@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "stdafx.h"
 
@@ -153,7 +153,7 @@ enum PLUGIN_TYPE
 struct plugin_data
 {
 public:
-	plugin_data() noexcept : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) { };
+	plugin_data() noexcept : type(PLUGIN_TYPE::PLUGIN_TYPE_NONE) {};
 
 	CString name;
 	CString desc;
@@ -163,7 +163,7 @@ public:
 	CString version;
 	enum PLUGIN_TYPE type;
 
-	// Zum Sortieren der Eintraege.
+	// Zum Sortieren der Einträge.
 	bool operator < (const plugin_data& rhs) noexcept
 	{
 		return file_name2 < rhs.file_name2;

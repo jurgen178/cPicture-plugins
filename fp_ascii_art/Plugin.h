@@ -8,12 +8,11 @@ class CFunctionPluginAsciiArt : public CFunctionPlugin
 protected:
 	CFunctionPluginAsciiArt();
 
-public:
-	virtual ~CFunctionPluginAsciiArt() { };
-
 protected:
 	HWND handle_wnd;
-	CWnd parent_wnd;
+
+public:
+	virtual ~CFunctionPluginAsciiArt() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()

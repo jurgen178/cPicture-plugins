@@ -41,7 +41,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginSample2::CFunctionPluginSample2()
-  : handle_wnd(NULL)
+	: handle_wnd(NULL)
 {
 	_wsetlocale(LC_ALL, L".ACP"); 
 }

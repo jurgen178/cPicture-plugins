@@ -13,7 +13,7 @@ protected:
 	HWND handle_wnd;
 
 public:
-	virtual ~CFunctionPluginCopyCB();
+	virtual ~CFunctionPluginCopyCB() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()

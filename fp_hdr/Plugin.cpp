@@ -172,7 +172,7 @@
 //Report bugs at <https://bugs.launchpad.net/enblend>.//
 
 
-CWinApp theApp;	// für DoModal, sonst wird NULL-pointer dereferenziert.
+CWinApp theApp;	// fÃ¼r DoModal, sonst wird NULL-pointer dereferenziert.
 
 
 const CString __stdcall GetPluginVersion()
@@ -235,7 +235,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(const HWND hwnd, const vec
 	if (file_list.size() < 2)
 	{
 		CString msg;
-		msg.Format(IDS_MIN_SELECTION);
+		msg.LoadString(IDS_MIN_SELECTION);
 		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 		
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;

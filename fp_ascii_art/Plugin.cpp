@@ -40,7 +40,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginAsciiArt::CFunctionPluginAsciiArt()
-  : handle_wnd(NULL)
+	: handle_wnd(NULL)
 {
 	// Set the locale to the system's ANSI code page.
 	_wsetlocale(LC_ALL, L".ACP"); 
@@ -72,7 +72,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(const HWND hwnd, cons
 	if (file_list.size() != 1)
 	{
 		CString msg;
-		msg.Format(IDS_STRING_SINGLE_FILE_ONLY);
+		msg.LoadString(IDS_STRING_SINGLE_FILE_ONLY);
 		::MessageBox(hwnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
 
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;

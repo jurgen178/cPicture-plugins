@@ -105,7 +105,7 @@ void ParameterDlg::OnBnClickedOk()
 	if(!CheckFile(enfuse_exe_path))
 	{
 		CString msg;
-		msg.Format(IDS_ENFUSE_MISSING);
+		msg.LoadString(IDS_ENFUSE_MISSING);
 		::MessageBox(m_hWnd, msg, title, MB_OK | MB_ICONINFORMATION);
 
 		OnBnClickedButtonBrowse();

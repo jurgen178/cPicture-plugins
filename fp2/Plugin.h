@@ -8,12 +8,11 @@ class CFunctionPluginSample2 : public CFunctionPlugin
 protected:
 	CFunctionPluginSample2();
 
-public:
-	virtual ~CFunctionPluginSample2() { };
-
 protected:
 	HWND handle_wnd;
-	CWnd parent_wnd;
+
+public:
+	virtual ~CFunctionPluginSample2() { };
 
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
