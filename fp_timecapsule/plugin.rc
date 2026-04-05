@@ -1,0 +1,122 @@
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+#include "afxres.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "Comments", "Time capsule function plugin for cPicture"
+            VALUE "CompanyName", "cPicture"
+            VALUE "FileDescription", "cPicture function plugin"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "cPicture function plugin"
+            VALUE "LegalCopyright", "Copyright (C)"
+            VALUE "OriginalFilename", "cpp_timecapsule.dll"
+            VALUE "ProductName", "cPicture function plugin"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+
+IDD_DIALOG_TIMECAPSULE DIALOGEX 0, 0, 236, 164
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Zeitkapsel erstellen"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Titel:",IDC_STATIC,7,7,222,8
+    EDITTEXT        IDC_EDIT_TITLE,7,18,222,14,ES_AUTOHSCROLL
+    LTEXT           "Sortierung:",IDC_STATIC,7,40,70,8
+    COMBOBOX        IDC_COMBO_SORT_MODE,82,37,147,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Steuert Reihenfolge von Bildern und der verbundenen Punkte im Graph.",IDC_STATIC,7,57,222,16
+    CONTROL         "Metadaten im Poster anzeigen",IDC_CHECK_METADATA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,77,132,10
+    LTEXT           "Thumbnail-Breite:",IDC_STATIC,7,98,70,8
+    EDITTEXT        IDC_EDIT_THUMB_WIDTH,82,95,38,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Thumbnail-Hoehe:",IDC_STATIC,129,98,70,8
+    EDITTEXT        IDC_EDIT_THUMB_HEIGHT,198,95,31,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Ortsradius (km):",IDC_STATIC,7,120,70,8
+    EDITTEXT        IDC_EDIT_LOCATION_RADIUS,82,117,38,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,54,143,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,131,143,50,14
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Zeitkapsel"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul Zeitkapsel"
+    IDS_PLUGIN_INFO         "Erzeugt aus einer Bildauswahl ein Story-Poster mit Timeline, Statistik und Miniaturen."
+    IDS_MIN_SELECTION       "Waehlen Sie fuer die Zeitkapsel mindestens zwei Bilder aus."
+    IDS_DEFAULT_TITLE       "Meine Zeitkapsel"
+    IDS_SORT_MODE_EXIF      "EXIF-Zeit"
+    IDS_SORT_MODE_SELECTION "Auswahlreihenfolge"
+    IDS_SORT_MODE_WEST_EAST "GPS West nach Ost"
+    IDS_SORT_MODE_NORTH_SOUTH "GPS Nord nach Sued"
+    IDS_SORTING_LABEL       "Sortierung"
+END
+
+#endif
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+IDD_DIALOG_TIMECAPSULE DIALOGEX 0, 0, 236, 164
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Create time capsule"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Title:",IDC_STATIC,7,7,222,8
+    EDITTEXT        IDC_EDIT_TITLE,7,18,222,14,ES_AUTOHSCROLL
+    LTEXT           "Sorting:",IDC_STATIC,7,40,70,8
+    COMBOBOX        IDC_COMBO_SORT_MODE,82,37,147,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Controls the order of both the pictures and the connected points in the graph.",IDC_STATIC,7,57,222,16
+    CONTROL         "Show metadata on poster",IDC_CHECK_METADATA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,77,132,10
+    LTEXT           "Thumbnail width:",IDC_STATIC,7,98,70,8
+    EDITTEXT        IDC_EDIT_THUMB_WIDTH,82,95,38,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Thumbnail height:",IDC_STATIC,129,98,70,8
+    EDITTEXT        IDC_EDIT_THUMB_HEIGHT,198,95,31,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Location radius (km):",IDC_STATIC,7,120,76,8
+    EDITTEXT        IDC_EDIT_LOCATION_RADIUS,82,117,38,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,54,143,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,131,143,50,14
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "Time Capsule"
+    IDS_PLUGIN_LONG_DESC    "Time capsule function plugin"
+    IDS_PLUGIN_INFO         "Builds a story poster from the selected pictures with a timeline, summary, and thumbnails."
+    IDS_MIN_SELECTION       "Select at least two pictures for the time capsule."
+    IDS_DEFAULT_TITLE       "My Time Capsule"
+    IDS_SORT_MODE_EXIF      "EXIF time"
+    IDS_SORT_MODE_SELECTION "Selection order"
+    IDS_SORT_MODE_WEST_EAST "GPS west to east"
+    IDS_SORT_MODE_NORTH_SOUTH "GPS north to south"
+    IDS_SORTING_LABEL       "Sorting"
+END
+
+#endif
+

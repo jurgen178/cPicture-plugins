@@ -1,0 +1,96 @@
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+#include "afxres.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "Comments", "X-Ray analysis function plugin for cPicture"
+            VALUE "CompanyName", "cPicture"
+            VALUE "FileDescription", "cPicture function plugin"
+            VALUE "FileVersion", "1.0.0.0"
+            VALUE "InternalName", "cPicture function plugin"
+            VALUE "LegalCopyright", "Copyright (C)"
+            VALUE "OriginalFilename", "cpp_xray.dll"
+            VALUE "ProductName", "cPicture function plugin"
+            VALUE "ProductVersion", "1.0.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+
+IDD_DIALOG_XRAY DIALOGEX 0, 0, 188, 100
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "X-Ray Analyse"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Analyse-Skalierung (%):",IDC_STATIC,7,10,86,8
+    EDITTEXT        IDC_EDIT_SCALE,116,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Empfindlichkeit:",IDC_STATIC,7,34,86,8
+    EDITTEXT        IDC_EDIT_SENSITIVITY,116,31,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "8x8 Raster einzeichnen",IDC_CHECK_GRID,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,57,103,10
+    DEFPUSHBUTTON   "OK",IDOK,37,79,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,103,79,50,14
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "X-Ray"
+    IDS_PLUGIN_LONG_DESC    "Funktionszusatzmodul X-Ray"
+    IDS_PLUGIN_INFO         "Erstellt pro Bild eine Analyse-Tafel mit Kantenbild, 8x8-Grenzen und kombinierter Heatmap."
+    IDS_MIN_SELECTION       "Waehlen Sie mindestens ein Bild fuer die X-Ray Analyse aus."
+END
+
+#endif
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+IDD_DIALOG_XRAY DIALOGEX 0, 0, 188, 100
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "X-Ray analysis"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Analysis scale (%):",IDC_STATIC,7,10,86,8
+    EDITTEXT        IDC_EDIT_SCALE,116,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Sensitivity:",IDC_STATIC,7,34,86,8
+    EDITTEXT        IDC_EDIT_SENSITIVITY,116,31,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Draw 8x8 grid",IDC_CHECK_GRID,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,57,103,10
+    DEFPUSHBUTTON   "OK",IDOK,37,79,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,103,79,50,14
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PLUGIN_SHORT_DESC   "X-Ray"
+    IDS_PLUGIN_LONG_DESC    "X-Ray function plugin"
+    IDS_PLUGIN_INFO         "Builds an analysis panel per image with edge, 8x8 boundary, and combined heat maps."
+    IDS_MIN_SELECTION       "Select at least one picture for the X-Ray analysis."
+END
+
+#endif
+

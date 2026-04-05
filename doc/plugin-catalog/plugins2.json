@@ -187,6 +187,30 @@
         "type": "function"
       },
       {
+        "name": "Zeitkapsel",
+        "desc": "Funktionszusatzmodul zum Erstellen eines Story-Posters mit Route, Orten und Miniaturen.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "info": "<h3>Zeitkapsel</h3><p>Dieses Funktionszusatzmodul erzeugt aus mehreren ausgewählten Bildern ein Poster mit Titel, Route, Orts-Clustern, Statistik und Miniaturen. Im Dialog lassen sich Sortierung, Ortsradius sowie die Größe der Vorschaubilder einstellen.</p><p>Die Route wird aus den verfügbaren GPS-Daten aufgebaut und mit den Bildminiaturen verknüpft. So entsteht eine visuelle Zusammenfassung einer Serie, Reise oder eines Shootings.</p>",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Funktionszusatzmodul zum Erstellen einer Analyse-Tafel mit Kanten-, Block- und Heatmap-Ansicht.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "info": "<h3>X-Ray</h3><p>Dieses Funktionszusatzmodul erzeugt für jedes ausgewählte Bild eine Analyse-Tafel mit Originalansicht, Kantenkarte, 8x8-Blockanalyse und kombinierter Heatmap. Die Skalierung, Sensitivität und das optionale 8x8-Gitter werden im Dialog eingestellt.</p><p>Die Ausgabe eignet sich, um Strukturen, Kompressionsartefakte und auffällige Bildbereiche schnell sichtbar zu machen.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Funktionszusatzmodul zum Verschmelzen mehrerer Bilder zu einem Bewegungsbild mit Spureneffekt.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "info": "<h3>Motion Composer</h3><p>Dieses Funktionszusatzmodul kombiniert mehrere Bilder zu einer einzelnen Komposition mit Bewegungs- und Spureneffekten. Ausgabegroesse, Schwellwert und farbige Staffelung der Spuren werden im Dialog festgelegt.</p><p>Es eignet sich besonders für Serien mit Bewegung, etwa Personen, Fahrzeuge oder wiederholte Abläufe.</p>",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -386,6 +410,30 @@
         "file": "cpp_qrcode.dll",
         "version": "1.0",
         "info": "<h3>QR Code</h3><p>This function plugin embeds a QR code into the selected pictures. The QR code text, corner position, relative size and margin can be configured in the dialog.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png' />",
+        "type": "function"
+      },
+      {
+        "name": "Time Capsule",
+        "desc": "Function plugin to create a story poster with route, locations and thumbnails.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "info": "<h3>Time Capsule</h3><p>This function plugin creates a poster from multiple selected pictures with title, route strip, location clusters, summary and thumbnails. The dialog lets you configure the sorting mode, location radius and thumbnail size.</p><p>The route is built from available GPS data and linked to the picture thumbnails, creating a visual summary of a trip, series or shoot.</p>",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Function plugin to create an analysis board with edge, block and heat map views.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "info": "<h3>X-Ray</h3><p>This function plugin creates an analysis board for each selected picture with the original view, an edge map, an 8x8 block analysis and a combined heat map. Scale, sensitivity and the optional 8x8 grid can be configured in the dialog.</p><p>The output helps highlight structures, compression artifacts and visually suspicious image regions.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Function plugin to merge multiple pictures into a motion composite with trail effects.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "info": "<h3>Motion Composer</h3><p>This function plugin combines multiple pictures into a single composition with motion and trail effects. Output size, threshold and optional trail colorization are configured in the dialog.</p><p>It is especially useful for sequences with movement, such as people, vehicles or repeated actions.</p>",
         "type": "function"
       },
       {

@@ -1,0 +1,7 @@
+LIBRARY      "cpp_timecapsule"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

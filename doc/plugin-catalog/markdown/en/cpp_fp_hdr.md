@@ -4,4 +4,5 @@ This function plugin creates an HDR picture from at least two pictures of an exp
 
 Uses: [Enfuse](app://wiki.panotools.org/Enfuse).
 
+<br>
 ![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png)

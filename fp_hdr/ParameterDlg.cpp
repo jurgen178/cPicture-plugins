@@ -6,6 +6,27 @@
 #include <afxdlgs.h>
 
 
+namespace
+{
+	class ScopedWaitCursor
+	{
+	public:
+		ScopedWaitCursor()
+			: previous_cursor(::SetCursor(::LoadCursor(NULL, IDC_WAIT)))
+		{
+		}
+
+		~ScopedWaitCursor()
+		{
+			::SetCursor(previous_cursor != NULL ? previous_cursor : ::LoadCursor(NULL, IDC_ARROW));
+		}
+
+	private:
+		HCURSOR previous_cursor;
+	};
+}
+
+
 CColorEdit::CColorEdit()
   : brush(RGB(0, 0, 0))
 {
@@ -170,6 +191,7 @@ HANDLE ParameterDlg::SpawnAndRedirect(LPCTSTR commandLine, HANDLE *hStdOutputRea
 void ParameterDlg::Go(LPCTSTR commandLine)
 {
 	console.RedrawWindow();
+	ScopedWaitCursor wait_cursor;
 
 	HANDLE hOutput, hProcess;
 	hProcess = SpawnAndRedirect(commandLine, &hOutput, NULL);
@@ -177,8 +199,6 @@ void ParameterDlg::Go(LPCTSTR commandLine)
 		return;
 
 	CString out;
-
-	BeginWaitCursor();
 	CHAR buffer[65];
 	DWORD read;
 	BOOL bRead(TRUE);
@@ -209,7 +229,6 @@ void ParameterDlg::Go(LPCTSTR commandLine)
 
 	CloseHandle(hOutput);
 	CloseHandle(hProcess);
-	EndWaitCursor();
 }
 
 void ParameterDlg::OnOK()

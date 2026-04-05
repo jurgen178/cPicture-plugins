@@ -187,6 +187,30 @@
         "type": "function"
       },
       {
+        "name": "Zeitkapsel",
+        "desc": "Funktionszusatzmodul zum Erstellen eines Story-Posters mit Route, Orten und Miniaturen.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_timecapsule.md",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Funktionszusatzmodul zum Erstellen einer Analyse-Tafel mit Kanten-, Block- und Heatmap-Ansicht.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_xray.md",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Funktionszusatzmodul zum Verschmelzen mehrerer Bilder zu einem Bewegungsbild mit Spureneffekt.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_motion_composer.md",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -386,6 +410,30 @@
         "file": "cpp_qrcode.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpp_qrcode.md",
+        "type": "function"
+      },
+      {
+        "name": "Time Capsule",
+        "desc": "Function plugin to create a story poster with route, places and thumbnails.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_timecapsule.md",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Function plugin to create an analysis board with edge, block and heatmap views.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_xray.md",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Function plugin to merge multiple pictures into a motion composite with trail effects.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_motion_composer.md",
         "type": "function"
       },
       {
