@@ -15,6 +15,8 @@ namespace
 		SORT_MODE_SELECTION,
 		SORT_MODE_GPS_WEST_EAST,
 		SORT_MODE_GPS_NORTH_SOUTH,
+		SORT_MODE_GPS_EAST_WEST,
+		SORT_MODE_GPS_SOUTH_NORTH,
 	};
 
 	const int header_height = 138;
@@ -295,6 +297,10 @@ namespace
 			return LoadText(IDS_SORT_MODE_WEST_EAST);
 		case SORT_MODE_GPS_NORTH_SOUTH:
 			return LoadText(IDS_SORT_MODE_NORTH_SOUTH);
+		case SORT_MODE_GPS_EAST_WEST:
+			return LoadText(IDS_SORT_MODE_EAST_WEST);
+		case SORT_MODE_GPS_SOUTH_NORTH:
+			return LoadText(IDS_SORT_MODE_SOUTH_NORTH);
 		case SORT_MODE_EXIF:
 		default:
 			return LoadText(IDS_SORT_MODE_EXIF);
@@ -508,7 +514,7 @@ namespace
 		return lhs->file_name.CompareNoCase(rhs->file_name) < 0;
 	}
 
-	bool ComparePicturesByGps(const picture_data* lhs, const picture_data* rhs, const bool west_east)
+	bool ComparePicturesByGps(const picture_data* lhs, const picture_data* rhs, const bool use_longitude, const bool ascending)
 	{
 		GeoPoint lhs_geo;
 		GeoPoint rhs_geo;
@@ -520,15 +526,15 @@ namespace
 
 		if (lhs_has_geo && rhs_has_geo)
 		{
-			const double lhs_axis = west_east ? lhs_geo.longitude : lhs_geo.latitude;
-			const double rhs_axis = west_east ? rhs_geo.longitude : rhs_geo.latitude;
+			const double lhs_axis = use_longitude ? lhs_geo.longitude : lhs_geo.latitude;
+			const double rhs_axis = use_longitude ? rhs_geo.longitude : rhs_geo.latitude;
 			if (lhs_axis != rhs_axis)
-				return lhs_axis < rhs_axis;
+				return ascending ? (lhs_axis < rhs_axis) : (lhs_axis > rhs_axis);
 
-			const double lhs_secondary = west_east ? lhs_geo.latitude : lhs_geo.longitude;
-			const double rhs_secondary = west_east ? rhs_geo.latitude : rhs_geo.longitude;
+			const double lhs_secondary = use_longitude ? lhs_geo.latitude : lhs_geo.longitude;
+			const double rhs_secondary = use_longitude ? rhs_geo.latitude : rhs_geo.longitude;
 			if (lhs_secondary != rhs_secondary)
-				return lhs_secondary < rhs_secondary;
+				return ascending ? (lhs_secondary < rhs_secondary) : (lhs_secondary > rhs_secondary);
 		}
 
 		return ComparePicturesByExif(lhs, rhs);
@@ -541,11 +547,19 @@ namespace
 		{
 		case SORT_MODE_GPS_WEST_EAST:
 			std::stable_sort(pictures.begin(), pictures.end(),
-				[](const picture_data* lhs, const picture_data* rhs) { return ComparePicturesByGps(lhs, rhs, true); });
+				[](const picture_data* lhs, const picture_data* rhs) { return ComparePicturesByGps(lhs, rhs, true, true); });
 			break;
 		case SORT_MODE_GPS_NORTH_SOUTH:
 			std::stable_sort(pictures.begin(), pictures.end(),
-				[](const picture_data* lhs, const picture_data* rhs) { return ComparePicturesByGps(lhs, rhs, false); });
+				[](const picture_data* lhs, const picture_data* rhs) { return ComparePicturesByGps(lhs, rhs, false, false); });
+			break;
+		case SORT_MODE_GPS_EAST_WEST:
+			std::stable_sort(pictures.begin(), pictures.end(),
+				[](const picture_data* lhs, const picture_data* rhs) { return ComparePicturesByGps(lhs, rhs, true, false); });
+			break;
+		case SORT_MODE_GPS_SOUTH_NORTH:
+			std::stable_sort(pictures.begin(), pictures.end(),
+				[](const picture_data* lhs, const picture_data* rhs) { return ComparePicturesByGps(lhs, rhs, false, true); });
 			break;
 		case SORT_MODE_EXIF:
 			std::stable_sort(pictures.begin(), pictures.end(), ComparePicturesByExif);

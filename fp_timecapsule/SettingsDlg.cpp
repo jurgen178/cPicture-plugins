@@ -51,7 +51,11 @@ BOOL CSettingsDlg::OnInitDialog()
 		sort_combo->AddString(text);
 		text.LoadString(IDS_SORT_MODE_NORTH_SOUTH);
 		sort_combo->AddString(text);
-		sort_combo->SetCurSel(max(0, min(3, sort_mode)));
+		text.LoadString(IDS_SORT_MODE_EAST_WEST);
+		sort_combo->AddString(text);
+		text.LoadString(IDS_SORT_MODE_SOUTH_NORTH);
+		sort_combo->AddString(text);
+		sort_combo->SetCurSel(max(0, min(5, sort_mode)));
 	}
 
 	if (title_text.IsEmpty())

@@ -10,6 +10,8 @@
 #define IDS_SORT_MODE_WEST_EAST         108
 #define IDS_SORT_MODE_NORTH_SOUTH       109
 #define IDS_SORTING_LABEL               110
+#define IDS_SORT_MODE_EAST_WEST         111
+#define IDS_SORT_MODE_SOUTH_NORTH       112
 #define IDC_EDIT_TITLE                  1000
 #define IDC_COMBO_SORT_MODE             1001
 #define IDC_CHECK_METADATA              1002
@@ -22,6 +24,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        106
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1006
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_SYMED_VALUE           113
 #endif
 #endif
