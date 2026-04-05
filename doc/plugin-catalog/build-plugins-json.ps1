@@ -3,11 +3,6 @@ $ErrorActionPreference = 'Stop'
 
 $SourceJsonPath = Join-Path $PSScriptRoot 'plugins.source.json'
 $OutputJsonPath = Join-Path $PSScriptRoot 'plugins2.json'
-$CopyTo = @(
-    # Optional später aktivieren, wenn die generierte Ausgabe bewusst übernommen werden soll:
-    # 'C:\Projects\cPicture\build\plugins2.json',
-    # 'C:\Projects\cPicture\x64\Debug\plugins2.json'
-)
 
 function Resolve-RelativePath {
     param(
@@ -148,16 +143,4 @@ if (-not $json.EndsWith("`r`n")) {
 $utf8Bom = New-Object System.Text.UTF8Encoding($true)
 [System.IO.File]::WriteAllText($OutputJsonPath, $json, $utf8Bom)
 
-foreach ($copyTarget in $CopyTo) {
-    $targetDir = Split-Path -Path $copyTarget -Parent
-    if (-not [string]::IsNullOrWhiteSpace($targetDir) -and -not (Test-Path -LiteralPath $targetDir)) {
-        [System.IO.Directory]::CreateDirectory($targetDir) | Out-Null
-    }
-
-    [System.IO.File]::WriteAllText($copyTarget, $json, $utf8Bom)
-}
-
 Write-Host "Generated: $OutputJsonPath"
-foreach ($copyTarget in $CopyTo) {
-    Write-Host "Copied to: $copyTarget"
-}
