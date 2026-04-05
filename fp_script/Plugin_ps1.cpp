@@ -15,8 +15,6 @@ CString scanPS1Description(char* Text)
 	//.NOTES
 	//    notes
 	//#>
-
-	static std::wregex& descriptionRegex = std::wregex(L"<#.+?[.]DESCRIPTION(?:\\s|\\\\n)+(.+?)(?:\\s|\\\\n)+(?:[.][a-z]{4,}(?:\\s|\\\\n)*|#>)", std::regex::icase);
 	
 	CString ScanText(Text);
 
@@ -31,30 +29,46 @@ CString scanPS1Description(char* Text)
 	// Simplify the line break.
 	ScanText.Replace(L"\r", L"");
 
-	// std::regex multiline
-	ScanText.Replace(L"\n", L"\\n");
+	const int commentStart(ScanText.Find(L"<#"));
+	if (commentStart == -1)
+		return L"";
 
-	//<#
-	//.DESCRIPTION
-	//    Example script to print the picture data.
-	//.NOTES
-	//    notes
-	//#>
+	const int commentEnd(ScanText.Find(L"#>", commentStart + 2));
+	if (commentEnd == -1)
+		return L"";
 
-	std::wstring input(ScanText);
-	std::wsmatch match;
+	const CString helpText(ScanText.Mid(commentStart + 2, commentEnd - commentStart - 2));
 
-	if (std::regex_search(input, match, descriptionRegex))
+	CString description;
+	bool inDescription(false);
+	int tokenPos(0);
+	while (tokenPos != -1)
 	{
-		std::wstring r = match[1];
-		CString m(r.c_str());
-		m.Replace(L"\\n", L"\n");
-		m.Trim(L" \n\t");
+		CString line(helpText.Tokenize(L"\n", tokenPos));
+		CString trimmed(line);
+		trimmed.Trim(L" \t");
 
-		return m;
+		if (!inDescription)
+		{
+			if (trimmed.CompareNoCase(L".DESCRIPTION") == 0)
+				inDescription = true;
+
+			continue;
+		}
+
+		// Sobald die nächste Help-Sektion beginnt, ist der DESCRIPTION-Block zu Ende.
+		if (!trimmed.IsEmpty() && trimmed[0] == L'.')
+			break;
+
+		if (!description.IsEmpty())
+			description += L"\n";
+
+		description += trimmed;
 	}
 
-	return L"";
+	description.Trim(L" \n\t");
+
+	return description;
 }
 
 
