@@ -116,7 +116,7 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
-	update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED));
+	update_data_list.emplace_back(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
 
 	++sequence;
 

@@ -308,7 +308,6 @@ const vector<update_data>& __stdcall CFunctionPluginMotionComposer::end(const ve
 		}
 	}
 
-	// Store the combined frame beside the first source image instead of under cPicture's current working directory.
 	CString output_file = GetDirectory(picture_data_list.front().file_name) + GetBaseName(picture_data_list.front().file_name) + L"-motion-composer" + GetExtension(picture_data_list.front().file_name);
 	update_data_list.emplace_back(
 		output_file,

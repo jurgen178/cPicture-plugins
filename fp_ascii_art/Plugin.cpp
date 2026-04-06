@@ -92,13 +92,13 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAsciiArt::start(const HWND hwnd, cons
 	// A negative value requests a relative size for the picture data.
 	// For example, -100 requests data for the original 100% picture size.
 	// To get picture data for the half size, use
-	// request_data_sizes.push_back(request_data_size(-50, -50, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
-	request_data_sizes.push_back(
-		request_data_size(AsciiDlg.preview_position_rect.Width(),
-			AsciiDlg.preview_position_rect.Height(),
-			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY)
+	// request_data_sizes.emplace_back(-50, -50, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
+	request_data_sizes.emplace_back(
+		AsciiDlg.preview_position_rect.Width(),
+		AsciiDlg.preview_position_rect.Height(),
+		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY
 	);
-	request_data_sizes.push_back(request_data_size(-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+	request_data_sizes.emplace_back(-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }

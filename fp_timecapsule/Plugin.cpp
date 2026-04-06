@@ -1323,7 +1323,7 @@ namespace
 		mem_dc.SelectObject(old_font);
 	}
 
-	// The route strip is intentionally schematic: a calm horizontal travel line reads better than a literal map trace.
+	// The route strip is intentionally schematic: a horizontal travel line reads better than a literal map trace.
 	void DrawRouteStrip(CDC& mem_dc, const CRect& route_rect, const PosterInsights& insights)
 	{
 		CBrush route_background(RGB(49, 63, 78));
@@ -1686,7 +1686,6 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	mem_dc.SelectObject(old_pen);
 	mem_dc.SelectObject(old_bitmap);
 
-	// The poster is written into the folder of the first selected picture, matching the behavior of other multi-image outputs.
 	CString output_name = GetDirectory(sorted_pictures.front()->file_name) + SanitizeStem(header_title) + GetExtension(sorted_pictures.front()->file_name);
 	update_data_list.emplace_back(
 		output_name,

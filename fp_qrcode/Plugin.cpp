@@ -135,12 +135,11 @@ enum REQUEST_TYPE __stdcall CFunctionPluginQRCode::start(
 
 	// Request [0]: preview-sized BGR display data (first picture only, shown in the dialog).
 	// Request [1]: full-size RGB data for the actual modification of every picture.
-	request_data_sizes.push_back(
-		request_data_size(previewRect.Width(), previewRect.Height(),
-			DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY));
-	request_data_sizes.push_back(
-		request_data_size(-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
-
+	request_data_sizes.emplace_back(
+		previewRect.Width(), previewRect.Height(),
+		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY);
+	request_data_sizes.emplace_back(
+		-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
@@ -216,13 +215,13 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 			qr_corner, qr_size, margin_px, qr_text);
 
 		// Signal that this picture was updated.
-		update_data_list.push_back(update_data(
+		update_data_list.emplace_back(
 			pd.file_name,
 			UPDATE_TYPE::UPDATE_TYPE_UPDATED,
 			rd.picture_width,
 			rd.picture_height,
 			rd.data,
-			DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+			DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 	}
 
 	// Inform the user about any skipped pictures.
