@@ -34,12 +34,42 @@ function Normalize-HtmlAttributeQuotes {
     })
 }
 
+function Normalize-MarkdownForHtmlConversion {
+    param(
+        [string]$Markdown
+    )
+
+    $normalized = $Markdown.Replace("`r", '')
+
+    # Rohes <br> direkt vor Markdown-Bildern verhindert, dass ConvertFrom-Markdown die Bilder rendert.
+    $normalized = [regex]::Replace($normalized, '(?im)^[ \t]*<br\s*/?>[ \t]*\n(?=[ \t]*!\[[^\]]*\]\([^\r\n]+\))', '')
+
+    return $normalized
+}
+
+function Convert-LiteralMarkdownImagesToHtml {
+    param(
+        [string]$Html
+    )
+
+    return [regex]::Replace($Html, '!\[([^\]]*)\]\((https?://[^\s)]+)\)', {
+        param($match)
+        $altText = [System.Net.WebUtility]::HtmlEncode($match.Groups[1].Value)
+        $imageUrl = $match.Groups[2].Value
+
+        return "<img src='$imageUrl' alt='$altText' />"
+    })
+}
+
 function Convert-MarkdownFileToHtmlFragment {
     param(
         [string]$MarkdownPath
     )
 
-    $markdownInfo = ConvertFrom-Markdown -LiteralPath $MarkdownPath
+    $markdown = Get-Content -LiteralPath $MarkdownPath -Raw
+    $markdown = Normalize-MarkdownForHtmlConversion -Markdown $markdown
+
+    $markdownInfo = ConvertFrom-Markdown -InputObject $markdown
     $html = [string]$markdownInfo.Html
 
     if ($html -match '(?is)<body[^>]*>(.*?)</body>') {
@@ -65,7 +95,9 @@ function Convert-MarkdownFileToHtmlFragment {
         return '<code>' + $code + '</code>'
     })
 
+    $html = Convert-LiteralMarkdownImagesToHtml -Html $html
     $html = [regex]::Replace($html, '(?is)<p>\s*(<img\b[^>]*>)\s*</p>', '$1')
+    $html = [regex]::Replace($html, '(?is)(?:<br\s*/?>\s*)+(?=<img\b)', '')
 
     $html = Normalize-HtmlAttributeQuotes -Html $html
     $html = $html.Replace('&quot;', '"')

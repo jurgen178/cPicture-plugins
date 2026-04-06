@@ -103,7 +103,7 @@
         "desc": "Funktionszusatzmodul zum Ausführen von PowerShell-, Batch- und Python-Skripten.",
         "file": "cpp_script.dll",
         "version": "1.1",
-        "info": "<h3>Skript-Funktionszusatzmodul</h3><p>Dieses Funktionszusatzmodul ermöglicht das Ausführen von PowerShell-, Batch- und Python-Skripten für die ausgewählten Bilder. Es wird automatisch installiert, wenn ein Skript-Plugin installiert wird.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_powershell.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_bat.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_python.png)",
+        "info": "<h3>Skript-Funktionszusatzmodul</h3><p>Dieses Funktionszusatzmodul ermöglicht das Ausführen von PowerShell-, Batch- und Python-Skripten für die ausgewählten Bilder. Es wird automatisch installiert, wenn ein Skript-Plugin installiert wird.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_powershell.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_bat.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_python.png' />",
         "type": "function"
       },
       {
@@ -111,7 +111,7 @@
         "desc": "Funktionszusatzmodul zum Ausführen der begin(), process_picture() und end() Funktionen.",
         "file": "cpp_fp1.dll",
         "version": "1.0",
-        "info": "<h3>Funktionszusatzmodul Beispiel 1</h3><p>Dieses Beispiel zeigt die grundlegende Struktur eines Funktionszusatzmoduls. Es werden alle drei Verarbeitungsschritte durchlaufen: <em>begin()</em> wird einmal zu Beginn aufgerufen, <em>process_picture()</em> für jedes ausgewählte Bild und <em>end()</em> abschließend. Die Bildnamen werden in einer Meldung angezeigt.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1b.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1c.png)",
+        "info": "<h3>Funktionszusatzmodul Beispiel 1</h3><p>Dieses Beispiel zeigt die grundlegende Struktur eines Funktionszusatzmoduls. Es werden alle drei Verarbeitungsschritte durchlaufen: <em>begin()</em> wird einmal zu Beginn aufgerufen, <em>process_picture()</em> für jedes ausgewählte Bild und <em>end()</em> abschließend. Die Bildnamen werden in einer Meldung angezeigt.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1a.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1b.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1c.png' />",
         "type": "function"
       },
       {
@@ -119,7 +119,7 @@
         "desc": "Funktionszusatzmodul zum Anzeigen eines Bild-Vorschaudialogs.",
         "file": "cpp_fp2.dll",
         "version": "1.0",
-        "info": "<h3>Funktionszusatzmodul Beispiel 2</h3><p>Dieses Beispiel zeigt, wie Bilddaten vom Plugin angefordert und in einem eigenen Dialogfenster dargestellt werden können. Die Vorschaubilder der ausgewählten Bilder werden in einem Dialog angezeigt.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png)",
+        "info": "<h3>Funktionszusatzmodul Beispiel 2</h3><p>Dieses Beispiel zeigt, wie Bilddaten vom Plugin angefordert und in einem eigenen Dialogfenster dargestellt werden können. Die Vorschaubilder der ausgewählten Bilder werden in einem Dialog angezeigt.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png' />",
         "type": "function"
       },
       {
@@ -127,7 +127,7 @@
         "desc": "Funktionszusatzmodul mit einem einfachen Bilderbestellformular.",
         "file": "cpp_fp3.dll",
         "version": "1.0",
-        "info": "<h3>Funktionszusatzmodul Beispiel 3</h3><p>Dieses Beispiel zeigt ein kleines Bestellformular für die ausgewählten Bilder. Es demonstriert die Verwendung von Bilddaten in einer eigenen Dialoganwendung innerhalb des Funktionszusatzmoduls.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp3.png)",
+        "info": "<h3>Funktionszusatzmodul Beispiel 3</h3><p>Dieses Beispiel zeigt ein kleines Bestellformular für die ausgewählten Bilder. Es demonstriert die Verwendung von Bilddaten in einer eigenen Dialoganwendung innerhalb des Funktionszusatzmoduls.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp3.png' />",
         "type": "function"
       },
       {
@@ -135,7 +135,7 @@
         "desc": "Funktionszusatzmodul zum Verkleinern und Ändern von Bildern.",
         "file": "cpp_fp4.dll",
         "version": "1.0",
-        "info": "<h3>Funktionszusatzmodul Beispiel 4</h3><p>Dieses Beispiel zeigt, wie Bilddaten verändert und als neue Datei gespeichert werden können. Die ausgewählten Bilder werden auf halbe Größe skaliert und farblich invertiert.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp4.png)",
+        "info": "<h3>Funktionszusatzmodul Beispiel 4</h3><p>Dieses Beispiel zeigt, wie Bilddaten verändert und als neue Datei gespeichert werden können. Die ausgewählten Bilder werden auf halbe Größe skaliert und farblich invertiert.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp4.png' />",
         "type": "function"
       },
       {
@@ -143,7 +143,7 @@
         "desc": "Funktionszusatzmodul zum Erstellen eines Indexprints aus zwei Bildern.",
         "file": "cpp_fp5.dll",
         "version": "1.0",
-        "info": "<h3>Funktionszusatzmodul Beispiel 5</h3><p>Dieses Beispiel erstellt aus genau zwei ausgewählten Bildern ein kombiniertes Indexprint-Bild mit Beschriftung. Es zeigt die Verwendung von GDI-Zeichenoperationen innerhalb des Funktionszusatzmoduls.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png)",
+        "info": "<h3>Funktionszusatzmodul Beispiel 5</h3><p>Dieses Beispiel erstellt aus genau zwei ausgewählten Bildern ein kombiniertes Indexprint-Bild mit Beschriftung. Es zeigt die Verwendung von GDI-Zeichenoperationen innerhalb des Funktionszusatzmoduls.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png' />",
         "type": "function"
       },
       {
@@ -151,7 +151,7 @@
         "desc": "Funktionszusatzmodul zum Zusammenführen von Belichtungsreihen.",
         "file": "cpp_fp_hdr.dll",
         "version": "1.0",
-        "info": "<h3>HDR enfuse</h3><p>Dieses Funktionszusatzmodul erstellt aus mindestens zwei Bildern einer Belichtungsreihe ein HDR-Bild durch Belichtungsfusion. Ausgabepfad und JPEG-Qualität sind im Dialog konfigurierbar.</p><p>Verwendet: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png)",
+        "info": "<h3>HDR enfuse</h3><p>Dieses Funktionszusatzmodul erstellt aus mindestens zwei Bildern einer Belichtungsreihe ein HDR-Bild durch Belichtungsfusion. Ausgabepfad und JPEG-Qualität sind im Dialog konfigurierbar.</p><p>Verwendet: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png' />",
         "type": "function"
       },
       {
@@ -159,7 +159,7 @@
         "desc": "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede der ausgewählten Bilder.",
         "file": "cpp_fp_ev.dll",
         "version": "1.0",
-        "info": "<h3>Belichtungsunterschied</h3><p>Dieses Funktionszusatzmodul berechnet den Belichtungsunterschied (EV) aller ausgewählten Bilder relativ zum ersten ausgewählten Bild als Referenz. Das Ergebnis wird in einer Übersicht angezeigt.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ev.png)",
+        "info": "<h3>Belichtungsunterschied</h3><p>Dieses Funktionszusatzmodul berechnet den Belichtungsunterschied (EV) aller ausgewählten Bilder relativ zum ersten ausgewählten Bild als Referenz. Das Ergebnis wird in einer Übersicht angezeigt.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ev.png' />",
         "type": "function"
       },
       {
@@ -167,7 +167,7 @@
         "desc": "Funktionszusatzmodul zum Konvertieren eines Bildes in ein Buchstabenbild (Ascii Art).",
         "file": "cpp_ascii_art.dll",
         "version": "1.0",
-        "info": "<h3>Ascii Art</h3><p>Dieses Funktionszusatzmodul konvertiert ein ausgewähltes Bild in ein Buchstabenbild (Ascii Art). Im Dialog können Schriftart, Blockgröße, Helligkeit und Kontrast angepasst werden. Das Ergebnis kann als Bild gespeichert werden.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png)",
+        "info": "<h3>Ascii Art</h3><p>Dieses Funktionszusatzmodul konvertiert ein ausgewähltes Bild in ein Buchstabenbild (Ascii Art). Im Dialog können Schriftart, Blockgröße, Helligkeit und Kontrast angepasst werden. Das Ergebnis kann als Bild gespeichert werden.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png' />",
         "type": "function"
       },
       {
@@ -183,7 +183,7 @@
         "desc": "Funktionszusatzmodul zum Einbetten eines QR-Codes in die ausgewählten Bilder.",
         "file": "cpp_qrcode.dll",
         "version": "1.0",
-        "info": "<h3>QR-Code</h3><p>Dieses Funktionszusatzmodul bettet einen QR-Code in die ausgewählten Bilder ein. Im Dialog können der QR-Code-Text, die Ecke, die relative Größe und der Abstand zum Bildrand eingestellt werden.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png)",
+        "info": "<h3>QR-Code</h3><p>Dieses Funktionszusatzmodul bettet einen QR-Code in die ausgewählten Bilder ein. Im Dialog können der QR-Code-Text, die Ecke, die relative Größe und der Abstand zum Bildrand eingestellt werden.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png' />",
         "type": "function"
       },
       {
@@ -191,7 +191,7 @@
         "desc": "Funktionszusatzmodul zum Erstellen eines Story-Posters mit Route, Orten und Miniaturen.",
         "file": "cpp_timecapsule.dll",
         "version": "1.0",
-        "info": "<h3>Zeitkapsel</h3><p>Dieses Funktionszusatzmodul erzeugt aus mehreren ausgewählten Bildern ein Story-Poster mit Titel, Route, Orts-Clustern, Statistik und Miniaturen. Im Dialog lassen sich Sortierung, Ortsradius und die Größe der Vorschaubilder einstellen.</p><p>Die Route wird aus den verfügbaren GPS-Daten aufgebaut und mit den Bildminiaturen verknüpft. So entsteht eine visuelle Zusammenfassung einer Reise, Serie oder eines Shootings.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_timecapsule.jpg)",
+        "info": "<h3>Zeitkapsel</h3><p>Dieses Funktionszusatzmodul erzeugt aus mehreren ausgewählten Bildern ein Story-Poster mit Titel, Route, Orts-Clustern, Statistik und Miniaturen. Im Dialog lassen sich Sortierung, Ortsradius und die Größe der Vorschaubilder einstellen.</p><p>Die Route wird aus den verfügbaren GPS-Daten aufgebaut und mit den Bildminiaturen verknüpft. So entsteht eine visuelle Zusammenfassung einer Reise, Serie oder eines Shootings.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_timecapsule.jpg' />",
         "type": "function"
       },
       {
@@ -199,7 +199,7 @@
         "desc": "Funktionszusatzmodul zum Erstellen einer Analyse-Tafel mit Kanten-, Block- und Heatmap-Ansicht.",
         "file": "cpp_xray.dll",
         "version": "1.0",
-        "info": "<h3>X-Ray</h3><p>Dieses Funktionszusatzmodul erzeugt für jedes ausgewählte Bild eine Analyse-Tafel mit Originalansicht, Kantenkarte, 8x8-Blockanalyse und kombinierter Heatmap. Skalierung, Sensitivität und das optionale 8x8-Gitter werden im Dialog eingestellt.</p><p>Die Ausgabe eignet sich, um Strukturen, Kompressionsartefakte und auffällige Bildbereiche schnell sichtbar zu machen.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg)",
+        "info": "<h3>X-Ray</h3><p>Dieses Funktionszusatzmodul erzeugt für jedes ausgewählte Bild eine Analyse-Tafel mit Originalansicht, Kantenkarte, 8x8-Blockanalyse und kombinierter Heatmap. Skalierung, Sensitivität und das optionale 8x8-Gitter werden im Dialog eingestellt.</p><p>Die Ausgabe eignet sich, um Strukturen, Kompressionsartefakte und auffällige Bildbereiche schnell sichtbar zu machen.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg' />",
         "type": "function"
       },
       {
@@ -207,7 +207,7 @@
         "desc": "Funktionszusatzmodul zum Verschmelzen mehrerer Bilder zu einem Bewegungsbild mit Spureneffekt.",
         "file": "cpp_motion_composer.dll",
         "version": "1.0",
-        "info": "<h3>Motion Composer</h3><p>Dieses Funktionszusatzmodul kombiniert mehrere Bilder zu einer einzelnen Komposition mit Bewegungs- und Spureneffekten. Ausgabegroesse, Schwellwert und die farbige Staffelung der Spuren werden im Dialog festgelegt.</p><p>Es eignet sich besonders fuer Serien mit Bewegung, etwa Personen, Fahrzeuge oder wiederholte Ablaeufe.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg)",
+        "info": "<h3>Motion Composer</h3><p>Dieses Funktionszusatzmodul kombiniert mehrere Bilder zu einer einzelnen Komposition mit Bewegungs- und Spureneffekten. Ausgabegröße, Schwellwert und die farbige Staffelung der Spuren werden im Dialog festgelegt.</p><p>Es eignet sich besonders für Serien mit Bewegung, etwa Personen, Fahrzeuge oder wiederholte Abläufe.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg' />",
         "type": "function"
       },
       {
@@ -223,7 +223,7 @@
         "desc": "Formatzusatzmodul zum Anzeigen von PDF-Dokumenten.",
         "file": "cpf_pdf.dll",
         "version": "1.0",
-        "info": "<h3>PDF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des PDF-Dokumentformats. PDF-Dateien können wie Bilder geöffnet und angezeigt werden.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png)",
+        "info": "<h3>PDF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des PDF-Dokumentformats. PDF-Dateien können wie Bilder geöffnet und angezeigt werden.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png' />",
         "type": "format"
       }
     ],
@@ -329,7 +329,7 @@
         "desc": "Function plugin to run PowerShell, Batch and Python scripts.",
         "file": "cpp_script.dll",
         "version": "1.1",
-        "info": "<h3>PowerShell Script Plugin</h3><p>This function plugin enables running PowerShell, Batch and Python scripts for the selected pictures. It is installed automatically when a script plugin is installed.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_powershell.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_bat.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_python.png)",
+        "info": "<h3>PowerShell Script Plugin</h3><p>This function plugin enables running PowerShell, Batch and Python scripts for the selected pictures. It is installed automatically when a script plugin is installed.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_powershell.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_bat.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_python.png' />",
         "type": "function"
       },
       {
@@ -337,7 +337,7 @@
         "desc": "Function plugin demonstrating the begin(), process_picture() and end() functions.",
         "file": "cpp_fp1.dll",
         "version": "1.0",
-        "info": "<h3>Function Plugin Sample 1</h3><p>This sample demonstrates the basic structure of a function plugin. All three processing steps are executed: <em>begin()</em> is called once at the start, <em>process_picture()</em> for each selected picture, and <em>end()</em> at the end. The picture names are shown in a message box.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1b.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1c.png)",
+        "info": "<h3>Function Plugin Sample 1</h3><p>This sample demonstrates the basic structure of a function plugin. All three processing steps are executed: <em>begin()</em> is called once at the start, <em>process_picture()</em> for each selected picture, and <em>end()</em> at the end. The picture names are shown in a message box.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1a.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1b.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1c.png' />",
         "type": "function"
       },
       {
@@ -345,7 +345,7 @@
         "desc": "Function plugin to display a picture preview dialog.",
         "file": "cpp_fp2.dll",
         "version": "1.0",
-        "info": "<h3>Function Plugin Sample 2</h3><p>This sample shows how to request picture data from the plugin and display it in a custom dialog window. Preview images of the selected pictures are shown in a dialog.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png)",
+        "info": "<h3>Function Plugin Sample 2</h3><p>This sample shows how to request picture data from the plugin and display it in a custom dialog window. Preview images of the selected pictures are shown in a dialog.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png' />",
         "type": "function"
       },
       {
@@ -353,7 +353,7 @@
         "desc": "Function plugin with a simple picture order form.",
         "file": "cpp_fp3.dll",
         "version": "1.0",
-        "info": "<h3>Function Plugin Sample 3</h3><p>This sample shows a small order form for the selected pictures. It demonstrates how to use picture data within a custom dialog application inside a function plugin.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp3.png)",
+        "info": "<h3>Function Plugin Sample 3</h3><p>This sample shows a small order form for the selected pictures. It demonstrates how to use picture data within a custom dialog application inside a function plugin.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp3.png' />",
         "type": "function"
       },
       {
@@ -361,7 +361,7 @@
         "desc": "Function plugin to resize and modify pictures.",
         "file": "cpp_fp4.dll",
         "version": "1.0",
-        "info": "<h3>Function Plugin Sample 4</h3><p>This sample shows how to modify picture data and save it as a new file. The selected pictures are scaled to half size and color-inverted.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp4.png)",
+        "info": "<h3>Function Plugin Sample 4</h3><p>This sample shows how to modify picture data and save it as a new file. The selected pictures are scaled to half size and color-inverted.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp4.png' />",
         "type": "function"
       },
       {
@@ -369,7 +369,7 @@
         "desc": "Function plugin to create an index print from two pictures.",
         "file": "cpp_fp5.dll",
         "version": "1.0",
-        "info": "<h3>Function Plugin Sample 5</h3><p>This sample creates a combined index print image from exactly two selected pictures, including a caption. It demonstrates the use of GDI drawing operations within a function plugin.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png)",
+        "info": "<h3>Function Plugin Sample 5</h3><p>This sample creates a combined index print image from exactly two selected pictures, including a caption. It demonstrates the use of GDI drawing operations within a function plugin.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png' />",
         "type": "function"
       },
       {
@@ -377,7 +377,7 @@
         "desc": "Function plugin to merge exposure series into an HDR picture.",
         "file": "cpp_fp_hdr.dll",
         "version": "1.0",
-        "info": "<h3>HDR enfuse</h3><p>This function plugin creates an HDR picture from at least two pictures of an exposure series using exposure fusion. The output path and JPEG quality can be configured in the dialog.</p><p>Uses: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png)",
+        "info": "<h3>HDR enfuse</h3><p>This function plugin creates an HDR picture from at least two pictures of an exposure series using exposure fusion. The output path and JPEG quality can be configured in the dialog.</p><p>Uses: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png' />",
         "type": "function"
       },
       {
@@ -385,7 +385,7 @@
         "desc": "Function plugin to calculate the exposure difference of the selected pictures.",
         "file": "cpp_fp_ev.dll",
         "version": "1.0",
-        "info": "<h3>Exposure Difference</h3><p>This function plugin calculates the exposure difference (EV) of all selected pictures relative to the first selected picture as the reference. The results are shown in an overview.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ev.png)",
+        "info": "<h3>Exposure Difference</h3><p>This function plugin calculates the exposure difference (EV) of all selected pictures relative to the first selected picture as the reference. The results are shown in an overview.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ev.png' />",
         "type": "function"
       },
       {
@@ -393,7 +393,7 @@
         "desc": "Function plugin to convert a picture into a letter image (Ascii Art).",
         "file": "cpp_ascii_art.dll",
         "version": "1.0",
-        "info": "<h3>Ascii Art</h3><p>This function plugin converts a selected picture into a letter image (Ascii Art). Font, block size, brightness and contrast can be adjusted in the dialog. The result can be saved as a picture.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png)",
+        "info": "<h3>Ascii Art</h3><p>This function plugin converts a selected picture into a letter image (Ascii Art). Font, block size, brightness and contrast can be adjusted in the dialog. The result can be saved as a picture.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png' />",
         "type": "function"
       },
       {
@@ -409,7 +409,7 @@
         "desc": "Function plugin to embed a QR code into the selected pictures.",
         "file": "cpp_qrcode.dll",
         "version": "1.0",
-        "info": "<h3>QR Code</h3><p>This function plugin embeds a QR code into the selected pictures. The QR code text, corner position, relative size and margin can be configured in the dialog.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png)",
+        "info": "<h3>QR Code</h3><p>This function plugin embeds a QR code into the selected pictures. The QR code text, corner position, relative size and margin can be configured in the dialog.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png' />",
         "type": "function"
       },
       {
@@ -417,7 +417,7 @@
         "desc": "Function plugin to create a story poster with route, places and thumbnails.",
         "file": "cpp_timecapsule.dll",
         "version": "1.0",
-        "info": "<h3>Time Capsule</h3><p>This function plugin creates a story poster from multiple selected pictures with title, route strip, location clusters, summary and thumbnails. The dialog lets you configure the sorting mode, location radius and thumbnail size.</p><p>The route is built from available GPS data and linked to the picture thumbnails, creating a visual summary of a trip, series or shoot.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_timecapsule.jpg)",
+        "info": "<h3>Time Capsule</h3><p>This function plugin creates a story poster from multiple selected pictures with title, route strip, location clusters, summary and thumbnails. The dialog lets you configure the sorting mode, location radius and thumbnail size.</p><p>The route is built from available GPS data and linked to the picture thumbnails, creating a visual summary of a trip, series or shoot.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_timecapsule.jpg' />",
         "type": "function"
       },
       {
@@ -425,7 +425,7 @@
         "desc": "Function plugin to create an analysis board with edge, block and heatmap views.",
         "file": "cpp_xray.dll",
         "version": "1.0",
-        "info": "<h3>X-Ray</h3><p>This function plugin creates an analysis board for each selected picture with the original view, an edge map, an 8x8 block analysis and a combined heat map. Scale, sensitivity and the optional 8x8 grid can be configured in the dialog.</p><p>The output helps highlight structures, compression artifacts and visually suspicious image regions.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg)",
+        "info": "<h3>X-Ray</h3><p>This function plugin creates an analysis board for each selected picture with the original view, an edge map, an 8x8 block analysis and a combined heat map. Scale, sensitivity and the optional 8x8 grid can be configured in the dialog.</p><p>The output helps highlight structures, compression artifacts and visually suspicious image regions.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg' />",
         "type": "function"
       },
       {
@@ -433,7 +433,7 @@
         "desc": "Function plugin to merge multiple pictures into a motion composite with trail effects.",
         "file": "cpp_motion_composer.dll",
         "version": "1.0",
-        "info": "<h3>Motion Composer</h3><p>This function plugin combines multiple pictures into a single composition with motion and trail effects. Output size, threshold and optional trail colorization are configured in the dialog.</p><p>It is especially useful for sequences with movement, such as people, vehicles or repeated actions.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg)",
+        "info": "<h3>Motion Composer</h3><p>This function plugin combines multiple pictures into a single composition with motion and trail effects. Output size, threshold and optional trail colorization are configured in the dialog.</p><p>It is especially useful for sequences with movement, such as people, vehicles or repeated actions.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg' />",
         "type": "function"
       },
       {
@@ -449,7 +449,7 @@
         "desc": "Format plugin to display PDF documents.",
         "file": "cpf_pdf.dll",
         "version": "1.0",
-        "info": "<h3>PDF Format</h3><p>This format plugin extends cPicture with support for the PDF document format. PDF files can be opened and displayed like pictures.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png)",
+        "info": "<h3>PDF Format</h3><p>This format plugin extends cPicture with support for the PDF document format. PDF files can be opened and displayed like pictures.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png' />",
         "type": "format"
       }
     ]
