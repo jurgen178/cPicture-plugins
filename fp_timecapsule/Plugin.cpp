@@ -2245,7 +2245,7 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	mem_dc.SelectObject(old_pen);
 	mem_dc.SelectObject(old_bitmap);
 
-	CString output_name = GetDirectory(sorted_pictures.front()->file_name) + SanitizeStem(header_title) + GetExtension(sorted_pictures.front()->file_name);
+	const CString output_name(GetDirectory(sorted_pictures.front()->file_name) + SanitizeStem(header_title) + GetExtension(sorted_pictures.front()->file_name));
 	update_data_list.emplace_back(
 		output_name,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,

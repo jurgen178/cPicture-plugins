@@ -509,7 +509,7 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 	DrawLabel(composite, out_width, out_height, 0, height, width, height, "BLOCK 8X8");
 	DrawLabel(composite, out_width, out_height, width, height, width, height, "COMBINED");
 
-	const CString output_file = GetDirectory(picture_data.file_name) + GetBaseName(picture_data.file_name) + L"-xray" + GetExtension(picture_data.file_name);
+	const CString output_file(GetDirectory(picture_data.file_name) + GetBaseName(picture_data.file_name) + L"-xray" + GetExtension(picture_data.file_name));
 	update_data_list.emplace_back(
 		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,

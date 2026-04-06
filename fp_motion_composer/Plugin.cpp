@@ -307,7 +307,7 @@ const vector<update_data>& __stdcall CFunctionPluginMotionComposer::end(const ve
 		}
 	}
 
-	CString output_file = GetDirectory(picture_data_list.front().file_name) + GetBaseName(picture_data_list.front().file_name) + L"-motion-composer" + GetExtension(picture_data_list.front().file_name);
+	const CString output_file(GetDirectory(picture_data_list.front().file_name) + GetBaseName(picture_data_list.front().file_name) + L"-motion-composer" + GetExtension(picture_data_list.front().file_name));
 	update_data_list.emplace_back(
 		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
