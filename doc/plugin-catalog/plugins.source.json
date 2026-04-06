@@ -142,7 +142,7 @@
         "name": "Funktionszusatzmodul Beispiel 5",
         "desc": "Funktionszusatzmodul zum Erstellen eines Indexprints aus zwei Bildern.",
         "file": "cpp_fp5.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_fp5.md",
         "type": "function"
       },
@@ -368,7 +368,7 @@
         "name": "Function Plugin Sample 5",
         "desc": "Function plugin to create an index print from two pictures.",
         "file": "cpp_fp5.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_fp5.md",
         "type": "function"
       },

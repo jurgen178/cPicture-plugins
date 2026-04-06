@@ -142,7 +142,7 @@
         "name": "Funktionszusatzmodul Beispiel 5",
         "desc": "Funktionszusatzmodul zum Erstellen eines Indexprints aus zwei Bildern.",
         "file": "cpp_fp5.dll",
-        "version": "1.0",
+        "version": "1.1",
         "info": "<h3>Funktionszusatzmodul Beispiel 5</h3><p>Dieses Beispiel erstellt aus genau zwei ausgewählten Bildern ein kombiniertes Indexprint-Bild mit Beschriftung. Es zeigt die Verwendung von GDI-Zeichenoperationen innerhalb des Funktionszusatzmoduls.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png' />",
         "type": "function"
       },
@@ -368,7 +368,7 @@
         "name": "Function Plugin Sample 5",
         "desc": "Function plugin to create an index print from two pictures.",
         "file": "cpp_fp5.dll",
-        "version": "1.0",
+        "version": "1.1",
         "info": "<h3>Function Plugin Sample 5</h3><p>This sample creates a combined index print image from exactly two selected pictures, including a caption. It demonstrates the use of GDI drawing operations within a function plugin.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png' />",
         "type": "function"
       },
