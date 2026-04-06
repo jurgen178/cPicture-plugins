@@ -156,14 +156,23 @@ namespace
 		return colors[index % (sizeof(colors) / sizeof(colors[0]))];
 	}
 
-	void ReplaceChar(CString& text, const WCHAR from, const WCHAR to)
+	struct WinHttpHandle
 	{
-		for (int index = 0; index < text.GetLength(); ++index)
+		WinHttpHandle() : handle(NULL) {}
+		explicit WinHttpHandle(HINTERNET value) : handle(value) {}
+		~WinHttpHandle()
 		{
-			if (text[index] == from)
-				text.SetAt(index, to);
+			if (handle != NULL)
+				::WinHttpCloseHandle(handle);
 		}
-	}
+
+		operator HINTERNET() const
+		{
+			return handle;
+		}
+
+		HINTERNET handle;
+	};
 
 	struct GpsNumberToken
 	{
@@ -184,6 +193,11 @@ namespace
 	bool IsWordLetter(const WCHAR ch)
 	{
 		return iswalpha(ch) != 0;
+	}
+
+	bool IsSkippedDirectionChar(const WCHAR ch)
+	{
+		return ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL;
 	}
 
 	bool IsStandaloneCompassLetter(const CString& input, const int index)
@@ -208,7 +222,7 @@ namespace
 		for (int index = start - 1; index >= 0; --index)
 		{
 			const WCHAR ch = input[index];
-			if (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL)
+			if (IsSkippedDirectionChar(ch))
 				continue;
 
 			if (IsWordLetter(ch))
@@ -223,7 +237,7 @@ namespace
 		for (int index = end; index < input.GetLength(); ++index)
 		{
 			const WCHAR ch = input[index];
-			if (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL)
+			if (IsSkippedDirectionChar(ch))
 				continue;
 
 			if (IsWordLetter(ch))
@@ -304,7 +318,7 @@ namespace
 	{
 		CString text;
 		text.Format(L"%.6f", value);
-		ReplaceChar(text, L',', L'.');
+		text.Replace(L',', L'.');
 		return text;
 	}
 
@@ -333,6 +347,24 @@ namespace
 		if (ch >= L'A' && ch <= L'F')
 			return 10 + ch - L'A';
 		return -1;
+	}
+
+	bool TryExtractJsonString(const CString& json, const CString& key, CString& value);
+
+	bool TryGetFirstNamedAddressPart(const CString& address_json, const WCHAR* const* keys, const int key_count, CString& value)
+	{
+		for (int index = 0; index < key_count; ++index)
+		{
+			if (TryExtractJsonString(address_json, keys[index], value))
+			{
+				value.Trim();
+				if (!value.IsEmpty())
+					return true;
+			}
+		}
+
+		value.Empty();
+		return false;
 	}
 
 	bool TryExtractJsonObject(const CString& json, const CString& key, CString& object_text)
@@ -496,15 +528,6 @@ namespace
 		return text;
 	}
 
-	bool TryGetNamedAddressPart(const CString& address_json, const WCHAR* key, CString& value)
-	{
-		if (!TryExtractJsonString(address_json, key, value))
-			return false;
-
-		value.Trim();
-		return !value.IsEmpty();
-	}
-
 	bool SameTextInsensitive(const CString& lhs, const CString& rhs)
 	{
 		return lhs.CompareNoCase(rhs) == 0;
@@ -529,6 +552,14 @@ namespace
 		CString address_json;
 		if (TryExtractJsonObject(json, L"address", address_json))
 		{
+			static const WCHAR* const road_keys[] = { L"road", L"pedestrian", L"residential", L"footway", L"path" };
+			static const WCHAR* const neighbourhood_keys[] = { L"neighbourhood", L"quarter", L"city_district", L"hamlet" };
+			static const WCHAR* const suburb_keys[] = { L"suburb", L"municipality" };
+			static const WCHAR* const city_keys[] = { L"city", L"town", L"village", L"state" };
+			static const WCHAR* const county_keys[] = { L"county" };
+			static const WCHAR* const house_number_keys[] = { L"house_number" };
+			static const WCHAR* const borough_keys[] = { L"borough" };
+
 			CString house_number;
 			CString road;
 			CString neighbourhood;
@@ -537,32 +568,17 @@ namespace
 			CString city;
 			CString county;
 
-			TryGetNamedAddressPart(address_json, L"house_number", house_number);
-			if (!TryGetNamedAddressPart(address_json, L"road", road))
-				if (!TryGetNamedAddressPart(address_json, L"pedestrian", road))
-					if (!TryGetNamedAddressPart(address_json, L"residential", road))
-						if (!TryGetNamedAddressPart(address_json, L"footway", road))
-							TryGetNamedAddressPart(address_json, L"path", road);
+			TryGetFirstNamedAddressPart(address_json, house_number_keys, sizeof(house_number_keys) / sizeof(house_number_keys[0]), house_number);
+			TryGetFirstNamedAddressPart(address_json, road_keys, sizeof(road_keys) / sizeof(road_keys[0]), road);
 
 			if (!road.IsEmpty() && !house_number.IsEmpty())
 				road += L" " + house_number;
 
-			if (!TryGetNamedAddressPart(address_json, L"neighbourhood", neighbourhood))
-				if (!TryGetNamedAddressPart(address_json, L"quarter", neighbourhood))
-					if (!TryGetNamedAddressPart(address_json, L"city_district", neighbourhood))
-						TryGetNamedAddressPart(address_json, L"hamlet", neighbourhood);
-
-			if (!TryGetNamedAddressPart(address_json, L"suburb", suburb))
-				TryGetNamedAddressPart(address_json, L"municipality", suburb);
-
-			TryGetNamedAddressPart(address_json, L"borough", borough);
-
-			if (!TryGetNamedAddressPart(address_json, L"city", city))
-				if (!TryGetNamedAddressPart(address_json, L"town", city))
-					if (!TryGetNamedAddressPart(address_json, L"village", city))
-						TryGetNamedAddressPart(address_json, L"state", city);
-
-			TryGetNamedAddressPart(address_json, L"county", county);
+			TryGetFirstNamedAddressPart(address_json, neighbourhood_keys, sizeof(neighbourhood_keys) / sizeof(neighbourhood_keys[0]), neighbourhood);
+			TryGetFirstNamedAddressPart(address_json, suburb_keys, sizeof(suburb_keys) / sizeof(suburb_keys[0]), suburb);
+			TryGetFirstNamedAddressPart(address_json, borough_keys, sizeof(borough_keys) / sizeof(borough_keys[0]), borough);
+			TryGetFirstNamedAddressPart(address_json, city_keys, sizeof(city_keys) / sizeof(city_keys[0]), city);
+			TryGetFirstNamedAddressPart(address_json, county_keys, sizeof(county_keys) / sizeof(county_keys[0]), county);
 
 			if (!neighbourhood.IsEmpty())
 				return JoinLocationParts(neighbourhood, city);
@@ -607,23 +623,20 @@ namespace
 	{
 		place_name.Empty();
 
-		HINTERNET session = ::WinHttpOpen(
+		WinHttpHandle session(::WinHttpOpen(
 			L"TimeCapsule/1.0",
 			WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
 			WINHTTP_NO_PROXY_NAME,
 			WINHTTP_NO_PROXY_BYPASS,
-			0);
+			0));
 		if (session == NULL)
 			return false;
 
 		::WinHttpSetTimeouts(session, 1500, 1500, 2500, 2500);
 
-		HINTERNET connection = ::WinHttpConnect(session, L"nominatim.openstreetmap.org", INTERNET_DEFAULT_HTTPS_PORT, 0);
+		WinHttpHandle connection(::WinHttpConnect(session, L"nominatim.openstreetmap.org", INTERNET_DEFAULT_HTTPS_PORT, 0));
 		if (connection == NULL)
-		{
-			::WinHttpCloseHandle(session);
 			return false;
-		}
 
 		CString request_path;
 		request_path.Format(
@@ -631,20 +644,16 @@ namespace
 			FormatCoordinateForUrl(geo.latitude).GetString(),
 			FormatCoordinateForUrl(geo.longitude).GetString());
 
-		HINTERNET request = ::WinHttpOpenRequest(
+		WinHttpHandle request(::WinHttpOpenRequest(
 			connection,
 			L"GET",
 			request_path,
 			NULL,
 			WINHTTP_NO_REFERER,
 			WINHTTP_DEFAULT_ACCEPT_TYPES,
-			WINHTTP_FLAG_SECURE);
+			WINHTTP_FLAG_SECURE));
 		if (request == NULL)
-		{
-			::WinHttpCloseHandle(connection);
-			::WinHttpCloseHandle(session);
 			return false;
-		}
 
 		const WCHAR* headers = L"Accept: application/json\r\n";
 		bool ok = ::WinHttpSendRequest(request, headers, static_cast<DWORD>(-1L), NULL, 0, 0, 0) == TRUE;
@@ -685,10 +694,6 @@ namespace
 			response_utf8 += chunk;
 		}
 
-		::WinHttpCloseHandle(request);
-		::WinHttpCloseHandle(connection);
-		::WinHttpCloseHandle(session);
-
 		if (!ok || status_code != 200 || response_utf8.empty())
 			return false;
 
@@ -716,6 +721,25 @@ namespace
 		return TryFetchNominatimLocationName(swapped_geo, place_name);
 	}
 
+	void AppendGpsNumberToken(const CString& input, CString& current, int& token_start, const int token_end, vector<GpsNumberToken>& values)
+	{
+		if (current.IsEmpty())
+			return;
+
+		current.Replace(L',', L'.');
+
+		GpsNumberToken token;
+		token.value = _wtof(current);
+		token.start = token_start;
+		token.end = token_end;
+		token.direction = FindAdjacentDirection(input, token.start, token.end);
+		token.axis_hint = FindAxisHint(input, token.start, token.end);
+		values.push_back(token);
+
+		current.Empty();
+		token_start = -1;
+	}
+
 	// GPS strings come back in different textual variants, so we first extract the numeric parts.
 	bool ExtractNumbers(const CString& input, vector<GpsNumberToken>& values)
 	{
@@ -732,30 +756,11 @@ namespace
 			}
 			else if (!current.IsEmpty())
 			{
-				ReplaceChar(current, L',', L'.');
-				GpsNumberToken token;
-				token.value = _wtof(current);
-				token.start = token_start;
-				token.end = index;
-				token.direction = FindAdjacentDirection(input, token.start, token.end);
-				token.axis_hint = FindAxisHint(input, token.start, token.end);
-				values.push_back(token);
-				current.Empty();
-				token_start = -1;
+				AppendGpsNumberToken(input, current, token_start, index, values);
 			}
 		}
 
-		if (!current.IsEmpty())
-		{
-			ReplaceChar(current, L',', L'.');
-			GpsNumberToken token;
-			token.value = _wtof(current);
-			token.start = token_start;
-			token.end = input.GetLength();
-			token.direction = FindAdjacentDirection(input, token.start, token.end);
-			token.axis_hint = FindAxisHint(input, token.start, token.end);
-			values.push_back(token);
-		}
+		AppendGpsNumberToken(input, current, token_start, input.GetLength(), values);
 
 		return values.size() >= 2;
 	}
@@ -873,33 +878,49 @@ namespace
 
 	CString FormatDistance(const double km)
 	{
-		CString text;
+		CString format;
 		if (km < 10.0)
-			text.Format(L"%.1f km", km);
+			format.LoadString(IDS_DISTANCE_DECIMAL_KM);
 		else
-			text.Format(L"%.0f km", km);
+			format.LoadString(IDS_DISTANCE_INTEGER_KM);
+
+		CString text;
+		text.Format(format, km);
 		return text;
 	}
 
 	CString FormatDuration(__int64 seconds)
 	{
 		if (seconds <= 0)
-			return L"0 h";
+		{
+			CString text;
+			text.LoadString(IDS_DURATION_ZERO_HOURS);
+			return text;
+		}
 
 		const __int64 days = seconds / 86400;
 		const __int64 hours = (seconds % 86400) / 3600;
-		CString text;
+		CString format;
 		if (days > 0)
-			text.Format(L"%lld Tage %lld h", days, hours);
-		else
-			text.Format(L"%lld h", max<__int64>(1, hours));
+		{
+			format.LoadString(IDS_DURATION_DAYS_HOURS);
+			CString text;
+			text.Format(format, days, hours);
+			return text;
+		}
+
+		format.LoadString(IDS_DURATION_HOURS);
+		CString text;
+		text.Format(format, max<__int64>(1, hours));
 		return text;
 	}
 
 	CString FormatLocationName(const int cluster_index)
 	{
+		CString format;
+		format.LoadString(IDS_LOCATION_FORMAT);
 		CString text;
-		text.Format(L"Ort %d", cluster_index + 1);
+		text.Format(format, cluster_index + 1);
 		return text;
 	}
 
@@ -939,30 +960,30 @@ namespace
 		return text;
 	}
 
-	CString LoadText(const UINT id)
-	{
-		CString text;
-		text.LoadString(id);
-		return text;
-	}
-
 	CString GetSortModeText(const int sort_mode)
 	{
+		CString text;
 		switch (sort_mode)
 		{
 		case SORT_MODE_SELECTION:
-			return LoadText(IDS_SORT_MODE_SELECTION);
+			text.LoadString(IDS_SORT_MODE_SELECTION);
+			return text;
 		case SORT_MODE_GPS_WEST_EAST:
-			return LoadText(IDS_SORT_MODE_WEST_EAST);
+			text.LoadString(IDS_SORT_MODE_WEST_EAST);
+			return text;
 		case SORT_MODE_GPS_NORTH_SOUTH:
-			return LoadText(IDS_SORT_MODE_NORTH_SOUTH);
+			text.LoadString(IDS_SORT_MODE_NORTH_SOUTH);
+			return text;
 		case SORT_MODE_GPS_EAST_WEST:
-			return LoadText(IDS_SORT_MODE_EAST_WEST);
+			text.LoadString(IDS_SORT_MODE_EAST_WEST);
+			return text;
 		case SORT_MODE_GPS_SOUTH_NORTH:
-			return LoadText(IDS_SORT_MODE_SOUTH_NORTH);
+			text.LoadString(IDS_SORT_MODE_SOUTH_NORTH);
+			return text;
 		case SORT_MODE_EXIF:
 		default:
-			return LoadText(IDS_SORT_MODE_EXIF);
+			text.LoadString(IDS_SORT_MODE_EXIF);
+			return text;
 		}
 	}
 
@@ -1072,8 +1093,10 @@ namespace
 
 	CString BuildSummary(const vector<const picture_data*>& pictures, const PosterInsights& insights)
 	{
+		CString format;
+		format.LoadString(IDS_SUMMARY_PICTURES);
 		CString summary;
-		summary.Format(L"%d Bilder", static_cast<int>(pictures.size()));
+		summary.Format(format, static_cast<int>(pictures.size()));
 
 		std::map<CString, int> camera_count;
 
@@ -1085,20 +1108,25 @@ namespace
 				camera_count[model]++;
 		}
 
+		format.LoadString(IDS_SUMMARY_EXTRAS);
 		CString extras;
-		extras.Format(L"  |  GPS: %d  |  Orte: %d  |  Kameras: %d", insights.gps_picture_count,
+		extras.Format(format, insights.gps_picture_count,
 			static_cast<int>(insights.clusters.size()), static_cast<int>(camera_count.size()));
 		summary += extras;
 
 		if (insights.total_distance_km > 0.0)
 		{
-			summary += L"  |  Strecke: ";
+			CString prefix;
+			prefix.LoadString(IDS_SUMMARY_DISTANCE_PREFIX);
+			summary += prefix;
 			summary += FormatDistance(insights.total_distance_km);
 		}
 
 		if (insights.first_exif_time != 0 && insights.last_exif_time >= insights.first_exif_time)
 		{
-			summary += L"  |  Dauer: ";
+			CString prefix;
+			prefix.LoadString(IDS_SUMMARY_DURATION_PREFIX);
+			summary += prefix;
 			summary += FormatDuration(insights.last_exif_time - insights.first_exif_time);
 		}
 
@@ -1110,7 +1138,7 @@ namespace
 			CString story;
 			if (!insights.clusters.empty())
 			{
-				story = L"Start: ";
+				story.LoadString(IDS_STORY_START_PREFIX);
 				for (size_t index = 0; index < insights.entries.size(); ++index)
 				{
 					if (insights.entries[index].cluster_index >= 0)
@@ -1124,7 +1152,9 @@ namespace
 				{
 					if (insights.entries[index - 1].cluster_index >= 0)
 					{
-						story += L"  |  Ziel: ";
+						CString prefix;
+						prefix.LoadString(IDS_STORY_DESTINATION_PREFIX);
+						story += prefix;
 						story += FormatLocationLabel(insights.clusters[insights.entries[index - 1].cluster_index], insights.entries[index - 1].cluster_index);
 						break;
 					}
@@ -1134,13 +1164,19 @@ namespace
 			if (insights.longest_hop_km > 0.0)
 			{
 				if (!story.IsEmpty())
-					story += L"  |  ";
-				story += L"Laengster Sprung: ";
+				{
+					CString separator;
+					separator.LoadString(IDS_STORY_SEPARATOR);
+					story += separator;
+				}
+				CString prefix;
+				prefix.LoadString(IDS_STORY_LONGEST_HOP_PREFIX);
+				story += prefix;
 				story += FormatDistance(insights.longest_hop_km);
 			}
 
 			if (story.IsEmpty())
-				story = L"Keine auswertbare Route gefunden";
+				story.LoadString(IDS_STORY_NO_ROUTE);
 
 			return story;
 		}
@@ -1291,7 +1327,9 @@ namespace
 			mem_dc.SetTextColor(RGB(214, 219, 224));
 			CRect text_rect(route_rect);
 			text_rect.DeflateRect(12, 10);
-			mem_dc.DrawText(L"GPS-Route erscheint hier, sobald mehrere verwertbare Punkte vorliegen.", text_rect,
+			CString placeholder;
+			placeholder.LoadString(IDS_ROUTE_PLACEHOLDER);
+			mem_dc.DrawText(placeholder, text_rect,
 				DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 			return;
 		}
@@ -1587,7 +1625,9 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	mem_dc.SetBkMode(TRANSPARENT);
 	mem_dc.SetTextColor(RGB(255, 248, 233));
 	CRect title_rect(24, 16, bitmap_width - 24, 54);
-	CString header_title = title_text.IsEmpty() ? CString(L"Time Capsule") : title_text;
+	CString header_title(title_text);
+	if (header_title.IsEmpty())
+		header_title.LoadString(IDS_DEFAULT_HEADER_TITLE);
 	mem_dc.DrawText(header_title, title_rect, DT_LEFT | DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
 
 	mem_dc.SelectObject(&summary_font);
@@ -1598,7 +1638,9 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	CRect summary_rect(24, header_height + 8, bitmap_width - 24, header_height + summary_height);
 	CString summary_text = BuildSummary(sorted_pictures, insights);
 	summary_text += L"\n";
-	summary_text += LoadText(IDS_SORTING_LABEL);
+	CString sorting_label;
+	sorting_label.LoadString(IDS_SORTING_LABEL);
+	summary_text += sorting_label;
 	summary_text += L": ";
 	summary_text += GetSortModeText(sort_mode);
 	summary_text += L"  |  ";
