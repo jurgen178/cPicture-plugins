@@ -77,7 +77,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample4::start(const HWND hwnd, const
 	{
 		// Request a half size picture size data in RGB layout.
 		// A negative value requests a relative size for the picture data.
-		request_data_sizes.push_back(request_data_size(-50, -50, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+		request_data_sizes.emplace_back(-50, -50, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 
 		return REQUEST_TYPE::REQUEST_TYPE_DATA;
 	}
@@ -153,13 +153,14 @@ bool __stdcall CFunctionPluginSample4::process_picture(const picture_data& pictu
 
 	// Signal that the picture is updated (enum UPDATE_TYPE).
 	// Use UPDATE_TYPE_ADDED if the file name is changed.
-	update_data_list.push_back(update_data(picture_data.file_name,
+	update_data_list.emplace_back(
+		picture_data.file_name,
 		UPDATE_TYPE_UPDATED,
 		// Picture will be updated with this data:
 		requested_data1.picture_width,
 		requested_data1.picture_height,
 		requested_data1.data,
-		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 
 	++picture_processed;
 

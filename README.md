@@ -104,6 +104,24 @@ Function plugin to convert a picture into ASCII art.
 ![](doc/ascii-art.png)   
 
 
+<br>Time Capsule
+---------------------
+
+Builds a shareable poster from the current selection with thumbnails, timeline-style ordering and metadata summary.
+
+
+<br>X-Ray
+---------------------
+
+Creates an analysis board for each selected picture with edge, block-boundary and combined heat maps without any AI dependency.
+
+
+<br>Motion Composer
+---------------------
+
+Merges a sequence into a single motion-heavy composite image with colored trails.
+
+
 <br>Structure and details
 ---------------------
 
@@ -155,5 +173,8 @@ cpp_fp_ev:		0x213000000
 cpp_ascii_art:  0x214000000  
 cpp_copy_cb:    0x215000000  
 cpp_qrcode:     0x216000000  
+cpp_timecapsule: 0x217000000  
+cpp_xray:        0x218000000  
+cpp_motion_composer: 0x219000000  
 
 

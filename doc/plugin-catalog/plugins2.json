@@ -1,0 +1,457 @@
+﻿{
+  "cPicture Plugins": {
+    "version": "1.0",
+    "plugins-de": [
+      {
+        "name": "Bilderverschlüsselung",
+        "desc": "PowerShell-Skript zum Verschlüsseln Ihrer Bilder.",
+        "file": "encrypt.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Bilderverschlüsselung</h3><p>Ein PowerShell-Skript zum Verschlüsseln Ihrer Bilder mit AES-256-Verschlüsselung. Verschlüsselte Bilder können nur mit dem passenden Skript <em>decrypt.ps1</em> und dem richtigen Passwort entschlüsselt werden.</p><p><strong>Hinweis:</strong> Bearbeiten Sie die Skriptdatei <em>encrypt.ps1</em> mit einem Texteditor und ändern Sie folgende Zeilen:</p><code># needs to match with 'decrypt.ps1':<br /><br /># change the following two secret phrases<br />$salt = 'secretSentence'<br />$init = 'anotherSecretSentence'<br /><br /># supply a strong password<br />$password = 'mySecretPassword!'</code>",
+        "type": "function"
+      },
+      {
+        "name": "Bilderentschlüsselung",
+        "desc": "PowerShell-Skript zum Entschlüsseln Ihrer Bilder.",
+        "file": "decrypt.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Bilderentschlüsselung</h3><p>Ein PowerShell-Skript zum Entschlüsseln von Bildern, die mit dem Skript <em>encrypt.ps1</em> verschlüsselt wurden. Passwort und Geheimphrasen müssen mit denen der Verschlüsselung übereinstimmen.</p><p><strong>Hinweis:</strong> Bearbeiten Sie die Skriptdatei <em>decrypt.ps1</em> mit einem Texteditor und ändern Sie folgende Zeilen:</p><code># needs to match with 'encrypt.ps1':<br /><br /># change the following two secret phrases<br />$salt = 'secretSentence'<br />$init = 'anotherSecretSentence'<br /><br /># supply a strong password<br />$password = 'mySecretPassword!'</code>",
+        "type": "function"
+      },
+      {
+        "name": "PowerShell-Skript-Beispiel",
+        "desc": "PowerShell-Skript-Beispiel zum Anzeigen von Bilddaten.",
+        "file": "ps1-example.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>PowerShell-Skript-Beispiel</h3><p>Ein PowerShell-Beispielskript, das für jedes ausgewählte Bild Dateiname, Auflösung und Megapixelzahl in der Konsole ausgibt.</p>",
+        "type": "function"
+      },
+      {
+        "name": "FTP-Dateiübertragung",
+        "desc": "PowerShell-Skript zum Hochladen Ihrer Bilder auf einen FTP-Server.",
+        "file": "ftp-upload.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>FTP-Dateiübertragung</h3><p>Ein PowerShell-Skript zum Hochladen der ausgewählten Bilder auf einen FTP-Server. Fehlende Unterordner werden automatisch angelegt.</p><p><strong>Hinweis:</strong> Bearbeiten Sie die Skriptdatei <em>ftp-upload.ps1</em> mit einem Texteditor und ändern Sie folgende Zeilen:</p><code># set the PASSWORD and the LOGINNAME for the $ftpServer:<br /><br />$ftpServer = \"ftp://PASSWORD:LOGINNAME@yourftpserver.com/\"<br />$ftpUploadFolder = \"test/upload/\"<br /></code>",
+        "type": "function"
+      },
+      {
+        "name": "Umbenennen",
+        "desc": "PowerShell-Skript zum Umbenennen Ihrer Bilder.",
+        "file": "rename.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Umbenennen</h3><p>Ein PowerShell-Skript zum Umbenennen der ausgewählten Bilder nach einer frei definierbaren Logik. Das Beispielskript benennt die Bilder mit einem fortlaufenden Index und einem festen Namen um.</p><p><strong>Hinweis:</strong> Passen Sie die Umbenennungslogik im Skript an Ihre Anforderungen an.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Exif-Bilddatum",
+        "desc": "PowerShell-Skript zum Ändern des Exif-Bilddatums.",
+        "file": "exiftool-date.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Exif-Bilddatum</h3><p>Ein PowerShell-Skript zum Ändern des Exif-Datums der ausgewählten Bilder. Das Beispielskript verschiebt alle Datumsfelder um 8 Stunden.</p><p><strong>Hinweis:</strong> Passen Sie den Zeitversatz im Skript an Ihre Anforderungen an.</p><p>Verwendet: <a href='app://exiftool.org'>ExifTool</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Raw zu DNG-Konverter",
+        "desc": "PowerShell-Skript zum Konvertieren von Raw-Bildern zu DNG.",
+        "file": "dng.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Raw zu DNG-Konverter</h3><p>Ein PowerShell-Skript zum Konvertieren der ausgewählten Raw-Bilder in das DNG-Format. Die DNG-Dateien werden im selben Ordner wie die Originaldateien gespeichert.</p><p>Verwendet: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Raw zu TIFF-Konverter",
+        "desc": "PowerShell-Skript zum Konvertieren von Raw-Bildern zu TIFF.",
+        "file": "Raw-nach-TIFF.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Raw zu TIFF-Konverter</h3><p>Ein PowerShell-Skript zum Konvertieren der ausgewählten Raw-Bilder in das TIFF-Format. Die Konvertierung erfolgt über einen Zwischenschritt im DNG-Format.</p><p>Verwendet: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> und <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Raw zu TIFF-NX",
+        "desc": "PowerShell-Skript zum Konvertieren von Raw zu TIFF und anschließendem Öffnen in NX Studio.",
+        "file": "Raw-nach-TIFF-NX.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Raw zu TIFF-NX</h3><p>Ein PowerShell-Skript zum Konvertieren eines ausgewählten Raw-Bildes in das TIFF-Format. Das konvertierte Bild wird anschließend automatisch in <em>NX Studio</em> geöffnet.</p><p>Verwendet: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> und <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Mehrfache Größenänderungen",
+        "desc": "PowerShell-Skript zum Erstellen verschiedener Größen desselben Bildes.",
+        "file": "sizing.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Mehrfache Größenänderungen</h3><p>Ein PowerShell-Skript zum Erstellen verschiedener Größen und Seitenverhältnisse der ausgewählten Bilder. Die Bilder werden in einen konfigurierbaren Ausgabeordner kopiert und zugeschnitten.</p><p><strong>Hinweis:</strong> Passen Sie den Ausgabeordner und die gewünschten Größen im Skript an.</p><p>Verwendet: <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Batch-Skript-Beispiel",
+        "desc": "Batch-Skript-Beispiel zum Anzeigen von Bilddaten.",
+        "file": "bat-example.bat",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Batch-Skript-Beispiel</h3><p>Ein Batch-Beispielskript, das für jedes ausgewählte Bild Dateiname, Pfad, Auflösung und weitere Bildinformationen in der Konsole ausgibt.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Python-Skript-Beispiel",
+        "desc": "Python-Skript-Beispiel zum Anzeigen von Bilddaten.",
+        "file": "py-example.py",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Python-Skript-Beispiel</h3><p>Ein Python-Beispielskript, das für jedes ausgewählte Bild Dateiname, Pfad, Auflösung und weitere Bildinformationen in der Konsole ausgibt.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Skript-Funktionszusatzmodul",
+        "desc": "Funktionszusatzmodul zum Ausführen von PowerShell-, Batch- und Python-Skripten.",
+        "file": "cpp_script.dll",
+        "version": "1.1",
+        "info": "<h3>Skript-Funktionszusatzmodul</h3><p>Dieses Funktionszusatzmodul ermöglicht das Ausführen von PowerShell-, Batch- und Python-Skripten für die ausgewählten Bilder. Es wird automatisch installiert, wenn ein Skript-Plugin installiert wird.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_powershell.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_bat.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_python.png)",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 1",
+        "desc": "Funktionszusatzmodul zum Ausführen der begin(), process_picture() und end() Funktionen.",
+        "file": "cpp_fp1.dll",
+        "version": "1.0",
+        "info": "<h3>Funktionszusatzmodul Beispiel 1</h3><p>Dieses Beispiel zeigt die grundlegende Struktur eines Funktionszusatzmoduls. Es werden alle drei Verarbeitungsschritte durchlaufen: <em>begin()</em> wird einmal zu Beginn aufgerufen, <em>process_picture()</em> für jedes ausgewählte Bild und <em>end()</em> abschließend. Die Bildnamen werden in einer Meldung angezeigt.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1b.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1c.png)",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 2",
+        "desc": "Funktionszusatzmodul zum Anzeigen eines Bild-Vorschaudialogs.",
+        "file": "cpp_fp2.dll",
+        "version": "1.0",
+        "info": "<h3>Funktionszusatzmodul Beispiel 2</h3><p>Dieses Beispiel zeigt, wie Bilddaten vom Plugin angefordert und in einem eigenen Dialogfenster dargestellt werden können. Die Vorschaubilder der ausgewählten Bilder werden in einem Dialog angezeigt.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png)",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 3",
+        "desc": "Funktionszusatzmodul mit einem einfachen Bilderbestellformular.",
+        "file": "cpp_fp3.dll",
+        "version": "1.0",
+        "info": "<h3>Funktionszusatzmodul Beispiel 3</h3><p>Dieses Beispiel zeigt ein kleines Bestellformular für die ausgewählten Bilder. Es demonstriert die Verwendung von Bilddaten in einer eigenen Dialoganwendung innerhalb des Funktionszusatzmoduls.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp3.png)",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 4",
+        "desc": "Funktionszusatzmodul zum Verkleinern und Ändern von Bildern.",
+        "file": "cpp_fp4.dll",
+        "version": "1.0",
+        "info": "<h3>Funktionszusatzmodul Beispiel 4</h3><p>Dieses Beispiel zeigt, wie Bilddaten verändert und als neue Datei gespeichert werden können. Die ausgewählten Bilder werden auf halbe Größe skaliert und farblich invertiert.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp4.png)",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 5",
+        "desc": "Funktionszusatzmodul zum Erstellen eines Indexprints aus zwei Bildern.",
+        "file": "cpp_fp5.dll",
+        "version": "1.0",
+        "info": "<h3>Funktionszusatzmodul Beispiel 5</h3><p>Dieses Beispiel erstellt aus genau zwei ausgewählten Bildern ein kombiniertes Indexprint-Bild mit Beschriftung. Es zeigt die Verwendung von GDI-Zeichenoperationen innerhalb des Funktionszusatzmoduls.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png)",
+        "type": "function"
+      },
+      {
+        "name": "HDR enfuse",
+        "desc": "Funktionszusatzmodul zum Zusammenführen von Belichtungsreihen.",
+        "file": "cpp_fp_hdr.dll",
+        "version": "1.0",
+        "info": "<h3>HDR enfuse</h3><p>Dieses Funktionszusatzmodul erstellt aus mindestens zwei Bildern einer Belichtungsreihe ein HDR-Bild durch Belichtungsfusion. Ausgabepfad und JPEG-Qualität sind im Dialog konfigurierbar.</p><p>Verwendet: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png)",
+        "type": "function"
+      },
+      {
+        "name": "Belichtungsunterschied",
+        "desc": "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede der ausgewählten Bilder.",
+        "file": "cpp_fp_ev.dll",
+        "version": "1.0",
+        "info": "<h3>Belichtungsunterschied</h3><p>Dieses Funktionszusatzmodul berechnet den Belichtungsunterschied (EV) aller ausgewählten Bilder relativ zum ersten ausgewählten Bild als Referenz. Das Ergebnis wird in einer Übersicht angezeigt.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ev.png)",
+        "type": "function"
+      },
+      {
+        "name": "Ascii Art",
+        "desc": "Funktionszusatzmodul zum Konvertieren eines Bildes in ein Buchstabenbild (Ascii Art).",
+        "file": "cpp_ascii_art.dll",
+        "version": "1.0",
+        "info": "<h3>Ascii Art</h3><p>Dieses Funktionszusatzmodul konvertiert ein ausgewähltes Bild in ein Buchstabenbild (Ascii Art). Im Dialog können Schriftart, Blockgröße, Helligkeit und Kontrast angepasst werden. Das Ergebnis kann als Bild gespeichert werden.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png)",
+        "type": "function"
+      },
+      {
+        "name": "Zwischenablage",
+        "desc": "Funktionszusatzmodul zum Kopieren eines Bildes in die Zwischenablage.",
+        "file": "cpp_copy_cb.dll",
+        "version": "1.0",
+        "info": "<h3>Zwischenablage</h3><p>Dieses Funktionszusatzmodul kopiert das ausgewählte Bild in die Windows-Zwischenablage, sodass es direkt in andere Anwendungen eingefügt werden kann.</p>",
+        "type": "function"
+      },
+      {
+        "name": "QR-Code",
+        "desc": "Funktionszusatzmodul zum Einbetten eines QR-Codes in die ausgewählten Bilder.",
+        "file": "cpp_qrcode.dll",
+        "version": "1.0",
+        "info": "<h3>QR-Code</h3><p>Dieses Funktionszusatzmodul bettet einen QR-Code in die ausgewählten Bilder ein. Im Dialog können der QR-Code-Text, die Ecke, die relative Größe und der Abstand zum Bildrand eingestellt werden.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png)",
+        "type": "function"
+      },
+      {
+        "name": "Zeitkapsel",
+        "desc": "Funktionszusatzmodul zum Erstellen eines Story-Posters mit Route, Orten und Miniaturen.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "info": "<h3>Zeitkapsel</h3><p>Dieses Funktionszusatzmodul erzeugt aus mehreren ausgewählten Bildern ein Story-Poster mit Titel, Route, Orts-Clustern, Statistik und Miniaturen. Im Dialog lassen sich Sortierung, Ortsradius und die Größe der Vorschaubilder einstellen.</p><p>Die Route wird aus den verfügbaren GPS-Daten aufgebaut und mit den Bildminiaturen verknüpft. So entsteht eine visuelle Zusammenfassung einer Reise, Serie oder eines Shootings.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_timecapsule.jpg)",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Funktionszusatzmodul zum Erstellen einer Analyse-Tafel mit Kanten-, Block- und Heatmap-Ansicht.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "info": "<h3>X-Ray</h3><p>Dieses Funktionszusatzmodul erzeugt für jedes ausgewählte Bild eine Analyse-Tafel mit Originalansicht, Kantenkarte, 8x8-Blockanalyse und kombinierter Heatmap. Skalierung, Sensitivität und das optionale 8x8-Gitter werden im Dialog eingestellt.</p><p>Die Ausgabe eignet sich, um Strukturen, Kompressionsartefakte und auffällige Bildbereiche schnell sichtbar zu machen.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg)",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Funktionszusatzmodul zum Verschmelzen mehrerer Bilder zu einem Bewegungsbild mit Spureneffekt.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "info": "<h3>Motion Composer</h3><p>Dieses Funktionszusatzmodul kombiniert mehrere Bilder zu einer einzelnen Komposition mit Bewegungs- und Spureneffekten. Ausgabegroesse, Schwellwert und die farbige Staffelung der Spuren werden im Dialog festgelegt.</p><p>Es eignet sich besonders fuer Serien mit Bewegung, etwa Personen, Fahrzeuge oder wiederholte Ablaeufe.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg)",
+        "type": "function"
+      },
+      {
+        "name": "TIFF- und PNG-Bilder",
+        "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
+        "file": "cpf_tiff_png.dll",
+        "version": "1.0",
+        "info": "<h3>TIFF- und PNG-Bildformat</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des TIFF- und PNG-Bildformats.</p>",
+        "type": "format"
+      },
+      {
+        "name": "PDF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen von PDF-Dokumenten.",
+        "file": "cpf_pdf.dll",
+        "version": "1.0",
+        "info": "<h3>PDF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des PDF-Dokumentformats. PDF-Dateien können wie Bilder geöffnet und angezeigt werden.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png)",
+        "type": "format"
+      }
+    ],
+    "plugins-en": [
+      {
+        "name": "Script 'Encrypt.ps1'",
+        "desc": "PowerShell script to encrypt your pictures.",
+        "file": "encrypt.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Encrypt</h3><p>A PowerShell script to encrypt your pictures using AES-256 encryption. Encrypted pictures can only be decrypted with the matching script <em>decrypt.ps1</em> and the correct password.</p><p><strong>Note:</strong> Open the script file <em>encrypt.ps1</em> with a text editor and change these lines:</p><code># needs to match with 'decrypt.ps1':<br /><br /># change the following two secret phrases<br />$salt = 'secretSentence'<br />$init = 'anotherSecretSentence'<br /><br /># supply a strong password<br />$password = 'mySecretPassword!'</code>",
+        "type": "function"
+      },
+      {
+        "name": "Script 'Decrypt.ps1'",
+        "desc": "PowerShell script to decrypt your pictures.",
+        "file": "decrypt.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Decrypt</h3><p>A PowerShell script to decrypt pictures that were encrypted with the <em>encrypt.ps1</em> script. The password and secret phrases must match those used during encryption.</p><p><strong>Note:</strong> Open the script file <em>decrypt.ps1</em> with a text editor and change these lines:</p><code># needs to match with 'encrypt.ps1':<br /><br /># change the following two secret phrases<br />$salt = 'secretSentence'<br />$init = 'anotherSecretSentence'<br /><br /># supply a strong password<br />$password = 'mySecretPassword!'</code>",
+        "type": "function"
+      },
+      {
+        "name": "PowerShell Script Example",
+        "desc": "PowerShell example script to display picture data.",
+        "file": "ps1-example.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>PowerShell Script Example</h3><p>A PowerShell example script that prints the filename, resolution and megapixel count for each selected picture to the console.</p>",
+        "type": "function"
+      },
+      {
+        "name": "FTP Upload",
+        "desc": "PowerShell script to upload your pictures to an FTP server.",
+        "file": "ftp-upload.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>FTP Upload</h3><p>A PowerShell script to upload the selected pictures to an FTP server. Missing subfolders are created automatically.</p><p><strong>Note:</strong> Open the script file <em>ftp-upload.ps1</em> with a text editor and change these lines:</p><code># set the PASSWORD and the LOGINNAME for the $ftpServer:<br /><br />$ftpServer = \"ftp://PASSWORD:LOGINNAME@yourftpserver.com/\"<br />$ftpUploadFolder = \"test/upload/\"<br /></code>",
+        "type": "function"
+      },
+      {
+        "name": "Rename",
+        "desc": "PowerShell script to rename your pictures.",
+        "file": "rename.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Rename</h3><p>A PowerShell script to rename the selected pictures using a customizable logic. The example script renames pictures with a sequential index and a fixed name.</p><p><strong>Note:</strong> Adjust the rename logic in the script to fit your needs.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Exif Picture Date",
+        "desc": "PowerShell script to modify the Exif date of your pictures.",
+        "file": "exiftool-date.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Exif Picture Date</h3><p>A PowerShell script to modify the Exif date of the selected pictures. The example script shifts all date fields by 8 hours.</p><p><strong>Note:</strong> Adjust the time offset in the script to fit your needs.</p><p>Uses: <a href='app://exiftool.org'>ExifTool</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Raw to DNG Converter",
+        "desc": "PowerShell script to convert Raw pictures to DNG.",
+        "file": "dng.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Raw to DNG Converter</h3><p>A PowerShell script to convert the selected Raw pictures to the DNG format. The DNG files are saved in the same folder as the originals.</p><p>Uses: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Raw to TIFF Converter",
+        "desc": "PowerShell script to convert Raw pictures to TIFF.",
+        "file": "Raw-nach-TIFF.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Raw to TIFF Converter</h3><p>A PowerShell script to convert the selected Raw pictures to the TIFF format. The conversion is done via an intermediate DNG step.</p><p>Uses: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> and <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Raw to TIFF-NX",
+        "desc": "PowerShell script to convert Raw to TIFF and open in NX Studio.",
+        "file": "Raw-nach-TIFF-NX.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Raw to TIFF-NX</h3><p>A PowerShell script to convert a selected Raw picture to TIFF format. The converted picture is automatically opened in <em>NX Studio</em> afterwards.</p><p>Uses: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> and <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Multiple Sizes",
+        "desc": "PowerShell script to create different sizes from the same picture.",
+        "file": "sizing.ps1",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Multiple Sizes</h3><p>A PowerShell script to create different sizes and aspect ratios from the selected pictures. The pictures are copied into a configurable output folder and cropped accordingly.</p><p><strong>Note:</strong> Adjust the output folder and desired sizes in the script.</p><p>Uses: <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Batch Script Example",
+        "desc": "Batch example script to display picture data.",
+        "file": "bat-example.bat",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Batch Script Example</h3><p>A Batch example script that prints the filename, path, resolution and other picture data to the console for each selected picture.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Python Script Example",
+        "desc": "Python example script to display picture data.",
+        "file": "py-example.py",
+        "file2": "cpp_script.dll",
+        "info": "<h3>Python Script Example</h3><p>A Python example script that prints the filename, path, resolution and other picture data to the console for each selected picture.</p>",
+        "type": "function"
+      },
+      {
+        "name": "Script Plugin",
+        "desc": "Function plugin to run PowerShell, Batch and Python scripts.",
+        "file": "cpp_script.dll",
+        "version": "1.1",
+        "info": "<h3>PowerShell Script Plugin</h3><p>This function plugin enables running PowerShell, Batch and Python scripts for the selected pictures. It is installed automatically when a script plugin is installed.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_powershell.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_bat.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_script_python.png)",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 1",
+        "desc": "Function plugin demonstrating the begin(), process_picture() and end() functions.",
+        "file": "cpp_fp1.dll",
+        "version": "1.0",
+        "info": "<h3>Function Plugin Sample 1</h3><p>This sample demonstrates the basic structure of a function plugin. All three processing steps are executed: <em>begin()</em> is called once at the start, <em>process_picture()</em> for each selected picture, and <em>end()</em> at the end. The picture names are shown in a message box.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1b.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp1c.png)",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 2",
+        "desc": "Function plugin to display a picture preview dialog.",
+        "file": "cpp_fp2.dll",
+        "version": "1.0",
+        "info": "<h3>Function Plugin Sample 2</h3><p>This sample shows how to request picture data from the plugin and display it in a custom dialog window. Preview images of the selected pictures are shown in a dialog.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png)",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 3",
+        "desc": "Function plugin with a simple picture order form.",
+        "file": "cpp_fp3.dll",
+        "version": "1.0",
+        "info": "<h3>Function Plugin Sample 3</h3><p>This sample shows a small order form for the selected pictures. It demonstrates how to use picture data within a custom dialog application inside a function plugin.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp3.png)",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 4",
+        "desc": "Function plugin to resize and modify pictures.",
+        "file": "cpp_fp4.dll",
+        "version": "1.0",
+        "info": "<h3>Function Plugin Sample 4</h3><p>This sample shows how to modify picture data and save it as a new file. The selected pictures are scaled to half size and color-inverted.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp4.png)",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 5",
+        "desc": "Function plugin to create an index print from two pictures.",
+        "file": "cpp_fp5.dll",
+        "version": "1.0",
+        "info": "<h3>Function Plugin Sample 5</h3><p>This sample creates a combined index print image from exactly two selected pictures, including a caption. It demonstrates the use of GDI drawing operations within a function plugin.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5a.png)<br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp5b.png)",
+        "type": "function"
+      },
+      {
+        "name": "HDR enfuse",
+        "desc": "Function plugin to merge exposure series into an HDR picture.",
+        "file": "cpp_fp_hdr.dll",
+        "version": "1.0",
+        "info": "<h3>HDR enfuse</h3><p>This function plugin creates an HDR picture from at least two pictures of an exposure series using exposure fusion. The output path and JPEG quality can be configured in the dialog.</p><p>Uses: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png)",
+        "type": "function"
+      },
+      {
+        "name": "Exposure Difference",
+        "desc": "Function plugin to calculate the exposure difference of the selected pictures.",
+        "file": "cpp_fp_ev.dll",
+        "version": "1.0",
+        "info": "<h3>Exposure Difference</h3><p>This function plugin calculates the exposure difference (EV) of all selected pictures relative to the first selected picture as the reference. The results are shown in an overview.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ev.png)",
+        "type": "function"
+      },
+      {
+        "name": "Ascii Art",
+        "desc": "Function plugin to convert a picture into a letter image (Ascii Art).",
+        "file": "cpp_ascii_art.dll",
+        "version": "1.0",
+        "info": "<h3>Ascii Art</h3><p>This function plugin converts a selected picture into a letter image (Ascii Art). Font, block size, brightness and contrast can be adjusted in the dialog. The result can be saved as a picture.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png)",
+        "type": "function"
+      },
+      {
+        "name": "Clipboard",
+        "desc": "Function plugin to copy a picture to the clipboard.",
+        "file": "cpp_copy_cb.dll",
+        "version": "1.0",
+        "info": "<h3>Clipboard</h3><p>This function plugin copies the selected picture to the Windows clipboard, so it can be pasted directly into other applications.</p>",
+        "type": "function"
+      },
+      {
+        "name": "QR Code",
+        "desc": "Function plugin to embed a QR code into the selected pictures.",
+        "file": "cpp_qrcode.dll",
+        "version": "1.0",
+        "info": "<h3>QR Code</h3><p>This function plugin embeds a QR code into the selected pictures. The QR code text, corner position, relative size and margin can be configured in the dialog.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png)",
+        "type": "function"
+      },
+      {
+        "name": "Time Capsule",
+        "desc": "Function plugin to create a story poster with route, places and thumbnails.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "info": "<h3>Time Capsule</h3><p>This function plugin creates a story poster from multiple selected pictures with title, route strip, location clusters, summary and thumbnails. The dialog lets you configure the sorting mode, location radius and thumbnail size.</p><p>The route is built from available GPS data and linked to the picture thumbnails, creating a visual summary of a trip, series or shoot.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_timecapsule.jpg)",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Function plugin to create an analysis board with edge, block and heatmap views.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "info": "<h3>X-Ray</h3><p>This function plugin creates an analysis board for each selected picture with the original view, an edge map, an 8x8 block analysis and a combined heat map. Scale, sensitivity and the optional 8x8 grid can be configured in the dialog.</p><p>The output helps highlight structures, compression artifacts and visually suspicious image regions.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg)",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Function plugin to merge multiple pictures into a motion composite with trail effects.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "info": "<h3>Motion Composer</h3><p>This function plugin combines multiple pictures into a single composition with motion and trail effects. Output size, threshold and optional trail colorization are configured in the dialog.</p><p>It is especially useful for sequences with movement, such as people, vehicles or repeated actions.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg)",
+        "type": "function"
+      },
+      {
+        "name": "TIFF and PNG Pictures",
+        "desc": "Format plugin to display TIFF and PNG pictures.",
+        "file": "cpf_tiff_png.dll",
+        "version": "1.0",
+        "info": "<h3>TIFF and PNG File Format</h3><p>This format plugin extends cPicture with support for the TIFF and PNG picture formats.</p>",
+        "type": "format"
+      },
+      {
+        "name": "PDF Format",
+        "desc": "Format plugin to display PDF documents.",
+        "file": "cpf_pdf.dll",
+        "version": "1.0",
+        "info": "<h3>PDF Format</h3><p>This format plugin extends cPicture with support for the PDF document format. PDF files can be opened and displayed like pictures.</p><br>![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png)",
+        "type": "format"
+      }
+    ]
+  }
+}

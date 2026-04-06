@@ -105,7 +105,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(const HWND hwnd, const
 		border_color = SettingsDlg.border_color;
 
 		// Request picture size data in BGR DWORD aligned layout.
-		request_data_sizes.push_back(request_data_size(picture_width, picture_height, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
+		request_data_sizes.emplace_back(picture_width, picture_height, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA);
 	
 		parent.Detach();
 
@@ -249,16 +249,17 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	CString filename(filename1 + L"-" + filename2 + filename1_ext);
 
 	// Signal that the picture is added (enum UPDATE_TYPE).
-	update_data_list.push_back(update_data(filename,
+	update_data_list.emplace_back(
+		filename,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
 		// Picture will be added with this data:
 		bitmap_width,
 		bitmap_height,
-		(BYTE*)ppvBits,
+		reinterpret_cast<BYTE*>(ppvBits),
 		// DIB data is using this format. When the end function return, the picture is created.
 		// ppvBits is still valid until the plugin call is finished, and by that time
 		// ~CFunctionPluginSample5() release the DIB Section.
-		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
+		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA);
 
 	// Clean-up
 	if (hOldFont)

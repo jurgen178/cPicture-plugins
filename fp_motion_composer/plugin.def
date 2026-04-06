@@ -1,0 +1,7 @@
+LIBRARY      "cpp_motion_composer"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

@@ -289,7 +289,7 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<pictur
 		{
 			if (parameterDlg.CheckFile(parameterDlg.output_file))
 			{
-				update_data_list.push_back(update_data(parameterDlg.output_file, UPDATE_TYPE::UPDATE_TYPE_ADDED));
+				update_data_list.emplace_back(parameterDlg.output_file, UPDATE_TYPE::UPDATE_TYPE_ADDED);
 			}
 		}
 

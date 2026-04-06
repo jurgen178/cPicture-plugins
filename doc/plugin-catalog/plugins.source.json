@@ -1,0 +1,457 @@
+{
+  "cPicture Plugins": {
+    "version": "1.0",
+    "plugins-de": [
+      {
+        "name": "Bilderverschlüsselung",
+        "desc": "PowerShell-Skript zum Verschlüsseln Ihrer Bilder.",
+        "file": "encrypt.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/encrypt.md",
+        "type": "function"
+      },
+      {
+        "name": "Bilderentschlüsselung",
+        "desc": "PowerShell-Skript zum Entschlüsseln Ihrer Bilder.",
+        "file": "decrypt.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/decrypt.md",
+        "type": "function"
+      },
+      {
+        "name": "PowerShell-Skript-Beispiel",
+        "desc": "PowerShell-Skript-Beispiel zum Anzeigen von Bilddaten.",
+        "file": "ps1-example.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/ps1-example.md",
+        "type": "function"
+      },
+      {
+        "name": "FTP-Dateiübertragung",
+        "desc": "PowerShell-Skript zum Hochladen Ihrer Bilder auf einen FTP-Server.",
+        "file": "ftp-upload.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/ftp-upload.md",
+        "type": "function"
+      },
+      {
+        "name": "Umbenennen",
+        "desc": "PowerShell-Skript zum Umbenennen Ihrer Bilder.",
+        "file": "rename.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/rename.md",
+        "type": "function"
+      },
+      {
+        "name": "Exif-Bilddatum",
+        "desc": "PowerShell-Skript zum Ändern des Exif-Bilddatums.",
+        "file": "exiftool-date.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/exiftool-date.md",
+        "type": "function"
+      },
+      {
+        "name": "Raw zu DNG-Konverter",
+        "desc": "PowerShell-Skript zum Konvertieren von Raw-Bildern zu DNG.",
+        "file": "dng.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/dng.md",
+        "type": "function"
+      },
+      {
+        "name": "Raw zu TIFF-Konverter",
+        "desc": "PowerShell-Skript zum Konvertieren von Raw-Bildern zu TIFF.",
+        "file": "Raw-nach-TIFF.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/Raw-nach-TIFF.md",
+        "type": "function"
+      },
+      {
+        "name": "Raw zu TIFF-NX",
+        "desc": "PowerShell-Skript zum Konvertieren von Raw zu TIFF und anschließendem Öffnen in NX Studio.",
+        "file": "Raw-nach-TIFF-NX.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/Raw-nach-TIFF-NX.md",
+        "type": "function"
+      },
+      {
+        "name": "Mehrfache Größenänderungen",
+        "desc": "PowerShell-Skript zum Erstellen verschiedener Größen desselben Bildes.",
+        "file": "sizing.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/sizing.md",
+        "type": "function"
+      },
+      {
+        "name": "Batch-Skript-Beispiel",
+        "desc": "Batch-Skript-Beispiel zum Anzeigen von Bilddaten.",
+        "file": "bat-example.bat",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/bat-example.md",
+        "type": "function"
+      },
+      {
+        "name": "Python-Skript-Beispiel",
+        "desc": "Python-Skript-Beispiel zum Anzeigen von Bilddaten.",
+        "file": "py-example.py",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/de/py-example.md",
+        "type": "function"
+      },
+      {
+        "name": "Skript-Funktionszusatzmodul",
+        "desc": "Funktionszusatzmodul zum Ausführen von PowerShell-, Batch- und Python-Skripten.",
+        "file": "cpp_script.dll",
+        "version": "1.1",
+        "infoFileMd": "markdown/de/cpp_script.md",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 1",
+        "desc": "Funktionszusatzmodul zum Ausführen der begin(), process_picture() und end() Funktionen.",
+        "file": "cpp_fp1.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_fp1.md",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 2",
+        "desc": "Funktionszusatzmodul zum Anzeigen eines Bild-Vorschaudialogs.",
+        "file": "cpp_fp2.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_fp2.md",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 3",
+        "desc": "Funktionszusatzmodul mit einem einfachen Bilderbestellformular.",
+        "file": "cpp_fp3.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_fp3.md",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 4",
+        "desc": "Funktionszusatzmodul zum Verkleinern und Ändern von Bildern.",
+        "file": "cpp_fp4.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_fp4.md",
+        "type": "function"
+      },
+      {
+        "name": "Funktionszusatzmodul Beispiel 5",
+        "desc": "Funktionszusatzmodul zum Erstellen eines Indexprints aus zwei Bildern.",
+        "file": "cpp_fp5.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_fp5.md",
+        "type": "function"
+      },
+      {
+        "name": "HDR enfuse",
+        "desc": "Funktionszusatzmodul zum Zusammenführen von Belichtungsreihen.",
+        "file": "cpp_fp_hdr.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_fp_hdr.md",
+        "type": "function"
+      },
+      {
+        "name": "Belichtungsunterschied",
+        "desc": "Funktionszusatzmodul zur Berechnung der Belichtungsunterschiede der ausgewählten Bilder.",
+        "file": "cpp_fp_ev.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_fp_ev.md",
+        "type": "function"
+      },
+      {
+        "name": "Ascii Art",
+        "desc": "Funktionszusatzmodul zum Konvertieren eines Bildes in ein Buchstabenbild (Ascii Art).",
+        "file": "cpp_ascii_art.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_ascii_art.md",
+        "type": "function"
+      },
+      {
+        "name": "Zwischenablage",
+        "desc": "Funktionszusatzmodul zum Kopieren eines Bildes in die Zwischenablage.",
+        "file": "cpp_copy_cb.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_copy_cb.md",
+        "type": "function"
+      },
+      {
+        "name": "QR-Code",
+        "desc": "Funktionszusatzmodul zum Einbetten eines QR-Codes in die ausgewählten Bilder.",
+        "file": "cpp_qrcode.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_qrcode.md",
+        "type": "function"
+      },
+      {
+        "name": "Zeitkapsel",
+        "desc": "Funktionszusatzmodul zum Erstellen eines Story-Posters mit Route, Orten und Miniaturen.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_timecapsule.md",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Funktionszusatzmodul zum Erstellen einer Analyse-Tafel mit Kanten-, Block- und Heatmap-Ansicht.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_xray.md",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Funktionszusatzmodul zum Verschmelzen mehrerer Bilder zu einem Bewegungsbild mit Spureneffekt.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_motion_composer.md",
+        "type": "function"
+      },
+      {
+        "name": "TIFF- und PNG-Bilder",
+        "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
+        "file": "cpf_tiff_png.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_tiff_png.md",
+        "type": "format"
+      },
+      {
+        "name": "PDF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen von PDF-Dokumenten.",
+        "file": "cpf_pdf.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_pdf.md",
+        "type": "format"
+      }
+    ],
+    "plugins-en": [
+      {
+        "name": "Script 'Encrypt.ps1'",
+        "desc": "PowerShell script to encrypt your pictures.",
+        "file": "encrypt.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/encrypt.md",
+        "type": "function"
+      },
+      {
+        "name": "Script 'Decrypt.ps1'",
+        "desc": "PowerShell script to decrypt your pictures.",
+        "file": "decrypt.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/decrypt.md",
+        "type": "function"
+      },
+      {
+        "name": "PowerShell Script Example",
+        "desc": "PowerShell example script to display picture data.",
+        "file": "ps1-example.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/ps1-example.md",
+        "type": "function"
+      },
+      {
+        "name": "FTP Upload",
+        "desc": "PowerShell script to upload your pictures to an FTP server.",
+        "file": "ftp-upload.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/ftp-upload.md",
+        "type": "function"
+      },
+      {
+        "name": "Rename",
+        "desc": "PowerShell script to rename your pictures.",
+        "file": "rename.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/rename.md",
+        "type": "function"
+      },
+      {
+        "name": "Exif Picture Date",
+        "desc": "PowerShell script to modify the Exif date of your pictures.",
+        "file": "exiftool-date.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/exiftool-date.md",
+        "type": "function"
+      },
+      {
+        "name": "Raw to DNG Converter",
+        "desc": "PowerShell script to convert Raw pictures to DNG.",
+        "file": "dng.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/dng.md",
+        "type": "function"
+      },
+      {
+        "name": "Raw to TIFF Converter",
+        "desc": "PowerShell script to convert Raw pictures to TIFF.",
+        "file": "Raw-nach-TIFF.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/Raw-nach-TIFF.md",
+        "type": "function"
+      },
+      {
+        "name": "Raw to TIFF-NX",
+        "desc": "PowerShell script to convert Raw to TIFF and open in NX Studio.",
+        "file": "Raw-nach-TIFF-NX.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/Raw-nach-TIFF-NX.md",
+        "type": "function"
+      },
+      {
+        "name": "Multiple Sizes",
+        "desc": "PowerShell script to create different sizes from the same picture.",
+        "file": "sizing.ps1",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/sizing.md",
+        "type": "function"
+      },
+      {
+        "name": "Batch Script Example",
+        "desc": "Batch example script to display picture data.",
+        "file": "bat-example.bat",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/bat-example.md",
+        "type": "function"
+      },
+      {
+        "name": "Python Script Example",
+        "desc": "Python example script to display picture data.",
+        "file": "py-example.py",
+        "file2": "cpp_script.dll",
+        "infoFileMd": "markdown/en/py-example.md",
+        "type": "function"
+      },
+      {
+        "name": "Script Plugin",
+        "desc": "Function plugin to run PowerShell, Batch and Python scripts.",
+        "file": "cpp_script.dll",
+        "version": "1.1",
+        "infoFileMd": "markdown/en/cpp_script.md",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 1",
+        "desc": "Function plugin demonstrating the begin(), process_picture() and end() functions.",
+        "file": "cpp_fp1.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_fp1.md",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 2",
+        "desc": "Function plugin to display a picture preview dialog.",
+        "file": "cpp_fp2.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_fp2.md",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 3",
+        "desc": "Function plugin with a simple picture order form.",
+        "file": "cpp_fp3.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_fp3.md",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 4",
+        "desc": "Function plugin to resize and modify pictures.",
+        "file": "cpp_fp4.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_fp4.md",
+        "type": "function"
+      },
+      {
+        "name": "Function Plugin Sample 5",
+        "desc": "Function plugin to create an index print from two pictures.",
+        "file": "cpp_fp5.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_fp5.md",
+        "type": "function"
+      },
+      {
+        "name": "HDR enfuse",
+        "desc": "Function plugin to merge exposure series into an HDR picture.",
+        "file": "cpp_fp_hdr.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_fp_hdr.md",
+        "type": "function"
+      },
+      {
+        "name": "Exposure Difference",
+        "desc": "Function plugin to calculate the exposure difference of the selected pictures.",
+        "file": "cpp_fp_ev.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_fp_ev.md",
+        "type": "function"
+      },
+      {
+        "name": "Ascii Art",
+        "desc": "Function plugin to convert a picture into a letter image (Ascii Art).",
+        "file": "cpp_ascii_art.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_ascii_art.md",
+        "type": "function"
+      },
+      {
+        "name": "Clipboard",
+        "desc": "Function plugin to copy a picture to the clipboard.",
+        "file": "cpp_copy_cb.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_copy_cb.md",
+        "type": "function"
+      },
+      {
+        "name": "QR Code",
+        "desc": "Function plugin to embed a QR code into the selected pictures.",
+        "file": "cpp_qrcode.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_qrcode.md",
+        "type": "function"
+      },
+      {
+        "name": "Time Capsule",
+        "desc": "Function plugin to create a story poster with route, places and thumbnails.",
+        "file": "cpp_timecapsule.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_timecapsule.md",
+        "type": "function"
+      },
+      {
+        "name": "X-Ray",
+        "desc": "Function plugin to create an analysis board with edge, block and heatmap views.",
+        "file": "cpp_xray.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_xray.md",
+        "type": "function"
+      },
+      {
+        "name": "Motion Composer",
+        "desc": "Function plugin to merge multiple pictures into a motion composite with trail effects.",
+        "file": "cpp_motion_composer.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_motion_composer.md",
+        "type": "function"
+      },
+      {
+        "name": "TIFF and PNG Pictures",
+        "desc": "Format plugin to display TIFF and PNG pictures.",
+        "file": "cpf_tiff_png.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_tiff_png.md",
+        "type": "format"
+      },
+      {
+        "name": "PDF Format",
+        "desc": "Format plugin to display PDF documents.",
+        "file": "cpf_pdf.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_pdf.md",
+        "type": "format"
+      }
+    ]
+  }
+}

@@ -106,7 +106,7 @@ bool __stdcall CFunctionPluginPyScript::process_picture(const picture_data& pict
 {
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
-	update_data_list.push_back(update_data(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED));
+	update_data_list.emplace_back(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
 
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;

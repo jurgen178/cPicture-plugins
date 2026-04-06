@@ -72,8 +72,8 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample3::start(const HWND hwnd, const
 	// A negative value requests a relative size for the picture data.
 	// For example, -100 requests data for the original 100% picture size.
 	// To get picture data for the half size, use
-	// request_data_sizes.push_back(request_data_size(-50, -50, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
-	request_data_sizes.push_back(request_data_size(size_x, size_y, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY));
+	// request_data_sizes.emplace_back(-50, -50, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
+	request_data_sizes.emplace_back(size_x, size_y, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA_DISPLAY);
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }

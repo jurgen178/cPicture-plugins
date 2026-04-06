@@ -1,0 +1,7 @@
+LIBRARY      "cpp_xray"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc
