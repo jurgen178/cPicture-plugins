@@ -4,9 +4,14 @@
 
 #include <array>
 #include <algorithm>
+#include <atomic>
+#include <cstdarg>
 #include <cmath>
 #include <cwctype>
 #include <map>
+#include <mutex>
+#include <process.h>
+#include <shlobj.h>
 #include <string>
 #include <winhttp.h>
 
@@ -29,6 +34,8 @@ namespace
 	constexpr int summary_height = 66;
 	constexpr int tile_padding = 18;
 	constexpr int caption_height = 66;
+	constexpr DWORD throttled_lookup_delay_ms = 1000;
+	constexpr DWORD worker_poll_interval_ms = 100;
 
 	struct GeoPoint
 	{
@@ -82,6 +89,26 @@ namespace
 	private:
 		HCURSOR previous_cursor = nullptr;
 	};
+
+	CString LoadStringResource(const UINT resource_id)
+	{
+		// Centralize resource lookups so newly added UI text stays out of the code paths.
+		CString text;
+		text.LoadString(resource_id);
+		return text;
+	}
+
+	CString FormatStringResource(const UINT resource_id, ...)
+	{
+		// Formatted status text is also loaded from resources to keep DE/EN variants in the RC file.
+		CString format(LoadStringResource(resource_id));
+		CString text;
+		va_list args;
+		va_start(args, resource_id);
+		text.FormatV(format, args);
+		va_end(args);
+		return text;
+	}
 
 	CString GetFileNameOnly(const CString& file_name)
 	{
@@ -169,8 +196,16 @@ namespace
 		}
 		~WinHttpHandle()
 		{
+			Close();
+		}
+
+		void Close()
+		{
 			if (handle != nullptr)
+			{
 				::WinHttpCloseHandle(handle);
+				handle = nullptr;
+			}
 		}
 
 		explicit operator bool() const
@@ -185,6 +220,344 @@ namespace
 
 		HINTERNET handle = nullptr;
 	};
+
+	class ScopedKernelHandle
+	{
+	public:
+		ScopedKernelHandle() = default;
+		explicit ScopedKernelHandle(HANDLE value) : handle(value) {}
+		ScopedKernelHandle(const ScopedKernelHandle&) = delete;
+		ScopedKernelHandle& operator=(const ScopedKernelHandle&) = delete;
+		ScopedKernelHandle(ScopedKernelHandle&& other) noexcept : handle(other.handle)
+		{
+			other.handle = nullptr;
+		}
+		ScopedKernelHandle& operator=(ScopedKernelHandle&& other) noexcept
+		{
+			if (this != &other)
+			{
+				Reset();
+				handle = other.handle;
+				other.handle = nullptr;
+			}
+
+			return *this;
+		}
+		~ScopedKernelHandle()
+		{
+			Reset();
+		}
+
+		void Reset(HANDLE value = nullptr)
+		{
+			if (handle != nullptr)
+				::CloseHandle(handle);
+			handle = value;
+		}
+
+		HANDLE Get() const
+		{
+			return handle;
+		}
+
+		explicit operator bool() const
+		{
+			return handle != nullptr;
+		}
+
+	private:
+		HANDLE handle = nullptr;
+	};
+
+	// One shared cancellation object coordinates UI cancel requests, throttle waits and active HTTP requests.
+	class CancellationContext
+	{
+	public:
+		CancellationContext()
+			: cancel_event(::CreateEvent(nullptr, TRUE, FALSE, nullptr))
+		{
+		}
+
+		bool IsValid() const
+		{
+			return static_cast<bool>(cancel_event);
+		}
+
+		bool IsCanceled() const
+		{
+			return canceled.load();
+		}
+
+		HANDLE GetEvent() const
+		{
+			return cancel_event.Get();
+		}
+
+		void RequestCancel()
+		{
+			canceled.store(true);
+			if (cancel_event)
+				::SetEvent(cancel_event.Get());
+
+			std::lock_guard<std::mutex> lock(active_request_mutex);
+			if (active_request != nullptr)
+			{
+				active_request->Close();
+				active_request = nullptr;
+			}
+		}
+
+		bool RegisterRequest(WinHttpHandle& request)
+		{
+			if (IsCanceled())
+				return false;
+
+			std::lock_guard<std::mutex> lock(active_request_mutex);
+			if (IsCanceled() || !request)
+				return false;
+
+			active_request = &request;
+			return true;
+		}
+
+		void ClearRequest(WinHttpHandle& request)
+		{
+			std::lock_guard<std::mutex> lock(active_request_mutex);
+			if (active_request == &request)
+				active_request = nullptr;
+		}
+
+	private:
+		std::atomic<bool> canceled = false;
+		ScopedKernelHandle cancel_event;
+		std::mutex active_request_mutex;
+		WinHttpHandle* active_request = nullptr;
+	};
+
+	// The current WinHTTP request is registered so a cancel can break an in-flight network call immediately.
+	class ActiveRequestScope
+	{
+	public:
+		ActiveRequestScope(CancellationContext* context_value, WinHttpHandle& request_value)
+			: context(context_value), request(&request_value)
+		{
+			registered = context == nullptr ? true : context->RegisterRequest(request_value);
+		}
+
+		~ActiveRequestScope()
+		{
+			if (registered && context != nullptr && request != nullptr)
+				context->ClearRequest(*request);
+		}
+
+		bool IsRegistered() const
+		{
+			return registered;
+		}
+
+	private:
+		CancellationContext* context = nullptr;
+		WinHttpHandle* request = nullptr;
+		bool registered = false;
+	};
+
+	// The shell progress dialog is COM-based, so the UI thread explicitly initializes COM for this phase.
+	class ScopedComInitializer
+	{
+	public:
+		ScopedComInitializer()
+		{
+			result = ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+			initialized = SUCCEEDED(result);
+			if (result == RPC_E_CHANGED_MODE)
+				result = S_OK;
+		}
+
+		~ScopedComInitializer()
+		{
+			if (initialized)
+				::CoUninitialize();
+		}
+
+		bool IsAvailable() const
+		{
+			return SUCCEEDED(result);
+		}
+
+	private:
+		HRESULT result = E_FAIL;
+		bool initialized = false;
+	};
+
+	// The worker only writes progress state; the UI thread reads and renders it.
+	struct ProgressState
+	{
+		std::mutex mutex;
+		CString phase;
+		CString detail;
+		ULONGLONG completed = 0;
+		ULONGLONG total = 1;
+		unsigned long revision = 0;
+	};
+
+	// Wrapper around the standard Windows progress dialog to keep UI code small and predictable.
+	class ProgressDialog
+	{
+	public:
+		~ProgressDialog()
+		{
+			Destroy();
+		}
+
+		bool Create(HWND owner, const CString& title, const CString& cancel_message)
+		{
+			HRESULT result = ::CoCreateInstance(CLSID_ProgressDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&dialog));
+			if (FAILED(result) || dialog == nullptr)
+				return false;
+
+			dialog->SetTitle(title);
+			dialog->SetCancelMsg(cancel_message, nullptr);
+			dialog->StartProgressDialog(owner, nullptr, PROGDLG_NOMINIMIZE, nullptr);
+			return true;
+		}
+
+		void Destroy()
+		{
+			if (dialog != nullptr)
+			{
+				dialog->StopProgressDialog();
+				dialog->Release();
+				dialog = nullptr;
+			}
+		}
+
+		void SetStatus(const CString& phase, const CString& detail)
+		{
+			if (dialog == nullptr)
+				return;
+
+			dialog->SetLine(1, phase, FALSE, nullptr);
+			dialog->SetLine(2, detail, FALSE, nullptr);
+		}
+
+		void SetProgress(const ULONGLONG completed, const ULONGLONG total)
+		{
+			if (dialog == nullptr)
+				return;
+
+			dialog->SetProgress64(completed, max<ULONGLONG>(1, total));
+		}
+
+		bool HasUserCancelled() const
+		{
+			return dialog != nullptr && dialog->HasUserCancelled() != FALSE;
+		}
+
+	private:
+		IProgressDialog* dialog = nullptr;
+	};
+
+	// The UI thread keeps pumping messages while it waits so the dialog remains responsive.
+	void PumpPendingMessages()
+	{
+		MSG msg;
+		while (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
+	}
+
+	void UpdateProgressState(ProgressState& state, const CString& phase, const CString& detail, const ULONGLONG completed, const ULONGLONG total)
+	{
+		// The worker updates both lines atomically so the UI never mixes old and new text.
+		std::lock_guard<std::mutex> lock(state.mutex);
+		state.phase = phase;
+		state.detail = detail;
+		state.completed = completed;
+		state.total = max<ULONGLONG>(1, total);
+		++state.revision;
+	}
+
+	void SyncProgressDialog(ProgressDialog& progress, ProgressState& state, unsigned long& revision)
+	{
+		// Only push text into the dialog when the worker actually published something new.
+		CString phase;
+		CString detail;
+		ULONGLONG completed = 0;
+		ULONGLONG total = 1;
+		{
+			std::lock_guard<std::mutex> lock(state.mutex);
+			if (state.revision == revision)
+				return;
+			phase = state.phase;
+			detail = state.detail;
+			completed = state.completed;
+			total = state.total;
+			revision = state.revision;
+		}
+
+		progress.SetStatus(phase, detail);
+		progress.SetProgress(completed, total);
+	}
+
+	bool PollProgressCancellation(CancellationContext& cancellation, ProgressDialog& progress)
+	{
+		// The shell dialog owns the cancel button; once pressed we fan that out to the worker and HTTP layer.
+		PumpPendingMessages();
+		if (progress.HasUserCancelled())
+		{
+			cancellation.RequestCancel();
+			progress.SetStatus(LoadStringResource(IDS_PROGRESS_CANCEL_PHASE), LoadStringResource(IDS_PROGRESS_CANCEL_DETAIL));
+		}
+
+		return cancellation.IsCanceled();
+	}
+
+	bool WaitForThrottleDelay(CancellationContext& cancellation, const DWORD delay_ms)
+	{
+		// Throttle waits must stay cancelable, otherwise the UI would feel stuck for the final sleep.
+		if (cancellation.IsCanceled())
+			return false;
+
+		const HANDLE cancel_event = cancellation.GetEvent();
+		if (cancel_event == nullptr)
+			return !cancellation.IsCanceled();
+
+		return ::WaitForSingleObject(cancel_event, delay_ms) == WAIT_TIMEOUT;
+	}
+
+	bool WaitForWorkerThread(HANDLE worker_handle, CancellationContext& cancellation, ProgressDialog& progress, ProgressState& progress_state)
+	{
+		// We wait in short slices so the dialog keeps updating and cancel stays responsive while the worker runs.
+		if (worker_handle == nullptr)
+			return false;
+
+		HANDLE wait_handles[1] = { worker_handle };
+		unsigned long applied_revision = 0;
+		for (;;)
+		{
+			SyncProgressDialog(progress, progress_state, applied_revision);
+			if (PollProgressCancellation(cancellation, progress))
+				return false;
+
+			const DWORD wait_result = ::MsgWaitForMultipleObjects(1, wait_handles, FALSE, worker_poll_interval_ms, QS_ALLINPUT);
+			if (wait_result == WAIT_OBJECT_0)
+				break;
+
+			if (wait_result == WAIT_TIMEOUT || wait_result == WAIT_OBJECT_0 + 1)
+			{
+				PumpPendingMessages();
+				continue;
+			}
+
+			return false;
+		}
+
+		SyncProgressDialog(progress, progress_state, applied_revision);
+		PollProgressCancellation(cancellation, progress);
+		return true;
+	}
 
 	struct GpsNumberToken
 	{
@@ -629,9 +1002,12 @@ namespace
 		return false;
 	}
 
-	bool TryFetchNominatimLocationName(const GeoPoint& geo, CString& place_name)
+	// The actual reverse-geocoding request is synchronous, but cancellation can still interrupt it by closing the request handle.
+	bool TryFetchNominatimLocationName(const GeoPoint& geo, CString& place_name, CancellationContext* cancellation)
 	{
 		place_name.Empty();
+		if (cancellation != nullptr && cancellation->IsCanceled())
+			return false;
 
 		WinHttpHandle session(::WinHttpOpen(
 			L"TimeCapsule/1.0",
@@ -641,11 +1017,15 @@ namespace
 			0));
 		if (!session)
 			return false;
+		if (cancellation != nullptr && cancellation->IsCanceled())
+			return false;
 
 		::WinHttpSetTimeouts(session, 1500, 1500, 2500, 2500);
 
 		WinHttpHandle connection(::WinHttpConnect(session, L"nominatim.openstreetmap.org", INTERNET_DEFAULT_HTTPS_PORT, 0));
 		if (!connection)
+			return false;
+		if (cancellation != nullptr && cancellation->IsCanceled())
 			return false;
 
 		CString request_path;
@@ -665,10 +1045,16 @@ namespace
 		if (!request)
 			return false;
 
+		ActiveRequestScope active_request(cancellation, request);
+		if (!active_request.IsRegistered())
+			return false;
+
 		const WCHAR* headers = L"Accept: application/json\r\n";
 		bool ok = ::WinHttpSendRequest(request, headers, static_cast<DWORD>(-1L), nullptr, 0, 0, 0) == TRUE;
 		if (ok)
 			ok = ::WinHttpReceiveResponse(request, nullptr) == TRUE;
+		if (cancellation != nullptr && cancellation->IsCanceled())
+			return false;
 
 		DWORD status_code = 0;
 		DWORD status_size = sizeof(status_code);
@@ -686,6 +1072,9 @@ namespace
 		std::string response_utf8;
 		while (ok)
 		{
+			if (cancellation != nullptr && cancellation->IsCanceled())
+				return false;
+
 			DWORD available = 0;
 			if (::WinHttpQueryDataAvailable(request, &available) != TRUE)
 				break;
@@ -703,6 +1092,8 @@ namespace
 			chunk.resize(downloaded);
 			response_utf8 += chunk;
 		}
+		if (cancellation != nullptr && cancellation->IsCanceled())
+			return false;
 
 		if (!ok || status_code != 200 || response_utf8.empty())
 			return false;
@@ -712,10 +1103,13 @@ namespace
 		return !place_name.IsEmpty();
 	}
 
-	bool TryResolveLocationNameNominatim(const CString& gps_text, const GeoPoint& geo, CString& place_name)
+	// Some EXIF variants swap latitude and longitude, so we retry once with swapped coordinates when that is plausible.
+	bool TryResolveLocationNameNominatim(const CString& gps_text, const GeoPoint& geo, CString& place_name, CancellationContext* cancellation)
 	{
-		if (TryFetchNominatimLocationName(geo, place_name))
+		if (TryFetchNominatimLocationName(geo, place_name, cancellation))
 			return true;
+		if (cancellation != nullptr && cancellation->IsCanceled())
+			return false;
 
 		if (HasExplicitGpsDirections(gps_text))
 			return false;
@@ -728,7 +1122,7 @@ namespace
 		if (fabs(swapped_geo.latitude) > 90.0 || fabs(swapped_geo.longitude) > 180.0)
 			return false;
 
-		return TryFetchNominatimLocationName(swapped_geo, place_name);
+		return TryFetchNominatimLocationName(swapped_geo, place_name, cancellation);
 	}
 
 	void AppendGpsNumberToken(const CString& input, CString& current, int& token_start, const int token_end, vector<GpsNumberToken>& values)
@@ -1023,17 +1417,37 @@ namespace
 		return static_cast<int>(clusters.size() - 1);
 	}
 
-	// Build the travel summary once so the drawing code can stay focused on layout.
-	PosterInsights AnalyzePictures(const vector<const picture_data*>& pictures, const double cluster_radius_km)
+	// Build the travel summary on the UI thread before the worker starts so clustering data is complete and stable.
+	bool AnalyzePictures(
+		const vector<const picture_data*>& pictures,
+		const double cluster_radius_km,
+		PosterInsights& insights,
+		CancellationContext* cancellation,
+		ProgressDialog* progress)
 	{
-		PosterInsights insights;
+		insights = PosterInsights();
 		insights.entries.reserve(pictures.size());
 
 		bool have_prev_geo = false;
 		GeoPoint prev_geo;
 
-		for (const picture_data* picture : pictures)
+		for (size_t picture_index = 0; picture_index < pictures.size(); ++picture_index)
 		{
+			if (cancellation != nullptr && cancellation->IsCanceled())
+				return false;
+
+			if (progress != nullptr && (picture_index == 0 || picture_index + 1 == pictures.size() || (picture_index % 16) == 0))
+			{
+				// Analysis is cheap, so sparse updates are enough to show life without spamming the dialog.
+				progress->SetStatus(
+					LoadStringResource(IDS_PROGRESS_ANALYZE_PHASE),
+					FormatStringResource(IDS_PROGRESS_ANALYZE_DETAIL, static_cast<int>(picture_index + 1), static_cast<int>(pictures.size())));
+				progress->SetProgress(static_cast<ULONGLONG>(picture_index + 1), static_cast<ULONGLONG>(max<size_t>(1, pictures.size())));
+				if (cancellation != nullptr && PollProgressCancellation(*cancellation, *progress))
+					return false;
+			}
+
+			const picture_data* picture = pictures[picture_index];
 			PosterEntry entry;
 			entry.picture = picture;
 			entry.geo.valid = false;
@@ -1069,24 +1483,52 @@ namespace
 			insights.entries.emplace_back(entry);
 		}
 
-		return insights;
+		return true;
 	}
 
-	// Reverse geocoding is done once per cluster so multi-image posters do not spam web requests.
-	void ResolveClusterNames(vector<RouteCluster>& clusters, const vector<PosterEntry>& entries)
+	bool TryGetClusterGpsText(const vector<PosterEntry>& entries, const int cluster_index, CString& gps_text)
 	{
-		const size_t max_online_lookups = 8;
-		for (size_t index = 0; index < clusters.size() && index < max_online_lookups; ++index)
+		// Each cluster borrows the first original GPS string so the fallback coordinate logic sees the same EXIF text.
+		for (const PosterEntry& entry : entries)
 		{
-			CString gps_text;
-			for (size_t entry_index = 0; entry_index < entries.size(); ++entry_index)
+			if (entry.cluster_index == cluster_index && entry.picture != nullptr)
 			{
-				if (entries[entry_index].cluster_index == static_cast<int>(index) && entries[entry_index].picture != nullptr)
-				{
-					gps_text = entries[entry_index].picture->gps;
-					break;
-				}
+				gps_text = entry.picture->gps;
+				return true;
 			}
+		}
+
+		gps_text.Empty();
+		return false;
+	}
+
+	// Reverse geocoding runs in the worker so the UI thread can keep the dialog responsive and cancelable.
+	bool ResolveClusterNames(
+		vector<RouteCluster>& clusters,
+		const vector<PosterEntry>& entries,
+		CancellationContext& cancellation,
+		ProgressState& progress_state)
+	{
+		const int cluster_count = static_cast<int>(clusters.size());
+		for (size_t index = 0; index < clusters.size(); ++index)
+		{
+			if (cancellation.IsCanceled())
+				return false;
+
+			CString gps_text;
+			TryGetClusterGpsText(entries, static_cast<int>(index), gps_text);
+
+			CString detail;
+			if (!gps_text.IsEmpty())
+				detail = FormatStringResource(IDS_PROGRESS_LOOKUP_DETAIL_GPS, static_cast<int>(index + 1), cluster_count, ShortGpsText(gps_text).GetString());
+			else
+				detail = FormatStringResource(IDS_PROGRESS_LOOKUP_DETAIL, static_cast<int>(index + 1), cluster_count);
+			UpdateProgressState(
+				progress_state,
+				LoadStringResource(IDS_PROGRESS_LOOKUP_PHASE),
+				detail,
+				static_cast<ULONGLONG>(index),
+				static_cast<ULONGLONG>(max(1, cluster_count)));
 
 			GeoPoint center;
 			center.valid = true;
@@ -1094,9 +1536,49 @@ namespace
 			center.longitude = clusters[index].longitude;
 
 			CString place_name;
-			if (TryResolveLocationNameNominatim(gps_text, center, place_name))
+			if (TryResolveLocationNameNominatim(gps_text, center, place_name, &cancellation))
 				clusters[index].place_name = place_name;
+
+			if (cancellation.IsCanceled())
+				return false;
+
+			if (index + 1 < clusters.size())
+			{
+				// Public Nominatim usage is limited to at most one request per second, so we pause before every next lookup.
+				UpdateProgressState(
+					progress_state,
+					LoadStringResource(IDS_PROGRESS_THROTTLE_PHASE),
+					FormatStringResource(IDS_PROGRESS_THROTTLE_DETAIL, static_cast<int>(index + 2), cluster_count),
+					static_cast<ULONGLONG>(index + 1),
+					static_cast<ULONGLONG>(max(1, cluster_count)));
+				if (!WaitForThrottleDelay(cancellation, throttled_lookup_delay_ms))
+					return false;
+			}
 		}
+
+		UpdateProgressState(progress_state, LoadStringResource(IDS_PROGRESS_RENDER_PHASE), CString(), static_cast<ULONGLONG>(cluster_count), static_cast<ULONGLONG>(max(1, cluster_count)));
+		return true;
+	}
+
+	// The worker only needs immutable input plus a mutable cluster list and the shared progress/cancel state.
+	struct ClusterLookupWorkerContext
+	{
+		vector<RouteCluster>* clusters = nullptr;
+		const vector<PosterEntry>* entries = nullptr;
+		CancellationContext* cancellation = nullptr;
+		ProgressState* progress_state = nullptr;
+		bool completed = false;
+	};
+
+	unsigned __stdcall ResolveClusterNamesWorkerProc(void* raw_context)
+	{
+		// Keep the thread proc tiny so the actual lookup logic stays testable and readable.
+		ClusterLookupWorkerContext* context = static_cast<ClusterLookupWorkerContext*>(raw_context);
+		if (context == nullptr || context->clusters == nullptr || context->entries == nullptr || context->cancellation == nullptr || context->progress_state == nullptr)
+			return 0;
+
+		context->completed = ResolveClusterNames(*context->clusters, *context->entries, *context->cancellation, *context->progress_state);
+		return 0;
 	}
 
 	CString BuildSummary(const vector<const picture_data*>& pictures, const PosterInsights& insights)
@@ -1558,6 +2040,7 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 {
 	ScopedWaitCursor wait_cursor;
 	update_data_list.clear();
+	const CString plugin_name = get_plugin_data().name;
 
 	if (picture_data_list.size() < 2)
 		return update_data_list;
@@ -1568,6 +2051,33 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 		poster_dib = nullptr;
 	}
 
+	// The standard progress dialog needs COM and becomes the single cancel source for the whole operation.
+	ScopedComInitializer com_initializer;
+
+	CancellationContext cancellation;
+	ProgressDialog progress;
+	if (!com_initializer.IsAvailable() || !cancellation.IsValid() || !progress.Create(handle_wnd, plugin_name, LoadStringResource(IDS_PROGRESS_CANCEL_MESSAGE)))
+	{
+		::MessageBox(handle_wnd, LoadStringResource(IDS_ERROR_PROGRESS_DIALOG), plugin_name, MB_OK | MB_ICONERROR);
+		return update_data_list;
+	}
+
+	progress.SetStatus(LoadStringResource(IDS_PROGRESS_INITIAL_PHASE), LoadStringResource(IDS_PROGRESS_INITIAL_DETAIL));
+	progress.SetProgress(0, max<ULONGLONG>(1, static_cast<ULONGLONG>(picture_data_list.size())));
+
+	// Every early exit uses the same cleanup path so partially built poster state is never leaked.
+	auto abort_operation = [&]() -> const vector<update_data>&
+	{
+		update_data_list.clear();
+		if (poster_dib != nullptr)
+		{
+			::DeleteObject(poster_dib);
+			poster_dib = nullptr;
+		}
+		progress.Destroy();
+		return update_data_list;
+	};
+
 	// Work on pointers so we can reorder the selected pictures without copying the plugin-owned structs.
 	vector<const picture_data*> sorted_pictures;
 	sorted_pictures.reserve(picture_data_list.size());
@@ -1576,9 +2086,32 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 
 	SortPictures(sorted_pictures, sort_mode);
 
-	PosterInsights insights = AnalyzePictures(sorted_pictures, location_cluster_radius_km);
-	ResolveClusterNames(insights.clusters, insights.entries);
+	// Step 1: cluster and summarize on the UI thread so the worker can read immutable lookup input.
+	PosterInsights insights;
+	if (!AnalyzePictures(sorted_pictures, location_cluster_radius_km, insights, &cancellation, &progress))
+		return abort_operation();
 
+	// Step 2: the worker resolves place names while the UI thread only mirrors status and cancellation.
+	ProgressState progress_state;
+	UpdateProgressState(progress_state, LoadStringResource(IDS_PROGRESS_LOOKUP_PHASE), LoadStringResource(IDS_PROGRESS_INITIAL_DETAIL), 0, static_cast<ULONGLONG>(max(1, static_cast<int>(insights.clusters.size()))));
+
+	ClusterLookupWorkerContext worker_context;
+	worker_context.clusters = &insights.clusters;
+	worker_context.entries = &insights.entries;
+	worker_context.cancellation = &cancellation;
+	worker_context.progress_state = &progress_state;
+
+	ScopedKernelHandle worker_handle(reinterpret_cast<HANDLE>(_beginthreadex(nullptr, 0, &ResolveClusterNamesWorkerProc, &worker_context, 0, nullptr)));
+	if (!worker_handle)
+	{
+		::MessageBox(handle_wnd, LoadStringResource(IDS_ERROR_PROGRESS_WORKER), plugin_name, MB_OK | MB_ICONERROR);
+		return abort_operation();
+	}
+
+	if (!WaitForWorkerThread(worker_handle.Get(), cancellation, progress, progress_state) || !worker_context.completed)
+		return abort_operation();
+
+	// Step 3: render only after the cluster names are finalized so captions and route labels stay consistent.
 	const int count = static_cast<int>(sorted_pictures.size());
 	const int cols = min(4, max(2, count));
 	const int rows = (count + cols - 1) / cols;
@@ -1598,7 +2131,7 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	void* dib_bits = nullptr;
 	poster_dib = ::CreateDIBSection(nullptr, &bitmap_info, DIB_RGB_COLORS, &dib_bits, nullptr, 0);
 	if (poster_dib == nullptr || dib_bits == nullptr)
-		return update_data_list;
+		return abort_operation();
 
 	CBitmap* bitmap = CBitmap::FromHandle(poster_dib);
 	CDC mem_dc;
@@ -1658,6 +2191,12 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	// Each tile reuses the requested preview plus a compact text caption and optional place badge.
 	for (int index = 0; index < count; ++index)
 	{
+		// Rendering also stays cancelable so a large poster can still be stopped after the lookup phase.
+		progress.SetStatus(LoadStringResource(IDS_PROGRESS_RENDER_PHASE), FormatStringResource(IDS_PROGRESS_RENDER_DETAIL, index + 1, count));
+		progress.SetProgress(static_cast<ULONGLONG>(index + 1), static_cast<ULONGLONG>(max(1, count)));
+		if (PollProgressCancellation(cancellation, progress))
+			return abort_operation();
+
 		const int col = index % cols;
 		const int row = index / cols;
 		const int left = tile_padding + col * (tile_width + tile_padding);
@@ -1694,6 +2233,7 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 		bitmap_height,
 		reinterpret_cast<BYTE*>(dib_bits),
 		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA);
+	progress.Destroy();
 
 	return update_data_list;
 }
