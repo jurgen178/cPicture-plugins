@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cwctype>
 #include <map>
 #include <string>
 #include <winhttp.h>
@@ -177,12 +178,12 @@ namespace
 
 	bool IsNumericChar(const WCHAR ch)
 	{
-		return (ch >= L'0' && ch <= L'9') || ch == L'+' || ch == L'-' || ch == L'.' || ch == L',';
+		return iswdigit(ch) != 0 || ch == L'+' || ch == L'-' || ch == L'.' || ch == L',';
 	}
 
-	bool IsAsciiLetter(const WCHAR ch)
+	bool IsWordLetter(const WCHAR ch)
 	{
-		return (ch >= L'A' && ch <= L'Z') || (ch >= L'a' && ch <= L'z');
+		return iswalpha(ch) != 0;
 	}
 
 	bool IsStandaloneCompassLetter(const CString& input, const int index)
@@ -194,9 +195,9 @@ namespace
 		if (upper != L'N' && upper != L'S' && upper != L'E' && upper != L'W')
 			return false;
 
-		if (index > 0 && IsAsciiLetter(input[index - 1]))
+		if (index > 0 && IsWordLetter(input[index - 1]))
 			return false;
-		if (index + 1 < input.GetLength() && IsAsciiLetter(input[index + 1]))
+		if (index + 1 < input.GetLength() && IsWordLetter(input[index + 1]))
 			return false;
 
 		return true;
@@ -210,14 +211,12 @@ namespace
 			if (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL)
 				continue;
 
-			if (IsAsciiLetter(ch))
+			if (IsWordLetter(ch))
 			{
 				if (IsStandaloneCompassLetter(input, index))
 					return static_cast<WCHAR>(towupper(ch));
 			}
 
-			if (IsNumericChar(ch))
-				break;
 			break;
 		}
 
@@ -227,14 +226,12 @@ namespace
 			if (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL)
 				continue;
 
-			if (IsAsciiLetter(ch))
+			if (IsWordLetter(ch))
 			{
 				if (IsStandaloneCompassLetter(input, index))
 					return static_cast<WCHAR>(towupper(ch));
 			}
 
-			if (IsNumericChar(ch))
-				break;
 			break;
 		}
 
@@ -597,9 +594,13 @@ namespace
 
 	bool HasExplicitGpsDirections(const CString& gps_text)
 	{
-		CString upper(gps_text);
-		upper.MakeUpper();
-		return upper.Find(L'N') >= 0 || upper.Find(L'S') >= 0 || upper.Find(L'E') >= 0 || upper.Find(L'W') >= 0;
+		for (int index = 0; index < gps_text.GetLength(); ++index)
+		{
+			if (IsStandaloneCompassLetter(gps_text, index))
+				return true;
+		}
+
+		return false;
 	}
 
 	bool TryFetchNominatimLocationName(const GeoPoint& geo, CString& place_name)
