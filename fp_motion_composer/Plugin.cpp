@@ -64,7 +64,6 @@ namespace
 
 	CString GetDirectory(const CString& file_name)
 	{
-		// cPicture uses the returned string as the destination path for added files, so we keep the source directory.
 		const int slash = file_name.ReverseFind(L'\\');
 		return slash >= 0 ? file_name.Left(slash + 1) : CString();
 	}

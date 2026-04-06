@@ -5,4 +5,4 @@ Dieses Funktionszusatzmodul erzeugt für jedes ausgewählte Bild eine Analyse-Ta
 Die Ausgabe eignet sich, um Strukturen, Kompressionsartefakte und auffällige Bildbereiche schnell sichtbar zu machen.
 
 <br>
-![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/xray.png)
+![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg)

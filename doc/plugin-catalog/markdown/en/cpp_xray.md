@@ -5,4 +5,4 @@ This function plugin creates an analysis board for each selected picture with th
 The output helps highlight structures, compression artifacts and visually suspicious image regions.
 
 <br>
-![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/xray.png)
+![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_xray.jpg)

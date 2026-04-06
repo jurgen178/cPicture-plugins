@@ -49,6 +49,8 @@
 #define IDS_PROGRESS_CANCEL_MESSAGE     143
 #define IDS_ERROR_PROGRESS_DIALOG       144
 #define IDS_ERROR_PROGRESS_WORKER       145
+#define IDS_PROGRESS_LOOKUP_DETAIL_NAME 146
+#define IDS_PROGRESS_THROTTLE_DETAIL_NAME 147
 #define IDC_EDIT_TITLE                  1000
 #define IDC_COMBO_SORT_MODE             1001
 #define IDC_CHECK_METADATA              1002
@@ -63,6 +65,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        106
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1006
-#define _APS_NEXT_SYMED_VALUE           146
+#define _APS_NEXT_SYMED_VALUE           148
 #endif
 #endif

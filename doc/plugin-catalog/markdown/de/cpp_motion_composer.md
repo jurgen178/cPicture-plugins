@@ -5,4 +5,4 @@ Dieses Funktionszusatzmodul kombiniert mehrere Bilder zu einer einzelnen Komposi
 Es eignet sich besonders fuer Serien mit Bewegung, etwa Personen, Fahrzeuge oder wiederholte Ablaeufe.
 
 <br>
-![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/motion_composer.png)
+![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg)

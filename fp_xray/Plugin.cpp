@@ -41,7 +41,6 @@ namespace
 
 	CString GetBaseName(const CString& file_name)
 	{
-		// cPicture passes the full source path here; for derived files we only want the bare name without extension.
 		const int slash = file_name.ReverseFind(L'\\');
 		CString name = slash >= 0 ? file_name.Mid(slash + 1) : file_name;
 		const int dot = name.ReverseFind(L'.');
@@ -50,7 +49,6 @@ namespace
 
 	CString GetDirectory(const CString& file_name)
 	{
-		// UPDATE_TYPE_ADDED should return a full target path so cPicture writes into the picture folder, not the app folder.
 		const int slash = file_name.ReverseFind(L'\\');
 		return slash >= 0 ? file_name.Left(slash + 1) : CString();
 	}

@@ -5,4 +5,4 @@ This function plugin combines multiple pictures into a single composition with m
 It is especially useful for sequences with movement, such as people, vehicles or repeated actions.
 
 <br>
-![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/motion_composer.png)
+![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg)

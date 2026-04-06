@@ -126,7 +126,6 @@ namespace
 
 	CString GetDirectory(const CString& file_name)
 	{
-		// Added images must carry an absolute target path; otherwise cPicture writes them into its app directory.
 		const int pos = file_name.ReverseFind(L'\\');
 		return pos >= 0 ? file_name.Left(pos + 1) : CString();
 	}
@@ -395,6 +394,7 @@ namespace
 		std::mutex mutex;
 		CString phase;
 		CString detail;
+		CString detail2;
 		ULONGLONG completed = 0;
 		ULONGLONG total = 1;
 		unsigned long revision = 0;
@@ -431,13 +431,14 @@ namespace
 			}
 		}
 
-		void SetStatus(const CString& phase, const CString& detail)
+		void SetStatus(const CString& phase, const CString& detail, const CString& detail2 = CString())
 		{
 			if (dialog == nullptr)
 				return;
 
 			dialog->SetLine(1, phase, FALSE, nullptr);
 			dialog->SetLine(2, detail, FALSE, nullptr);
+			dialog->SetLine(3, detail2, FALSE, nullptr);
 		}
 
 		void SetProgress(const ULONGLONG completed, const ULONGLONG total)
@@ -468,12 +469,13 @@ namespace
 		}
 	}
 
-	void UpdateProgressState(ProgressState& state, const CString& phase, const CString& detail, const ULONGLONG completed, const ULONGLONG total)
+	void UpdateProgressState(ProgressState& state, const CString& phase, const CString& detail, const ULONGLONG completed, const ULONGLONG total, const CString& detail2 = CString())
 	{
-		// The worker updates both lines atomically so the UI never mixes old and new text.
+		// The worker updates all displayed lines atomically so the UI never mixes old and new text.
 		std::lock_guard<std::mutex> lock(state.mutex);
 		state.phase = phase;
 		state.detail = detail;
+		state.detail2 = detail2;
 		state.completed = completed;
 		state.total = max<ULONGLONG>(1, total);
 		++state.revision;
@@ -484,6 +486,7 @@ namespace
 		// Only push text into the dialog when the worker actually published something new.
 		CString phase;
 		CString detail;
+		CString detail2;
 		ULONGLONG completed = 0;
 		ULONGLONG total = 1;
 		{
@@ -492,12 +495,13 @@ namespace
 				return;
 			phase = state.phase;
 			detail = state.detail;
+			detail2 = state.detail2;
 			completed = state.completed;
 			total = state.total;
 			revision = state.revision;
 		}
 
-		progress.SetStatus(phase, detail);
+		progress.SetStatus(phase, detail, detail2);
 		progress.SetProgress(completed, total);
 	}
 
@@ -1539,18 +1543,34 @@ namespace
 			if (TryResolveLocationNameNominatim(gps_text, center, place_name, &cancellation))
 				clusters[index].place_name = place_name;
 
+			CString resolved_detail;
+			if (!place_name.IsEmpty())
+				resolved_detail = FormatStringResource(IDS_PROGRESS_LOOKUP_DETAIL_NAME, static_cast<int>(index + 1), cluster_count, place_name.GetString());
+			UpdateProgressState(
+				progress_state,
+				LoadStringResource(IDS_PROGRESS_LOOKUP_PHASE),
+				detail,
+				static_cast<ULONGLONG>(index + 1),
+				static_cast<ULONGLONG>(max(1, cluster_count)),
+				resolved_detail);
+
 			if (cancellation.IsCanceled())
 				return false;
 
 			if (index + 1 < clusters.size())
 			{
 				// Public Nominatim usage is limited to at most one request per second, so we pause before every next lookup.
+				CString throttle_detail = FormatStringResource(IDS_PROGRESS_THROTTLE_DETAIL, static_cast<int>(index + 2), cluster_count);
+				CString throttle_detail2;
+				if (!place_name.IsEmpty())
+					throttle_detail2 = FormatStringResource(IDS_PROGRESS_LOOKUP_DETAIL_NAME, static_cast<int>(index + 1), cluster_count, place_name.GetString());
 				UpdateProgressState(
 					progress_state,
 					LoadStringResource(IDS_PROGRESS_THROTTLE_PHASE),
-					FormatStringResource(IDS_PROGRESS_THROTTLE_DETAIL, static_cast<int>(index + 2), cluster_count),
+					throttle_detail,
 					static_cast<ULONGLONG>(index + 1),
-					static_cast<ULONGLONG>(max(1, cluster_count)));
+					static_cast<ULONGLONG>(max(1, cluster_count)),
+					throttle_detail2);
 				if (!WaitForThrottleDelay(cancellation, throttled_lookup_delay_ms))
 					return false;
 			}
