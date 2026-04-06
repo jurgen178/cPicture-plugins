@@ -5,6 +5,10 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <string>
+#include <winhttp.h>
+
+#pragma comment(lib, "winhttp.lib")
 
 
 namespace
@@ -41,6 +45,7 @@ namespace
 		double longitude;
 		int count;
 		COLORREF color;
+		CString place_name;
 	};
 
 	struct PosterEntry
@@ -90,15 +95,23 @@ namespace
 
 	CString GetFileNameOnly(const CString& file_name)
 	{
+		// The plugin receives absolute file paths from cPicture, but captions and stems only need the leaf name.
 		const int pos = file_name.ReverseFind(L'\\');
 		return pos >= 0 ? file_name.Mid(pos + 1) : file_name;
 	}
 
-	CString GetStem(const CString& file_name)
+	CString GetBaseName(const CString& file_name)
 	{
 		CString name(GetFileNameOnly(file_name));
 		const int dot = name.ReverseFind(L'.');
 		return dot > 0 ? name.Left(dot) : name;
+	}
+
+	CString GetDirectory(const CString& file_name)
+	{
+		// Added images must carry an absolute target path; otherwise cPicture writes them into its app directory.
+		const int pos = file_name.ReverseFind(L'\\');
+		return pos >= 0 ? file_name.Left(pos + 1) : CString();
 	}
 
 	CString GetExtension(const CString& file_name)
@@ -151,49 +164,683 @@ namespace
 		}
 	}
 
+	struct GpsNumberToken
+	{
+		GpsNumberToken() : value(0.0), start(0), end(0), direction(0), axis_hint(0) {}
+
+		double value;
+		int start;
+		int end;
+		WCHAR direction;
+		int axis_hint;
+	};
+
+	bool IsNumericChar(const WCHAR ch)
+	{
+		return (ch >= L'0' && ch <= L'9') || ch == L'+' || ch == L'-' || ch == L'.' || ch == L',';
+	}
+
+	bool IsAsciiLetter(const WCHAR ch)
+	{
+		return (ch >= L'A' && ch <= L'Z') || (ch >= L'a' && ch <= L'z');
+	}
+
+	bool IsStandaloneCompassLetter(const CString& input, const int index)
+	{
+		if (index < 0 || index >= input.GetLength())
+			return false;
+
+		const WCHAR upper = static_cast<WCHAR>(towupper(input[index]));
+		if (upper != L'N' && upper != L'S' && upper != L'E' && upper != L'W')
+			return false;
+
+		if (index > 0 && IsAsciiLetter(input[index - 1]))
+			return false;
+		if (index + 1 < input.GetLength() && IsAsciiLetter(input[index + 1]))
+			return false;
+
+		return true;
+	}
+
+	WCHAR FindAdjacentDirection(const CString& input, const int start, const int end)
+	{
+		for (int index = start - 1; index >= 0; --index)
+		{
+			const WCHAR ch = input[index];
+			if (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL)
+				continue;
+
+			if (IsAsciiLetter(ch))
+			{
+				if (IsStandaloneCompassLetter(input, index))
+					return static_cast<WCHAR>(towupper(ch));
+			}
+
+			if (IsNumericChar(ch))
+				break;
+			break;
+		}
+
+		for (int index = end; index < input.GetLength(); ++index)
+		{
+			const WCHAR ch = input[index];
+			if (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL)
+				continue;
+
+			if (IsAsciiLetter(ch))
+			{
+				if (IsStandaloneCompassLetter(input, index))
+					return static_cast<WCHAR>(towupper(ch));
+			}
+
+			if (IsNumericChar(ch))
+				break;
+			break;
+		}
+
+		return 0;
+	}
+
+	int FindAxisHint(const CString& input, const int start, const int end)
+	{
+		CString lower(input);
+		lower.MakeLower();
+
+		const int left_start = max(0, start - 12);
+		const int left_length = start - left_start;
+		if (left_length > 0)
+		{
+			const CString context = lower.Mid(left_start, left_length);
+			if (context.Find(L"lat") >= 0)
+				return 1;
+			if (context.Find(L"lon") >= 0 || context.Find(L"lng") >= 0 || context.Find(L"long") >= 0)
+				return 2;
+		}
+
+		const int right_end = min(lower.GetLength(), end + 12);
+		const int right_length = right_end - end;
+		if (right_length > 0)
+		{
+			const CString context = lower.Mid(end, right_length);
+			if (context.Find(L"lat") >= 0)
+				return 1;
+			if (context.Find(L"lon") >= 0 || context.Find(L"lng") >= 0 || context.Find(L"long") >= 0)
+				return 2;
+		}
+
+		return 0;
+	}
+
+	int GetAxisFromToken(const GpsNumberToken& token)
+	{
+		if (token.direction == L'N' || token.direction == L'S' || token.axis_hint == 1)
+			return 1;
+		if (token.direction == L'E' || token.direction == L'W' || token.axis_hint == 2)
+			return 2;
+		return 0;
+	}
+
+	double BuildCoordinateFromTokens(const vector<GpsNumberToken>& values, const size_t start_index, size_t& next_index)
+	{
+		double coordinate = fabs(values[start_index].value);
+		next_index = start_index + 1;
+
+		if (next_index < values.size() && GetAxisFromToken(values[next_index]) == 0 && fabs(values[next_index].value) < 60.0)
+		{
+			coordinate += fabs(values[next_index].value) / 60.0;
+			++next_index;
+
+			if (next_index < values.size() && GetAxisFromToken(values[next_index]) == 0 && fabs(values[next_index].value) < 60.0)
+			{
+				coordinate += fabs(values[next_index].value) / 3600.0;
+				++next_index;
+			}
+		}
+
+		if (values[start_index].value < 0.0 || values[start_index].direction == L'S' || values[start_index].direction == L'W')
+			coordinate = -coordinate;
+
+		return coordinate;
+	}
+
+	CString FormatCoordinateForUrl(const double value)
+	{
+		CString text;
+		text.Format(L"%.6f", value);
+		ReplaceChar(text, L',', L'.');
+		return text;
+	}
+
+	CString Utf8ToCString(const std::string& text)
+	{
+		if (text.empty())
+			return CString();
+
+		const int length = ::MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), NULL, 0);
+		if (length <= 0)
+			return CString();
+
+		CString wide;
+		wchar_t* buffer = wide.GetBuffer(length);
+		::MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), buffer, length);
+		wide.ReleaseBuffer(length);
+		return wide;
+	}
+
+	int HexValue(const WCHAR ch)
+	{
+		if (ch >= L'0' && ch <= L'9')
+			return ch - L'0';
+		if (ch >= L'a' && ch <= L'f')
+			return 10 + ch - L'a';
+		if (ch >= L'A' && ch <= L'F')
+			return 10 + ch - L'A';
+		return -1;
+	}
+
+	bool TryExtractJsonObject(const CString& json, const CString& key, CString& object_text)
+	{
+		const CString needle = L"\"" + key + L"\"";
+		const int key_pos = json.Find(needle);
+		if (key_pos < 0)
+			return false;
+
+		const int colon_pos = json.Find(L':', key_pos + needle.GetLength());
+		if (colon_pos < 0)
+			return false;
+
+		const int object_start = json.Find(L'{', colon_pos + 1);
+		if (object_start < 0)
+			return false;
+
+		bool in_string = false;
+		bool escape = false;
+		int depth = 0;
+
+		for (int index = object_start; index < json.GetLength(); ++index)
+		{
+			const WCHAR ch = json[index];
+			if (in_string)
+			{
+				if (escape)
+					escape = false;
+				else if (ch == L'\\')
+					escape = true;
+				else if (ch == L'\"')
+					in_string = false;
+				continue;
+			}
+
+			if (ch == L'\"')
+			{
+				in_string = true;
+			}
+			else if (ch == L'{')
+			{
+				++depth;
+			}
+			else if (ch == L'}')
+			{
+				--depth;
+				if (depth == 0)
+				{
+					object_text = json.Mid(object_start, index - object_start + 1);
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool TryExtractJsonString(const CString& json, const CString& key, CString& value)
+	{
+		const CString needle = L"\"" + key + L"\"";
+		const int key_pos = json.Find(needle);
+		if (key_pos < 0)
+			return false;
+
+		const int colon_pos = json.Find(L':', key_pos + needle.GetLength());
+		if (colon_pos < 0)
+			return false;
+
+		int value_pos = colon_pos + 1;
+		while (value_pos < json.GetLength() && json[value_pos] <= L' ')
+			++value_pos;
+
+		if (value_pos >= json.GetLength() || json[value_pos] != L'\"')
+			return false;
+
+		CString result;
+		bool escape = false;
+
+		for (int index = value_pos + 1; index < json.GetLength(); ++index)
+		{
+			const WCHAR ch = json[index];
+			if (escape)
+			{
+				switch (ch)
+				{
+				case L'\"':
+				case L'\\':
+				case L'/':
+					result += ch;
+					break;
+				case L'b':
+					result += L'\b';
+					break;
+				case L'f':
+					result += L'\f';
+					break;
+				case L'n':
+					result += L'\n';
+					break;
+				case L'r':
+					result += L'\r';
+					break;
+				case L't':
+					result += L'\t';
+					break;
+				case L'u':
+					if (index + 4 < json.GetLength())
+					{
+						int unicode_value = 0;
+						bool valid = true;
+						for (int hex_index = 0; hex_index < 4; ++hex_index)
+						{
+							const int hex_value = HexValue(json[index + 1 + hex_index]);
+							if (hex_value < 0)
+							{
+								valid = false;
+								break;
+							}
+							unicode_value = unicode_value * 16 + hex_value;
+						}
+						if (valid)
+						{
+							result += static_cast<WCHAR>(unicode_value);
+							index += 4;
+						}
+					}
+					break;
+				default:
+					result += ch;
+					break;
+				}
+
+				escape = false;
+				continue;
+			}
+
+			if (ch == L'\\')
+			{
+				escape = true;
+			}
+			else if (ch == L'\"')
+			{
+				value = result;
+				return true;
+			}
+			else
+			{
+				result += ch;
+			}
+		}
+
+		return false;
+	}
+
+	CString TrimDisplayName(CString text)
+	{
+		const int comma = text.Find(L',');
+		if (comma > 0)
+			text = text.Left(comma);
+		text.Trim();
+		return text;
+	}
+
+	bool TryGetNamedAddressPart(const CString& address_json, const WCHAR* key, CString& value)
+	{
+		if (!TryExtractJsonString(address_json, key, value))
+			return false;
+
+		value.Trim();
+		return !value.IsEmpty();
+	}
+
+	bool SameTextInsensitive(const CString& lhs, const CString& rhs)
+	{
+		return lhs.CompareNoCase(rhs) == 0;
+	}
+
+	CString JoinLocationParts(const CString& first, const CString& second)
+	{
+		if (first.IsEmpty())
+			return second;
+		if (second.IsEmpty())
+			return first;
+		if (SameTextInsensitive(first, second))
+			return first;
+		return first + L", " + second;
+	}
+
+	CString PickLocationNameFromNominatimJson(const CString& json)
+	{
+		if (json.Find(L"\"error\"") >= 0)
+			return CString();
+
+		CString address_json;
+		if (TryExtractJsonObject(json, L"address", address_json))
+		{
+			CString house_number;
+			CString road;
+			CString neighbourhood;
+			CString suburb;
+			CString borough;
+			CString city;
+			CString county;
+
+			TryGetNamedAddressPart(address_json, L"house_number", house_number);
+			if (!TryGetNamedAddressPart(address_json, L"road", road))
+				if (!TryGetNamedAddressPart(address_json, L"pedestrian", road))
+					if (!TryGetNamedAddressPart(address_json, L"residential", road))
+						if (!TryGetNamedAddressPart(address_json, L"footway", road))
+							TryGetNamedAddressPart(address_json, L"path", road);
+
+			if (!road.IsEmpty() && !house_number.IsEmpty())
+				road += L" " + house_number;
+
+			if (!TryGetNamedAddressPart(address_json, L"neighbourhood", neighbourhood))
+				if (!TryGetNamedAddressPart(address_json, L"quarter", neighbourhood))
+					if (!TryGetNamedAddressPart(address_json, L"city_district", neighbourhood))
+						TryGetNamedAddressPart(address_json, L"hamlet", neighbourhood);
+
+			if (!TryGetNamedAddressPart(address_json, L"suburb", suburb))
+				TryGetNamedAddressPart(address_json, L"municipality", suburb);
+
+			TryGetNamedAddressPart(address_json, L"borough", borough);
+
+			if (!TryGetNamedAddressPart(address_json, L"city", city))
+				if (!TryGetNamedAddressPart(address_json, L"town", city))
+					if (!TryGetNamedAddressPart(address_json, L"village", city))
+						TryGetNamedAddressPart(address_json, L"state", city);
+
+			TryGetNamedAddressPart(address_json, L"county", county);
+
+			if (!neighbourhood.IsEmpty())
+				return JoinLocationParts(neighbourhood, city);
+			if (!suburb.IsEmpty())
+				return JoinLocationParts(suburb, city);
+			if (!borough.IsEmpty())
+				return JoinLocationParts(borough, city);
+			if (!city.IsEmpty())
+				return city;
+			if (!road.IsEmpty())
+				return JoinLocationParts(road, city);
+			if (!county.IsEmpty())
+				return county;
+		}
+
+		CString fallback;
+		if (TryExtractJsonString(json, L"name", fallback))
+		{
+			fallback.Trim();
+			if (!fallback.IsEmpty())
+				return fallback;
+		}
+
+		if (TryExtractJsonString(json, L"display_name", fallback))
+			return TrimDisplayName(fallback);
+
+		return CString();
+	}
+
+	bool HasExplicitGpsDirections(const CString& gps_text)
+	{
+		CString upper(gps_text);
+		upper.MakeUpper();
+		return upper.Find(L'N') >= 0 || upper.Find(L'S') >= 0 || upper.Find(L'E') >= 0 || upper.Find(L'W') >= 0;
+	}
+
+	bool TryFetchNominatimLocationName(const GeoPoint& geo, CString& place_name)
+	{
+		place_name.Empty();
+
+		HINTERNET session = ::WinHttpOpen(
+			L"TimeCapsule/1.0",
+			WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+			WINHTTP_NO_PROXY_NAME,
+			WINHTTP_NO_PROXY_BYPASS,
+			0);
+		if (session == NULL)
+			return false;
+
+		::WinHttpSetTimeouts(session, 1500, 1500, 2500, 2500);
+
+		HINTERNET connection = ::WinHttpConnect(session, L"nominatim.openstreetmap.org", INTERNET_DEFAULT_HTTPS_PORT, 0);
+		if (connection == NULL)
+		{
+			::WinHttpCloseHandle(session);
+			return false;
+		}
+
+		CString request_path;
+		request_path.Format(
+			L"/reverse?format=jsonv2&lat=%s&lon=%s&zoom=18&addressdetails=1&accept-language=de,en",
+			FormatCoordinateForUrl(geo.latitude).GetString(),
+			FormatCoordinateForUrl(geo.longitude).GetString());
+
+		HINTERNET request = ::WinHttpOpenRequest(
+			connection,
+			L"GET",
+			request_path,
+			NULL,
+			WINHTTP_NO_REFERER,
+			WINHTTP_DEFAULT_ACCEPT_TYPES,
+			WINHTTP_FLAG_SECURE);
+		if (request == NULL)
+		{
+			::WinHttpCloseHandle(connection);
+			::WinHttpCloseHandle(session);
+			return false;
+		}
+
+		const WCHAR* headers = L"Accept: application/json\r\n";
+		bool ok = ::WinHttpSendRequest(request, headers, static_cast<DWORD>(-1L), NULL, 0, 0, 0) == TRUE;
+		if (ok)
+			ok = ::WinHttpReceiveResponse(request, NULL) == TRUE;
+
+		DWORD status_code = 0;
+		DWORD status_size = sizeof(status_code);
+		if (ok)
+		{
+			ok = ::WinHttpQueryHeaders(
+				request,
+				WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+				WINHTTP_HEADER_NAME_BY_INDEX,
+				&status_code,
+				&status_size,
+				WINHTTP_NO_HEADER_INDEX) == TRUE;
+		}
+
+		std::string response_utf8;
+		while (ok)
+		{
+			DWORD available = 0;
+			if (::WinHttpQueryDataAvailable(request, &available) != TRUE)
+				break;
+
+			if (available == 0)
+				break;
+
+			std::string chunk;
+			chunk.resize(available);
+
+			DWORD downloaded = 0;
+			if (::WinHttpReadData(request, &chunk[0], available, &downloaded) != TRUE)
+				break;
+
+			chunk.resize(downloaded);
+			response_utf8 += chunk;
+		}
+
+		::WinHttpCloseHandle(request);
+		::WinHttpCloseHandle(connection);
+		::WinHttpCloseHandle(session);
+
+		if (!ok || status_code != 200 || response_utf8.empty())
+			return false;
+
+		place_name = PickLocationNameFromNominatimJson(Utf8ToCString(response_utf8));
+		place_name.Trim();
+		return !place_name.IsEmpty();
+	}
+
+	bool TryResolveLocationNameNominatim(const CString& gps_text, const GeoPoint& geo, CString& place_name)
+	{
+		if (TryFetchNominatimLocationName(geo, place_name))
+			return true;
+
+		if (HasExplicitGpsDirections(gps_text))
+			return false;
+
+		GeoPoint swapped_geo;
+		swapped_geo.valid = true;
+		swapped_geo.latitude = geo.longitude;
+		swapped_geo.longitude = geo.latitude;
+
+		if (fabs(swapped_geo.latitude) > 90.0 || fabs(swapped_geo.longitude) > 180.0)
+			return false;
+
+		return TryFetchNominatimLocationName(swapped_geo, place_name);
+	}
+
 	// GPS strings come back in different textual variants, so we first extract the numeric parts.
-	bool ExtractNumbers(const CString& input, vector<double>& values)
+	bool ExtractNumbers(const CString& input, vector<GpsNumberToken>& values)
 	{
 		CString current;
+		int token_start = -1;
 		for (int index = 0; index < input.GetLength(); ++index)
 		{
 			const WCHAR ch = input[index];
-			if ((ch >= L'0' && ch <= L'9') || ch == L'+' || ch == L'-' || ch == L'.' || ch == L',')
+			if (IsNumericChar(ch))
 			{
+				if (current.IsEmpty())
+					token_start = index;
 				current += ch;
 			}
 			else if (!current.IsEmpty())
 			{
 				ReplaceChar(current, L',', L'.');
-				values.push_back(_wtof(current));
+				GpsNumberToken token;
+				token.value = _wtof(current);
+				token.start = token_start;
+				token.end = index;
+				token.direction = FindAdjacentDirection(input, token.start, token.end);
+				token.axis_hint = FindAxisHint(input, token.start, token.end);
+				values.push_back(token);
 				current.Empty();
+				token_start = -1;
 			}
 		}
 
 		if (!current.IsEmpty())
 		{
 			ReplaceChar(current, L',', L'.');
-			values.push_back(_wtof(current));
+			GpsNumberToken token;
+			token.value = _wtof(current);
+			token.start = token_start;
+			token.end = input.GetLength();
+			token.direction = FindAdjacentDirection(input, token.start, token.end);
+			token.axis_hint = FindAxisHint(input, token.start, token.end);
+			values.push_back(token);
 		}
 
 		return values.size() >= 2;
 	}
 
-	// The plugin only needs a tolerant decimal lat/lon parser, not full GPS DMS support.
+	// EXIF GPS may arrive either as decimal degrees or as degree/minute/second sequences.
 	bool TryParseDecimalGps(const CString& gps_text, GeoPoint& point)
 	{
-		vector<double> values;
+		vector<GpsNumberToken> values;
 		if (!ExtractNumbers(gps_text, values))
 			return false;
 
-		double latitude = values[0];
-		double longitude = values[1];
+		double latitude = 0.0;
+		double longitude = 0.0;
+		bool have_latitude = false;
+		bool have_longitude = false;
+
+		for (size_t index = 0; index < values.size(); ++index)
+		{
+			const int axis = GetAxisFromToken(values[index]);
+			if (axis == 0)
+				continue;
+
+			size_t next_index = index + 1;
+			const double value = BuildCoordinateFromTokens(values, index, next_index);
+
+			if (axis == 1)
+			{
+				latitude = value;
+				have_latitude = true;
+			}
+			else if (axis == 2)
+			{
+				longitude = value;
+				have_longitude = true;
+			}
+
+			index = next_index - 1;
+		}
+
+		if (!have_latitude || !have_longitude)
+		{
+			double first = values[0].value;
+			double second = values[1].value;
+
+			if (!have_latitude && !have_longitude)
+			{
+				const bool first_can_be_lat = fabs(first) <= 90.0;
+				const bool first_can_be_lon = fabs(first) <= 180.0;
+				const bool second_can_be_lat = fabs(second) <= 90.0;
+				const bool second_can_be_lon = fabs(second) <= 180.0;
+
+				if (!first_can_be_lat && second_can_be_lat)
+				{
+					latitude = second;
+					longitude = first;
+				}
+				else if (!second_can_be_lat && first_can_be_lat)
+				{
+					latitude = first;
+					longitude = second;
+				}
+				else
+				{
+					latitude = first;
+					longitude = second;
+				}
+				have_latitude = true;
+				have_longitude = true;
+			}
+			else if (!have_latitude && have_longitude)
+			{
+				latitude = fabs(first - longitude) < fabs(second - longitude) ? second : first;
+				have_latitude = true;
+			}
+			else if (have_latitude && !have_longitude)
+			{
+				longitude = fabs(first - latitude) < fabs(second - latitude) ? second : first;
+				have_longitude = true;
+			}
+		}
 
 		CString upper(gps_text);
 		upper.MakeUpper();
-		if (upper.Find(L'S') >= 0)
+		if (!have_latitude && upper.Find(L'S') >= 0)
 			latitude = -fabs(latitude);
-		if (upper.Find(L'W') >= 0)
+		if (!have_longitude && upper.Find(L'W') >= 0)
 			longitude = -fabs(longitude);
 
 		if (fabs(latitude) > 90.0 || fabs(longitude) > 180.0)
@@ -255,6 +902,14 @@ namespace
 		return text;
 	}
 
+	CString GetClusterName(const RouteCluster& cluster, const int cluster_index)
+	{
+		if (!cluster.place_name.IsEmpty())
+			return cluster.place_name;
+
+		return FormatLocationName(cluster_index);
+	}
+
 	CString FormatCoordinate(const double value)
 	{
 		CString text;
@@ -264,8 +919,11 @@ namespace
 
 	CString FormatLocationLabel(const RouteCluster& cluster, const int cluster_index)
 	{
+		if (!cluster.place_name.IsEmpty())
+			return cluster.place_name;
+
 		CString text;
-		text.Format(L"Ort %d (%s, %s)", cluster_index + 1,
+		text.Format(L"%s (%s, %s)", GetClusterName(cluster, cluster_index).GetString(),
 			FormatCoordinate(cluster.latitude).GetString(),
 			FormatCoordinate(cluster.longitude).GetString());
 		return text;
@@ -384,6 +1042,33 @@ namespace
 		return insights;
 	}
 
+	// Reverse geocoding is done once per cluster so multi-image posters do not spam web requests.
+	void ResolveClusterNames(vector<RouteCluster>& clusters, const vector<PosterEntry>& entries)
+	{
+		const size_t max_online_lookups = 8;
+		for (size_t index = 0; index < clusters.size() && index < max_online_lookups; ++index)
+		{
+			CString gps_text;
+			for (size_t entry_index = 0; entry_index < entries.size(); ++entry_index)
+			{
+				if (entries[entry_index].cluster_index == static_cast<int>(index) && entries[entry_index].picture != NULL)
+				{
+					gps_text = entries[entry_index].picture->gps;
+					break;
+				}
+			}
+
+			GeoPoint center;
+			center.valid = true;
+			center.latitude = clusters[index].latitude;
+			center.longitude = clusters[index].longitude;
+
+			CString place_name;
+			if (TryResolveLocationNameNominatim(gps_text, center, place_name))
+				clusters[index].place_name = place_name;
+		}
+	}
+
 	CString BuildSummary(const vector<const picture_data*>& pictures, const PosterInsights& insights)
 	{
 		CString summary;
@@ -459,9 +1144,9 @@ namespace
 			return story;
 		}
 
-	CString BuildCaption(const picture_data& picture, bool show_metadata, const PosterEntry& entry)
+	CString BuildCaption(const picture_data& picture, bool show_metadata, const PosterEntry& entry, const vector<RouteCluster>& clusters)
 	{
-		CString line1(GetStem(picture.file_name));
+		CString line1(GetBaseName(picture.file_name));
 		CString line2;
 		CString line3;
 
@@ -473,8 +1158,8 @@ namespace
 		if (show_metadata)
 		{
 			CString location;
-			if (entry.cluster_index >= 0)
-				location = FormatLocationName(entry.cluster_index);
+			if (entry.cluster_index >= 0 && entry.cluster_index < static_cast<int>(clusters.size()))
+				location = GetClusterName(clusters[entry.cluster_index], entry.cluster_index);
 
 			CString model(picture.model);
 			model.Trim();
@@ -593,7 +1278,7 @@ namespace
 		mem_dc.SelectObject(old_font);
 	}
 
-	// Route positions are normalized into the banner rect instead of using a real map projection.
+	// The route strip is intentionally schematic: a calm horizontal travel line reads better than a literal map trace.
 	void DrawRouteStrip(CDC& mem_dc, const CRect& route_rect, const PosterInsights& insights)
 	{
 		CBrush route_background(RGB(49, 63, 78));
@@ -610,40 +1295,37 @@ namespace
 			return;
 		}
 
-		double min_lat = 999.0;
-		double max_lat = -999.0;
-		double min_lon = 999.0;
-		double max_lon = -999.0;
-
-		for (size_t index = 0; index < insights.entries.size(); ++index)
-		{
-			if (!insights.entries[index].geo.valid)
-				continue;
-			min_lat = min(min_lat, insights.entries[index].geo.latitude);
-			max_lat = max(max_lat, insights.entries[index].geo.latitude);
-			min_lon = min(min_lon, insights.entries[index].geo.longitude);
-			max_lon = max(max_lon, insights.entries[index].geo.longitude);
-		}
-
-		const double lat_span = max(0.001, max_lat - min_lat);
-		const double lon_span = max(0.001, max_lon - min_lon);
 		const int left = route_rect.left + 14;
 		const int top = route_rect.top + 14;
 		const int width = max(1, route_rect.Width() - 28);
 		const int height = max(1, route_rect.Height() - 28);
+		const int baseline_y = top + (height * 3) / 4;
 
-		CPen route_pen(PS_SOLID, 3, RGB(225, 214, 170));
-		CPen* old_pen = mem_dc.SelectObject(&route_pen);
-		bool first = true;
-		CPoint prev;
+		vector<CPoint> route_points;
+		route_points.reserve(insights.gps_picture_count);
 
+		int valid_index = 0;
+		const int valid_count = max(1, insights.gps_picture_count);
 		for (size_t index = 0; index < insights.entries.size(); ++index)
 		{
 			if (!insights.entries[index].geo.valid)
 				continue;
 
-			const int x = left + static_cast<int>(((insights.entries[index].geo.longitude - min_lon) / lon_span) * width);
-			const int y = top + height - static_cast<int>(((insights.entries[index].geo.latitude - min_lat) / lat_span) * height);
+			const int x = valid_count == 1
+				? left + width / 2
+				: left + static_cast<int>((static_cast<double>(valid_index) / (valid_count - 1)) * width);
+			route_points.push_back(CPoint(x, baseline_y));
+			++valid_index;
+		}
+
+		CPen route_pen(PS_SOLID, 3, RGB(225, 214, 170));
+		CPen* old_pen = mem_dc.SelectObject(&route_pen);
+		bool first = true;
+
+		for (size_t index = 0; index < route_points.size(); ++index)
+		{
+			const int x = route_points[index].x;
+			const int y = route_points[index].y;
 
 			if (first)
 			{
@@ -654,21 +1336,22 @@ namespace
 			{
 				mem_dc.LineTo(x, y);
 			}
-			prev = CPoint(x, y);
 		}
 
 		mem_dc.SelectObject(old_pen);
 
+		valid_index = 0;
 		for (size_t index = 0; index < insights.entries.size(); ++index)
 		{
 			if (!insights.entries[index].geo.valid || insights.entries[index].cluster_index < 0)
 				continue;
 
-			const int x = left + static_cast<int>(((insights.entries[index].geo.longitude - min_lon) / lon_span) * width);
-			const int y = top + height - static_cast<int>(((insights.entries[index].geo.latitude - min_lat) / lat_span) * height);
+			const int x = route_points[valid_index].x;
+			const int y = route_points[valid_index].y;
 			const int badge_radius = 10;
 			const CRect badge_rect(x - badge_radius, y - badge_radius, x + badge_radius + 1, y + badge_radius + 1);
 			DrawNumberBadge(mem_dc, badge_rect, insights.clusters[insights.entries[index].cluster_index].color, static_cast<int>(index) + 1);
+			++valid_index;
 		}
 
 		mem_dc.SetBkMode(TRANSPARENT);
@@ -846,7 +1529,8 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 
 	SortPictures(sorted_pictures, sort_mode);
 
-	const PosterInsights insights = AnalyzePictures(sorted_pictures, location_cluster_radius_km);
+	PosterInsights insights = AnalyzePictures(sorted_pictures, location_cluster_radius_km);
+	ResolveClusterNames(insights.clusters, insights.entries);
 
 	const int count = static_cast<int>(sorted_pictures.size());
 	const int cols = min(4, max(2, count));
@@ -944,14 +1628,15 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 		mem_dc.SelectObject(&caption_font);
 		mem_dc.SetTextColor(RGB(52, 52, 52));
 		CRect caption_rect(left, top + thumbnail_height + 8, left + tile_width, top + thumbnail_height + caption_height);
-		mem_dc.DrawText(BuildCaption(*sorted_pictures[index], show_metadata, insights.entries[index]), caption_rect, DT_LEFT | DT_WORDBREAK | DT_END_ELLIPSIS);
+		mem_dc.DrawText(BuildCaption(*sorted_pictures[index], show_metadata, insights.entries[index], insights.clusters), caption_rect, DT_LEFT | DT_WORDBREAK | DT_END_ELLIPSIS);
 	}
 
 	mem_dc.SelectObject(old_font);
 	mem_dc.SelectObject(old_pen);
 	mem_dc.SelectObject(old_bitmap);
 
-	CString output_name = SanitizeStem(header_title) + GetExtension(sorted_pictures.front()->file_name);
+	// The poster is written into the folder of the first selected picture, matching the behavior of other multi-image outputs.
+	CString output_name = GetDirectory(sorted_pictures.front()->file_name) + SanitizeStem(header_title) + GetExtension(sorted_pictures.front()->file_name);
 	update_data_list.push_back(update_data(
 		output_name,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,

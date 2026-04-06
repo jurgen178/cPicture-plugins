@@ -42,12 +42,20 @@ namespace
 		dst[index + 2] = static_cast<BYTE>((dst[index + 2] * (255 - alpha) + blue * alpha) / 255);
 	}
 
-	CString GetStem(const CString& file_name)
+	CString GetBaseName(const CString& file_name)
 	{
+		// cPicture passes the full source path here; for derived files we only want the bare name without extension.
 		const int slash = file_name.ReverseFind(L'\\');
 		CString name = slash >= 0 ? file_name.Mid(slash + 1) : file_name;
 		const int dot = name.ReverseFind(L'.');
 		return dot > 0 ? name.Left(dot) : name;
+	}
+
+	CString GetDirectory(const CString& file_name)
+	{
+		// UPDATE_TYPE_ADDED should return a full target path so cPicture writes into the picture folder, not the app folder.
+		const int slash = file_name.ReverseFind(L'\\');
+		return slash >= 0 ? file_name.Left(slash + 1) : CString();
 	}
 
 	CString GetExtension(const CString& file_name)
@@ -462,7 +470,8 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 	DrawLabel(composite, out_width, out_height, 0, height, width, height, "BLOCK 8X8");
 	DrawLabel(composite, out_width, out_height, width, height, width, height, "COMBINED");
 
-	const CString output_file = GetStem(picture_data.file_name) + L"-xray" + GetExtension(picture_data.file_name);
+	// Write the analysis image next to the source file instead of relying on the current working directory.
+	const CString output_file = GetDirectory(picture_data.file_name) + GetBaseName(picture_data.file_name) + L"-xray" + GetExtension(picture_data.file_name);
 	update_data_list.push_back(update_data(
 		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
