@@ -12,17 +12,17 @@ namespace
 	{
 	public:
 		ScopedWaitCursor()
-			: previous_cursor(::SetCursor(::LoadCursor(NULL, IDC_WAIT)))
+			: previous_cursor(::SetCursor(::LoadCursor(nullptr, IDC_WAIT)))
 		{
 		}
 
 		~ScopedWaitCursor()
 		{
-			::SetCursor(previous_cursor != NULL ? previous_cursor : ::LoadCursor(NULL, IDC_ARROW));
+			::SetCursor(previous_cursor != nullptr ? previous_cursor : ::LoadCursor(nullptr, IDC_ARROW));
 		}
 
 	private:
-		HCURSOR previous_cursor;
+		HCURSOR previous_cursor = nullptr;
 	};
 
 	inline int PixelIndex(const int x, const int y, const int width)
@@ -143,41 +143,85 @@ namespace
 	const unsigned char* GetGlyph5x7(const char ch)
 	{
 		static const unsigned char glyph_space[7] = { 0, 0, 0, 0, 0, 0, 0 };
+		static const unsigned char glyph_0[7] = { 14, 17, 19, 21, 25, 17, 14 };
+		static const unsigned char glyph_1[7] = { 4, 12, 4, 4, 4, 4, 14 };
+		static const unsigned char glyph_2[7] = { 14, 17, 1, 2, 4, 8, 31 };
+		static const unsigned char glyph_3[7] = { 30, 1, 1, 14, 1, 1, 30 };
+		static const unsigned char glyph_4[7] = { 2, 6, 10, 18, 31, 2, 2 };
+		static const unsigned char glyph_5[7] = { 31, 16, 16, 30, 1, 1, 30 };
+		static const unsigned char glyph_6[7] = { 14, 16, 16, 30, 17, 17, 14 };
+		static const unsigned char glyph_7[7] = { 31, 1, 2, 4, 8, 8, 8 };
 		static const unsigned char glyph_8[7] = { 14, 17, 17, 14, 17, 17, 14 };
+		static const unsigned char glyph_9[7] = { 14, 17, 17, 15, 1, 1, 14 };
 		static const unsigned char glyph_a[7] = { 14, 17, 17, 31, 17, 17, 17 };
 		static const unsigned char glyph_b[7] = { 30, 17, 17, 30, 17, 17, 30 };
 		static const unsigned char glyph_c[7] = { 14, 17, 16, 16, 16, 17, 14 };
 		static const unsigned char glyph_d[7] = { 30, 17, 17, 17, 17, 17, 30 };
 		static const unsigned char glyph_e[7] = { 31, 16, 16, 30, 16, 16, 31 };
+		static const unsigned char glyph_f[7] = { 31, 16, 16, 30, 16, 16, 16 };
 		static const unsigned char glyph_g[7] = { 14, 17, 16, 16, 19, 17, 14 };
+		static const unsigned char glyph_h[7] = { 17, 17, 17, 31, 17, 17, 17 };
 		static const unsigned char glyph_i[7] = { 31, 4, 4, 4, 4, 4, 31 };
+		static const unsigned char glyph_j[7] = { 7, 2, 2, 2, 2, 18, 12 };
 		static const unsigned char glyph_k[7] = { 17, 18, 20, 24, 20, 18, 17 };
 		static const unsigned char glyph_l[7] = { 16, 16, 16, 16, 16, 16, 31 };
 		static const unsigned char glyph_m[7] = { 17, 27, 21, 21, 17, 17, 17 };
 		static const unsigned char glyph_n[7] = { 17, 25, 21, 19, 17, 17, 17 };
 		static const unsigned char glyph_o[7] = { 14, 17, 17, 17, 17, 17, 14 };
+		static const unsigned char glyph_p[7] = { 30, 17, 17, 30, 16, 16, 16 };
+		static const unsigned char glyph_q[7] = { 14, 17, 17, 17, 21, 18, 13 };
 		static const unsigned char glyph_r[7] = { 30, 17, 17, 30, 20, 18, 17 };
 		static const unsigned char glyph_s[7] = { 14, 17, 16, 14, 1, 17, 14 };
+		static const unsigned char glyph_t[7] = { 31, 4, 4, 4, 4, 4, 4 };
+		static const unsigned char glyph_u[7] = { 17, 17, 17, 17, 17, 17, 14 };
+		static const unsigned char glyph_v[7] = { 17, 17, 17, 17, 17, 10, 4 };
+		static const unsigned char glyph_w[7] = { 17, 17, 17, 21, 21, 21, 10 };
 		static const unsigned char glyph_x[7] = { 17, 17, 10, 4, 10, 17, 17 };
+		static const unsigned char glyph_y[7] = { 17, 17, 10, 4, 4, 4, 4 };
+		static const unsigned char glyph_z[7] = { 31, 1, 2, 4, 8, 16, 31 };
 
-		switch (ch)
+		const char upper = ch >= 'a' && ch <= 'z'
+			? static_cast<char>(ch - 'a' + 'A')
+			: ch;
+
+		switch (upper)
 		{
+		case '0': return glyph_0;
+		case '1': return glyph_1;
+		case '2': return glyph_2;
+		case '3': return glyph_3;
+		case '4': return glyph_4;
+		case '5': return glyph_5;
+		case '6': return glyph_6;
+		case '7': return glyph_7;
 		case '8': return glyph_8;
+		case '9': return glyph_9;
 		case 'A': return glyph_a;
 		case 'B': return glyph_b;
 		case 'C': return glyph_c;
 		case 'D': return glyph_d;
 		case 'E': return glyph_e;
+		case 'F': return glyph_f;
 		case 'G': return glyph_g;
+		case 'H': return glyph_h;
 		case 'I': return glyph_i;
+		case 'J': return glyph_j;
 		case 'K': return glyph_k;
 		case 'L': return glyph_l;
 		case 'M': return glyph_m;
 		case 'N': return glyph_n;
 		case 'O': return glyph_o;
+		case 'P': return glyph_p;
+		case 'Q': return glyph_q;
 		case 'R': return glyph_r;
 		case 'S': return glyph_s;
+		case 'T': return glyph_t;
+		case 'U': return glyph_u;
+		case 'V': return glyph_v;
+		case 'W': return glyph_w;
 		case 'X': return glyph_x;
+		case 'Y': return glyph_y;
+		case 'Z': return glyph_z;
 		case ' ': return glyph_space;
 		default: return glyph_space;
 		}
@@ -357,7 +401,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginXRay::CFunctionPluginXRay()
-	: handle_wnd(NULL),
+	: handle_wnd(nullptr),
 	  analysis_scale(60),
 	  sensitivity(55),
 	  show_grid(true)
@@ -366,8 +410,8 @@ CFunctionPluginXRay::CFunctionPluginXRay()
 
 CFunctionPluginXRay::~CFunctionPluginXRay()
 {
-	for (vector<BYTE*>::iterator it = generated_buffers.begin(); it != generated_buffers.end(); ++it)
-		delete[] *it;
+	for (BYTE* buffer : generated_buffers)
+		delete[] buffer;
 }
 
 struct plugin_data __stdcall CFunctionPluginXRay::get_plugin_data() const
@@ -419,7 +463,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginXRay::start(
 	sensitivity = settings.sensitivity;
 	show_grid = settings.show_grid == TRUE;
 
-	request_data_sizes.push_back(request_data_size(-analysis_scale, -analysis_scale, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+	request_data_sizes.emplace_back(-analysis_scale, -analysis_scale, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
@@ -431,7 +475,7 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 		return true;
 
 	const requested_data& request = picture_data.requested_data_list.front();
-	if (request.data == NULL || request.picture_width <= 0 || request.picture_height <= 0)
+	if (request.data == nullptr || request.picture_width <= 0 || request.picture_height <= 0)
 		return true;
 
 	const int width = request.picture_width;
@@ -440,7 +484,7 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 	const int out_height = height * 2;
 
 	BYTE* composite = new BYTE[out_width * out_height * 3];
-	generated_buffers.push_back(composite);
+	generated_buffers.emplace_back(composite);
 	for (int index = 0; index < out_width * out_height * 3; ++index)
 		composite[index] = 18;
 
@@ -472,13 +516,13 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 
 	// Write the analysis image next to the source file instead of relying on the current working directory.
 	const CString output_file = GetDirectory(picture_data.file_name) + GetBaseName(picture_data.file_name) + L"-xray" + GetExtension(picture_data.file_name);
-	update_data_list.push_back(update_data(
+	update_data_list.emplace_back(
 		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
 		out_width,
 		out_height,
 		composite,
-		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 
 	return true;
 }

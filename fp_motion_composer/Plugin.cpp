@@ -2,6 +2,7 @@
 #include "Plugin.h"
 #include "SettingsDlg.h"
 
+#include <array>
 #include <algorithm>
 
 
@@ -12,17 +13,17 @@ namespace
 	{
 	public:
 		ScopedWaitCursor()
-			: previous_cursor(::SetCursor(::LoadCursor(NULL, IDC_WAIT)))
+			: previous_cursor(::SetCursor(::LoadCursor(nullptr, IDC_WAIT)))
 		{
 		}
 
 		~ScopedWaitCursor()
 		{
-			::SetCursor(previous_cursor != NULL ? previous_cursor : ::LoadCursor(NULL, IDC_ARROW));
+			::SetCursor(previous_cursor != nullptr ? previous_cursor : ::LoadCursor(nullptr, IDC_ARROW));
 		}
 
 	private:
-		HCURSOR previous_cursor;
+		HCURSOR previous_cursor = nullptr;
 	};
 
 	struct TrailColor
@@ -39,17 +40,17 @@ namespace
 
 	TrailColor GetTrailColor(const int frame_index)
 	{
-		static const TrailColor palette[] =
-		{
+		static const std::array<TrailColor, 6> palette =
+		{{
 			{ 255, 92, 92 },
 			{ 255, 174, 66 },
 			{ 255, 232, 92 },
 			{ 88, 216, 255 },
 			{ 180, 132, 255 },
 			{ 255, 120, 216 }
-		};
+		}};
 
-		return palette[frame_index % (sizeof(palette) / sizeof(palette[0]))];
+		return palette[frame_index % palette.size()];
 	}
 
 	CString GetBaseName(const CString& file_name)
@@ -77,7 +78,7 @@ namespace
 	// cPicture may preserve aspect ratio when returning resized previews, so validate against the actual payload.
 	bool HasExpectedRgbBuffer(const requested_data& request)
 	{
-		if (request.data == NULL || request.picture_width <= 0 || request.picture_height <= 0)
+		if (request.data == nullptr || request.picture_width <= 0 || request.picture_height <= 0)
 			return false;
 
 		const __int64 expected_len = 3LL * request.picture_width * request.picture_height;
@@ -122,12 +123,12 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginMotionComposer::CFunctionPluginMotionComposer()
-	: handle_wnd(NULL),
+	: handle_wnd(nullptr),
 	  output_width(1280),
 	  output_height(720),
 	  difference_threshold(48),
 	  colorize_frames(true),
-	  composite_data(NULL)
+	  composite_data(nullptr)
 {
 }
 
@@ -187,7 +188,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginMotionComposer::start(
 	difference_threshold = settings.difference_threshold;
 	colorize_frames = settings.colorize_frames == TRUE;
 
-	request_data_sizes.push_back(request_data_size(output_width, output_height, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+	request_data_sizes.emplace_back(output_width, output_height, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
@@ -205,10 +206,10 @@ const vector<update_data>& __stdcall CFunctionPluginMotionComposer::end(const ve
 		return update_data_list;
 
 	vector<const requested_data*> frames;
-	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
+	for (const picture_data& picture : picture_data_list)
 	{
-		if (!it->requested_data_list.empty() && it->requested_data_list.front().data != NULL)
-			frames.push_back(&it->requested_data_list.front());
+		if (!picture.requested_data_list.empty() && picture.requested_data_list.front().data != nullptr)
+			frames.emplace_back(&picture.requested_data_list.front());
 	}
 
 	if (frames.size() < 2)
@@ -309,13 +310,13 @@ const vector<update_data>& __stdcall CFunctionPluginMotionComposer::end(const ve
 
 	// Store the combined frame beside the first source image instead of under cPicture's current working directory.
 	CString output_file = GetDirectory(picture_data_list.front().file_name) + GetBaseName(picture_data_list.front().file_name) + L"-motion-composer" + GetExtension(picture_data_list.front().file_name);
-	update_data_list.push_back(update_data(
+	update_data_list.emplace_back(
 		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
 		canvas_width,
 		canvas_height,
 		composite_data,
-		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA));
+		DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 
 	return update_data_list;
 }

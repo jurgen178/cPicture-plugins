@@ -2,6 +2,7 @@
 #include "Plugin.h"
 #include "SettingsDlg.h"
 
+#include <array>
 #include <algorithm>
 #include <cmath>
 #include <cwctype>
@@ -24,74 +25,62 @@ namespace
 		SORT_MODE_GPS_SOUTH_NORTH,
 	};
 
-	const int header_height = 138;
-	const int summary_height = 66;
-	const int tile_padding = 18;
-	const int caption_height = 66;
+	constexpr int header_height = 138;
+	constexpr int summary_height = 66;
+	constexpr int tile_padding = 18;
+	constexpr int caption_height = 66;
 
 	struct GeoPoint
 	{
-		GeoPoint() : valid(false), latitude(0.0), longitude(0.0) {}
-
-		bool valid;
-		double latitude;
-		double longitude;
+		bool valid = false;
+		double latitude = 0.0;
+		double longitude = 0.0;
 	};
 
 	struct RouteCluster
 	{
-		RouteCluster() : latitude(0.0), longitude(0.0), count(0), color(RGB(0, 0, 0)) {}
-
-		double latitude;
-		double longitude;
-		int count;
-		COLORREF color;
+		double latitude = 0.0;
+		double longitude = 0.0;
+		int count = 0;
+		COLORREF color = RGB(0, 0, 0);
 		CString place_name;
 	};
 
 	struct PosterEntry
 	{
-		PosterEntry() : picture(NULL), cluster_index(-1), hop_distance_km(0.0) {}
-
-		const picture_data* picture;
+		const picture_data* picture = nullptr;
 		GeoPoint geo;
-		int cluster_index;
-		double hop_distance_km;
+		int cluster_index = -1;
+		double hop_distance_km = 0.0;
 	};
 
 	struct PosterInsights
 	{
-		PosterInsights()
-			: gps_picture_count(0), total_distance_km(0.0), longest_hop_km(0.0), longest_hop_index(-1),
-			  first_exif_time(0), last_exif_time(0)
-		{
-		}
-
 		vector<PosterEntry> entries;
 		vector<RouteCluster> clusters;
-		int gps_picture_count;
-		double total_distance_km;
-		double longest_hop_km;
-		int longest_hop_index;
-		__int64 first_exif_time;
-		__int64 last_exif_time;
+		int gps_picture_count = 0;
+		double total_distance_km = 0.0;
+		double longest_hop_km = 0.0;
+		int longest_hop_index = -1;
+		__int64 first_exif_time = 0;
+		__int64 last_exif_time = 0;
 	};
 
 	class ScopedWaitCursor
 	{
 	public:
 		ScopedWaitCursor()
-			: previous_cursor(::SetCursor(::LoadCursor(NULL, IDC_WAIT)))
+			: previous_cursor(::SetCursor(::LoadCursor(nullptr, IDC_WAIT)))
 		{
 		}
 
 		~ScopedWaitCursor()
 		{
-			::SetCursor(previous_cursor != NULL ? previous_cursor : ::LoadCursor(NULL, IDC_ARROW));
+			::SetCursor(previous_cursor != nullptr ? previous_cursor : ::LoadCursor(nullptr, IDC_ARROW));
 		}
 
 	private:
-		HCURSOR previous_cursor;
+		HCURSOR previous_cursor = nullptr;
 	};
 
 	CString GetFileNameOnly(const CString& file_name)
@@ -132,7 +121,7 @@ namespace
 			const WCHAR ch = text[index];
 			if (ch == L' ')
 				text.SetAt(index, L'-');
-			else if (wcschr(L"\\/:*?\"<>|", ch) != NULL)
+			else if (wcschr(L"\\/:*?\"<>|", ch) != nullptr)
 				text.SetAt(index, L'_');
 		}
 
@@ -141,7 +130,7 @@ namespace
 
 	COLORREF GetClusterColor(const int index)
 	{
-		static const COLORREF colors[] =
+		static const std::array<COLORREF, 8> colors =
 		{
 			RGB(227, 102, 73),
 			RGB(70, 130, 180),
@@ -153,17 +142,40 @@ namespace
 			RGB(124, 114, 84)
 		};
 
-		return colors[index % (sizeof(colors) / sizeof(colors[0]))];
+		return colors[index % colors.size()];
 	}
 
 	struct WinHttpHandle
 	{
-		WinHttpHandle() : handle(NULL) {}
+		WinHttpHandle() = default;
 		explicit WinHttpHandle(HINTERNET value) : handle(value) {}
+		WinHttpHandle(const WinHttpHandle&) = delete;
+		WinHttpHandle& operator=(const WinHttpHandle&) = delete;
+		WinHttpHandle(WinHttpHandle&& other) noexcept : handle(other.handle)
+		{
+			other.handle = nullptr;
+		}
+		WinHttpHandle& operator=(WinHttpHandle&& other) noexcept
+		{
+			if (this != &other)
+			{
+				if (handle != nullptr)
+					::WinHttpCloseHandle(handle);
+				handle = other.handle;
+				other.handle = nullptr;
+			}
+
+			return *this;
+		}
 		~WinHttpHandle()
 		{
-			if (handle != NULL)
+			if (handle != nullptr)
 				::WinHttpCloseHandle(handle);
+		}
+
+		explicit operator bool() const
+		{
+			return handle != nullptr;
 		}
 
 		operator HINTERNET() const
@@ -171,18 +183,16 @@ namespace
 			return handle;
 		}
 
-		HINTERNET handle;
+		HINTERNET handle = nullptr;
 	};
 
 	struct GpsNumberToken
 	{
-		GpsNumberToken() : value(0.0), start(0), end(0), direction(0), axis_hint(0) {}
-
-		double value;
-		int start;
-		int end;
-		WCHAR direction;
-		int axis_hint;
+		double value = 0.0;
+		int start = 0;
+		int end = 0;
+		WCHAR direction = 0;
+		int axis_hint = 0;
 	};
 
 	bool IsNumericChar(const WCHAR ch)
@@ -197,7 +207,7 @@ namespace
 
 	bool IsSkippedDirectionChar(const WCHAR ch)
 	{
-		return ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != NULL;
+		return ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || wcschr(L":;=/()[]{}<>|,", ch) != nullptr;
 	}
 
 	bool IsStandaloneCompassLetter(const CString& input, const int index)
@@ -327,7 +337,7 @@ namespace
 		if (text.empty())
 			return CString();
 
-		const int length = ::MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), NULL, 0);
+		const int length = ::MultiByteToWideChar(CP_UTF8, 0, text.data(), static_cast<int>(text.size()), nullptr, 0);
 		if (length <= 0)
 			return CString();
 
@@ -552,13 +562,13 @@ namespace
 		CString address_json;
 		if (TryExtractJsonObject(json, L"address", address_json))
 		{
-			static const WCHAR* const road_keys[] = { L"road", L"pedestrian", L"residential", L"footway", L"path" };
-			static const WCHAR* const neighbourhood_keys[] = { L"neighbourhood", L"quarter", L"city_district", L"hamlet" };
-			static const WCHAR* const suburb_keys[] = { L"suburb", L"municipality" };
-			static const WCHAR* const city_keys[] = { L"city", L"town", L"village", L"state" };
-			static const WCHAR* const county_keys[] = { L"county" };
-			static const WCHAR* const house_number_keys[] = { L"house_number" };
-			static const WCHAR* const borough_keys[] = { L"borough" };
+			static const std::array<const WCHAR*, 5> road_keys = { L"road", L"pedestrian", L"residential", L"footway", L"path" };
+			static const std::array<const WCHAR*, 4> neighbourhood_keys = { L"neighbourhood", L"quarter", L"city_district", L"hamlet" };
+			static const std::array<const WCHAR*, 2> suburb_keys = { L"suburb", L"municipality" };
+			static const std::array<const WCHAR*, 4> city_keys = { L"city", L"town", L"village", L"state" };
+			static const std::array<const WCHAR*, 1> county_keys = { L"county" };
+			static const std::array<const WCHAR*, 1> house_number_keys = { L"house_number" };
+			static const std::array<const WCHAR*, 1> borough_keys = { L"borough" };
 
 			CString house_number;
 			CString road;
@@ -568,17 +578,17 @@ namespace
 			CString city;
 			CString county;
 
-			TryGetFirstNamedAddressPart(address_json, house_number_keys, sizeof(house_number_keys) / sizeof(house_number_keys[0]), house_number);
-			TryGetFirstNamedAddressPart(address_json, road_keys, sizeof(road_keys) / sizeof(road_keys[0]), road);
+			TryGetFirstNamedAddressPart(address_json, house_number_keys.data(), static_cast<int>(house_number_keys.size()), house_number);
+			TryGetFirstNamedAddressPart(address_json, road_keys.data(), static_cast<int>(road_keys.size()), road);
 
 			if (!road.IsEmpty() && !house_number.IsEmpty())
 				road += L" " + house_number;
 
-			TryGetFirstNamedAddressPart(address_json, neighbourhood_keys, sizeof(neighbourhood_keys) / sizeof(neighbourhood_keys[0]), neighbourhood);
-			TryGetFirstNamedAddressPart(address_json, suburb_keys, sizeof(suburb_keys) / sizeof(suburb_keys[0]), suburb);
-			TryGetFirstNamedAddressPart(address_json, borough_keys, sizeof(borough_keys) / sizeof(borough_keys[0]), borough);
-			TryGetFirstNamedAddressPart(address_json, city_keys, sizeof(city_keys) / sizeof(city_keys[0]), city);
-			TryGetFirstNamedAddressPart(address_json, county_keys, sizeof(county_keys) / sizeof(county_keys[0]), county);
+			TryGetFirstNamedAddressPart(address_json, neighbourhood_keys.data(), static_cast<int>(neighbourhood_keys.size()), neighbourhood);
+			TryGetFirstNamedAddressPart(address_json, suburb_keys.data(), static_cast<int>(suburb_keys.size()), suburb);
+			TryGetFirstNamedAddressPart(address_json, borough_keys.data(), static_cast<int>(borough_keys.size()), borough);
+			TryGetFirstNamedAddressPart(address_json, city_keys.data(), static_cast<int>(city_keys.size()), city);
+			TryGetFirstNamedAddressPart(address_json, county_keys.data(), static_cast<int>(county_keys.size()), county);
 
 			if (!neighbourhood.IsEmpty())
 				return JoinLocationParts(neighbourhood, city);
@@ -629,13 +639,13 @@ namespace
 			WINHTTP_NO_PROXY_NAME,
 			WINHTTP_NO_PROXY_BYPASS,
 			0));
-		if (session == NULL)
+		if (!session)
 			return false;
 
 		::WinHttpSetTimeouts(session, 1500, 1500, 2500, 2500);
 
 		WinHttpHandle connection(::WinHttpConnect(session, L"nominatim.openstreetmap.org", INTERNET_DEFAULT_HTTPS_PORT, 0));
-		if (connection == NULL)
+		if (!connection)
 			return false;
 
 		CString request_path;
@@ -648,17 +658,17 @@ namespace
 			connection,
 			L"GET",
 			request_path,
-			NULL,
+			nullptr,
 			WINHTTP_NO_REFERER,
 			WINHTTP_DEFAULT_ACCEPT_TYPES,
 			WINHTTP_FLAG_SECURE));
-		if (request == NULL)
+		if (!request)
 			return false;
 
 		const WCHAR* headers = L"Accept: application/json\r\n";
-		bool ok = ::WinHttpSendRequest(request, headers, static_cast<DWORD>(-1L), NULL, 0, 0, 0) == TRUE;
+		bool ok = ::WinHttpSendRequest(request, headers, static_cast<DWORD>(-1L), nullptr, 0, 0, 0) == TRUE;
 		if (ok)
-			ok = ::WinHttpReceiveResponse(request, NULL) == TRUE;
+			ok = ::WinHttpReceiveResponse(request, nullptr) == TRUE;
 
 		DWORD status_code = 0;
 		DWORD status_size = sizeof(status_code);
@@ -734,7 +744,7 @@ namespace
 		token.end = token_end;
 		token.direction = FindAdjacentDirection(input, token.start, token.end);
 		token.axis_hint = FindAxisHint(input, token.start, token.end);
-		values.push_back(token);
+		values.emplace_back(token);
 
 		current.Empty();
 		token_start = -1;
@@ -932,22 +942,20 @@ namespace
 		return FormatLocationName(cluster_index);
 	}
 
-	CString FormatCoordinate(const double value)
-	{
-		CString text;
-		text.Format(L"%.4f", value);
-		return text;
-	}
-
 	CString FormatLocationLabel(const RouteCluster& cluster, const int cluster_index)
 	{
 		if (!cluster.place_name.IsEmpty())
 			return cluster.place_name;
 
+		CString latitude_text;
+		latitude_text.Format(L"%.4f", cluster.latitude);
+		CString longitude_text;
+		longitude_text.Format(L"%.4f", cluster.longitude);
+
 		CString text;
 		text.Format(L"%s (%s, %s)", GetClusterName(cluster, cluster_index).GetString(),
-			FormatCoordinate(cluster.latitude).GetString(),
-			FormatCoordinate(cluster.longitude).GetString());
+			latitude_text.GetString(),
+			longitude_text.GetString());
 		return text;
 	}
 
@@ -1011,7 +1019,7 @@ namespace
 		cluster.longitude = geo.longitude;
 		cluster.count = 1;
 		cluster.color = GetClusterColor(static_cast<int>(clusters.size()));
-		clusters.push_back(cluster);
+		clusters.emplace_back(cluster);
 		return static_cast<int>(clusters.size() - 1);
 	}
 
@@ -1024,13 +1032,13 @@ namespace
 		bool have_prev_geo = false;
 		GeoPoint prev_geo;
 
-		for (vector<const picture_data*>::const_iterator it = pictures.begin(); it != pictures.end(); ++it)
+		for (const picture_data* picture : pictures)
 		{
 			PosterEntry entry;
-			entry.picture = *it;
+			entry.picture = picture;
 			entry.geo.valid = false;
 
-			if (TryParseDecimalGps((*it)->gps, entry.geo))
+			if (TryParseDecimalGps(picture->gps, entry.geo))
 			{
 				entry.cluster_index = FindOrCreateCluster(entry.geo, insights.clusters, cluster_radius_km);
 				++insights.gps_picture_count;
@@ -1050,15 +1058,15 @@ namespace
 				have_prev_geo = true;
 			}
 
-			if ((*it)->exif_time != 0)
+			if (picture->exif_time != 0)
 			{
-				if (insights.first_exif_time == 0 || (*it)->exif_time < insights.first_exif_time)
-					insights.first_exif_time = (*it)->exif_time;
-				if (insights.last_exif_time == 0 || (*it)->exif_time > insights.last_exif_time)
-					insights.last_exif_time = (*it)->exif_time;
+				if (insights.first_exif_time == 0 || picture->exif_time < insights.first_exif_time)
+					insights.first_exif_time = picture->exif_time;
+				if (insights.last_exif_time == 0 || picture->exif_time > insights.last_exif_time)
+					insights.last_exif_time = picture->exif_time;
 			}
 
-			insights.entries.push_back(entry);
+			insights.entries.emplace_back(entry);
 		}
 
 		return insights;
@@ -1073,7 +1081,7 @@ namespace
 			CString gps_text;
 			for (size_t entry_index = 0; entry_index < entries.size(); ++entry_index)
 			{
-				if (entries[entry_index].cluster_index == static_cast<int>(index) && entries[entry_index].picture != NULL)
+				if (entries[entry_index].cluster_index == static_cast<int>(index) && entries[entry_index].picture != nullptr)
 				{
 					gps_text = entries[entry_index].picture->gps;
 					break;
@@ -1100,9 +1108,9 @@ namespace
 
 		std::map<CString, int> camera_count;
 
-		for (vector<const picture_data*>::const_iterator it = pictures.begin(); it != pictures.end(); ++it)
+		for (const picture_data* picture : pictures)
 		{
-			CString model((*it)->model);
+			CString model(picture->model);
 			model.Trim();
 			if (!model.IsEmpty())
 				camera_count[model]++;
@@ -1353,7 +1361,7 @@ namespace
 			const int x = valid_count == 1
 				? left + width / 2
 				: left + static_cast<int>((static_cast<double>(valid_index) / (valid_count - 1)) * width);
-			route_points.push_back(CPoint(x, baseline_y));
+			route_points.emplace_back(x, baseline_y);
 			++valid_index;
 		}
 
@@ -1401,11 +1409,11 @@ namespace
 
 	void DrawRequestedPicture(CDC& mem_dc, const requested_data& request, const CRect& target)
 	{
-		if (request.data == NULL)
+		if (request.data == nullptr)
 			return;
 
 		HDRAWDIB draw_dib = DrawDibOpen();
-		if (draw_dib == NULL)
+		if (draw_dib == nullptr)
 			return;
 
 		BITMAPINFOHEADER bmi_header = { 0 };
@@ -1462,8 +1470,8 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginTimeCapsule::CFunctionPluginTimeCapsule()
-	: handle_wnd(NULL),
-	  poster_dib(NULL),
+	: handle_wnd(nullptr),
+	  poster_dib(nullptr),
 	  sort_mode(SORT_MODE_EXIF),
 	  show_metadata(true),
 	  thumbnail_width(240),
@@ -1474,7 +1482,7 @@ CFunctionPluginTimeCapsule::CFunctionPluginTimeCapsule()
 
 CFunctionPluginTimeCapsule::~CFunctionPluginTimeCapsule()
 {
-	if (poster_dib != NULL)
+	if (poster_dib != nullptr)
 		::DeleteObject(poster_dib);
 }
 
@@ -1533,10 +1541,10 @@ enum REQUEST_TYPE __stdcall CFunctionPluginTimeCapsule::start(
 	thumbnail_height = settings.thumbnail_height;
 	location_cluster_radius_km = settings.location_cluster_radius_km;
 
-	request_data_sizes.push_back(request_data_size(
+	request_data_sizes.emplace_back(
 		thumbnail_width,
 		thumbnail_height,
-		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
+		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA);
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
@@ -1554,17 +1562,17 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	if (picture_data_list.size() < 2)
 		return update_data_list;
 
-	if (poster_dib != NULL)
+	if (poster_dib != nullptr)
 	{
 		::DeleteObject(poster_dib);
-		poster_dib = NULL;
+		poster_dib = nullptr;
 	}
 
 	// Work on pointers so we can reorder the selected pictures without copying the plugin-owned structs.
 	vector<const picture_data*> sorted_pictures;
 	sorted_pictures.reserve(picture_data_list.size());
-	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
-		sorted_pictures.push_back(&(*it));
+	for (const picture_data& picture : picture_data_list)
+		sorted_pictures.emplace_back(&picture);
 
 	SortPictures(sorted_pictures, sort_mode);
 
@@ -1587,14 +1595,14 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	bitmap_info.bmiHeader.biWidth = bitmap_width;
 	bitmap_info.bmiHeader.biHeight = bitmap_height;
 
-	void* dib_bits = NULL;
-	poster_dib = ::CreateDIBSection(NULL, &bitmap_info, DIB_RGB_COLORS, &dib_bits, NULL, 0);
-	if (poster_dib == NULL || dib_bits == NULL)
+	void* dib_bits = nullptr;
+	poster_dib = ::CreateDIBSection(nullptr, &bitmap_info, DIB_RGB_COLORS, &dib_bits, nullptr, 0);
+	if (poster_dib == nullptr || dib_bits == nullptr)
 		return update_data_list;
 
 	CBitmap* bitmap = CBitmap::FromHandle(poster_dib);
 	CDC mem_dc;
-	mem_dc.CreateCompatibleDC(NULL);
+	mem_dc.CreateCompatibleDC(nullptr);
 	CBitmap* old_bitmap = mem_dc.SelectObject(bitmap);
 
 	CRect full_rect(0, 0, bitmap_width, bitmap_height);
@@ -1680,13 +1688,13 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 
 	// The poster is written into the folder of the first selected picture, matching the behavior of other multi-image outputs.
 	CString output_name = GetDirectory(sorted_pictures.front()->file_name) + SanitizeStem(header_title) + GetExtension(sorted_pictures.front()->file_name);
-	update_data_list.push_back(update_data(
+	update_data_list.emplace_back(
 		output_name,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
 		bitmap_width,
 		bitmap_height,
-		(BYTE*)dib_bits,
-		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA));
+		reinterpret_cast<BYTE*>(dib_bits),
+		DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA);
 
 	return update_data_list;
 }
