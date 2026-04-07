@@ -31,6 +31,7 @@ namespace
 	};
 
 	constexpr int header_height = 138;
+	constexpr int compact_header_height = 72;
 	constexpr int summary_height = 66;
 	constexpr int tile_padding = 18;
 	constexpr int caption_height = 66;
@@ -1685,9 +1686,6 @@ namespace
 				story += FormatDistance(insights.longest_hop_km);
 			}
 
-			if (story.IsEmpty())
-				story.LoadString(IDS_STORY_NO_ROUTE);
-
 			return story;
 		}
 
@@ -1828,21 +1826,14 @@ namespace
 	// The route strip is intentionally schematic: a horizontal travel line reads better than a literal map trace.
 	void DrawRouteStrip(CDC& mem_dc, const CRect& route_rect, const PosterInsights& insights)
 	{
-		CBrush route_background(RGB(49, 63, 78));
-		mem_dc.FillRect(route_rect, &route_background);
+		if (insights.gps_picture_count > 0)
+		{
+			CBrush route_background(RGB(49, 63, 78));
+			mem_dc.FillRect(route_rect, &route_background);
+		}
 
 		if (insights.gps_picture_count < 2)
-		{
-			mem_dc.SetBkMode(TRANSPARENT);
-			mem_dc.SetTextColor(RGB(214, 219, 224));
-			CRect text_rect(route_rect);
-			text_rect.DeflateRect(12, 10);
-			CString placeholder;
-			placeholder.LoadString(IDS_ROUTE_PLACEHOLDER);
-			mem_dc.DrawText(placeholder, text_rect,
-				DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 			return;
-		}
 
 		const int left = route_rect.left + 14;
 		const int top = route_rect.top + 14;
@@ -2138,7 +2129,8 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	const int tile_width = thumbnail_width;
 	const int tile_height = thumbnail_height + caption_height;
 	const int bitmap_width = tile_padding + cols * (tile_width + tile_padding);
-	const int bitmap_height = header_height + summary_height + tile_padding + rows * (tile_height + tile_padding);
+	const int current_header_height = insights.gps_picture_count > 0 ? header_height : compact_header_height;
+	const int bitmap_height = current_header_height + summary_height + tile_padding + rows * (tile_height + tile_padding);
 
 	BITMAPINFO bitmap_info = { 0 };
 	bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -2162,7 +2154,7 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	CBrush bg_brush(RGB(248, 245, 239));
 	mem_dc.FillRect(full_rect, &bg_brush);
 
-	CRect header_rect(0, 0, bitmap_width, header_height);
+	CRect header_rect(0, 0, bitmap_width, current_header_height);
 	CBrush header_brush(RGB(34, 49, 63));
 	mem_dc.FillRect(header_rect, &header_brush);
 
@@ -2192,20 +2184,27 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	mem_dc.DrawText(header_title, title_rect, DT_LEFT | DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
 
 	mem_dc.SelectObject(&summary_font);
-	mem_dc.SetTextColor(RGB(49, 55, 61));
-	CRect route_rect(24, 58, bitmap_width - 24, header_height - 14);
-	DrawRouteStrip(mem_dc, route_rect, insights);
+	mem_dc.SetTextColor(RGB(26, 31, 37));
+	if (insights.gps_picture_count > 0)
+	{
+		CRect route_rect(24, 58, bitmap_width - 24, current_header_height - 14);
+		DrawRouteStrip(mem_dc, route_rect, insights);
+	}
 
-	CRect summary_rect(24, header_height + 8, bitmap_width - 24, header_height + summary_height);
+	CRect summary_rect(24, current_header_height + 8, bitmap_width - 24, current_header_height + summary_height);
 	CString summary_text = BuildSummary(sorted_pictures, insights);
 	summary_text += L"\n";
 	CString sorting_label;
 	sorting_label.LoadString(IDS_SORTING_LABEL);
+	CString story_line = BuildStoryLine(insights);
 	summary_text += sorting_label;
 	summary_text += L": ";
 	summary_text += GetSortModeText(sort_mode);
-	summary_text += L"  |  ";
-	summary_text += BuildStoryLine(insights);
+	if (!story_line.IsEmpty())
+	{
+		summary_text += L"  |  ";
+		summary_text += story_line;
+	}
 	mem_dc.DrawText(summary_text, summary_rect, DT_LEFT | DT_WORDBREAK);
 
 	// Each tile reuses the requested preview plus a compact text caption and optional place badge.
@@ -2220,7 +2219,7 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 		const int col = index % cols;
 		const int row = index / cols;
 		const int left = tile_padding + col * (tile_width + tile_padding);
-		const int top = header_height + summary_height + tile_padding + row * (tile_height + tile_padding);
+		const int top = current_header_height + summary_height + tile_padding + row * (tile_height + tile_padding);
 
 		CRect tile_rect(left, top, left + tile_width, top + thumbnail_height);
 		CRect outer_rect(left - 2, top - 2, left + tile_width + 2, top + thumbnail_height + 2);
