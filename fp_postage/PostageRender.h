@@ -17,13 +17,13 @@ struct PostageSettings
 		: border_percent(5),
 		  paper_style(POSTAGE_PAPER_CREAM),
 		  value_text(L"50 Cent"),
-		  value_corner(1),
+		  value_corner(3),
 		  value_margin_percent(4),
-		  value_color(RGB(92, 71, 39))
+		  value_color(RGB(255, 255, 255))
 	{
 		ZeroMemory(&value_font, sizeof(value_font));
 		value_font.lfHeight = -16;
-		value_font.lfWeight = FW_BOLD;
+		value_font.lfWeight = FW_SEMIBOLD;
 		value_font.lfCharSet = DEFAULT_CHARSET;
 		value_font.lfQuality = PROOF_QUALITY;
 		value_font.lfPitchAndFamily = VARIABLE_PITCH | FF_SWISS;
