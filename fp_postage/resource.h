@@ -8,8 +8,9 @@
 #define IDS_PLUGIN_INFO                 102
 #define IDD_DIALOG_POSTAGE             103
 #define IDS_PAPER_WHITE                104
-#define IDS_PAPER_CREAM                105
-#define IDS_PAPER_VINTAGE              106
+#define IDS_PAPER_OFFWHITE             105
+#define IDS_PAPER_CREAM                106
+#define IDS_PAPER_VINTAGE              107
 #define IDC_PREVIEW                    1000
 #define IDC_SLIDER_BORDER              1001
 #define IDC_STATIC_BORDER_VAL          1002
@@ -26,7 +27,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        108
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101

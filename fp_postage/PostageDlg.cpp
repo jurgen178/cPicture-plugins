@@ -72,11 +72,13 @@ BOOL CPostageDlg::OnInitDialog()
 	CString text;
 	text.LoadString(IDS_PAPER_WHITE);
 	m_comboPaper.AddString(text);
+	text.LoadString(IDS_PAPER_OFFWHITE);
+	m_comboPaper.AddString(text);
 	text.LoadString(IDS_PAPER_CREAM);
 	m_comboPaper.AddString(text);
 	text.LoadString(IDS_PAPER_VINTAGE);
 	m_comboPaper.AddString(text);
-	m_comboPaper.SetCurSel(max(0, min(settings.paper_style, 2)));
+	m_comboPaper.SetCurSel(max(0, min(settings.paper_style, 3)));
 	m_valueCorner.SetCorner(settings.value_corner);
 
 	m_editValue.SetWindowText(settings.value_text);

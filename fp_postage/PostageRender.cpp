@@ -38,6 +38,8 @@ namespace
 		{
 		case POSTAGE_PAPER_WHITE:
 			return RGB(250, 250, 246);
+		case POSTAGE_PAPER_OFFWHITE:
+			return RGB(248, 244, 232);
 		case POSTAGE_PAPER_VINTAGE:
 			return RGB(236, 223, 191);
 		case POSTAGE_PAPER_CREAM:
