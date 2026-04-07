@@ -1174,7 +1174,7 @@ namespace
 		return values.size() >= 2;
 	}
 
-	// EXIF GPS may arrive either as decimal degrees or as degree/minute/second sequences.
+	// EXIF GPS as decimal degrees or as degree/minute/second sequences.
 	bool TryParseDecimalGps(const CString& gps_text, GeoPoint& point)
 	{
 		vector<GpsNumberToken> values;

@@ -74,7 +74,6 @@ namespace
 		return dot >= 0 ? file_name.Mid(dot) : L".jpg";
 	}
 
-	// cPicture may preserve aspect ratio when returning resized previews, so validate against the actual payload.
 	bool HasExpectedRgbBuffer(const requested_data& request)
 	{
 		if (request.data == nullptr || request.picture_width <= 0 || request.picture_height <= 0)
