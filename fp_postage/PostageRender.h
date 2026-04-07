@@ -15,10 +15,8 @@ struct PostageSettings
 	int border_percent = 5;
 	int paper_style = POSTAGE_PAPER_CREAM;
 	CString value_text = L"50 Cent";
-	bool show_stamp = true;
-	CString stamp_text = L"AIR MAIL";
-	int stamp_angle = -18;
-	int stamp_strength = 60;
+	int value_corner = 1;
+	int value_margin_percent = 4;
 };
 
 void DrawPostagePreview(CDC& dc, const CRect& preview_rect, const requested_data& source, const PostageSettings& settings);

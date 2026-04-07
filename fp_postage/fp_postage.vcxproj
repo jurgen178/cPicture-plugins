@@ -212,6 +212,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CornerPickerCtrl.cpp" />
     <ClCompile Include="Plugin.cpp" />
     <ClCompile Include="PostageDlg.cpp" />
     <ClCompile Include="PostageRender.cpp" />
@@ -226,6 +227,7 @@
     <None Include="plugin.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CornerPickerCtrl.h" />
     <ClInclude Include="FunctionPlugin.h" />
     <ClInclude Include="Plugin.h" />
     <ClInclude Include="PostageDlg.h" />

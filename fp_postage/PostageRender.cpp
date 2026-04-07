@@ -219,48 +219,29 @@ namespace
 		CFont* old_font = dc.SelectObject(&font);
 		const int old_mode = dc.SetBkMode(TRANSPARENT);
 		const COLORREF old_color = dc.SetTextColor(RGB(92, 71, 39));
+		const int text_margin = max(4, min(canvas_rect.Width(), canvas_rect.Height()) * settings.value_margin_percent / 100);
 
 		CRect text_rect(canvas_rect);
-		text_rect.DeflateRect(16, 10);
-		dc.DrawText(text, text_rect, DT_RIGHT | DT_TOP | DT_SINGLELINE | DT_END_ELLIPSIS);
+		text_rect.DeflateRect(text_margin, text_margin);
+		UINT flags = DT_SINGLELINE | DT_END_ELLIPSIS;
+		switch (settings.value_corner)
+		{
+		case 0:
+			flags |= DT_LEFT | DT_TOP;
+			break;
+		case 1:
+			flags |= DT_RIGHT | DT_TOP;
+			break;
+		case 2:
+			flags |= DT_LEFT | DT_BOTTOM;
+			break;
+		case 3:
+		default:
+			flags |= DT_RIGHT | DT_BOTTOM;
+			break;
+		}
+		dc.DrawText(text, text_rect, flags);
 
-		dc.SetTextColor(old_color);
-		dc.SetBkMode(old_mode);
-		dc.SelectObject(old_font);
-	}
-
-	void DrawStamp(CDC& dc, const CRect& canvas_rect, const PostageSettings& settings)
-	{
-		if (!settings.show_stamp)
-			return;
-
-		CString text(settings.stamp_text);
-		text.Trim();
-		if (text.IsEmpty())
-			return;
-
-		const COLORREF paper = GetPaperColor(settings.paper_style);
-		const COLORREF stamp_color = MixColor(paper, RGB(174, 43, 43), settings.stamp_strength);
-		const int font_height = max(20, min(canvas_rect.Width(), canvas_rect.Height()) / 9);
-		CFont font;
-		font.CreateFont(font_height, 0, settings.stamp_angle * 10, settings.stamp_angle * 10, FW_BOLD, 0, 0, 0,
-			DEFAULT_CHARSET, OUT_DEVICE_PRECIS, CLIP_CHARACTER_PRECIS, PROOF_QUALITY,
-			VARIABLE_PITCH | FF_SWISS, L"Arial");
-		CFont* old_font = dc.SelectObject(&font);
-		const int old_mode = dc.SetBkMode(TRANSPARENT);
-		const COLORREF old_color = dc.SetTextColor(stamp_color);
-
-		CPen pen(PS_SOLID, max(1, settings.stamp_strength / 20), stamp_color);
-		CPen* old_pen = dc.SelectObject(&pen);
-		CBrush* old_brush = static_cast<CBrush*>(dc.SelectStockObject(NULL_BRUSH));
-
-		CRect stamp_rect(canvas_rect);
-		stamp_rect.DeflateRect(canvas_rect.Width() / 6, canvas_rect.Height() / 3);
-		dc.Ellipse(stamp_rect);
-		dc.DrawText(text, stamp_rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
-
-		dc.SelectObject(old_brush);
-		dc.SelectObject(old_pen);
 		dc.SetTextColor(old_color);
 		dc.SetBkMode(old_mode);
 		dc.SelectObject(old_font);
@@ -282,7 +263,6 @@ namespace
 		CRect border_rect(paper_rect);
 		border_rect.DeflateRect(layout.radius + max(4, metrics.spacing_px), layout.radius + max(4, metrics.spacing_px));
 		DrawValueText(dc, border_rect, settings);
-		DrawStamp(dc, border_rect, settings);
 	}
 }
 

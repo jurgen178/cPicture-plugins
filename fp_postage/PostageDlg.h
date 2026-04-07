@@ -2,6 +2,7 @@
 
 #include "FunctionPlugin.h"
 #include "PostageRender.h"
+#include "CornerPickerCtrl.h"
 #include "resource.h"
 #include <afxcmn.h>
 
@@ -21,19 +22,15 @@ protected:
 	const vector<picture_data>& picture_data_list;
 
 	CSliderCtrl m_sliderBorder;
-	CSliderCtrl m_sliderStampAngle;
-	CSliderCtrl m_sliderStampStrength;
+	CSliderCtrl m_sliderValueMargin;
 	CStatic m_staticBorderVal;
-	CStatic m_staticStampAngleVal;
-	CStatic m_staticStampStrengthVal;
+	CStatic m_staticValueMarginVal;
 	CComboBox m_comboPaper;
+	CCornerPickerCtrl m_valueCorner;
 	CEdit m_editValue;
-	CButton m_checkStamp;
-	CEdit m_editStampText;
 	CStatic m_preview;
 
 	void UpdateLabels();
-	void UpdateStampControls();
 	void DrawPreview(CDC& dc);
 
 protected:
