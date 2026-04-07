@@ -18,7 +18,6 @@ public:
 	BOOL show_grid;
 
 protected:
-	virtual void OnOK();
 	virtual BOOL OnInitDialog();
 	virtual void DoDataExchange(CDataExchange* pDX);
 

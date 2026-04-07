@@ -23,10 +23,10 @@ void CSettingsDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_CBIndex(pDX, IDC_COMBO_SORT_MODE, sort_mode);
 	DDX_Check(pDX, IDC_CHECK_METADATA, show_metadata);
 	DDX_Text(pDX, IDC_EDIT_THUMB_WIDTH, thumbnail_width);
-	DDX_Text(pDX, IDC_EDIT_THUMB_HEIGHT, thumbnail_height);
-	DDX_Text(pDX, IDC_EDIT_LOCATION_RADIUS, location_cluster_radius_km);
 	DDV_MinMaxInt(pDX, thumbnail_width, 120, 480);
+	DDX_Text(pDX, IDC_EDIT_THUMB_HEIGHT, thumbnail_height);
 	DDV_MinMaxInt(pDX, thumbnail_height, 90, 320);
+	DDX_Text(pDX, IDC_EDIT_LOCATION_RADIUS, location_cluster_radius_km);
 	DDV_MinMaxDouble(pDX, location_cluster_radius_km, 0.1, 250.0);
 }
 
@@ -69,11 +69,12 @@ BOOL CSettingsDlg::OnInitDialog()
 
 void CSettingsDlg::OnOK()
 {
-	UpdateData(TRUE);
+	if (!UpdateData(TRUE))
+		return;
 	title_text.Trim();
 
 	if (title_text.IsEmpty())
 		title_text.LoadString(IDS_DEFAULT_TITLE);
 
-	CDialog::OnOK();
+	EndDialog(IDOK);
 }

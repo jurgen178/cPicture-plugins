@@ -18,10 +18,10 @@ void CSettingsDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_SCALE, analysis_scale);
-	DDX_Text(pDX, IDC_EDIT_SENSITIVITY, sensitivity);
-	DDX_Check(pDX, IDC_CHECK_GRID, show_grid);
 	DDV_MinMaxInt(pDX, analysis_scale, 20, 100);
+	DDX_Text(pDX, IDC_EDIT_SENSITIVITY, sensitivity);
 	DDV_MinMaxInt(pDX, sensitivity, 10, 100);
+	DDX_Check(pDX, IDC_CHECK_GRID, show_grid);
 }
 
 
@@ -34,11 +34,4 @@ BOOL CSettingsDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 	UpdateData(FALSE);
 	return TRUE;
-}
-
-
-void CSettingsDlg::OnOK()
-{
-	UpdateData(TRUE);
-	CDialog::OnOK();
 }

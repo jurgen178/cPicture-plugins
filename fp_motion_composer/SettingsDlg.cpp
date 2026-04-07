@@ -19,12 +19,12 @@ void CSettingsDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_OUTPUT_WIDTH, output_width);
+	DDV_MinMaxInt(pDX, output_width, 320, 8000);
 	DDX_Text(pDX, IDC_EDIT_OUTPUT_HEIGHT, output_height);
+	DDV_MinMaxInt(pDX, output_height, 180, 6000);
 	DDX_Text(pDX, IDC_EDIT_THRESHOLD, difference_threshold);
-	DDX_Check(pDX, IDC_CHECK_COLORIZE, colorize_frames);
-	DDV_MinMaxInt(pDX, output_width, 320, 1920);
-	DDV_MinMaxInt(pDX, output_height, 180, 1080);
 	DDV_MinMaxInt(pDX, difference_threshold, 8, 160);
+	DDX_Check(pDX, IDC_CHECK_COLORIZE, colorize_frames);
 }
 
 
@@ -37,11 +37,4 @@ BOOL CSettingsDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 	UpdateData(FALSE);
 	return TRUE;
-}
-
-
-void CSettingsDlg::OnOK()
-{
-	UpdateData(TRUE);
-	CDialog::OnOK();
 }
