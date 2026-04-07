@@ -16,10 +16,6 @@ void CPostageDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SLIDER_BORDER, m_sliderBorder);
 	DDX_Control(pDX, IDC_STATIC_BORDER_VAL, m_staticBorderVal);
-	DDX_Control(pDX, IDC_SLIDER_PERFORATION, m_sliderPerforation);
-	DDX_Control(pDX, IDC_STATIC_PERFORATION_VAL, m_staticPerforationVal);
-	DDX_Control(pDX, IDC_SLIDER_PADDING, m_sliderPadding);
-	DDX_Control(pDX, IDC_STATIC_PADDING_VAL, m_staticPaddingVal);
 	DDX_Control(pDX, IDC_COMBO_PAPER, m_comboPaper);
 	DDX_Control(pDX, IDC_EDIT_VALUE, m_editValue);
 	DDX_Control(pDX, IDC_CHECK_STAMP, m_checkStamp);
@@ -47,14 +43,8 @@ BOOL CPostageDlg::OnInitDialog()
 	m_preview.GetClientRect(&preview_rect);
 	m_preview.MapWindowPoints(this, &preview_rect);
 
-	m_sliderBorder.SetRange(6, 24);
-	m_sliderBorder.SetPos(max(6, min(settings.border_percent, 24)));
-
-	m_sliderPerforation.SetRange(4, 20);
-	m_sliderPerforation.SetPos(max(4, min(settings.perforation_percent, 20)));
-
-	m_sliderPadding.SetRange(1, 12);
-	m_sliderPadding.SetPos(max(1, min(settings.inner_padding_percent, 12)));
+	m_sliderBorder.SetRange(0, 10);
+	m_sliderBorder.SetPos(max(0, min(settings.border_percent, 10)));
 
 	m_sliderStampAngle.SetRange(-45, 45);
 	m_sliderStampAngle.SetPos(max(-45, min(settings.stamp_angle, 45)));
@@ -83,8 +73,6 @@ BOOL CPostageDlg::OnInitDialog()
 void CPostageDlg::OnOK()
 {
 	settings.border_percent = m_sliderBorder.GetPos();
-	settings.perforation_percent = m_sliderPerforation.GetPos();
-	settings.inner_padding_percent = m_sliderPadding.GetPos();
 	settings.paper_style = max(0, m_comboPaper.GetCurSel());
 	m_editValue.GetWindowText(settings.value_text);
 	settings.show_stamp = m_checkStamp.GetCheck() == BST_CHECKED;
@@ -99,10 +87,6 @@ void CPostageDlg::UpdateLabels()
 	CString text;
 	text.Format(L"%d", m_sliderBorder.GetPos());
 	m_staticBorderVal.SetWindowText(text);
-	text.Format(L"%d", m_sliderPerforation.GetPos());
-	m_staticPerforationVal.SetWindowText(text);
-	text.Format(L"%d", m_sliderPadding.GetPos());
-	m_staticPaddingVal.SetWindowText(text);
 	text.Format(L"%d", m_sliderStampAngle.GetPos());
 	m_staticStampAngleVal.SetWindowText(text);
 	text.Format(L"%d", m_sliderStampStrength.GetPos());
@@ -168,8 +152,6 @@ void CPostageDlg::DrawPreview(CDC& dc)
 
 	PostageSettings preview_settings;
 	preview_settings.border_percent = m_sliderBorder.GetSafeHwnd() ? m_sliderBorder.GetPos() : settings.border_percent;
-	preview_settings.perforation_percent = m_sliderPerforation.GetSafeHwnd() ? m_sliderPerforation.GetPos() : settings.perforation_percent;
-	preview_settings.inner_padding_percent = m_sliderPadding.GetSafeHwnd() ? m_sliderPadding.GetPos() : settings.inner_padding_percent;
 	preview_settings.paper_style = m_comboPaper.GetSafeHwnd() ? max(0, m_comboPaper.GetCurSel()) : settings.paper_style;
 	preview_settings.show_stamp = m_checkStamp.GetSafeHwnd() ? (m_checkStamp.GetCheck() == BST_CHECKED) : settings.show_stamp;
 	preview_settings.stamp_angle = m_sliderStampAngle.GetSafeHwnd() ? m_sliderStampAngle.GetPos() : settings.stamp_angle;

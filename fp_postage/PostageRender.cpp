@@ -7,10 +7,21 @@ namespace
 {
 	struct PostageMetrics
 	{
-		int border_px = 18;
-		int padding_px = 6;
+		int spacing_px = 0;
 		int hole_radius = 4;
-		int hole_step = 8;
+		int hole_gap_min = 2;
+	};
+
+	struct PerforationLayout
+	{
+		int radius = 4;
+		int count_x = 2;
+		int count_y = 2;
+		int corner_margin = 3;
+		int start_x = 0;
+		int start_y = 0;
+		double gap_x = 3.0;
+		double gap_y = 3.0;
 	};
 
 	COLORREF GetPaperColor(const int paper_style)
@@ -41,23 +52,23 @@ namespace
 	{
 		PostageMetrics metrics;
 		const int shorter_side = max(1, min(source.picture_width, source.picture_height));
-		metrics.border_px = max(18, shorter_side * settings.border_percent / 100);
-		metrics.padding_px = max(6, shorter_side * settings.inner_padding_percent / 100);
-		metrics.hole_radius = max(4, metrics.border_px * settings.perforation_percent / 24);
-		metrics.hole_radius = min(metrics.hole_radius, max(4, metrics.border_px - 3));
-		metrics.hole_step = max(metrics.hole_radius * 2, metrics.hole_radius + 6);
+		metrics.spacing_px = max(0, shorter_side * settings.border_percent / 100);
+
+		const int target_diameter = max(8, min(24, shorter_side / 28));
+		metrics.hole_radius = max(4, target_diameter / 2);
+		metrics.hole_gap_min = max(2, metrics.hole_radius / 3);
 		return metrics;
 	}
 
 	CRect BuildCanvasRect(const requested_data& source, const PostageMetrics& metrics)
 	{
-		const int margin = metrics.border_px + metrics.padding_px;
+		const int margin = metrics.spacing_px + metrics.hole_radius + 2;
 		return CRect(0, 0, source.picture_width + margin * 2, source.picture_height + margin * 2);
 	}
 
 	CRect BuildImageRect(const CRect& canvas_rect, const requested_data& source, const PostageMetrics& metrics)
 	{
-		const int margin = metrics.border_px + metrics.padding_px;
+		const int margin = metrics.spacing_px + metrics.hole_radius + 2;
 		return CRect(
 			canvas_rect.left + margin,
 			canvas_rect.top + margin,
@@ -65,49 +76,80 @@ namespace
 			canvas_rect.top + margin + source.picture_height);
 	}
 
-	CRect BuildPaperRect(const CRect& canvas_rect)
+	CRect BuildPaperRect(const CRect& image_rect, const PostageMetrics& metrics)
 	{
-		CRect paper_rect(canvas_rect);
-		paper_rect.DeflateRect(1, 1);
+		CRect paper_rect(image_rect);
+		paper_rect.InflateRect(metrics.spacing_px, metrics.spacing_px);
 		return paper_rect;
 	}
 
-	void DrawHalfCircleCuts(CDC& dc, const CRect& paper_rect, const PostageMetrics& metrics, const COLORREF background, const COLORREF outline)
+	PerforationLayout BuildPerforationLayout(const CRect& paper_rect, const PostageMetrics& metrics)
+	{
+		PerforationLayout layout;
+		const int width = max(1, paper_rect.Width() - 1);
+		const int height = max(1, paper_rect.Height() - 1);
+		const int diameter_target = max(8, metrics.hole_radius * 2);
+		const int gap_target = max(metrics.hole_gap_min, diameter_target / 4);
+		layout.corner_margin = max(2, metrics.hole_radius / 2 + 1);
+
+		const int usable_width = max(diameter_target, width - layout.corner_margin * 2);
+		const int usable_height = max(diameter_target, height - layout.corner_margin * 2);
+
+		layout.count_x = max(1, (usable_width + gap_target) / max(1, diameter_target + gap_target));
+		layout.count_y = max(1, (usable_height + gap_target) / max(1, diameter_target + gap_target));
+
+		const int radius_x = max(3, (usable_width - gap_target * max(0, layout.count_x - 1)) / max(2, layout.count_x * 2));
+		const int radius_y = max(3, (usable_height - gap_target * max(0, layout.count_y - 1)) / max(2, layout.count_y * 2));
+		layout.radius = max(3, min(metrics.hole_radius, min(radius_x, radius_y)));
+		layout.corner_margin = max(2, layout.radius / 2 + 1);
+
+		layout.gap_x = layout.count_x > 1
+			? static_cast<double>(max(0, width - 2 * layout.corner_margin) - 2 * layout.radius * layout.count_x) / static_cast<double>(layout.count_x - 1)
+			: 0.0;
+		layout.gap_y = layout.count_y > 1
+			? static_cast<double>(max(0, height - 2 * layout.corner_margin) - 2 * layout.radius * layout.count_y) / static_cast<double>(layout.count_y - 1)
+			: 0.0;
+		layout.start_x = paper_rect.left + layout.corner_margin + layout.radius;
+		layout.start_y = paper_rect.top + layout.corner_margin + layout.radius;
+
+		return layout;
+	}
+
+	void DrawHalfCircleCuts(CDC& dc, const CRect& paper_rect, const PerforationLayout& layout, const COLORREF background, const COLORREF outline)
 	{
 		CPen pen(PS_SOLID, 1, outline);
 		CBrush brush(background);
 		CPen* old_pen = dc.SelectObject(&pen);
 		CBrush* old_brush = dc.SelectObject(&brush);
+		const int saved_dc = dc.SaveDC();
+		dc.IntersectClipRect(paper_rect);
 
 		const int left = paper_rect.left;
 		const int top = paper_rect.top;
 		const int right = paper_rect.right - 1;
 		const int bottom = paper_rect.bottom - 1;
-		const int radius = metrics.hole_radius;
-		const int step = metrics.hole_step;
+		const int radius = layout.radius;
 
-		for (int x = left + radius; x <= right - radius; x += step)
+		for (int index = 0; index < layout.count_x; ++index)
 		{
+			const int x = static_cast<int>(std::lround(layout.start_x + index * (radius * 2.0 + layout.gap_x)));
 			dc.Ellipse(x - radius, top - radius, x + radius, top + radius);
 			dc.Ellipse(x - radius, bottom - radius, x + radius, bottom + radius);
 		}
 
-		for (int y = top + radius; y <= bottom - radius; y += step)
+		for (int index = 0; index < layout.count_y; ++index)
 		{
+			const int y = static_cast<int>(std::lround(layout.start_y + index * (radius * 2.0 + layout.gap_y)));
 			dc.Ellipse(left - radius, y - radius, left + radius, y + radius);
 			dc.Ellipse(right - radius, y - radius, right + radius, y + radius);
 		}
 
-		dc.Ellipse(left - radius, top - radius, left + radius, top + radius);
-		dc.Ellipse(right - radius, top - radius, right + radius, top + radius);
-		dc.Ellipse(left - radius, bottom - radius, left + radius, bottom + radius);
-		dc.Ellipse(right - radius, bottom - radius, right + radius, bottom + radius);
-
+		dc.RestoreDC(saved_dc);
 		dc.SelectObject(old_brush);
 		dc.SelectObject(old_pen);
 	}
 
-	void DrawPaperShape(CDC& dc, const CRect& paper_rect, const PostageMetrics& metrics, const PostageSettings& settings, const COLORREF background)
+	void DrawPaperBase(CDC& dc, const CRect& paper_rect, const PostageMetrics& metrics, const PostageSettings& settings)
 	{
 		const COLORREF paper = GetPaperColor(settings.paper_style);
 		const COLORREF outline = MixColor(paper, RGB(120, 94, 66), 45);
@@ -119,14 +161,12 @@ namespace
 		CBrush* old_brush = dc.SelectObject(&paper_brush);
 		dc.Rectangle(paper_rect);
 
-		DrawHalfCircleCuts(dc, paper_rect, metrics, background, outline);
-
 		CPen highlight_pen(PS_SOLID, 1, highlight);
 		dc.SelectObject(&highlight_pen);
-		dc.MoveTo(paper_rect.left + metrics.hole_radius, paper_rect.top + 1);
-		dc.LineTo(paper_rect.right - metrics.hole_radius, paper_rect.top + 1);
-		dc.MoveTo(paper_rect.left + 1, paper_rect.top + metrics.hole_radius);
-		dc.LineTo(paper_rect.left + 1, paper_rect.bottom - metrics.hole_radius);
+		dc.MoveTo(paper_rect.left + metrics.hole_radius + 2, paper_rect.top + 1);
+		dc.LineTo(paper_rect.right - metrics.hole_radius - 2, paper_rect.top + 1);
+		dc.MoveTo(paper_rect.left + 1, paper_rect.top + metrics.hole_radius + 2);
+		dc.LineTo(paper_rect.left + 1, paper_rect.bottom - metrics.hole_radius - 2);
 
 		dc.SelectObject(old_brush);
 		dc.SelectObject(old_pen);
@@ -162,21 +202,6 @@ namespace
 			0);
 
 		DrawDibClose(draw_dib);
-	}
-
-	void DrawInnerFrame(CDC& dc, const CRect& image_rect, const PostageSettings& settings)
-	{
-		const int shorter_side = min(image_rect.Width(), image_rect.Height());
-		const int padding_px = max(6, shorter_side * settings.inner_padding_percent / 100);
-		CRect inner_rect(image_rect);
-		inner_rect.InflateRect(padding_px, padding_px);
-
-		CPen pen(PS_SOLID, 2, RGB(171, 148, 108));
-		CPen* old_pen = dc.SelectObject(&pen);
-		CBrush* old_brush = static_cast<CBrush*>(dc.SelectStockObject(NULL_BRUSH));
-		dc.Rectangle(inner_rect);
-		dc.SelectObject(old_brush);
-		dc.SelectObject(old_pen);
 	}
 
 	void DrawValueText(CDC& dc, const CRect& canvas_rect, const PostageSettings& settings)
@@ -246,15 +271,16 @@ namespace
 		const PostageMetrics metrics = GetMetrics(source, settings);
 		dc.FillSolidRect(canvas_rect, background);
 
-		const CRect paper_rect = BuildPaperRect(canvas_rect);
-		DrawPaperShape(dc, paper_rect, metrics, settings, background);
-
 		const CRect image_rect = BuildImageRect(canvas_rect, source, metrics);
+		const CRect paper_rect = BuildPaperRect(image_rect, metrics);
+		const PerforationLayout layout = BuildPerforationLayout(paper_rect, metrics);
+
+		DrawPaperBase(dc, paper_rect, metrics, settings);
 		DrawSourcePicture(dc, source, image_rect);
-		DrawInnerFrame(dc, image_rect, settings);
+		DrawHalfCircleCuts(dc, paper_rect, layout, background, MixColor(GetPaperColor(settings.paper_style), RGB(120, 94, 66), 45));
 
 		CRect border_rect(paper_rect);
-		border_rect.DeflateRect(metrics.hole_radius + 4, metrics.hole_radius + 4);
+		border_rect.DeflateRect(layout.radius + max(4, metrics.spacing_px), layout.radius + max(4, metrics.spacing_px));
 		DrawValueText(dc, border_rect, settings);
 		DrawStamp(dc, border_rect, settings);
 	}

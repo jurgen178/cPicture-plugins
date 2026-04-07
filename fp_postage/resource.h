@@ -13,10 +13,6 @@
 #define IDC_PREVIEW                    1000
 #define IDC_SLIDER_BORDER              1001
 #define IDC_STATIC_BORDER_VAL          1002
-#define IDC_SLIDER_PERFORATION         1003
-#define IDC_STATIC_PERFORATION_VAL     1004
-#define IDC_SLIDER_PADDING             1005
-#define IDC_STATIC_PADDING_VAL         1006
 #define IDC_COMBO_PAPER                1007
 #define IDC_EDIT_VALUE                 1008
 #define IDC_CHECK_STAMP                1009
@@ -32,7 +28,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        107
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

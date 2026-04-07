@@ -12,9 +12,7 @@ enum POSTAGE_PAPER_STYLE
 
 struct PostageSettings
 {
-	int border_percent = 12;
-	int perforation_percent = 6;
-	int inner_padding_percent = 4;
+	int border_percent = 5;
 	int paper_style = POSTAGE_PAPER_CREAM;
 	CString value_text = L"50 Cent";
 	bool show_stamp = true;

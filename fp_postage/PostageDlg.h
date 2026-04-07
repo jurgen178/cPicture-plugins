@@ -21,13 +21,9 @@ protected:
 	const vector<picture_data>& picture_data_list;
 
 	CSliderCtrl m_sliderBorder;
-	CSliderCtrl m_sliderPerforation;
-	CSliderCtrl m_sliderPadding;
 	CSliderCtrl m_sliderStampAngle;
 	CSliderCtrl m_sliderStampStrength;
 	CStatic m_staticBorderVal;
-	CStatic m_staticPerforationVal;
-	CStatic m_staticPaddingVal;
 	CStatic m_staticStampAngleVal;
 	CStatic m_staticStampStrengthVal;
 	CComboBox m_comboPaper;
