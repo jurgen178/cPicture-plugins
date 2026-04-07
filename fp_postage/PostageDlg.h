@@ -17,7 +17,8 @@ public:
 	}
 
 protected:
-	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+	afx_msg void OnPaint();
+	DECLARE_MESSAGE_MAP()
 
 private:
 	COLORREF m_previewColor = RGB(0, 0, 0);

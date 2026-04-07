@@ -2,20 +2,18 @@
 #include "PostageDlg.h"
 #include <afxdlgs.h>
 
-void CTextColorPreviewCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
+BEGIN_MESSAGE_MAP(CTextColorPreviewCtrl, CStatic)
+	ON_WM_PAINT()
+END_MESSAGE_MAP()
+
+void CTextColorPreviewCtrl::OnPaint()
 {
-	if (lpDrawItemStruct == nullptr)
-		return;
-
-	CDC dc;
-	dc.Attach(lpDrawItemStruct->hDC);
-
-	CRect rect(lpDrawItemStruct->rcItem);
+	CPaintDC dc(this);
+	CRect rect;
+	GetClientRect(&rect);
 	dc.FrameRect(&rect, &CBrush(::GetSysColor(COLOR_WINDOWFRAME)));
 	rect.DeflateRect(1, 1);
 	dc.FillSolidRect(rect, m_previewColor);
-
-	dc.Detach();
 }
 
 CPostageDlg::CPostageDlg(const vector<picture_data>& picture_data_list, CWnd* pParent /*=NULL*/)
