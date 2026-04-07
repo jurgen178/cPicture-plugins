@@ -122,6 +122,12 @@ Creates an analysis board for each selected picture with edge, block-boundary an
 Merges a sequence into a single motion-heavy composite image with colored trails.
 
 
+<br>Postage
+---------------------
+
+Creates a new picture that looks like a simple postage stamp with a perforated border, value text and optional stamp overlay.
+
+
 <br>Structure and details
 ---------------------
 
@@ -176,5 +182,6 @@ cpp_qrcode:     0x216000000
 cpp_timecapsule: 0x217000000  
 cpp_xray:        0x218000000  
 cpp_motion_composer: 0x219000000  
+cpp_postage:     0x21A000000  
 
 

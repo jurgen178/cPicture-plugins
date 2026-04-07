@@ -1,0 +1,7 @@
+LIBRARY      "cpp_postage"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc
