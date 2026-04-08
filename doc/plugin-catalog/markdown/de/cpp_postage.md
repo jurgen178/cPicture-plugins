@@ -4,4 +4,7 @@ Dieses Funktionszusatzmodul verwandelt ausgewählte Bilder in Briefmarken mit pe
 
 <br>
 ![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage1.png)
+<br>
 ![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage2.jpg)
+<br>
+![](https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage_index.jpg)

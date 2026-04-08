@@ -191,7 +191,7 @@
         "desc": "Funktionszusatzmodul zum Umwandeln ausgewählter Bilder in Briefmarken mit perforiertem Rand und Text.",
         "file": "cpp_postage.dll",
         "version": "1.0",
-        "info": "<h3>Postage</h3><p>Dieses Funktionszusatzmodul verwandelt ausgewählte Bilder in Briefmarken mit perforiertem Rand. Im Dialog lassen sich Papierstil, Randabstand, Text, Textecke, Schriftart und Textfarbe einstellen.</p><p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage1.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage2.jpg' /></p>",
+        "info": "<h3>Postage</h3><p>Dieses Funktionszusatzmodul verwandelt ausgewählte Bilder in Briefmarken mit perforiertem Rand. Im Dialog lassen sich Papierstil, Randabstand, Text, Textecke, Schriftart und Textfarbe einstellen.</p><p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage1.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage2.jpg' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage_index.jpg' /></p>",
         "type": "function"
       },
       {
@@ -425,7 +425,7 @@
         "desc": "Function plugin to turn selected pictures into postage stamps with a perforated border and text.",
         "file": "cpp_postage.dll",
         "version": "1.0",
-        "info": "<h3>Postage</h3><p>This function plugin turns selected pictures into postage stamps with a perforated border. The dialog lets you configure the paper style, border spacing, text, text corner, font and text color.</p><p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage1.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage2.jpg' /></p>",
+        "info": "<h3>Postage</h3><p>This function plugin turns selected pictures into postage stamps with a perforated border. The dialog lets you configure the paper style, border spacing, text, text corner, font and text color.</p><p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage1.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage2.jpg' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage_index.jpg' /></p>",
         "type": "function"
       },
       {
