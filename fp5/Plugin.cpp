@@ -16,6 +16,15 @@ constexpr int picture_height(240);
 constexpr int headline_height(50);
 constexpr int border(10);
 
+namespace
+{
+	CString AppendToBaseName(const CString& file_name, const CString& append)
+	{
+		const int extension_dot = file_name.ReverseFind(L'.');
+		return file_name.Left(extension_dot) + append + file_name.Mid(extension_dot);
+	}
+}
+
 
 const CString __stdcall GetPluginVersion()
 {
@@ -245,13 +254,11 @@ const vector<update_data>& __stdcall CFunctionPluginSample5::end(const vector<pi
 	filename2 = filename2.Left(filename2.ReverseFind(L'.'));
 
 	// Use the file type of the first file.
-	const CString filename1_ext(picture_data1.file_name.Mid(picture_data1.file_name.ReverseFind(L'.')));
-	const CString dir_filename1(picture_data1.file_name.Left(picture_data1.file_name.ReverseFind(L'\\') + 1));
-	const CString filename(dir_filename1 + filename1 + L"-" + filename2 + filename1_ext);
+	const CString output_file(AppendToBaseName(picture_data1.file_name, L"-" + filename2));
 
 	// Signal that the picture is added (enum UPDATE_TYPE).
 	update_data_list.emplace_back(
-		filename,
+		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
 		// Picture will be added with this data:
 		bitmap_width,

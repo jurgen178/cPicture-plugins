@@ -53,25 +53,10 @@ namespace
 		return palette[frame_index % palette.size()];
 	}
 
-	CString GetBaseName(const CString& file_name)
+	CString AppendToBaseName(const CString& file_name, const CString& append)
 	{
-		// Split the incoming absolute path into a reusable base name for the generated composite.
-		const int slash = file_name.ReverseFind(L'\\');
-		CString name = slash >= 0 ? file_name.Mid(slash + 1) : file_name;
-		const int dot = name.ReverseFind(L'.');
-		return dot > 0 ? name.Left(dot) : name;
-	}
-
-	CString GetDirectory(const CString& file_name)
-	{
-		const int slash = file_name.ReverseFind(L'\\');
-		return slash >= 0 ? file_name.Left(slash + 1) : CString();
-	}
-
-	CString GetExtension(const CString& file_name)
-	{
-		const int dot = file_name.ReverseFind(L'.');
-		return dot >= 0 ? file_name.Mid(dot) : L".jpg";
+		const int extension_dot = file_name.ReverseFind(L'.');
+		return file_name.Left(extension_dot) + append + file_name.Mid(extension_dot);
 	}
 
 	bool HasExpectedRgbBuffer(const requested_data& request)
@@ -306,7 +291,7 @@ const vector<update_data>& __stdcall CFunctionPluginMotionComposer::end(const ve
 		}
 	}
 
-	const CString output_file(GetDirectory(picture_data_list.front().file_name) + GetBaseName(picture_data_list.front().file_name) + L"-motion-composer" + GetExtension(picture_data_list.front().file_name));
+	const CString output_file(AppendToBaseName(picture_data_list.front().file_name, L"-motion-composer"));
 	update_data_list.emplace_back(
 		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,

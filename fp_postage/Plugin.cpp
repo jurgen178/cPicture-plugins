@@ -4,23 +4,10 @@
 
 namespace
 {
-	CString GetBaseName(const CString& file_name)
+	CString AppendToBaseName(const CString& file_name, const CString& append)
 	{
-		CString name(file_name.Mid(file_name.ReverseFind(L'\\') + 1));
-		const int dot = name.ReverseFind(L'.');
-		return dot > 0 ? name.Left(dot) : name;
-	}
-
-	CString GetDirectory(const CString& file_name)
-	{
-		const int pos = file_name.ReverseFind(L'\\');
-		return pos >= 0 ? file_name.Left(pos + 1) : CString();
-	}
-
-	CString GetExtension(const CString& file_name)
-	{
-		const int dot = file_name.ReverseFind(L'.');
-		return dot >= 0 ? file_name.Mid(dot) : L".jpg";
+		const int extension_dot = file_name.ReverseFind(L'.');
+		return file_name.Left(extension_dot) + append + file_name.Mid(extension_dot);
 	}
 }
 
@@ -149,9 +136,9 @@ const vector<update_data>& __stdcall CFunctionPluginPostage::end(const vector<pi
 
 		dib_list.emplace_back(dib);
 
-		const CString output_name = GetDirectory(picture.file_name) + GetBaseName(picture.file_name) + L"-postage" + GetExtension(picture.file_name);
+		const CString output_file(AppendToBaseName(picture.file_name, L"-postage"));
 		update_data_list.emplace_back(
-			output_name,
+			output_file,
 			UPDATE_TYPE::UPDATE_TYPE_ADDED,
 			output_width,
 			output_height,

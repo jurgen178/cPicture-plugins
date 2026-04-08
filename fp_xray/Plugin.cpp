@@ -39,24 +39,10 @@ namespace
 		dst[index + 2] = static_cast<BYTE>((dst[index + 2] * (255 - alpha) + blue * alpha) / 255);
 	}
 
-	CString GetBaseName(const CString& file_name)
+	CString AppendToBaseName(const CString& file_name, const CString& append)
 	{
-		const int slash = file_name.ReverseFind(L'\\');
-		CString name = slash >= 0 ? file_name.Mid(slash + 1) : file_name;
-		const int dot = name.ReverseFind(L'.');
-		return dot > 0 ? name.Left(dot) : name;
-	}
-
-	CString GetDirectory(const CString& file_name)
-	{
-		const int slash = file_name.ReverseFind(L'\\');
-		return slash >= 0 ? file_name.Left(slash + 1) : CString();
-	}
-
-	CString GetExtension(const CString& file_name)
-	{
-		const int dot = file_name.ReverseFind(L'.');
-		return dot >= 0 ? file_name.Mid(dot) : L".jpg";
+		const int extension_dot = file_name.ReverseFind(L'.');
+		return file_name.Left(extension_dot) + append + file_name.Mid(extension_dot);
 	}
 
 	void CopyPanel(const BYTE* src, const int src_width, const int src_height,
@@ -509,7 +495,7 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 	DrawLabel(composite, out_width, out_height, 0, height, width, height, "BLOCK 8X8");
 	DrawLabel(composite, out_width, out_height, width, height, width, height, "COMBINED");
 
-	const CString output_file(GetDirectory(picture_data.file_name) + GetBaseName(picture_data.file_name) + L"-xray" + GetExtension(picture_data.file_name));
+	const CString output_file(AppendToBaseName(picture_data.file_name, L"-xray"));
 	update_data_list.emplace_back(
 		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
