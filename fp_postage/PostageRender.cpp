@@ -292,7 +292,8 @@ namespace
 		const int old_mode = dc.SetBkMode(TRANSPARENT);
 		const COLORREF old_color = dc.SetTextColor(settings.value_color);
 		// Text margin is a percentage of the available text area so it scales with the stamp size.
-		const int text_margin = max(1, min(canvas_rect.Width(), canvas_rect.Height()) * settings.value_margin_percent / 100);
+		// At slider 0 the text sits exactly in the corner of the inner border area (zero extra margin).
+		const int text_margin = max(0, min(canvas_rect.Width(), canvas_rect.Height()) * settings.value_margin_percent / 100);
 
 		CRect text_rect(canvas_rect);
 		text_rect.DeflateRect(text_margin, text_margin);
@@ -337,10 +338,15 @@ namespace
 		DrawHalfCircleCuts(dc, paper_rect, layout, background,
 			metrics.draw_outline ? MixColor(GetPaperColor(settings.paper_style), RGB(120, 94, 66), 45) : CLR_INVALID);
 
-		CRect border_rect(paper_rect);
-		// Keep text safely inside the perforation field.
-		border_rect.DeflateRect(layout.radius + max(2, metrics.spacing_px), layout.radius + max(1, metrics.spacing_px));
-		DrawValueText(dc, border_rect, settings);
+		// Inset text rect from the image edges by enough to clear the perforation half-circles.
+		// When spacing_px=0 the perforations cut into the image so the full radius must be avoided.
+		// When spacing_px >= layout.radius the perforations are fully outside and no inset is needed.
+		const int perf_inset = max(0, layout.radius - metrics.spacing_px);
+		// Add a fixed horizontal margin so the text does not touch the image edge.
+		const int horz_extra = max(4, layout.corner_margin);
+		CRect text_base(image_rect);
+		text_base.DeflateRect(perf_inset + horz_extra, perf_inset);
+		DrawValueText(dc, text_base, settings);
 	}
 }
 
