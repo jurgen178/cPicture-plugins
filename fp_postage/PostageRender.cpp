@@ -25,8 +25,8 @@ namespace
 		int count_x = 2;
 		int count_y = 2;
 		int corner_margin = 3;
-		int start_x = 0;
-		int start_y = 0;
+		int start_x = 0;  // set by BuildPerforationLayout; meaningless before that call
+		int start_y = 0;  // set by BuildPerforationLayout; meaningless before that call
 		double gap_x = 3.0;
 		double gap_y = 3.0;
 	};
@@ -59,6 +59,16 @@ namespace
 			(GetBValue(base) * inv + GetBValue(overlay) * clamped) / 100);
 	}
 
+	// Compute the perforation hole radius from image size and user scale setting.
+	// Used by both GetMetrics and GetMinimumPostageBorderPercent to avoid duplication.
+	int ComputeHoleRadius(const int shorter_side, const int perforation_scale_percent)
+	{
+		const int perforation_scale = max(50, min(perforation_scale_percent, 350));
+		const int target_diameter = max(4,
+			static_cast<int>(std::lround(static_cast<double>(kPerforationReferenceDiameter) * shorter_side * perforation_scale / (kPerforationReferenceSize * 100.0))));
+		return max(2, target_diameter / 2);
+	}
+
 	// Convert user settings into pixel-based rendering metrics.
 	PostageMetrics GetMetrics(const requested_data& source, const PostageSettings& settings)
 	{
@@ -66,12 +76,7 @@ namespace
 		// Border spacing follows the smaller side so the visual weight stays consistent.
 		const int shorter_side = max(1, min(source.picture_width, source.picture_height));
 
-		// Let the user make the perforation finer or coarser around the same visual baseline.
-		const int perforation_scale = max(50, min(settings.perforation_scale_percent, 350));
-		// Scale the hole diameter from the 1024 px reference instead of packing more holes into larger images.
-		const int target_diameter = max(4,
-			static_cast<int>(std::lround(static_cast<double>(kPerforationReferenceDiameter) * shorter_side * perforation_scale / (kPerforationReferenceSize * 100.0))));
-		metrics.hole_radius = max(2, target_diameter / 2);
+		metrics.hole_radius = ComputeHoleRadius(shorter_side, settings.perforation_scale_percent);
 		// Keep a small minimum bridge between circles so the paper edge does not collapse.
 		metrics.hole_gap_min = max(1, metrics.hole_radius / 3);
 
@@ -100,15 +105,16 @@ namespace
 		return CRect(0, 0, source.picture_width + margin * 2, source.picture_height + margin * 2);
 	}
 
-	// Place the source image inside the final canvas while leaving room for the paper border.
-	CRect BuildImageRect(const CRect& canvas_rect, const requested_data& source, const PostageMetrics& metrics)
+	// Place the source image inside the canvas, offset from the given origin by the canvas margin.
+	// origin must be the top-left corner of a canvas produced by BuildCanvasRect with the same metrics.
+	CRect BuildImageRect(const CPoint& origin, const requested_data& source, const PostageMetrics& metrics)
 	{
 		const int margin = GetCanvasMargin(metrics);
 		return CRect(
-			canvas_rect.left + margin,
-			canvas_rect.top + margin,
-			canvas_rect.left + margin + source.picture_width,
-			canvas_rect.top + margin + source.picture_height);
+			origin.x + margin,
+			origin.y + margin,
+			origin.x + margin + source.picture_width,
+			origin.y + margin + source.picture_height);
 	}
 
 	// Expand from the image bounds to the paper bounds. The paper is what receives the perforation.
@@ -222,10 +228,12 @@ namespace
 
 		CPen highlight_pen(PS_SOLID, 1, highlight);
 		dc.SelectObject(&highlight_pen);
-		dc.MoveTo(paper_rect.left + metrics.hole_radius + 2, paper_rect.top + 1);
-		dc.LineTo(paper_rect.right - metrics.hole_radius - 2, paper_rect.top + 1);
-		dc.MoveTo(paper_rect.left + 1, paper_rect.top + metrics.hole_radius + 2);
-		dc.LineTo(paper_rect.left + 1, paper_rect.bottom - metrics.hole_radius - 2);
+		// Inset the highlight lines to avoid overdrawing the perforation zone corners.
+		const int corner_inset = metrics.hole_radius + 2;
+		dc.MoveTo(paper_rect.left + corner_inset, paper_rect.top + 1);
+		dc.LineTo(paper_rect.right - corner_inset, paper_rect.top + 1);
+		dc.MoveTo(paper_rect.left + 1, paper_rect.top + corner_inset);
+		dc.LineTo(paper_rect.left + 1, paper_rect.bottom - corner_inset);
 
 		dc.SelectObject(old_brush);
 		dc.SelectObject(old_pen);
@@ -265,15 +273,15 @@ namespace
 	}
 
 	// Draw the optional text label inside the stamp border area.
-	void DrawValueText(CDC& dc, const CRect& canvas_rect, const PostageSettings& settings)
+	void DrawValueText(CDC& dc, const CRect& text_area, const PostageSettings& settings)
 	{
 		CString text(settings.value_text);
 		text.Trim();
 		if (text.IsEmpty())
 			return;
 
-		// Use the current border area as the visual base size, then scale that by the chosen LOGFONT size.
-		const int base_font_height = max(18, min(canvas_rect.Width(), canvas_rect.Height()) / 10);
+		// Use the text area size as the visual base size, then scale that by the chosen LOGFONT size.
+		const int base_font_height = max(18, min(text_area.Width(), text_area.Height()) / 10);
 		const int selected_height = max(1, abs(settings.value_font.lfHeight));
 		const int font_height = settings.value_font.lfHeight != 0
 			? max(8, MulDiv(base_font_height, selected_height, 16))
@@ -301,24 +309,24 @@ namespace
 		const COLORREF old_color = dc.SetTextColor(settings.value_color);
 		// Text margin is a percentage of the available text area so it scales with the stamp size.
 		// At slider 0 the text sits exactly in the corner of the inner border area (zero extra margin).
-		const int text_margin = max(0, min(canvas_rect.Width(), canvas_rect.Height()) * settings.value_margin_percent / 100);
+		const int text_margin = max(0, min(text_area.Width(), text_area.Height()) * settings.value_margin_percent / 100);
 
-		CRect text_rect(canvas_rect);
+		CRect text_rect(text_area);
 		text_rect.DeflateRect(text_margin, text_margin);
 		UINT flags = DT_SINGLELINE | DT_END_ELLIPSIS;
 		// Map the selected corner to DrawText alignment flags.
 		switch (settings.value_corner)
 		{
-		case 0:
+		case ValueCorner::TopLeft:
 			flags |= DT_LEFT | DT_TOP;
 			break;
-		case 1:
+		case ValueCorner::TopRight:
 			flags |= DT_RIGHT | DT_TOP;
 			break;
-		case 2:
+		case ValueCorner::BottomLeft:
 			flags |= DT_LEFT | DT_BOTTOM;
 			break;
-		case 3:
+		case ValueCorner::BottomRight:
 		default:
 			flags |= DT_RIGHT | DT_BOTTOM;
 			break;
@@ -336,7 +344,7 @@ namespace
 		const PostageMetrics metrics = GetMetrics(source, settings);
 		dc.FillSolidRect(canvas_rect, background);
 
-		const CRect image_rect = BuildImageRect(canvas_rect, source, metrics);
+		const CRect image_rect = BuildImageRect(canvas_rect.TopLeft(), source, metrics);
 		const CRect paper_rect = BuildPaperRect(image_rect, metrics);
 		const PerforationLayout layout = BuildPerforationLayout(paper_rect, metrics);
 
@@ -361,10 +369,7 @@ namespace
 int GetMinimumPostageBorderPercent(const requested_data& source, const PostageSettings& settings)
 {
 	const int shorter_side = max(1, min(source.picture_width, source.picture_height));
-	const int perforation_scale = max(50, min(settings.perforation_scale_percent, 350));
-	const int target_diameter = max(4,
-		static_cast<int>(std::lround(static_cast<double>(kPerforationReferenceDiameter) * shorter_side * perforation_scale / (kPerforationReferenceSize * 100.0))));
-	const int hole_radius = max(2, target_diameter / 2);
+	const int hole_radius = ComputeHoleRadius(shorter_side, settings.perforation_scale_percent);
 	return max(1, (hole_radius * 100 + shorter_side - 1) / shorter_side);
 }
 

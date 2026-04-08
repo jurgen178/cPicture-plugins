@@ -106,7 +106,7 @@ BOOL CPostageDlg::OnInitDialog()
 	text.LoadString(IDS_PAPER_VINTAGE);
 	m_comboPaper.AddString(text);
 	m_comboPaper.SetCurSel(max(0, min(settings.paper_style, 3)));
-	m_valueCorner.SetCorner(settings.value_corner);
+	m_valueCorner.SetCorner(static_cast<int>(settings.value_corner));
 
 	m_editValue.SetWindowText(settings.value_text);
 	UpdateFontButtonLabel();
@@ -123,7 +123,7 @@ void CPostageDlg::OnOK()
 	settings.value_margin_percent = m_sliderValueMargin.GetPos();
 	settings.paper_style = max(0, m_comboPaper.GetCurSel());
 	m_editValue.GetWindowText(settings.value_text);
-	settings.value_corner = m_valueCorner.GetCorner();
+	settings.value_corner = static_cast<ValueCorner>(m_valueCorner.GetCorner());
 	CDialog::OnOK();
 }
 
@@ -251,7 +251,7 @@ void CPostageDlg::DrawPreview(CDC& dc)
 		: settings.perforation_scale_percent;
 	preview_settings.value_margin_percent = m_sliderValueMargin.GetSafeHwnd() ? m_sliderValueMargin.GetPos() : settings.value_margin_percent;
 	preview_settings.paper_style = m_comboPaper.GetSafeHwnd() ? max(0, m_comboPaper.GetCurSel()) : settings.paper_style;
-	preview_settings.value_corner = m_valueCorner.GetSafeHwnd() ? m_valueCorner.GetCorner() : settings.value_corner;
+	preview_settings.value_corner = m_valueCorner.GetSafeHwnd() ? static_cast<ValueCorner>(m_valueCorner.GetCorner()) : settings.value_corner;
 	preview_settings.value_font = settings.value_font;
 	preview_settings.value_color = settings.value_color;
 	preview_settings.value_text = settings.value_text;

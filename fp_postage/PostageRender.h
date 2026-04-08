@@ -11,6 +11,15 @@ enum POSTAGE_PAPER_STYLE
 	POSTAGE_PAPER_VINTAGE,
 };
 
+// Corner the value text is anchored to; matches the 2x2 grid in CCornerPickerCtrl.
+enum class ValueCorner : int
+{
+	TopLeft     = 0,
+	TopRight    = 1,
+	BottomLeft  = 2,
+	BottomRight = 3,
+};
+
 struct PostageSettings
 {
 	PostageSettings()
@@ -18,11 +27,11 @@ struct PostageSettings
 		  perforation_scale_percent(184),	// 5
 		  paper_style(POSTAGE_PAPER_OFFWHITE),
 		  value_text(L"50 Cent"),
-		  value_corner(3),
+		  value_corner(ValueCorner::BottomRight),
 		  value_margin_percent(4),
-		  value_font{},
 		  value_color(RGB(255, 255, 255))
 	{
+		value_font = {};
 		value_font.lfHeight = -16;
 		value_font.lfWeight = FW_SEMIBOLD;
 		value_font.lfCharSet = DEFAULT_CHARSET;
@@ -35,7 +44,7 @@ struct PostageSettings
 	int perforation_scale_percent;
 	int paper_style;
 	CString value_text;
-	int value_corner;
+	ValueCorner value_corner;
 	int value_margin_percent;
 	LOGFONT value_font;
 	COLORREF value_color;
