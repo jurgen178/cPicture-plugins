@@ -85,17 +85,25 @@ namespace
 		return metrics;
 	}
 
-	// Build the full output canvas. This includes the original image plus paper border and perforation depth.
+	// Returns the canvas margin: paper border plus optional outer border outside the perforations.
+	// To restore a visible outer border, change outer_border to: metrics.hole_radius + 2
+	int GetCanvasMargin(const PostageMetrics& metrics)
+	{
+		const int outer_border = 0; /* metrics.hole_radius + 2 */
+		return metrics.spacing_px + outer_border;
+	}
+
+	// Build the full output canvas. The canvas ends exactly at the paper edge; perforation circles are clipped at the boundary.
 	CRect BuildCanvasRect(const requested_data& source, const PostageMetrics& metrics)
 	{
-		const int margin = metrics.spacing_px + metrics.hole_radius + 2;
+		const int margin = GetCanvasMargin(metrics);
 		return CRect(0, 0, source.picture_width + margin * 2, source.picture_height + margin * 2);
 	}
 
-	// Place the source image inside the final canvas while leaving room for the stamp edge around it.
+	// Place the source image inside the final canvas while leaving room for the paper border.
 	CRect BuildImageRect(const CRect& canvas_rect, const requested_data& source, const PostageMetrics& metrics)
 	{
-		const int margin = metrics.spacing_px + metrics.hole_radius + 2;
+		const int margin = GetCanvasMargin(metrics);
 		return CRect(
 			canvas_rect.left + margin,
 			canvas_rect.top + margin,
