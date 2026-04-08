@@ -20,9 +20,9 @@ struct PostageSettings
 		  value_text(L"50 Cent"),
 		  value_corner(3),
 		  value_margin_percent(4),
+		  value_font{},
 		  value_color(RGB(255, 255, 255))
 	{
-		ZeroMemory(&value_font, sizeof(value_font));
 		value_font.lfHeight = -16;
 		value_font.lfWeight = FW_SEMIBOLD;
 		value_font.lfCharSet = DEFAULT_CHARSET;
