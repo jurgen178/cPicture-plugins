@@ -292,7 +292,7 @@ namespace
 		const int old_mode = dc.SetBkMode(TRANSPARENT);
 		const COLORREF old_color = dc.SetTextColor(settings.value_color);
 		// Text margin is a percentage of the available text area so it scales with the stamp size.
-		const int text_margin = max(4, min(canvas_rect.Width(), canvas_rect.Height()) * settings.value_margin_percent / 100);
+		const int text_margin = max(1, min(canvas_rect.Width(), canvas_rect.Height()) * settings.value_margin_percent / 100);
 
 		CRect text_rect(canvas_rect);
 		text_rect.DeflateRect(text_margin, text_margin);
@@ -339,7 +339,7 @@ namespace
 
 		CRect border_rect(paper_rect);
 		// Keep text safely inside the perforation field.
-		border_rect.DeflateRect(layout.radius + max(4, metrics.spacing_px), layout.radius + max(4, metrics.spacing_px));
+		border_rect.DeflateRect(layout.radius + max(2, metrics.spacing_px), layout.radius + max(1, metrics.spacing_px));
 		DrawValueText(dc, border_rect, settings);
 	}
 }
