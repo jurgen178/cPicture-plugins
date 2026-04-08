@@ -17,11 +17,13 @@
 #define IDC_VALUE_CORNER               1003
 #define IDC_SLIDER_VALUE_MARGIN        1004
 #define IDC_STATIC_VALUE_MARGIN_VAL    1005
+#define IDC_SLIDER_PERFORATION         1006
 #define IDC_COMBO_PAPER                1007
 #define IDC_EDIT_VALUE                 1008
 #define IDC_BUTTON_TEXT_FONT           1009
 #define IDC_BUTTON_TEXT_COLOR          1010
 #define IDC_STATIC_TEXT_COLOR          1011
+#define IDC_STATIC_PERFORATION_VAL     1012
 
 // Next default values for new objects
 // 
@@ -29,7 +31,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        108
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

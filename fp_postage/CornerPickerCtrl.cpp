@@ -82,8 +82,12 @@ void CCornerPickerCtrl::DrawCell(CDC& dc, int index)
 void CCornerPickerCtrl::OnPaint()
 {
 	CPaintDC dc(this);
+	CRect client;
+	GetClientRect(&client);
+	dc.FillSolidRect(client, ::GetSysColor(COLOR_BTNFACE));
 	for (int index = 0; index < 4; ++index)
 		DrawCell(dc, index);
+	dc.FrameRect(client, &CBrush(::GetSysColor(COLOR_WINDOWFRAME)));
 }
 
 BOOL CCornerPickerCtrl::OnEraseBkgnd(CDC* /*pDC*/)

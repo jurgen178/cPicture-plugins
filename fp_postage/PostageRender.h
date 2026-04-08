@@ -15,6 +15,7 @@ struct PostageSettings
 {
 	PostageSettings()
 		: border_percent(5),
+		  perforation_scale_percent(100),
 		  paper_style(POSTAGE_PAPER_OFFWHITE),
 		  value_text(L"50 Cent"),
 		  value_corner(3),
@@ -31,6 +32,7 @@ struct PostageSettings
 	}
 
 	int border_percent;
+	int perforation_scale_percent;
 	int paper_style;
 	CString value_text;
 	int value_corner;
@@ -39,5 +41,6 @@ struct PostageSettings
 	COLORREF value_color;
 };
 
+int GetMinimumPostageBorderPercent(const requested_data& source, const PostageSettings& settings);
 void DrawPostagePreview(CDC& dc, const CRect& preview_rect, const requested_data& source, const PostageSettings& settings);
 HBITMAP RenderPostageBitmap(const requested_data& source, const PostageSettings& settings, void*& dib_bits, int& output_width, int& output_height);

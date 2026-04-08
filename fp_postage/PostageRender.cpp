@@ -65,19 +65,23 @@ namespace
 		PostageMetrics metrics;
 		// Border spacing follows the smaller side so the visual weight stays consistent.
 		const int shorter_side = max(1, min(source.picture_width, source.picture_height));
-		// Very small border values snap to zero to avoid a half-visible perforation state.
-		const int border_percent = settings.border_percent < 2 ? 0 : settings.border_percent;
+
+		// Let the user make the perforation finer or coarser around the same visual baseline.
+		const int perforation_scale = max(50, min(settings.perforation_scale_percent, 350));
+		// Scale the hole diameter from the 1024 px reference instead of packing more holes into larger images.
+		const int target_diameter = max(4,
+			static_cast<int>(std::lround(static_cast<double>(kPerforationReferenceDiameter) * shorter_side * perforation_scale / (kPerforationReferenceSize * 100.0))));
+		metrics.hole_radius = max(2, target_diameter / 2);
+		// Keep a small minimum bridge between circles so the paper edge does not collapse.
+		metrics.hole_gap_min = max(1, metrics.hole_radius / 3);
+
+		// The border must either be zero or at least one perforation radius wide so no half cut overlaps the image.
+		const int minimum_border_percent = GetMinimumPostageBorderPercent(source, settings);
+		const int border_percent = settings.border_percent < minimum_border_percent ? 0 : settings.border_percent;
 		metrics.spacing_px = max(0, shorter_side * border_percent / 100);
-		if (border_percent == 0 || metrics.spacing_px < 2)
+		if (border_percent == 0 || metrics.spacing_px < metrics.hole_radius)
 			metrics.spacing_px = 0;
 		metrics.draw_outline = metrics.spacing_px > 0;
-
-		// Scale the hole diameter from the 1024 px reference instead of packing more holes into larger images.
-		const int target_diameter = max(8,
-			static_cast<int>(std::lround(static_cast<double>(kPerforationReferenceDiameter) * shorter_side / kPerforationReferenceSize)));
-		metrics.hole_radius = max(4, target_diameter / 2);
-		// Keep a small minimum bridge between circles so the paper edge does not collapse.
-		metrics.hole_gap_min = max(2, metrics.hole_radius / 3);
 		return metrics;
 	}
 
@@ -114,10 +118,10 @@ namespace
 		const int width = max(1, paper_rect.Width() - 1);
 		const int height = max(1, paper_rect.Height() - 1);
 		// Diameter and preferred gap define the target rhythm of the perforation.
-		const int diameter_target = max(8, metrics.hole_radius * 2);
+		const int diameter_target = max(4, metrics.hole_radius * 2);
 		const int gap_target = max(metrics.hole_gap_min, diameter_target / 4);
 		// Keep additional paper in the corners so the stamp corners stay visually stronger.
-		layout.corner_margin = max(4, metrics.hole_radius / 2 + 3);
+		layout.corner_margin = max(3, metrics.hole_radius / 2 + 2);
 
 		// Only the inner usable span can be filled with circles and gaps.
 		const int usable_width = max(diameter_target, width - layout.corner_margin * 2);
@@ -128,11 +132,11 @@ namespace
 		layout.count_y = max(1, (usable_height + gap_target) / max(1, diameter_target + gap_target));
 
 		// Shrink the radius only when needed so the chosen circle count actually fits.
-		const int radius_x = max(3, (usable_width - gap_target * max(0, layout.count_x - 1)) / max(2, layout.count_x * 2));
-		const int radius_y = max(3, (usable_height - gap_target * max(0, layout.count_y - 1)) / max(2, layout.count_y * 2));
-		layout.radius = max(3, min(metrics.hole_radius, min(radius_x, radius_y)));
+		const int radius_x = max(2, (usable_width - gap_target * max(0, layout.count_x - 1)) / max(2, layout.count_x * 2));
+		const int radius_y = max(2, (usable_height - gap_target * max(0, layout.count_y - 1)) / max(2, layout.count_y * 2));
+		layout.radius = max(2, min(metrics.hole_radius, min(radius_x, radius_y)));
 		// Recompute the corner margin from the final radius so corners still keep enough paper.
-		layout.corner_margin = max(4, layout.radius / 2 + 3);
+		layout.corner_margin = max(3, layout.radius / 2 + 2);
 
 		// Distribute any leftover space into the horizontal and vertical gaps independently.
 		layout.gap_x = layout.count_x > 1
@@ -338,6 +342,16 @@ namespace
 		border_rect.DeflateRect(layout.radius + max(4, metrics.spacing_px), layout.radius + max(4, metrics.spacing_px));
 		DrawValueText(dc, border_rect, settings);
 	}
+}
+
+int GetMinimumPostageBorderPercent(const requested_data& source, const PostageSettings& settings)
+{
+	const int shorter_side = max(1, min(source.picture_width, source.picture_height));
+	const int perforation_scale = max(50, min(settings.perforation_scale_percent, 350));
+	const int target_diameter = max(4,
+		static_cast<int>(std::lround(static_cast<double>(kPerforationReferenceDiameter) * shorter_side * perforation_scale / (kPerforationReferenceSize * 100.0))));
+	const int hole_radius = max(2, target_diameter / 2);
+	return max(1, (hole_radius * 100 + shorter_side - 1) / shorter_side);
 }
 
 // Render into an off-screen bitmap at natural size, then scale the whole stamp into the preview rectangle.

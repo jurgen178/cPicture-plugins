@@ -40,8 +40,10 @@ protected:
 	const vector<picture_data>& picture_data_list;
 
 	CSliderCtrl m_sliderBorder;
+	CSliderCtrl m_sliderPerforation;
 	CSliderCtrl m_sliderValueMargin;
 	CStatic m_staticBorderVal;
+	CStatic m_staticPerforationVal;
 	CStatic m_staticValueMarginVal;
 	CComboBox m_comboPaper;
 	CButton m_buttonFont;

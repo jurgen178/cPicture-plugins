@@ -2,6 +2,28 @@
 #include "PostageDlg.h"
 #include <afxdlgs.h>
 
+namespace
+{
+	constexpr int kPerforationLevelMin = 1;
+	constexpr int kPerforationLevelMax = 10;
+	constexpr int kPerforationScaleMin = 50;
+	constexpr int kPerforationScaleMax = 350;
+
+	int GetPerforationScaleFromLevel(const int level)
+	{
+		const int clamped_level = max(kPerforationLevelMin, min(level, kPerforationLevelMax));
+		return kPerforationScaleMin + (clamped_level - kPerforationLevelMin) * (kPerforationScaleMax - kPerforationScaleMin) /
+			max(1, kPerforationLevelMax - kPerforationLevelMin);
+	}
+
+	int GetPerforationLevelFromScale(const int scale)
+	{
+		const int clamped_scale = max(kPerforationScaleMin, min(scale, kPerforationScaleMax));
+		return kPerforationLevelMin + (clamped_scale - kPerforationScaleMin) * (kPerforationLevelMax - kPerforationLevelMin) /
+			max(1, kPerforationScaleMax - kPerforationScaleMin);
+	}
+}
+
 BEGIN_MESSAGE_MAP(CTextColorPreviewCtrl, CStatic)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
@@ -30,7 +52,9 @@ void CPostageDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SLIDER_BORDER, m_sliderBorder);
+	DDX_Control(pDX, IDC_SLIDER_PERFORATION, m_sliderPerforation);
 	DDX_Control(pDX, IDC_STATIC_BORDER_VAL, m_staticBorderVal);
+	DDX_Control(pDX, IDC_STATIC_PERFORATION_VAL, m_staticPerforationVal);
 	DDX_Control(pDX, IDC_SLIDER_VALUE_MARGIN, m_sliderValueMargin);
 	DDX_Control(pDX, IDC_STATIC_VALUE_MARGIN_VAL, m_staticValueMarginVal);
 	DDX_Control(pDX, IDC_COMBO_PAPER, m_comboPaper);
@@ -64,6 +88,11 @@ BOOL CPostageDlg::OnInitDialog()
 
 	m_sliderBorder.SetRange(0, 10);
 	m_sliderBorder.SetPos(settings.border_percent);
+	settings.perforation_scale_percent = max(50, min(settings.perforation_scale_percent, 350));
+	m_sliderPerforation.SetRange(kPerforationLevelMin, kPerforationLevelMax);
+	m_sliderPerforation.SetTicFreq(1);
+	m_sliderPerforation.SetPageSize(1);
+	m_sliderPerforation.SetPos(GetPerforationLevelFromScale(settings.perforation_scale_percent));
 	m_sliderValueMargin.SetRange(0, 20);
 	m_sliderValueMargin.SetPos(max(0, min(settings.value_margin_percent, 20)));
 
@@ -90,6 +119,7 @@ BOOL CPostageDlg::OnInitDialog()
 void CPostageDlg::OnOK()
 {
 	settings.border_percent = GetEffectiveBorderPercent();
+	settings.perforation_scale_percent = GetPerforationScaleFromLevel(m_sliderPerforation.GetPos());
 	settings.value_margin_percent = m_sliderValueMargin.GetPos();
 	settings.paper_style = max(0, m_comboPaper.GetCurSel());
 	m_editValue.GetWindowText(settings.value_text);
@@ -100,7 +130,15 @@ void CPostageDlg::OnOK()
 int CPostageDlg::GetEffectiveBorderPercent() const
 {
 	const int border_percent = m_sliderBorder.GetSafeHwnd() ? m_sliderBorder.GetPos() : settings.border_percent;
-	return border_percent < 2 ? 0 : border_percent;
+	if (picture_data_list.empty() || picture_data_list.front().requested_data_list.empty())
+		return border_percent < 2 ? 0 : border_percent;
+
+	PostageSettings current_settings = settings;
+	if (m_sliderPerforation.GetSafeHwnd())
+		current_settings.perforation_scale_percent = GetPerforationScaleFromLevel(m_sliderPerforation.GetPos());
+	const requested_data& source = picture_data_list.front().requested_data_list.front();
+	const int minimum_border_percent = GetMinimumPostageBorderPercent(source, current_settings);
+	return border_percent < minimum_border_percent ? 0 : border_percent;
 }
 
 void CPostageDlg::UpdateLabels()
@@ -108,6 +146,8 @@ void CPostageDlg::UpdateLabels()
 	CString text;
 	text.Format(L"%d", GetEffectiveBorderPercent());
 	m_staticBorderVal.SetWindowText(text);
+	text.Format(L"%d", m_sliderPerforation.GetPos());
+	m_staticPerforationVal.SetWindowText(text);
 	text.Format(L"%d", m_sliderValueMargin.GetPos());
 	m_staticValueMarginVal.SetWindowText(text);
 }
@@ -157,7 +197,10 @@ void CPostageDlg::OnChooseTextColor()
 
 void CPostageDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if (pScrollBar != nullptr && pScrollBar->GetSafeHwnd() == m_sliderBorder.GetSafeHwnd() && m_sliderBorder.GetPos() < 2)
+	UNREFERENCED_PARAMETER(nSBCode);
+	UNREFERENCED_PARAMETER(nPos);
+	UNREFERENCED_PARAMETER(pScrollBar);
+	if (GetEffectiveBorderPercent() == 0 && m_sliderBorder.GetPos() > 0)
 		m_sliderBorder.SetPos(0);
 
 	UpdateLabels();
@@ -203,6 +246,9 @@ void CPostageDlg::DrawPreview(CDC& dc)
 
 	PostageSettings preview_settings;
 	preview_settings.border_percent = GetEffectiveBorderPercent();
+	preview_settings.perforation_scale_percent = m_sliderPerforation.GetSafeHwnd()
+		? GetPerforationScaleFromLevel(m_sliderPerforation.GetPos())
+		: settings.perforation_scale_percent;
 	preview_settings.value_margin_percent = m_sliderValueMargin.GetSafeHwnd() ? m_sliderValueMargin.GetPos() : settings.value_margin_percent;
 	preview_settings.paper_style = m_comboPaper.GetSafeHwnd() ? max(0, m_comboPaper.GetCurSel()) : settings.paper_style;
 	preview_settings.value_corner = m_valueCorner.GetSafeHwnd() ? m_valueCorner.GetCorner() : settings.value_corner;
