@@ -26,7 +26,7 @@ struct PostageSettings
 		: border_percent(5),
 		  perforation_scale_percent(184),	// 5
 		  paper_style(POSTAGE_PAPER_OFFWHITE),
-		  value_text(L"50 Cent"),
+		  value_text(L"50 cent"),
 		  value_corner(ValueCorner::BottomRight),
 		  value_margin_percent(4),
 		  value_color(RGB(255, 255, 255))
