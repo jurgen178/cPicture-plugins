@@ -111,48 +111,18 @@ namespace
 		return text;
 	}
 
-	CString GetFileNameOnly(const CString& file_name)
-	{
-		// The plugin receives absolute file paths from cPicture, but captions and stems only need the leaf name.
-		const int pos = file_name.ReverseFind(L'\\');
-		return pos >= 0 ? file_name.Mid(pos + 1) : file_name;
-	}
-
 	CString GetBaseName(const CString& file_name)
 	{
-		CString name(GetFileNameOnly(file_name));
+		const int slash = file_name.ReverseFind(L'\\');
+		CString name = slash >= 0 ? file_name.Mid(slash + 1) : file_name;
 		const int dot = name.ReverseFind(L'.');
 		return dot > 0 ? name.Left(dot) : name;
 	}
 
-	CString GetDirectory(const CString& file_name)
+	CString AppendToBaseName(const CString& file_name, const CString& append)
 	{
-		const int pos = file_name.ReverseFind(L'\\');
-		return pos >= 0 ? file_name.Left(pos + 1) : CString();
-	}
-
-	CString GetExtension(const CString& file_name)
-	{
-		const int dot = file_name.ReverseFind(L'.');
-		return dot >= 0 ? file_name.Mid(dot) : L".jpg";
-	}
-
-	CString SanitizeStem(CString text)
-	{
-		text.Trim();
-		if (text.IsEmpty())
-			text = L"timecapsule";
-
-		for (int index = 0; index < text.GetLength(); ++index)
-		{
-			const WCHAR ch = text[index];
-			if (ch == L' ')
-				text.SetAt(index, L'-');
-			else if (wcschr(L"\\/:*?\"<>|", ch) != nullptr)
-				text.SetAt(index, L'_');
-		}
-
-		return text;
+		const int extension_dot = file_name.ReverseFind(L'.');
+		return file_name.Left(extension_dot) + append + file_name.Mid(extension_dot);
 	}
 
 	COLORREF GetClusterColor(const int index)
@@ -1174,7 +1144,7 @@ namespace
 		return values.size() >= 2;
 	}
 
-	// EXIF GPS may arrive either as decimal degrees or as degree/minute/second sequences.
+	// EXIF GPS as decimal degrees or as degree/minute/second sequences.
 	bool TryParseDecimalGps(const CString& gps_text, GeoPoint& point)
 	{
 		vector<GpsNumberToken> values;
@@ -2244,9 +2214,9 @@ const vector<update_data>& __stdcall CFunctionPluginTimeCapsule::end(const vecto
 	mem_dc.SelectObject(old_pen);
 	mem_dc.SelectObject(old_bitmap);
 
-	const CString output_name(GetDirectory(sorted_pictures.front()->file_name) + SanitizeStem(header_title) + GetExtension(sorted_pictures.front()->file_name));
+	const CString output_file(AppendToBaseName(sorted_pictures.front()->file_name, L"-timecapsule"));
 	update_data_list.emplace_back(
-		output_name,
+		output_file,
 		UPDATE_TYPE::UPDATE_TYPE_ADDED,
 		bitmap_width,
 		bitmap_height,

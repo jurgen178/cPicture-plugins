@@ -187,6 +187,14 @@
         "type": "function"
       },
       {
+        "name": "Postage",
+        "desc": "Funktionszusatzmodul zum Umwandeln ausgewählter Bilder in Briefmarken mit perforiertem Rand und Text.",
+        "file": "cpp_postage.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_postage.md",
+        "type": "function"
+      },
+      {
         "name": "Zeitkapsel",
         "desc": "Funktionszusatzmodul zum Erstellen eines Story-Posters mit Route, Orten und Miniaturen.",
         "file": "cpp_timecapsule.dll",
@@ -410,6 +418,14 @@
         "file": "cpp_qrcode.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpp_qrcode.md",
+        "type": "function"
+      },
+      {
+        "name": "Postage",
+        "desc": "Function plugin to turn selected pictures into postage stamps with a perforated border and text.",
+        "file": "cpp_postage.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_postage.md",
         "type": "function"
       },
       {

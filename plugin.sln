@@ -36,6 +36,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpf_pdf_format", "pdf_forma
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_qrcode", "fp_qrcode\fp_qrcode.vcxproj", "{A7D3E9B1-F254-4C8A-B096-2E7F3C1D5A08}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_postage", "fp_postage\fp_postage.vcxproj", "{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_timecapsule", "fp_timecapsule\fp_timecapsule.vcxproj", "{F2D7CCA8-4367-4BF6-B035-FFBF42AAA5BB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_xray", "fp_xray\fp_xray.vcxproj", "{85A4BA19-CB3C-4835-A67F-C4372C588F52}"
@@ -172,6 +174,14 @@ Global
 		{A7D3E9B1-F254-4C8A-B096-2E7F3C1D5A08}.Release|x64.Build.0 = Release|x64
 		{A7D3E9B1-F254-4C8A-B096-2E7F3C1D5A08}.Release|x86.ActiveCfg = Release|Win32
 		{A7D3E9B1-F254-4C8A-B096-2E7F3C1D5A08}.Release|x86.Build.0 = Release|Win32
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Debug|x64.ActiveCfg = Debug|x64
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Debug|x64.Build.0 = Debug|x64
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Debug|x86.ActiveCfg = Debug|Win32
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Debug|x86.Build.0 = Debug|Win32
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Release|x64.ActiveCfg = Release|x64
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Release|x64.Build.0 = Release|x64
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Release|x86.ActiveCfg = Release|Win32
+		{E31D6B75-3D40-46E1-91B5-FD2AFA0B63A7}.Release|x86.Build.0 = Release|Win32
 		{F2D7CCA8-4367-4BF6-B035-FFBF42AAA5BB}.Debug|x64.ActiveCfg = Debug|x64
 		{F2D7CCA8-4367-4BF6-B035-FFBF42AAA5BB}.Debug|x64.Build.0 = Debug|x64
 		{F2D7CCA8-4367-4BF6-B035-FFBF42AAA5BB}.Debug|x86.ActiveCfg = Debug|Win32
