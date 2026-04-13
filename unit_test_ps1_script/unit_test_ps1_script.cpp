@@ -127,12 +127,12 @@ namespace unittest
 
 		TEST_METHOD(TestEscapeCmdLineJsonData2)
 		{
-			// ab"c'1\ 
+			// ab"c'1\  (1 Backslash) 
 			CString text(L"ab\"c'\\1\\");
 
 			CString escapedText = escapeCmdLineJsonDataPS1Str(text);
 
-			// ab\\""c''\\1\\\\ 
+			// ab\\""c''\\1\\\\  (4 Backslashes) 
 			Assert::AreEqual(L"ab\\\\\"\"c''\\\\1\\\\\\\\", escapedText);
 		}
 

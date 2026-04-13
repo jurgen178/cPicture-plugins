@@ -67,7 +67,7 @@ CString escapeCmdLineJsonDataPS1Str(CString text)
 		// Use double group replacement to replace delimiting quotes and inside quotes.
 
 		// [{"key''1","value"a","key2","value\b\"}]
-		text.Replace(L"\\", L"\\\\\\\\");	// \ -> \\\\ 
+		text.Replace(L"\\", L"\\\\\\\\");	// \ -> \\\\ (4 Backslashes)
 
 		// [{"key''1","value"a","key2","value\\\\b\\\\"}]
 
@@ -106,16 +106,16 @@ CString escapeCmdLineJsonDataPS1Str(CString text)
 	}
 	else
 	{
-		// ab"c'1\ 
+		// ab"c'1\  (1 Backslash) 
 
-		text.Replace(L"\\", L"\\\\");	// \ -> \\ 
+		text.Replace(L"\\", L"\\\\");	// \ -> \\  (2 Backslashes)
 		text.Replace(L"\"", L"\\\\\"\"");	// " -> ""
 
 		// Add double \ to avoid escaping the following quote when text ends with a \.
 		if (text.Right(1) == L"\\")
 			text += L"\\\\";
 
-		// ab\\""c''\\1\\\\ 
+		// ab\\""c''\\1\\\\  (2 Backslashes) 
 	}
 
 	return text;
@@ -182,9 +182,9 @@ CString escapeCmdLineJsonDataPyStr(CString text)
 	}
 	else
 	{
-		// ab"c'1\ 
+		// ab"c'1\  (1 Backslash) 
 
-		text.Replace(L"\\", L"\\\\");	// \ -> \\ 
+		text.Replace(L"\\", L"\\\\");	// \ -> \\  (2 Backslashes)
 
 		text.Replace(L"\"", L"\\\"");	// " -> \"
 
@@ -192,7 +192,7 @@ CString escapeCmdLineJsonDataPyStr(CString text)
 		if (text.Right(1) == L"\\")
 			text += L"\\\\";
 
-		// ab\\""c''\\1\\\\ 
+		// ab\\""c''\\1\\\\  (2 Backslashes) 
 	}
 
 	return text;
