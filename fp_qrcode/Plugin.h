@@ -18,6 +18,9 @@ protected:
 	int qr_relative_size; // QR size as percentage of the shorter image side (5..50)
 	int qr_margin_percent; // gap between QR and image edge as % of shorter side (0..25)
 
+	void LoadSettings();
+	void SaveSettings() const;
+
 public:
 	static CFunctionPlugin* __stdcall GetInstance()
 	{

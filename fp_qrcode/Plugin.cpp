@@ -3,6 +3,7 @@
 #include "locale.h"
 #include "QrCodeDlg.h"
 #include "qrcode.h"
+#include "..\shared\PluginSettings.h"
 
 // Plugin cpp_qrcode.
 // Overlays a QR code onto the selected pictures at a chosen corner.
@@ -12,7 +13,7 @@
 static void DrawQRCode(BYTE* data, int img_width, int img_height,
 	int corner, int qr_size_px, int margin_px, const CString& text)
 {
-	const std::string utf8 = CStringToUTF8(text);
+	const std::string utf8 = PluginShared::CStringToUtf8(text);
 	if (utf8.empty())
 		return;
 
@@ -99,6 +100,25 @@ CFunctionPluginQRCode::CFunctionPluginQRCode()
 	_wsetlocale(LC_ALL, L".ACP");
 }
 
+void CFunctionPluginQRCode::LoadSettings()
+{
+	PluginShared::PluginSettingsSection settings(L"qrcode");
+	qr_corner = settings.GetInt(L"corner", 3);
+	qr_text = settings.GetString(L"text", L"");
+	qr_relative_size = settings.GetInt(L"relative_size", 20);
+	qr_margin_percent = settings.GetInt(L"margin_percent", 2);
+}
+
+void CFunctionPluginQRCode::SaveSettings() const
+{
+	PluginShared::PluginSettingsSection settings(L"qrcode");
+	settings.SetInt(L"corner", qr_corner, 3);
+	settings.SetString(L"text", qr_text, L"");
+	settings.SetInt(L"relative_size", qr_relative_size, 20);
+	settings.SetInt(L"margin_percent", qr_margin_percent, 2);
+	settings.Save();
+}
+
 struct plugin_data __stdcall CFunctionPluginQRCode::get_plugin_data() const
 {
 	struct plugin_data pluginData;
@@ -153,6 +173,8 @@ bool __stdcall CFunctionPluginQRCode::process_picture(const picture_data& pictur
 const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 	const vector<picture_data>& picture_data_list)
 {
+	LoadSettings();
+
 	// Show the settings dialog with a live preview of the first picture.
 	CWnd parent;
 	parent.Attach(handle_wnd);
@@ -171,13 +193,14 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 
 	parent.Detach();
 
-	if (dlg.text.IsEmpty())
-		return update_data_list;
-
 	qr_corner = dlg.corner;
 	qr_text = dlg.text;
 	qr_relative_size = dlg.relative_size;
 	qr_margin_percent = dlg.margin_percent;
+	SaveSettings();
+
+	if (dlg.text.IsEmpty())
+		return update_data_list;
 
 	constexpr int MIN_QR_SIZE = 32; // pixels – skip pictures whose QR would be smaller
 
