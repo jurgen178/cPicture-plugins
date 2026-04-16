@@ -129,14 +129,9 @@ namespace PluginShared
 
 	CString GetCurrentModuleDirectory()
 	{
-		HMODULE module_handle = NULL;
-		if (!::GetModuleHandleExW(
-			GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-			reinterpret_cast<LPCWSTR>(&GetCurrentModuleDirectory),
-			&module_handle))
-		{
+		HMODULE module_handle = AfxGetInstanceHandle();
+		if (module_handle == NULL)
 			return CString();
-		}
 
 		WCHAR module_path[MAX_PATH] = {};
 		::GetModuleFileNameW(module_handle, module_path, MAX_PATH);
