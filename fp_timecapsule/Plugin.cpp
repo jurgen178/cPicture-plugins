@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Plugin.h"
 #include "SettingsDlg.h"
+#include "..\shared\PluginSettings.h"
 
 #include <array>
 #include <algorithm>
@@ -1908,7 +1909,7 @@ namespace
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.0";
+	return L"1.1";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -1943,6 +1944,32 @@ CFunctionPluginTimeCapsule::CFunctionPluginTimeCapsule()
 {
 }
 
+void CFunctionPluginTimeCapsule::LoadSettings()
+{
+	PluginShared::PluginSettingsSection settings(L"timecapsule");
+	title_text = settings.GetString(L"title_text", L"");
+	sort_mode = settings.GetInt(L"sort_mode", SORT_MODE_EXIF);
+	show_metadata = settings.GetBool(L"show_metadata", true);
+	thumbnail_width = settings.GetInt(L"thumbnail_width", 240);
+	thumbnail_height = settings.GetInt(L"thumbnail_height", 150);
+	location_cluster_radius_km = settings.GetFloat(L"location_cluster_radius_km", 2.0f);
+}
+
+void CFunctionPluginTimeCapsule::SaveSettings() const
+{
+	CString default_title;
+	default_title.LoadString(IDS_DEFAULT_TITLE);
+
+	PluginShared::PluginSettingsSection settings(L"timecapsule");
+	settings.SetString(L"title_text", title_text, default_title);
+	settings.SetInt(L"sort_mode", sort_mode, SORT_MODE_EXIF);
+	settings.SetBool(L"show_metadata", show_metadata, true);
+	settings.SetInt(L"thumbnail_width", thumbnail_width, 240);
+	settings.SetInt(L"thumbnail_height", thumbnail_height, 150);
+	settings.SetFloat(L"location_cluster_radius_km", static_cast<float>(location_cluster_radius_km), 2.0f);
+	settings.Save();
+}
+
 CFunctionPluginTimeCapsule::~CFunctionPluginTimeCapsule()
 {
 	if (poster_dib != nullptr)
@@ -1969,6 +1996,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginTimeCapsule::start(
 	vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
+	LoadSettings();
 
 	if (file_list.size() < 2)
 	{
@@ -2003,6 +2031,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginTimeCapsule::start(
 	thumbnail_width = settings.thumbnail_width;
 	thumbnail_height = settings.thumbnail_height;
 	location_cluster_radius_km = settings.location_cluster_radius_km;
+	SaveSettings();
 
 	request_data_sizes.emplace_back(
 		thumbnail_width,

@@ -7,9 +7,17 @@ class CFunctionPluginAsciiArt : public CFunctionPlugin
 {
 protected:
 	CFunctionPluginAsciiArt();
+	void LoadSettings();
+	void SaveSettings() const;
 
 protected:
 	HWND handle_wnd;
+	CString font_name;
+	int font_size;
+	int blocksize;
+	int brightness;
+	int contrast;
+	bool zx_block_symbols;
 
 public:
 	virtual ~CFunctionPluginAsciiArt() { };

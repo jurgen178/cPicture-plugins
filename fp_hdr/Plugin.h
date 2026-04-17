@@ -7,10 +7,14 @@ class CFunctionPluginHDR : public CFunctionPlugin
 {
 protected:
 	CFunctionPluginHDR();
+	void LoadSettings();
+	void SaveSettings() const;
 
 protected:
 	HWND handle_wnd;
 	vector<const WCHAR*> picture_list;
+	int jpeg_quality;
+	CString enfuse_exe_path;
 
 public:
 	virtual ~CFunctionPluginHDR() { };

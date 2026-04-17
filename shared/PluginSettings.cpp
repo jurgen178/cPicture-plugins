@@ -1,7 +1,7 @@
+#include "stdafx.h"
 #include "PluginSettings.h"
 
-#include "parson.h"
-
+#include <math.h>
 #include <stdio.h>
 
 namespace
@@ -13,38 +13,6 @@ namespace
 		if (left[left.GetLength() - 1] == L'\\')
 			return left + right;
 		return left + L"\\" + right;
-	}
-
-	bool ReadUtf8TextFile(const CString& file_path, CString& text)
-	{
-		FILE* file = NULL;
-		if (_wfopen_s(&file, file_path, L"rb") != 0 || file == NULL)
-			return false;
-
-		fseek(file, 0, SEEK_END);
-		const long length = ftell(file);
-		fseek(file, 0, SEEK_SET);
-
-		std::string utf8;
-		if (length > 0)
-		{
-			utf8.resize(length);
-			const size_t bytes_read = fread(&utf8[0], 1, utf8.size(), file);
-			utf8.resize(bytes_read);
-		}
-
-		fclose(file);
-
-		if (utf8.size() >= 3
-			&& static_cast<unsigned char>(utf8[0]) == 0xEF
-			&& static_cast<unsigned char>(utf8[1]) == 0xBB
-			&& static_cast<unsigned char>(utf8[2]) == 0xBF)
-		{
-			utf8.erase(0, 3);
-		}
-
-		text = PluginShared::Utf8ToCString(utf8);
-		return true;
 	}
 
 	bool WriteUtf8TextFile(const CString& file_path, const std::string& utf8)
@@ -70,19 +38,87 @@ namespace
 		return false;
 	}
 
-	std::wstring ToWide(const CString& text)
-	{
-		return std::wstring(text.GetString());
-	}
-
-	CString ToCString(const std::wstring& text)
-	{
-		return CString(text.c_str());
-	}
-
 	CString BuildTempFilePath(const CString& file_path)
 	{
 		return file_path + L".tmp";
+	}
+
+	bool ReadUtf8FileBytes(const CString& file_path, std::string& utf8)
+	{
+		utf8.clear();
+
+		FILE* file = NULL;
+		if (_wfopen_s(&file, file_path, L"rb") != 0 || file == NULL)
+			return false;
+
+		fseek(file, 0, SEEK_END);
+		const long length = ftell(file);
+		fseek(file, 0, SEEK_SET);
+
+		if (length > 0)
+		{
+			utf8.resize(length);
+			const size_t bytes_read = fread(&utf8[0], 1, utf8.size(), file);
+			utf8.resize(bytes_read);
+		}
+
+		fclose(file);
+
+		if (utf8.size() >= 3
+			&& static_cast<unsigned char>(utf8[0]) == 0xEF
+			&& static_cast<unsigned char>(utf8[1]) == 0xBB
+			&& static_cast<unsigned char>(utf8[2]) == 0xBF)
+		{
+			utf8.erase(0, 3);
+		}
+
+		return true;
+	}
+
+	CString EncodeBinaryData(const BYTE* data, const int size)
+	{
+		static const WCHAR hex_digits[] = L"0123456789abcdef";
+		CString encoded;
+		for (int index = 0; index < size; ++index)
+		{
+			const BYTE value = data[index];
+			encoded += hex_digits[(value >> 4) & 0x0F];
+			encoded += hex_digits[value & 0x0F];
+		}
+
+		return encoded;
+	}
+
+	bool DecodeBinaryData(const CString& hex, void* data, const int size)
+	{
+		if (data == NULL || size < 0 || (hex.GetLength() % 2) != 0)
+			return false;
+
+		BYTE* bytes = static_cast<BYTE*>(data);
+		const int decoded_size = hex.GetLength() / 2;
+		for (int index = 0; index < decoded_size; ++index)
+		{
+			int value = 0;
+			for (int digit = 0; digit < 2; ++digit)
+			{
+				value <<= 4;
+				const WCHAR c = hex[index * 2 + digit];
+
+				if (c >= L'0' && c <= L'9')
+					value += c - L'0';
+				else if (c >= L'a' && c <= L'f')
+					value += c - L'a' + 10;
+				else if (c >= L'A' && c <= L'F')
+					value += c - L'A' + 10;
+				else
+					return false;
+			}
+
+			if (index < size)
+				bytes[index] = static_cast<BYTE>(value);
+		}
+
+		return true;
 	}
 }
 
@@ -160,44 +196,77 @@ namespace PluginShared
 	PluginSettingsSection::~PluginSettingsSection()
 	{
 		if (root_value_ != NULL)
-			json_value_free(root_value_);
+			delete root_value_;
 	}
 
 	CString PluginSettingsSection::GetString(const CString& key, const CString& default_value) const
 	{
-		json_object_t* section = GetSection();
+		nlohmann::json* section = GetSection();
 		if (section == NULL)
 			return default_value;
 
 		const std::string key_utf8 = CStringToUtf8(key);
-		const char* value = json_object_get_string(section, key_utf8.c_str());
-		return value != NULL ? Utf8ToCString(std::string(value)) : default_value;
+		nlohmann::json::const_iterator it = section->find(key_utf8);
+		if (it == section->end() || !it->is_string())
+			return default_value;
+
+		return Utf8ToCString(it->get<std::string>());
 	}
 
 	int PluginSettingsSection::GetInt(const CString& key, const int default_value) const
 	{
-		json_object_t* section = GetSection();
+		nlohmann::json* section = GetSection();
 		if (section == NULL)
 			return default_value;
 
 		const std::string key_utf8 = CStringToUtf8(key);
-		if (!json_object_has_value_of_type(section, key_utf8.c_str(), JSONNumber))
+		nlohmann::json::const_iterator it = section->find(key_utf8);
+		if (it == section->end() || !it->is_number())
 			return default_value;
 
-		return static_cast<int>(json_object_get_number(section, key_utf8.c_str()));
+		return static_cast<int>(it->get<double>());
+	}
+
+	float PluginSettingsSection::GetFloat(const CString& key, const float default_value) const
+	{
+		nlohmann::json* section = GetSection();
+		if (section == NULL)
+			return default_value;
+
+		const std::string key_utf8 = CStringToUtf8(key);
+		nlohmann::json::const_iterator it = section->find(key_utf8);
+		if (it == section->end() || !it->is_number())
+			return default_value;
+
+		return static_cast<float>(it->get<double>());
 	}
 
 	bool PluginSettingsSection::GetBool(const CString& key, const bool default_value) const
 	{
-		json_object_t* section = GetSection();
+		nlohmann::json* section = GetSection();
 		if (section == NULL)
 			return default_value;
 
 		const std::string key_utf8 = CStringToUtf8(key);
-		if (!json_object_has_value_of_type(section, key_utf8.c_str(), JSONBoolean))
+		nlohmann::json::const_iterator it = section->find(key_utf8);
+		if (it == section->end() || !it->is_boolean())
 			return default_value;
 
-		return json_object_get_boolean(section, key_utf8.c_str()) == 1;
+		return it->get<bool>();
+	}
+
+	bool PluginSettingsSection::GetBinaryData(const CString& key, void* data, const int size) const
+	{
+		nlohmann::json* section = GetSection();
+		if (section == NULL)
+			return false;
+
+		const std::string key_utf8 = CStringToUtf8(key);
+		nlohmann::json::const_iterator it = section->find(key_utf8);
+		if (it == section->end() || !it->is_string())
+			return false;
+
+		return DecodeBinaryData(Utf8ToCString(it->get<std::string>()), data, size);
 	}
 
 	void PluginSettingsSection::SetString(const CString& key, const CString& value, const CString& default_value)
@@ -211,7 +280,7 @@ namespace PluginShared
 			return;
 		}
 
-		json_object_t* section = GetOrCreateSection();
+		nlohmann::json* section = GetOrCreateSection();
 		if (section == NULL)
 			return;
 
@@ -220,9 +289,8 @@ namespace PluginShared
 			return;
 
 		const std::string key_utf8 = CStringToUtf8(key);
-		const std::string value_utf8 = CStringToUtf8(value);
-		if (json_object_set_string(section, key_utf8.c_str(), value_utf8.c_str()) == JSONSuccess)
-			is_dirty_ = true;
+		(*section)[key_utf8] = CStringToUtf8(value);
+		is_dirty_ = true;
 	}
 
 	void PluginSettingsSection::SetInt(const CString& key, const int value, const int default_value)
@@ -236,7 +304,7 @@ namespace PluginShared
 			return;
 		}
 
-		json_object_t* section = GetOrCreateSection();
+		nlohmann::json* section = GetOrCreateSection();
 		if (section == NULL)
 			return;
 
@@ -244,8 +312,32 @@ namespace PluginShared
 			return;
 
 		const std::string key_utf8 = CStringToUtf8(key);
-		if (json_object_set_number(section, key_utf8.c_str(), static_cast<double>(value)) == JSONSuccess)
-			is_dirty_ = true;
+		(*section)[key_utf8] = value;
+		is_dirty_ = true;
+	}
+
+	void PluginSettingsSection::SetFloat(const CString& key, const float value, const float default_value)
+	{
+		EnsureLoaded();
+		if (has_parse_error_)
+			return;
+		if (value == default_value)
+		{
+			Remove(key);
+			return;
+		}
+
+		nlohmann::json* section = GetOrCreateSection();
+		if (section == NULL)
+			return;
+
+		const std::string key_utf8 = CStringToUtf8(key);
+		nlohmann::json::const_iterator it = section->find(key_utf8);
+		if (it != section->end() && it->is_number() && static_cast<float>(it->get<double>()) == value)
+			return;
+
+		(*section)[key_utf8] = value;
+		is_dirty_ = true;
 	}
 
 	void PluginSettingsSection::SetBool(const CString& key, const bool value, const bool default_value)
@@ -259,7 +351,7 @@ namespace PluginShared
 			return;
 		}
 
-		json_object_t* section = GetOrCreateSection();
+		nlohmann::json* section = GetOrCreateSection();
 		if (section == NULL)
 			return;
 
@@ -267,25 +359,45 @@ namespace PluginShared
 			return;
 
 		const std::string key_utf8 = CStringToUtf8(key);
-		if (json_object_set_boolean(section, key_utf8.c_str(), value ? 1 : 0) == JSONSuccess)
-			is_dirty_ = true;
+		(*section)[key_utf8] = value;
+		is_dirty_ = true;
+	}
+
+	void PluginSettingsSection::SetBinaryData(const CString& key, const void* data, const int size)
+	{
+		EnsureLoaded();
+		if (has_parse_error_ || data == NULL || size <= 0)
+			return;
+
+		nlohmann::json* section = GetOrCreateSection();
+		if (section == NULL)
+			return;
+
+		const CString encoded(EncodeBinaryData(static_cast<const BYTE*>(data), size));
+		const CString current_value(GetString(key, CString()));
+		if (current_value == encoded)
+			return;
+
+		const std::string key_utf8 = CStringToUtf8(key);
+		(*section)[key_utf8] = CStringToUtf8(encoded);
+		is_dirty_ = true;
 	}
 
 	void PluginSettingsSection::Remove(const CString& key)
 	{
 		EnsureLoaded();
-		if (has_parse_error_ || root_value_ == NULL || json_value_get_type(root_value_) != JSONObject)
+		if (has_parse_error_ || root_value_ == NULL || !root_value_->is_object())
 			return;
 
-		json_object_t* section = GetSection();
+		nlohmann::json* section = GetSection();
 		if (section == NULL)
 			return;
 
 		const std::string key_utf8 = CStringToUtf8(key);
-		if (!json_object_has_value(section, key_utf8.c_str()))
+		if (!section->contains(key_utf8))
 			return;
 
-		json_object_remove(section, key_utf8.c_str());
+		section->erase(key_utf8);
 		is_dirty_ = true;
 		CleanupSectionIfEmpty();
 	}
@@ -299,15 +411,10 @@ namespace PluginShared
 			return true;
 
 		if (root_value_ == NULL)
-			root_value_ = json_value_init_object();
-
-		char* serialized_string = json_serialize_to_string_pretty(root_value_);
-		if (serialized_string == NULL)
-			return false;
+			root_value_ = new nlohmann::json(nlohmann::json::object());
 
 		const CString temp_file_path = BuildTempFilePath(file_path_);
-		const std::string utf8(serialized_string);
-		json_free_serialized_string(serialized_string);
+		const std::string utf8 = root_value_->dump(4, ' ', false, nlohmann::json::error_handler_t::strict);
 
 		if (!WriteUtf8TextFile(temp_file_path, utf8))
 			return false;
@@ -337,93 +444,79 @@ namespace PluginShared
 
 		is_loaded_ = true;
 		has_parse_error_ = false;
-		root_value_ = json_value_init_object();
+		root_value_ = new nlohmann::json(nlohmann::json::object());
 
-		CString file_text;
-		if (!ReadUtf8TextFile(file_path_, file_text))
+		std::string utf8;
+		if (!ReadUtf8FileBytes(file_path_, utf8))
 			return;
 
 		if (root_value_ != NULL)
 		{
-			json_value_free(root_value_);
+			delete root_value_;
 			root_value_ = NULL;
 		}
 
-		const std::string utf8 = CStringToUtf8(file_text);
-		root_value_ = json_parse_string(utf8.c_str());
-		if (root_value_ == NULL || json_value_get_type(root_value_) != JSONObject)
+		root_value_ = new nlohmann::json(nlohmann::json::parse(utf8, NULL, false));
+		if (root_value_ == NULL || root_value_->is_discarded() || !root_value_->is_object())
 		{
 			has_parse_error_ = true;
 			if (root_value_ != NULL)
 			{
-				json_value_free(root_value_);
+				delete root_value_;
 				root_value_ = NULL;
 			}
-			root_value_ = json_value_init_object();
+			root_value_ = new nlohmann::json(nlohmann::json::object());
 			return;
 		}
 	}
 
-	json_object_t* PluginSettingsSection::GetOrCreateSection()
+	nlohmann::json* PluginSettingsSection::GetOrCreateSection()
 	{
 		EnsureLoaded();
 		if (has_parse_error_ || root_value_ == NULL)
 			return NULL;
 
-		JSON_Object* root_object = json_value_get_object(root_value_);
 		const std::string plugin_name_utf8 = CStringToUtf8(plugin_name_);
-		JSON_Value* section_value = json_object_get_value(root_object, plugin_name_utf8.c_str());
-		if (section_value != NULL && json_value_get_type(section_value) == JSONObject)
-			return json_value_get_object(section_value);
+		nlohmann::json::iterator it = root_value_->find(plugin_name_utf8);
+		if (it != root_value_->end() && it->is_object())
+			return &(*it);
 
-		if (section_value != NULL)
+		if (it != root_value_->end())
 		{
-			json_object_remove(root_object, plugin_name_utf8.c_str());
+			root_value_->erase(plugin_name_utf8);
 			is_dirty_ = true;
 		}
 
-		JSON_Value* new_section = json_value_init_object();
-		if (new_section == NULL)
-			return NULL;
-
-		if (json_object_set_value(root_object, plugin_name_utf8.c_str(), new_section) != JSONSuccess)
-		{
-			json_value_free(new_section);
-			return NULL;
-		}
-
+		(*root_value_)[plugin_name_utf8] = nlohmann::json::object();
 		is_dirty_ = true;
-		return json_value_get_object(new_section);
+		return &(*root_value_)[plugin_name_utf8];
 	}
 
-	json_object_t* PluginSettingsSection::GetSection() const
+	nlohmann::json* PluginSettingsSection::GetSection() const
 	{
 		EnsureLoaded();
-		if (has_parse_error_ || root_value_ == NULL || json_value_get_type(root_value_) != JSONObject)
+		if (has_parse_error_ || root_value_ == NULL || !root_value_->is_object())
 			return NULL;
 
-		JSON_Object* root_object = json_value_get_object(root_value_);
 		const std::string plugin_name_utf8 = CStringToUtf8(plugin_name_);
-		JSON_Value* section_value = json_object_get_value(root_object, plugin_name_utf8.c_str());
-		if (section_value == NULL || json_value_get_type(section_value) != JSONObject)
+		nlohmann::json::iterator it = root_value_->find(plugin_name_utf8);
+		if (it == root_value_->end() || !it->is_object())
 			return NULL;
 
-		return json_value_get_object(section_value);
+		return &(*it);
 	}
 
 	void PluginSettingsSection::CleanupSectionIfEmpty()
 	{
-		if (root_value_ == NULL || json_value_get_type(root_value_) != JSONObject)
+		if (root_value_ == NULL || !root_value_->is_object())
 			return;
 
-		JSON_Object* root_object = json_value_get_object(root_value_);
 		const std::string plugin_name_utf8 = CStringToUtf8(plugin_name_);
-		JSON_Value* section_value = json_object_get_value(root_object, plugin_name_utf8.c_str());
-		if (section_value == NULL || json_value_get_type(section_value) != JSONObject)
+		nlohmann::json::iterator it = root_value_->find(plugin_name_utf8);
+		if (it == root_value_->end() || !it->is_object())
 			return;
 
-		JSON_Object* section = json_value_get_object(section_value);
-		if (json_object_get_count(section) == 0)
-			json_object_remove(root_object, plugin_name_utf8.c_str());
+		if (it->empty())
+			root_value_->erase(it);
 	}
 }

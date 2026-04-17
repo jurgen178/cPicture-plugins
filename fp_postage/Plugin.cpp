@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Plugin.h"
 #include "PostageDlg.h"
+#include "..\shared\PluginSettings.h"
 
 namespace
 {
@@ -13,7 +14,7 @@ namespace
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.0";
+	return L"1.1";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -39,6 +40,47 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 CFunctionPluginPostage::CFunctionPluginPostage()
 	: handle_wnd(NULL)
 {
+}
+
+void CFunctionPluginPostage::LoadSettings()
+{
+	const PostageSettings default_settings;
+	PluginShared::PluginSettingsSection section(L"postage");
+
+	settings.border_percent = section.GetInt(L"border_percent", default_settings.border_percent);
+	settings.perforation_scale_percent = section.GetInt(L"perforation_scale_percent", default_settings.perforation_scale_percent);
+	settings.paper_style = section.GetInt(L"paper_style", default_settings.paper_style);
+	settings.value_text = section.GetString(L"value_text", default_settings.value_text);
+	settings.value_corner = static_cast<ValueCorner>(section.GetInt(L"value_corner", static_cast<int>(default_settings.value_corner)));
+	settings.value_margin_percent = section.GetInt(L"value_margin_percent", default_settings.value_margin_percent);
+	settings.value_color = static_cast<COLORREF>(section.GetInt(L"value_color", static_cast<int>(default_settings.value_color)));
+
+	LOGFONT loaded_font = default_settings.value_font;
+	if (section.GetBinaryData(L"value_font", &loaded_font, sizeof(loaded_font)))
+		settings.value_font = loaded_font;
+	else
+		settings.value_font = default_settings.value_font;
+}
+
+void CFunctionPluginPostage::SaveSettings() const
+{
+	const PostageSettings default_settings;
+	PluginShared::PluginSettingsSection section(L"postage");
+
+	section.SetInt(L"border_percent", settings.border_percent, default_settings.border_percent);
+	section.SetInt(L"perforation_scale_percent", settings.perforation_scale_percent, default_settings.perforation_scale_percent);
+	section.SetInt(L"paper_style", settings.paper_style, default_settings.paper_style);
+	section.SetString(L"value_text", settings.value_text, default_settings.value_text);
+	section.SetInt(L"value_corner", static_cast<int>(settings.value_corner), static_cast<int>(default_settings.value_corner));
+	section.SetInt(L"value_margin_percent", settings.value_margin_percent, default_settings.value_margin_percent);
+	section.SetInt(L"value_color", static_cast<int>(settings.value_color), static_cast<int>(default_settings.value_color));
+
+	if (memcmp(&settings.value_font, &default_settings.value_font, sizeof(LOGFONT)) == 0)
+		section.Remove(L"value_font");
+	else
+		section.SetBinaryData(L"value_font", &settings.value_font, sizeof(settings.value_font));
+
+	section.Save();
 }
 
 CFunctionPluginPostage::~CFunctionPluginPostage()
@@ -73,6 +115,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginPostage::start(
 	vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
+	LoadSettings();
 	if (file_list.empty())
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 
@@ -120,6 +163,7 @@ const vector<update_data>& __stdcall CFunctionPluginPostage::end(const vector<pi
 
 	parent.Detach();
 	settings = dlg.settings;
+	SaveSettings();
 
 	for (const picture_data& picture : picture_data_list)
 	{

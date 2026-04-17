@@ -2,9 +2,23 @@
 #include "plugin.h"
 #include "locale.h"
 #include "ParameterDlg.h"
+#include "..\shared\PluginSettings.h"
 
 // Plugin cpp_fp_hdr
 // Blends two pictures using the enfuse app.
+
+namespace
+{
+	CString GetDefaultEnfuseExePath()
+	{
+		const CString path(L".");
+		WCHAR abs_path[MAX_PATH] = { 0 };
+		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
+			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
+
+		return CString(abs_path) + L"\\enfuse.exe";
+	}
+}
 
 
 // https://sourceforge.net/projects/enblend/
@@ -177,7 +191,7 @@ CWinApp theApp;	// für DoModal, sonst wird NULL-pointer dereferenziert.
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.0";
+	return L"1.1";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -204,9 +218,26 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 
 
 CFunctionPluginHDR::CFunctionPluginHDR()
-	: handle_wnd(NULL)
+	: handle_wnd(NULL),
+	  jpeg_quality(95)
 {
 	_wsetlocale(LC_ALL, L".ACP");
+}
+
+void CFunctionPluginHDR::LoadSettings()
+{
+	PluginShared::PluginSettingsSection settings(L"hdr");
+	jpeg_quality = settings.GetInt(L"jpeg_quality", 95);
+	enfuse_exe_path = settings.GetString(L"enfuse_exe_path", L"");
+}
+
+void CFunctionPluginHDR::SaveSettings() const
+{
+	PluginShared::PluginSettingsSection settings(L"hdr");
+	const CString default_enfuse_exe_path = GetDefaultEnfuseExePath();
+	settings.SetInt(L"jpeg_quality", jpeg_quality, 95);
+	settings.SetString(L"enfuse_exe_path", enfuse_exe_path, default_enfuse_exe_path);
+	settings.Save();
 }
 
 struct plugin_data __stdcall CFunctionPluginHDR::get_plugin_data() const
@@ -230,6 +261,7 @@ struct arg_count __stdcall CFunctionPluginHDR::get_arg_count() const
 enum REQUEST_TYPE __stdcall CFunctionPluginHDR::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
+	LoadSettings();
 
 	// Requires at least 2 pictures.
 	if (file_list.size() < 2)
@@ -276,17 +308,17 @@ const vector<update_data>& __stdcall CFunctionPluginHDR::end(const vector<pictur
 		const CString hdr_file(dir_bild + name_bild_1 + L"-" + name_bild_n + ext_bild_1);
 
 		parameterDlg.output_file = hdr_file;
-		parameterDlg.jpeg_quality = 95;
+		parameterDlg.jpeg_quality = jpeg_quality;
 
-		const CString path(L".");
-		WCHAR abs_path[MAX_PATH] = { 0 };
-		if (_wfullpath(abs_path, path, MAX_PATH - 1) == NULL)
-			wcsncpy_s(abs_path, MAX_PATH, path, MAX_PATH - 1);
-
-		parameterDlg.enfuse_exe_path = CString(abs_path) + L"\\enfuse.exe";
+		const CString default_enfuse_exe_path = GetDefaultEnfuseExePath();
+		parameterDlg.enfuse_exe_path = enfuse_exe_path.IsEmpty() ? default_enfuse_exe_path : enfuse_exe_path;
 
 		if (parameterDlg.DoModal() == IDOK)
 		{
+			jpeg_quality = parameterDlg.jpeg_quality;
+			enfuse_exe_path = parameterDlg.enfuse_exe_path;
+			SaveSettings();
+
 			if (parameterDlg.CheckFile(parameterDlg.output_file))
 			{
 				update_data_list.emplace_back(parameterDlg.output_file, UPDATE_TYPE::UPDATE_TYPE_ADDED);

@@ -8,6 +8,8 @@ class CFunctionPluginTimeCapsule : public CFunctionPlugin
 {
 protected:
 	CFunctionPluginTimeCapsule();
+	void LoadSettings();
+	void SaveSettings() const;
 
 protected:
 	HWND handle_wnd;

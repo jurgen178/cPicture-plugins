@@ -7,6 +7,8 @@ class CFunctionPluginXRay : public CFunctionPlugin
 {
 protected:
 	CFunctionPluginXRay();
+	void LoadSettings();
+	void SaveSettings() const;
 
 protected:
 	HWND handle_wnd;

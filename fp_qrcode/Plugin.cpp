@@ -60,7 +60,7 @@ static void DrawQRCode(BYTE* data, int img_width, int img_height,
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.0";
+	return L"1.1";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -140,6 +140,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginQRCode::start(
 	vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
+	LoadSettings();
 
 	CWnd parent;
 	parent.Attach(handle_wnd);
@@ -173,8 +174,6 @@ bool __stdcall CFunctionPluginQRCode::process_picture(const picture_data& pictur
 const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 	const vector<picture_data>& picture_data_list)
 {
-	LoadSettings();
-
 	// Show the settings dialog with a live preview of the first picture.
 	CWnd parent;
 	parent.Attach(handle_wnd);

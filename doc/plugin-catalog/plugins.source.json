@@ -142,7 +142,7 @@
         "name": "Funktionszusatzmodul Beispiel 5",
         "desc": "Funktionszusatzmodul zum Erstellen eines Indexprints aus zwei Bildern.",
         "file": "cpp_fp5.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/de/cpp_fp5.md",
         "type": "function"
       },
@@ -150,7 +150,7 @@
         "name": "HDR enfuse",
         "desc": "Funktionszusatzmodul zum Zusammenführen von Belichtungsreihen.",
         "file": "cpp_fp_hdr.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_fp_hdr.md",
         "type": "function"
       },
@@ -166,7 +166,7 @@
         "name": "Ascii Art",
         "desc": "Funktionszusatzmodul zum Konvertieren eines Bildes in ein Buchstabenbild (Ascii Art).",
         "file": "cpp_ascii_art.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_ascii_art.md",
         "type": "function"
       },
@@ -182,7 +182,7 @@
         "name": "QR-Code",
         "desc": "Funktionszusatzmodul zum Einbetten eines QR-Codes in die ausgewählten Bilder.",
         "file": "cpp_qrcode.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_qrcode.md",
         "type": "function"
       },
@@ -190,7 +190,7 @@
         "name": "Postage",
         "desc": "Funktionszusatzmodul zum Umwandeln ausgewählter Bilder in Briefmarken mit perforiertem Rand und Text.",
         "file": "cpp_postage.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_postage.md",
         "type": "function"
       },
@@ -198,7 +198,7 @@
         "name": "Zeitkapsel",
         "desc": "Funktionszusatzmodul zum Erstellen eines Story-Posters mit Route, Orten und Miniaturen.",
         "file": "cpp_timecapsule.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_timecapsule.md",
         "type": "function"
       },
@@ -206,7 +206,7 @@
         "name": "X-Ray",
         "desc": "Funktionszusatzmodul zum Erstellen einer Analyse-Tafel mit Kanten-, Block- und Heatmap-Ansicht.",
         "file": "cpp_xray.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_xray.md",
         "type": "function"
       },
@@ -214,7 +214,7 @@
         "name": "Motion Composer",
         "desc": "Funktionszusatzmodul zum Verschmelzen mehrerer Bilder zu einem Bewegungsbild mit Spureneffekt.",
         "file": "cpp_motion_composer.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_motion_composer.md",
         "type": "function"
       },
@@ -376,7 +376,7 @@
         "name": "Function Plugin Sample 5",
         "desc": "Function plugin to create an index print from two pictures.",
         "file": "cpp_fp5.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/en/cpp_fp5.md",
         "type": "function"
       },
@@ -384,7 +384,7 @@
         "name": "HDR enfuse",
         "desc": "Function plugin to merge exposure series into an HDR picture.",
         "file": "cpp_fp_hdr.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_fp_hdr.md",
         "type": "function"
       },
@@ -400,7 +400,7 @@
         "name": "Ascii Art",
         "desc": "Function plugin to convert a picture into a letter image (Ascii Art).",
         "file": "cpp_ascii_art.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_ascii_art.md",
         "type": "function"
       },
@@ -416,7 +416,7 @@
         "name": "QR Code",
         "desc": "Function plugin to embed a QR code into the selected pictures.",
         "file": "cpp_qrcode.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_qrcode.md",
         "type": "function"
       },
@@ -424,7 +424,7 @@
         "name": "Postage",
         "desc": "Function plugin to turn selected pictures into postage stamps with a perforated border and text.",
         "file": "cpp_postage.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_postage.md",
         "type": "function"
       },
@@ -432,7 +432,7 @@
         "name": "Time Capsule",
         "desc": "Function plugin to create a story poster with route, places and thumbnails.",
         "file": "cpp_timecapsule.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_timecapsule.md",
         "type": "function"
       },
@@ -440,7 +440,7 @@
         "name": "X-Ray",
         "desc": "Function plugin to create an analysis board with edge, block and heatmap views.",
         "file": "cpp_xray.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_xray.md",
         "type": "function"
       },
@@ -448,7 +448,7 @@
         "name": "Motion Composer",
         "desc": "Function plugin to merge multiple pictures into a motion composite with trail effects.",
         "file": "cpp_motion_composer.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_motion_composer.md",
         "type": "function"
       },

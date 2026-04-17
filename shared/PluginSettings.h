@@ -1,10 +1,8 @@
 #pragma once
 
 #include <afxwin.h>
+#include "json.hpp"
 #include <string>
-
-struct json_object_t;
-struct json_value_t;
 
 namespace PluginShared
 {
@@ -22,11 +20,15 @@ namespace PluginShared
 
 		CString GetString(const CString& key, const CString& default_value) const;
 		int GetInt(const CString& key, int default_value) const;
+		float GetFloat(const CString& key, float default_value) const;
 		bool GetBool(const CString& key, bool default_value) const;
+		bool GetBinaryData(const CString& key, void* data, int size) const;
 
 		void SetString(const CString& key, const CString& value, const CString& default_value);
 		void SetInt(const CString& key, int value, int default_value);
+		void SetFloat(const CString& key, float value, float default_value);
 		void SetBool(const CString& key, bool value, bool default_value);
+		void SetBinaryData(const CString& key, const void* data, int size);
 		void Remove(const CString& key);
 
 		bool Save();
@@ -35,15 +37,15 @@ namespace PluginShared
 
 	private:
 		void EnsureLoaded() const;
-		json_object_t* GetOrCreateSection();
-		json_object_t* GetSection() const;
+		nlohmann::json* GetOrCreateSection();
+		nlohmann::json* GetSection() const;
 		void CleanupSectionIfEmpty();
 
 		CString plugin_name_;
 		CString file_path_;
 		mutable bool is_loaded_;
 		mutable bool has_parse_error_;
-		mutable json_value_t* root_value_;
+		mutable nlohmann::json* root_value_;
 		bool is_dirty_;
 	};
 }
