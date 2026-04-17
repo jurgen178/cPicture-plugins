@@ -15,7 +15,7 @@ static vector<script_info> ScriptsPy;
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.1";
+	return L"1.2";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -76,8 +76,9 @@ const int __stdcall GetPluginInit()
 
 			if (err == 0)
 			{
-				const int size(min(textSize, _filelength(_fileno(infile))));
-				fread(Text, sizeof(char), size, infile);
+				const int size(min(textSize - 1, _filelength(_fileno(infile))));
+				const size_t bytesRead = fread(Text, sizeof(char), size, infile);
+				Text[bytesRead] = '\0';
 
 				desc = scan_description(Text);
 

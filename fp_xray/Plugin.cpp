@@ -481,12 +481,23 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 
 	const int width = request.picture_width;
 	const int height = request.picture_height;
+	if (width > INT_MAX / 2 || height > INT_MAX / 2)
+		return true;
+
 	const int out_width = width * 2;
 	const int out_height = height * 2;
+	const unsigned __int64 composite_size64 = 3ULL * static_cast<unsigned __int64>(out_width) * static_cast<unsigned __int64>(out_height);
+	if (composite_size64 > static_cast<unsigned __int64>(SIZE_MAX))
+		return true;
 
-	BYTE* composite = new BYTE[out_width * out_height * 3];
+	const size_t composite_size = static_cast<size_t>(composite_size64);
+
+	BYTE* composite = new (std::nothrow) BYTE[composite_size];
+	if (composite == nullptr)
+		return true;
+
 	generated_buffers.emplace_back(composite);
-	for (int index = 0; index < out_width * out_height * 3; ++index)
+	for (size_t index = 0; index < composite_size; ++index)
 		composite[index] = 18;
 
 	vector<BYTE> gray;

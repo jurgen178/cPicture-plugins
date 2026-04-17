@@ -13,7 +13,7 @@
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.0";
+	return L"1.1";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -100,13 +100,21 @@ const vector<update_data>& __stdcall CFunctionPluginCopyCB::end(const vector<pic
 { 
 	// End event.
 
+	if (picture_data_list.empty() || picture_data_list.front().requested_data_list.empty())
+	{
+		CString msg;
+		msg.LoadString(IDS_CLIPBOARD_PICTURE_ERROR);
+		::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONERROR);
+		return update_data_list;
+	}
+
 	// Get the picture data.
-	picture_data picture_data = picture_data_list[0];
-	requested_data requested_data = picture_data.requested_data_list[0];
+	const picture_data& picture_data = picture_data_list.front();
+	const requested_data& requested_data = picture_data.requested_data_list.front();
 
 	bool bSuccess(false);
 
-	if (requested_data.picture_width && requested_data.picture_height)
+	if (requested_data.data != NULL && requested_data.picture_width > 0 && requested_data.picture_height > 0)
 	{
 		// Create a BITMAPINFOHEADER.
 		BITMAPINFOHEADER bi;
@@ -137,28 +145,35 @@ const vector<update_data>& __stdcall CFunctionPluginCopyCB::end(const vector<pic
 		{
 			// Lock the memory and copy the BITMAPINFOHEADER and RGB data.
 			BYTE* pDIB = reinterpret_cast<BYTE*>(::GlobalLock(hMem));
-			memcpy(pDIB, &bi, sizeof(BITMAPINFOHEADER));
-			memcpy(pDIB + sizeof(BITMAPINFOHEADER), requested_data.data, size3);
-			::GlobalUnlock(hMem);
-
-			if (::OpenClipboard(NULL))
+			if (pDIB)
 			{
-				::EmptyClipboard();
-				if (!::SetClipboardData(CF_DIB, hMem))
+				memcpy(pDIB, &bi, sizeof(BITMAPINFOHEADER));
+				memcpy(pDIB + sizeof(BITMAPINFOHEADER), requested_data.data, static_cast<size_t>(size3));
+				::GlobalUnlock(hMem);
+
+				if (::OpenClipboard(NULL))
 				{
-					// When SetClipboardData succeeds, the system takes ownership of the memory block,
-					// and you should not free it. However, if SetClipboardData fails, the ownership
-					// remains with your application, and you are responsible for freeing the memory.
+					::EmptyClipboard();
+					if (!::SetClipboardData(CF_DIB, hMem))
+					{
+						// When SetClipboardData succeeds, the system takes ownership of the memory block,
+						// and you should not free it. However, if SetClipboardData fails, the ownership
+						// remains with your application, and you are responsible for freeing the memory.
+						::GlobalFree(hMem);
+					}
+
+					::CloseClipboard();
+
+					CString msg;
+					msg.LoadString(IDS_CLIPBOARD_PICTURE);
+					::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
+
+					bSuccess = true;
+				}
+				else
+				{
 					::GlobalFree(hMem);
 				}
-
-				::CloseClipboard();
-
-				CString msg;
-				msg.LoadString(IDS_CLIPBOARD_PICTURE);
-				::MessageBox(handle_wnd, msg, get_plugin_data().name, MB_OK | MB_ICONINFORMATION);
-
-				bSuccess = true;
 			}
 			else
 			{
