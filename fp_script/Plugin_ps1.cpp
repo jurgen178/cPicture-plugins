@@ -291,6 +291,10 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 		for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
 			update_data_list.emplace_back(it->file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
 	}
+	else
+	{
+		ShowShellExecuteErrorMessage(handle_wnd, get_plugin_data().name, m_PowerShellExe, script, m_script_info.script);
+	}
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	return update_data_list;

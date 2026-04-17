@@ -102,7 +102,7 @@
         "name": "Skript-Funktionszusatzmodul",
         "desc": "Funktionszusatzmodul zum Ausführen von PowerShell-, Batch- und Python-Skripten.",
         "file": "cpp_script.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/de/cpp_script.md",
         "type": "function"
       },
@@ -336,7 +336,7 @@
         "name": "Script Plugin",
         "desc": "Function plugin to run PowerShell, Batch and Python scripts.",
         "file": "cpp_script.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/en/cpp_script.md",
         "type": "function"
       },

@@ -1,4 +1,5 @@
 ﻿#include "global.h"
+#include "resource.h"
 
 
 bool CheckFile(const WCHAR* pFile)
@@ -288,7 +289,6 @@ CString toBase64(const CString& data)
 	return L"";
 }
 
-#ifdef DEBUG
 CString GetLastErrorStr()
 {
 	DWORD errorCode = GetLastError();
@@ -312,4 +312,124 @@ CString GetLastErrorStr()
 
 	return str;
 }
-#endif
+
+namespace
+{
+	CString LoadResourceString(const UINT resourceId)
+	{
+		CString text;
+		text.LoadString(resourceId);
+		return text;
+	}
+
+	void AppendDetailSection(CString& text, const UINT labelId, const CString& value)
+	{
+		text += LoadResourceString(labelId);
+		text += value;
+		text += L"\r\n\r\n";
+	}
+
+	class CErrorDetailsDialog : public CDialog
+	{
+	public:
+		CErrorDetailsDialog(const CString& title, const CString& text, CWnd* parentWnd)
+			: CDialog(IDD_ERROR_DETAILS_DIALOG, parentWnd),
+			m_title(title),
+			m_text(text)
+		{
+		}
+
+	protected:
+		virtual BOOL OnInitDialog() override
+		{
+			CDialog::OnInitDialog();
+
+			SetWindowText(m_title);
+			SetDlgItemText(IDC_ERROR_DETAILS_EDIT, m_text);
+			SetDlgItemText(IDC_ERROR_DETAILS_COPY, LoadResourceString(IDS_ERROR_DETAILS_COPY));
+			SetDlgItemText(IDOK, LoadResourceString(IDS_ERROR_DETAILS_OK));
+
+			if (CWnd* editControl = GetDlgItem(IDC_ERROR_DETAILS_EDIT))
+			{
+				editControl->SetFocus();
+				return FALSE;
+			}
+
+			return TRUE;
+		}
+
+		afx_msg void OnSize(UINT nType, int cx, int cy)
+		{
+			CDialog::OnSize(nType, cx, cy);
+
+			if (!::IsWindow(m_hWnd))
+				return;
+
+			const int margin = 10;
+			const int buttonWidth = 120;
+			const int buttonHeight = 28;
+			const int buttonTop = cy - margin - buttonHeight;
+			const int editHeight = max(60, buttonTop - margin);
+
+			if (CWnd* editControl = GetDlgItem(IDC_ERROR_DETAILS_EDIT))
+				editControl->MoveWindow(margin, margin, max(50, cx - (2 * margin)), editHeight);
+
+			if (CWnd* copyButton = GetDlgItem(IDC_ERROR_DETAILS_COPY))
+				copyButton->MoveWindow(max(margin, cx - margin - (2 * buttonWidth) - 8), buttonTop, buttonWidth, buttonHeight);
+
+			if (CWnd* okButton = GetDlgItem(IDOK))
+				okButton->MoveWindow(max(margin, cx - margin - buttonWidth), buttonTop, buttonWidth, buttonHeight);
+		}
+
+		afx_msg void OnCopyDetails()
+		{
+			if (CWnd* editControl = GetDlgItem(IDC_ERROR_DETAILS_EDIT))
+			{
+				editControl->SetFocus();
+				editControl->SendMessage(EM_SETSEL, 0, -1);
+				editControl->SendMessage(WM_COPY, 0, 0);
+			}
+		}
+
+		DECLARE_MESSAGE_MAP()
+
+	private:
+		CString m_title;
+		CString m_text;
+	};
+
+	BEGIN_MESSAGE_MAP(CErrorDetailsDialog, CDialog)
+		ON_WM_SIZE()
+		ON_BN_CLICKED(IDC_ERROR_DETAILS_COPY, &CErrorDetailsDialog::OnCopyDetails)
+	END_MESSAGE_MAP()
+}
+
+void ShowShellExecuteErrorMessage(HWND hwnd, const CString& title, const CString& executable, const CString& parameters, const CString& scriptFile)
+{
+	const DWORD errorCode = GetLastError();
+	const CString errorMsg = GetLastErrorStr();
+
+	WCHAR currentDirectory[MAX_PATH] = { 0 };
+	if (::GetCurrentDirectory(MAX_PATH, currentDirectory) == 0)
+		wcsncpy_s(currentDirectory, MAX_PATH, LoadResourceString(IDS_ERROR_DETAILS_UNKNOWN), _TRUNCATE);
+
+	CString msg;
+	msg += LoadResourceString(IDS_ERROR_SCRIPT_START_FAILED);
+	msg += L"\r\n\r\n";
+	if (!scriptFile.IsEmpty())
+		AppendDetailSection(msg, IDS_ERROR_DETAILS_SCRIPT_LABEL, scriptFile);
+	AppendDetailSection(msg, IDS_ERROR_DETAILS_FILE_LABEL, executable);
+	AppendDetailSection(msg, IDS_ERROR_DETAILS_PARAMS_LABEL, parameters);
+	AppendDetailSection(msg, IDS_ERROR_DETAILS_WORKDIR_LABEL, currentDirectory);
+	msg += LoadResourceString(IDS_ERROR_DETAILS_LASTERROR_LABEL);
+	CString errorCodeText;
+	errorCodeText.Format(L"%lu", errorCode);
+	msg += errorCodeText;
+	msg += L"\r\n\r\n";
+	msg += LoadResourceString(IDS_ERROR_DETAILS_MESSAGE_LABEL);
+	msg += errorMsg.IsEmpty() ? LoadResourceString(IDS_ERROR_DETAILS_NO_SYSTEM_MESSAGE) : errorMsg;
+
+	CWnd* parentWnd = hwnd != NULL ? CWnd::FromHandle(hwnd) : NULL;
+	CErrorDetailsDialog dialog(title, msg, parentWnd);
+	dialog.DoModal();
+}

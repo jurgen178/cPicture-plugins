@@ -113,7 +113,10 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 #endif
 
 	if (!ret)
+	{
+		ShowShellExecuteErrorMessage(handle_wnd, get_plugin_data().name, script, cmd, script_file);
 		return false;
+	}
 
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.
