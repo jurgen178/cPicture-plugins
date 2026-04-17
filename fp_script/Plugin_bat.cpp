@@ -105,7 +105,6 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 	shInfo.lpFile = script;
 	shInfo.lpParameters = cmd;
 	shInfo.nShow = SW_SHOWNORMAL;
-	shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	const BOOL ret = ShellExecuteEx(&shInfo);
 
@@ -113,12 +112,7 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 	CString errorMsg = GetLastErrorStr();
 #endif
 
-	if (!ret || shInfo.hProcess == NULL)
-		return false;
-
-	const DWORD waitResult = WaitForSingleObject(shInfo.hProcess, INFINITE);
-	::CloseHandle(shInfo.hProcess);
-	if (waitResult != WAIT_OBJECT_0)
+	if (!ret)
 		return false;
 
 	// Signal that the picture could be updated.

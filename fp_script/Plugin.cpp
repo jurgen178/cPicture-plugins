@@ -76,9 +76,8 @@ const int __stdcall GetPluginInit()
 
 			if (err == 0)
 			{
-				const int size(min(textSize - 1, _filelength(_fileno(infile))));
-				const size_t bytesRead = fread(Text, sizeof(char), size, infile);
-				Text[bytesRead] = '\0';
+				const int size(min(textSize, _filelength(_fileno(infile))));
+				fread(Text, sizeof(char), size, infile);
 
 				desc = scan_description(Text);
 

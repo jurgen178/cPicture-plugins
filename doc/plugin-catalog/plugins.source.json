@@ -174,7 +174,7 @@
         "name": "Zwischenablage",
         "desc": "Funktionszusatzmodul zum Kopieren eines Bildes in die Zwischenablage.",
         "file": "cpp_copy_cb.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/de/cpp_copy_cb.md",
         "type": "function"
       },
@@ -408,7 +408,7 @@
         "name": "Clipboard",
         "desc": "Function plugin to copy a picture to the clipboard.",
         "file": "cpp_copy_cb.dll",
-        "version": "1.0",
+        "version": "1.1",
         "infoFileMd": "markdown/en/cpp_copy_cb.md",
         "type": "function"
       },

@@ -83,7 +83,6 @@ struct arg_count __stdcall CFunctionPluginPyScript::get_arg_count() const
 enum REQUEST_TYPE __stdcall CFunctionPluginPyScript::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
-	update_data_list.clear();
 
 	const bool bScript(CheckFile(m_script_info.script));
 	if (!bScript)
@@ -259,7 +258,6 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 	shInfo.lpFile = m_PythonExe;
 	shInfo.lpParameters = script;
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
-	shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	const BOOL ret = ShellExecuteEx(&shInfo);
 
@@ -267,16 +265,11 @@ const vector<update_data>& __stdcall CFunctionPluginPyScript::end(const vector<p
 	CString errorMsg = GetLastErrorStr();
 #endif
 
-	if (!ret || shInfo.hProcess == NULL)
-		return update_data_list;
-
-	const DWORD waitResult = WaitForSingleObject(shInfo.hProcess, INFINITE);
-	::CloseHandle(shInfo.hProcess);
-	if (waitResult != WAIT_OBJECT_0)
-		return update_data_list;
-
-	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
-		update_data_list.emplace_back(it->file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
+	if (ret)
+	{
+		for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
+			update_data_list.emplace_back(it->file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
+	}
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	return update_data_list;

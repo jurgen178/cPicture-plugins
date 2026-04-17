@@ -103,7 +103,6 @@ struct arg_count __stdcall CFunctionPluginPS1Script::get_arg_count() const
 enum REQUEST_TYPE __stdcall CFunctionPluginPS1Script::start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes)
 {
 	handle_wnd = hwnd;
-	update_data_list.clear();
 
 	const bool bScript(CheckFile(m_script_info.script));
 	if (!bScript)
@@ -176,7 +175,7 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	if (noexit)
 		script += L"-noexit ";	// -noexit keeps the powershell console open
 
-	script += L"-File \".\\" + m_script_info.script + L"\" ";
+	script += L"-Command \".\\" + m_script_info.script + L" ";
 
 	// Add picture data as json.
 
@@ -280,7 +279,6 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	shInfo.lpFile = m_PowerShellExe;
 	shInfo.lpParameters = script;
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
-	shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	const BOOL ret = ShellExecuteEx(&shInfo);
 
@@ -288,16 +286,11 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	CString errorMsg = GetLastErrorStr();
 #endif
 
-	if (!ret || shInfo.hProcess == NULL)
-		return update_data_list;
-
-	const DWORD waitResult = WaitForSingleObject(shInfo.hProcess, INFINITE);
-	::CloseHandle(shInfo.hProcess);
-	if (waitResult != WAIT_OBJECT_0)
-		return update_data_list;
-
-	for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
-		update_data_list.emplace_back(it->file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
+	if (ret)
+	{
+		for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
+			update_data_list.emplace_back(it->file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
+	}
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	return update_data_list;
