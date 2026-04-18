@@ -242,11 +242,12 @@ CString toBase64(const unsigned char* data, const int len)
 	}
 
 	const int last_block_size = len % 3;
+	// Base64 tail blocks are zero-padded; do not read beyond the provided input buffer.
 
 	if (last_block_size == 1)
 	{
 		const unsigned char c1 = data[size3] >> 2;
-		const unsigned char c2 = ((data[size3] & 0x03) << 4) | (data[size3 + 1] >> 4);
+		const unsigned char c2 = (data[size3] & 0x03) << 4;
 
 		base64 += base64map[c1];
 		base64 += base64map[c2];
@@ -260,7 +261,7 @@ CString toBase64(const unsigned char* data, const int len)
 	{
 		const unsigned char c1 = data[size3] >> 2;
 		const unsigned char c2 = ((data[size3] & 0x03) << 4) | (data[size3 + 1] >> 4);
-		const unsigned char c3 = ((data[size3 + 1] & 0x0F) << 2) | (data[size3 + 2] >> 6);
+		const unsigned char c3 = (data[size3 + 1] & 0x0F) << 2;
 
 		base64 += base64map[c1];
 		base64 += base64map[c2];

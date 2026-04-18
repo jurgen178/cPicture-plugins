@@ -213,6 +213,7 @@ const vector<update_data>& __stdcall CFunctionPluginQRCode::end(
 		// Index 1 is the full-size RGB data requested in start().
 		if (pd.requested_data_list.size() < 2)
 			continue;
+
 		const requested_data& rd = pd.requested_data_list[1];
 
 		if (rd.data == nullptr || rd.picture_width == 0 || rd.picture_height == 0)
