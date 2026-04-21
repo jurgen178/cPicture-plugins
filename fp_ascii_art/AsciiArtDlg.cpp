@@ -21,6 +21,8 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	title(title),
 	picture_data_list(picture_data_list),
 	index(0),
+	selected_font_name(L"Consolas"),
+	fontsize(12),
 	blocksize(72),
 	brightness(0),
 	contrast(0),
@@ -31,6 +33,26 @@ CAsciiArtDlg::CAsciiArtDlg(const vector<picture_data>& picture_data_list, CWnd* 
 	bmiHeader.biPlanes = 1;
 	bmiHeader.biBitCount = 24;
 	bmiHeader.biCompression = BI_RGB;
+}
+
+void CAsciiArtDlg::ApplySettings(const CString& fontName, const int fontSize, const int blockSize, const int brightnessValue, const int contrastValue, const bool useZxBlockSymbols)
+{
+	selected_font_name = fontName;
+	fontsize = fontSize;
+	blocksize = blockSize;
+	brightness = brightnessValue;
+	contrast = contrastValue;
+	ZxBlockSymbols = useZxBlockSymbols;
+}
+
+void CAsciiArtDlg::GetSettings(CString& fontName, int& fontSize, int& blockSize, int& brightnessValue, int& contrastValue, bool& useZxBlockSymbols) const
+{
+	fontName = selected_font_name;
+	fontSize = fontsize;
+	blockSize = blocksize;
+	brightnessValue = brightness;
+	contrastValue = contrast;
+	useZxBlockSymbols = ZxBlockSymbols;
 }
 
 CAsciiArtDlg::~CAsciiArtDlg()
@@ -72,7 +94,7 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	preview_position.MapWindowPoints(this, &preview_position_rect);
 
 	fontSizeSliderCtrl.SetRange(1, 40);  // Set the range.
-	fontSizeSliderCtrl.SetPos(12);       // Set initial position.
+	fontSizeSliderCtrl.SetPos(fontsize);       // Set initial position.
 
 	blockSizeSliderCtrl.SetRange(4, 200);	// Set the range.
 	blockSizeSliderCtrl.SetPos(blocksize);	// Set initial position.
@@ -97,6 +119,10 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	SetWindowText(str);
 
 	fontSelectComboBox.Init(pParentWnd, &CAsciiArtDlg::Update, this);
+	if (selected_font_name.IsEmpty())
+		selected_font_name = ZxBlockSymbols ? L"Cascadia mono" : L"Consolas";
+	fontSelectComboBox.SetFont(selected_font_name);
+	ButtonZxBlockSymbols.SetCheck(ZxBlockSymbols ? BST_CHECKED : BST_UNCHECKED);
 
 	// Post the custom message to be handled after OnInitDialog.
 	PostMessage(WM_POST_INITDIALOG);
@@ -113,6 +139,9 @@ LRESULT CAsciiArtDlg::OnPostInitDialog(WPARAM wParam, LPARAM lParam)
 
 void CAsciiArtDlg::UpdateDisplayFont(const CString& fontName, const int fontsize)
 {
+	selected_font_name = fontName;
+	this->fontsize = fontsize;
+
 	// Delete the old font if it exists.
 	if (ascii_display_font.m_hObject)
 		ascii_display_font.DeleteObject();
@@ -619,6 +648,7 @@ void CAsciiArtDlg::OnClickedCheckZxBlockSymbols()
 
 	// Set best font to display the Unicode black chars.
 	fontSelectComboBox.SetFont(ZxBlockSymbols ? L"Cascadia mono" : L"Consolas");
+	selected_font_name = fontSelectComboBox.GetSelectedFont();
 
 	Update(fontSelectComboBox.GetSelectedFont());
 }

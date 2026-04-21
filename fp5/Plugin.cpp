@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "plugin.h"
 #include "SettingsDlg.h"
+#include "..\shared\PluginSettings.h"
 
 // Example Plugin cpp_fp5.
 // Index print of two pictures.
@@ -28,7 +29,7 @@ namespace
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.1";
+	return L"1.2";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -57,8 +58,29 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int k)
 CFunctionPluginSample5::CFunctionPluginSample5()
 	: handle_wnd(NULL),
 	picture_processed(0),
-	Dib(NULL)
+	Dib(NULL),
+	border_color(RGB(255, 255, 0))
 {
+}
+
+void CFunctionPluginSample5::LoadSettings()
+{
+	PluginShared::PluginSettingsSection settings(L"sample5");
+	CString default_headline;
+	default_headline.LoadString(IDS_HEADLINE_TEXT);
+	headline_text = settings.GetString(L"headline_text", default_headline);
+	border_color = static_cast<COLORREF>(settings.GetInt(L"border_color", static_cast<int>(RGB(255, 255, 0))));
+}
+
+void CFunctionPluginSample5::SaveSettings() const
+{
+	CString default_headline;
+	default_headline.LoadString(IDS_HEADLINE_TEXT);
+
+	PluginShared::PluginSettingsSection settings(L"sample5");
+	settings.SetString(L"headline_text", headline_text, default_headline);
+	settings.SetInt(L"border_color", static_cast<int>(border_color), static_cast<int>(RGB(255, 255, 0)));
+	settings.Save();
 }
 
 CFunctionPluginSample5::~CFunctionPluginSample5()
@@ -89,6 +111,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(const HWND hwnd, const
 	// Start event.
 
 	handle_wnd = hwnd;
+	LoadSettings();
 
 	// Requires 2 pictures.
 	if (file_list.size() != 2)
@@ -105,6 +128,8 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(const HWND hwnd, const
 	parent.Attach(handle_wnd);
 
 	CSettingsDlg SettingsDlg(&parent);
+	SettingsDlg.headline_text = headline_text;
+	SettingsDlg.border_color = border_color;
 	if (SettingsDlg.DoModal() == IDOK)
 	{
 		// Get the headline text.
@@ -112,6 +137,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginSample5::start(const HWND hwnd, const
 
 		// Get the border color.
 		border_color = SettingsDlg.border_color;
+		SaveSettings();
 
 		// Request picture size data in BGR DWORD aligned layout.
 		request_data_sizes.emplace_back(picture_width, picture_height, DATA_REQUEST_TYPE::REQUEST_TYPE_BGR_DWORD_ALIGNED_DATA);

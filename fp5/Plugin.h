@@ -8,6 +8,8 @@ class CFunctionPluginSample5 : public CFunctionPlugin
 {
 protected:
 	CFunctionPluginSample5();
+	void LoadSettings();
+	void SaveSettings() const;
 
 protected:
 	HWND handle_wnd;

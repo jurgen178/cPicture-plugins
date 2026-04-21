@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Plugin.h"
 #include "SettingsDlg.h"
+#include "..\shared\PluginSettings.h"
 
 #include <array>
 #include <algorithm>
@@ -81,7 +82,7 @@ namespace
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.0";
+	return L"1.1";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -115,6 +116,25 @@ CFunctionPluginMotionComposer::CFunctionPluginMotionComposer()
 {
 }
 
+void CFunctionPluginMotionComposer::LoadSettings()
+{
+	PluginShared::PluginSettingsSection settings(L"motion_composer");
+	output_width = settings.GetInt(L"output_width", 1280);
+	output_height = settings.GetInt(L"output_height", 720);
+	difference_threshold = settings.GetInt(L"difference_threshold", 48);
+	colorize_frames = settings.GetBool(L"colorize_frames", true);
+}
+
+void CFunctionPluginMotionComposer::SaveSettings() const
+{
+	PluginShared::PluginSettingsSection settings(L"motion_composer");
+	settings.SetInt(L"output_width", output_width, 1280);
+	settings.SetInt(L"output_height", output_height, 720);
+	settings.SetInt(L"difference_threshold", difference_threshold, 48);
+	settings.SetBool(L"colorize_frames", colorize_frames, true);
+	settings.Save();
+}
+
 CFunctionPluginMotionComposer::~CFunctionPluginMotionComposer()
 {
 	delete[] composite_data;
@@ -141,6 +161,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginMotionComposer::start(
 {
 	handle_wnd = hwnd;
 	update_data_list.clear();
+	LoadSettings();
 
 	if (file_list.size() < 2)
 	{
@@ -170,6 +191,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginMotionComposer::start(
 	output_height = settings.output_height;
 	difference_threshold = settings.difference_threshold;
 	colorize_frames = settings.colorize_frames == TRUE;
+	SaveSettings();
 
 	request_data_sizes.emplace_back(output_width, output_height, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;

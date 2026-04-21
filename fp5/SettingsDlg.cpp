@@ -33,7 +33,6 @@ BOOL CSettingsDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	headline_text.LoadString(IDS_HEADLINE_TEXT);
 	m_colorStatic.SetColor(border_color);
 
 	UpdateData(false); // write the data

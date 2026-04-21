@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Plugin.h"
 #include "SettingsDlg.h"
+#include "..\shared\PluginSettings.h"
 
 namespace
 {
@@ -357,7 +358,7 @@ namespace
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.0";
+	return L"1.1";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()
@@ -389,6 +390,23 @@ CFunctionPluginXRay::CFunctionPluginXRay()
 {
 }
 
+void CFunctionPluginXRay::LoadSettings()
+{
+	PluginShared::PluginSettingsSection settings(L"xray");
+	analysis_scale = settings.GetInt(L"analysis_scale", 60);
+	sensitivity = settings.GetInt(L"sensitivity", 55);
+	show_grid = settings.GetBool(L"show_grid", true);
+}
+
+void CFunctionPluginXRay::SaveSettings() const
+{
+	PluginShared::PluginSettingsSection settings(L"xray");
+	settings.SetInt(L"analysis_scale", analysis_scale, 60);
+	settings.SetInt(L"sensitivity", sensitivity, 55);
+	settings.SetBool(L"show_grid", show_grid, true);
+	settings.Save();
+}
+
 CFunctionPluginXRay::~CFunctionPluginXRay()
 {
 	for (BYTE* buffer : generated_buffers)
@@ -416,6 +434,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginXRay::start(
 {
 	handle_wnd = hwnd;
 	update_data_list.clear();
+	LoadSettings();
 
 	if (file_list.empty())
 	{
@@ -443,6 +462,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginXRay::start(
 	analysis_scale = settings.analysis_scale;
 	sensitivity = settings.sensitivity;
 	show_grid = settings.show_grid == TRUE;
+	SaveSettings();
 
 	request_data_sizes.emplace_back(-analysis_scale, -analysis_scale, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
@@ -461,12 +481,23 @@ bool __stdcall CFunctionPluginXRay::process_picture(const picture_data& picture_
 
 	const int width = request.picture_width;
 	const int height = request.picture_height;
+	if (width > INT_MAX / 2 || height > INT_MAX / 2)
+		return true;
+
 	const int out_width = width * 2;
 	const int out_height = height * 2;
+	const unsigned __int64 composite_size64 = 3ULL * static_cast<unsigned __int64>(out_width) * static_cast<unsigned __int64>(out_height);
+	if (composite_size64 > static_cast<unsigned __int64>(SIZE_MAX))
+		return true;
 
-	BYTE* composite = new BYTE[out_width * out_height * 3];
+	const size_t composite_size = static_cast<size_t>(composite_size64);
+
+	BYTE* composite = new (std::nothrow) BYTE[composite_size];
+	if (composite == nullptr)
+		return true;
+
 	generated_buffers.emplace_back(composite);
-	for (int index = 0; index < out_width * out_height * 3; ++index)
+	for (size_t index = 0; index < composite_size; ++index)
 		composite[index] = 18;
 
 	vector<BYTE> gray;

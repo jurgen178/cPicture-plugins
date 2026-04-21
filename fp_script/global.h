@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "resource.h"
 
 #include <vector>
 #include <io.h>
@@ -18,7 +19,5 @@ CString escapeCmdLineJsonDataPyStr(CString text);
 bool toUTF8(const CString& data, unsigned char*& utf8Buffer, int& utf8Length);
 CString toBase64(const unsigned char* bin, const int len);
 CString toBase64(const CString& data);
-
-#ifdef DEBUG
 CString GetLastErrorStr();
-#endif
+void ShowShellExecuteErrorMessage(HWND hwnd, const CString& title, const CString& executable, const CString& parameters, const CString& scriptFile);

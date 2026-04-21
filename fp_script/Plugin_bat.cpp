@@ -38,6 +38,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginBatScript::start(const HWND hwnd, con
 {
 	sequence = 0;
 	max_files = static_cast<int>(file_list.size());
+	update_data_list.clear();
 	handle_wnd = hwnd;
 
 	const bool bScript(CheckFile(script_file));
@@ -104,7 +105,6 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 	shInfo.lpFile = script;
 	shInfo.lpParameters = cmd;
 	shInfo.nShow = SW_SHOWNORMAL;
-	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	const BOOL ret = ShellExecuteEx(&shInfo);
 
@@ -112,7 +112,11 @@ bool __stdcall CFunctionPluginBatScript::process_picture(const picture_data& pic
 	CString errorMsg = GetLastErrorStr();
 #endif
 
-	WaitForSingleObject(shInfo.hProcess, INFINITE);
+	if (!ret)
+	{
+		ShowShellExecuteErrorMessage(handle_wnd, get_plugin_data().name, script, cmd, script_file);
+		return false;
+	}
 
 	// Signal that the picture could be updated.
 	// This info will be submitted in the 'end' event.

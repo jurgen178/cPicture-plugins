@@ -23,6 +23,8 @@ public:
 	CRect preview_position_rect;
 	CFontSelectComboBox	fontSelectComboBox;
 	CWnd* pParentWnd;
+	void ApplySettings(const CString& fontName, int fontSize, int blockSize, int brightnessValue, int contrastValue, bool useZxBlockSymbols);
+	void GetSettings(CString& fontName, int& fontSize, int& blockSize, int& brightnessValue, int& contrastValue, bool& useZxBlockSymbols) const;
 
 protected:
 	CString title;
@@ -36,6 +38,8 @@ protected:
 
 	CSliderCtrl fontSizeSliderCtrl;
 	CString static_text_fontsize;
+	CString selected_font_name;
+	int fontsize;
 	
 	int blocksize;
 	CSliderCtrl blockSizeSliderCtrl;

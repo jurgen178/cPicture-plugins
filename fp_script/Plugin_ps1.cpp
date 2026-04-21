@@ -74,7 +74,7 @@ CString scanPS1Description(char* Text)
 
 CFunctionPluginPS1Script::CFunctionPluginPS1Script(const script_info script_info)
 	//: m_PowerShellExe(L"c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe "),
-	: m_PowerShellExe(L"pwsh.exe "),
+	: m_PowerShellExe(L"pwsh.exe"),
 	handle_wnd(NULL),
 	m_script_info(script_info)
 {
@@ -124,10 +124,6 @@ enum REQUEST_TYPE __stdcall CFunctionPluginPS1Script::start(const HWND hwnd, con
 
 bool __stdcall CFunctionPluginPS1Script::process_picture(const picture_data& picture_data)
 {
-	// Signal that the picture could be updated.
-	// This info will be submitted in the 'end' event.
-	update_data_list.emplace_back(picture_data.file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
-
 	// Return true to load the next picture, return false to stop with this picture and continue to the 'end' event.
 	return true;
 }
@@ -161,8 +157,9 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 
 	if (err == 0)
 	{
-		const int size(min(textSize, _filelength(_fileno(infile))));
-		fread(Text, sizeof(char), size, infile);
+		const int size(min(textSize - 1, _filelength(_fileno(infile))));
+		const size_t bytesRead = fread(Text, sizeof(char), size, infile);
+		Text[bytesRead] = '\0';
 
 		console = scanBoolVar(Text, consoleSearchTextTemplate, true);
 
@@ -282,7 +279,6 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	shInfo.lpFile = m_PowerShellExe;
 	shInfo.lpParameters = script;
 	shInfo.nShow = console ? SW_SHOWNORMAL : SW_HIDE;
-	//shInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
 
 	const BOOL ret = ShellExecuteEx(&shInfo);
 
@@ -290,7 +286,15 @@ const vector<update_data>& __stdcall CFunctionPluginPS1Script::end(const vector<
 	CString errorMsg = GetLastErrorStr();
 #endif
 
-	WaitForSingleObject(shInfo.hProcess, INFINITE);
+	if (ret)
+	{
+		for (vector<picture_data>::const_iterator it = picture_data_list.begin(); it != picture_data_list.end(); ++it)
+			update_data_list.emplace_back(it->file_name, UPDATE_TYPE::UPDATE_TYPE_UPDATED);
+	}
+	else
+	{
+		ShowShellExecuteErrorMessage(handle_wnd, get_plugin_data().name, m_PowerShellExe, script, m_script_info.script);
+	}
 
 	// Return list of pictures that are updated, added or deleted (enum UPDATE_TYPE).
 	return update_data_list;

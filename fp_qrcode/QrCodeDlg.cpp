@@ -5,6 +5,7 @@
 #include "QrCodeDlg.h"
 #include "CornerPickerCtrl.h"
 #include "qrcode.h"
+#include "..\shared\PluginSettings.h"
 
 
 // CQrCodeDlg dialog
@@ -213,7 +214,7 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 		m_editText.GetWindowText(cur_text);
 
 	// Generate QR code.
-	const std::string utf8 = CStringToUTF8(cur_text);
+	const std::string utf8 = PluginShared::CStringToUtf8(cur_text);
 
 	std::vector<bool> qrBitmap;
 	int modules = 0;

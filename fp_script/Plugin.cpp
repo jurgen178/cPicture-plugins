@@ -15,7 +15,7 @@ static vector<script_info> ScriptsPy;
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.1";
+	return L"1.2";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()

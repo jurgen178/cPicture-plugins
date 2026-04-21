@@ -8,6 +8,8 @@ class CFunctionPluginPostage : public CFunctionPlugin
 {
 protected:
 	CFunctionPluginPostage();
+	void LoadSettings();
+	void SaveSettings() const;
 
 public:
 	virtual ~CFunctionPluginPostage();

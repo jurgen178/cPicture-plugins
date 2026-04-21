@@ -7,6 +7,8 @@ class CFunctionPluginMotionComposer : public CFunctionPlugin
 {
 protected:
 	CFunctionPluginMotionComposer();
+	void LoadSettings();
+	void SaveSettings() const;
 
 protected:
 	HWND handle_wnd;
