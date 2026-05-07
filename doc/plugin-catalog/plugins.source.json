@@ -190,7 +190,7 @@
         "name": "Postage",
         "desc": "Funktionszusatzmodul zum Umwandeln ausgewählter Bilder in Briefmarken mit perforiertem Rand und Text.",
         "file": "cpp_postage.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/de/cpp_postage.md",
         "type": "function"
       },
@@ -424,7 +424,7 @@
         "name": "Postage",
         "desc": "Function plugin to turn selected pictures into postage stamps with a perforated border and text.",
         "file": "cpp_postage.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/en/cpp_postage.md",
         "type": "function"
       },

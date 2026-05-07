@@ -118,7 +118,7 @@ namespace
 		const int diameter_target = max(4, metrics.hole_radius * 2);
 		const int gap_target = max(metrics.hole_gap_min, diameter_target / 4);
 		// Keep additional paper in the corners so the stamp corners stay visually stronger.
-		layout.corner_margin = max(3, metrics.hole_radius / 2 + 2);
+		layout.corner_margin = max(3, metrics.hole_radius + 2);
 
 		// Only the inner usable span can be filled with circles and gaps.
 		const int usable_width = max(diameter_target, width - layout.corner_margin * 2);
@@ -133,7 +133,7 @@ namespace
 		const int radius_y = max(2, (usable_height - gap_target * max(0, layout.count_y - 1)) / max(2, layout.count_y * 2));
 		layout.radius = max(2, min(metrics.hole_radius, min(radius_x, radius_y)));
 		// Recompute the corner margin from the final radius so corners still keep enough paper.
-		layout.corner_margin = max(3, layout.radius / 2 + 2);
+		layout.corner_margin = max(3, layout.radius + 2);
 
 		// Distribute any leftover space into the horizontal and vertical gaps independently.
 		layout.gap_x = layout.count_x > 1
