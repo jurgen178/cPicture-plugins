@@ -31,23 +31,6 @@ namespace
 		double gap_y = 3.0;
 	};
 
-	// Pick the paper fill tone used for the selected stamp style.
-	COLORREF GetPaperColor(const int paper_style)
-	{
-		switch (paper_style)
-		{
-		case POSTAGE_PAPER_WHITE:
-			return RGB(250, 250, 246);
-		case POSTAGE_PAPER_OFFWHITE:
-			return RGB(248, 244, 232);
-		case POSTAGE_PAPER_VINTAGE:
-			return RGB(236, 223, 191);
-		case POSTAGE_PAPER_CREAM:
-		default:
-			return RGB(246, 238, 216);
-		}
-	}
-
 	// Blend two colors to derive outline and highlight tones from the paper color.
 	COLORREF MixColor(const COLORREF base, const COLORREF overlay, const int amount)
 	{
@@ -209,7 +192,7 @@ namespace
 	// Draw the rectangular paper body that sits behind the source image.
 	void DrawPaperBase(CDC& dc, const CRect& paper_rect, const PostageMetrics& metrics, const PostageSettings& settings)
 	{
-		const COLORREF paper = GetPaperColor(settings.paper_style);
+		const COLORREF paper = GetPostagePaperColor(settings);
 		const COLORREF outline = MixColor(paper, RGB(120, 94, 66), 45);
 		const COLORREF highlight = MixColor(paper, RGB(255, 255, 255), 25);
 
@@ -352,7 +335,7 @@ namespace
 		DrawSourcePicture(dc, source, image_rect);
 		// The outline color is only used when a visible paper border exists outside the image.
 		DrawHalfCircleCuts(dc, paper_rect, layout, background,
-			metrics.draw_outline ? MixColor(GetPaperColor(settings.paper_style), RGB(120, 94, 66), 45) : CLR_INVALID);
+			metrics.draw_outline ? MixColor(GetPostagePaperColor(settings), RGB(120, 94, 66), 45) : CLR_INVALID);
 
 		// Inset text rect from the image edges by enough to clear the perforation half-circles.
 		// When spacing_px=0 the perforations cut into the image so the full radius must be avoided.
@@ -363,6 +346,27 @@ namespace
 		CRect text_base(image_rect);
 		text_base.DeflateRect(perf_inset + horz_extra, perf_inset);
 		DrawValueText(dc, text_base, settings);
+	}
+}
+
+COLORREF GetPostagePaperColor(const PostageSettings& settings)
+{
+	if (settings.paper_style == POSTAGE_PAPER_CUSTOM)
+	{
+		return settings.paper_color;
+	}
+
+	switch (settings.paper_style)
+	{
+	case POSTAGE_PAPER_WHITE:
+		return RGB(250, 250, 246);
+	case POSTAGE_PAPER_OFFWHITE:
+		return RGB(248, 244, 232);
+	case POSTAGE_PAPER_VINTAGE:
+		return RGB(236, 223, 191);
+	case POSTAGE_PAPER_CREAM:
+	default:
+		return RGB(246, 238, 216);
 	}
 }
 

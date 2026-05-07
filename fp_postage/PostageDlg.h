@@ -6,7 +6,7 @@
 #include "resource.h"
 #include <afxcmn.h>
 
-class CTextColorPreviewCtrl : public CStatic
+class CColorPreviewCtrl : public CStatic
 {
 public:
 	void SetPreviewColor(const COLORREF color)
@@ -46,9 +46,11 @@ protected:
 	CStatic m_staticPerforationVal;
 	CStatic m_staticValueMarginVal;
 	CComboBox m_comboPaper;
+	CButton m_buttonPaperColor;
 	CButton m_buttonFont;
 	CButton m_buttonTextColor;
-	CTextColorPreviewCtrl m_staticTextColor;
+	CColorPreviewCtrl m_staticTextColor;
+	CColorPreviewCtrl m_staticPaperColor;
 	CCornerPickerCtrl m_valueCorner;
 	CEdit m_editValue;
 	CStatic m_preview;
@@ -57,6 +59,7 @@ protected:
 	void UpdateLabels();
 	void UpdateFontButtonLabel();
 	void UpdateTextColorBrush();
+	void UpdatePaperColorControls();
 	void DrawPreview(CDC& dc);
 
 protected:
@@ -67,7 +70,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();
 	afx_msg void OnChanged();
+	afx_msg void OnPaperChanged();
 	afx_msg void OnChooseFont();
 	afx_msg void OnChooseTextColor();
+	afx_msg void OnChoosePaperColor();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

@@ -24,11 +24,11 @@ namespace
 	}
 }
 
-BEGIN_MESSAGE_MAP(CTextColorPreviewCtrl, CStatic)
+BEGIN_MESSAGE_MAP(CColorPreviewCtrl, CStatic)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-void CTextColorPreviewCtrl::OnPaint()
+void CColorPreviewCtrl::OnPaint()
 {
 	CPaintDC dc(this);
 	CRect rect;
@@ -58,6 +58,8 @@ void CPostageDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER_VALUE_MARGIN, m_sliderValueMargin);
 	DDX_Control(pDX, IDC_STATIC_VALUE_MARGIN_VAL, m_staticValueMarginVal);
 	DDX_Control(pDX, IDC_COMBO_PAPER, m_comboPaper);
+	DDX_Control(pDX, IDC_BUTTON_PAPER_COLOR, m_buttonPaperColor);
+	DDX_Control(pDX, IDC_STATIC_PAPER_COLOR, m_staticPaperColor);
 	DDX_Control(pDX, IDC_BUTTON_TEXT_FONT, m_buttonFont);
 	DDX_Control(pDX, IDC_BUTTON_TEXT_COLOR, m_buttonTextColor);
 	DDX_Control(pDX, IDC_STATIC_TEXT_COLOR, m_staticTextColor);
@@ -72,7 +74,8 @@ BEGIN_MESSAGE_MAP(CPostageDlg, CDialog)
 	ON_BN_CLICKED(IDC_VALUE_CORNER, OnChanged)
 	ON_BN_CLICKED(IDC_BUTTON_TEXT_FONT, OnChooseFont)
 	ON_BN_CLICKED(IDC_BUTTON_TEXT_COLOR, OnChooseTextColor)
-	ON_CBN_SELCHANGE(IDC_COMBO_PAPER, OnChanged)
+	ON_BN_CLICKED(IDC_BUTTON_PAPER_COLOR, OnChoosePaperColor)
+	ON_CBN_SELCHANGE(IDC_COMBO_PAPER, OnPaperChanged)
 	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
@@ -105,12 +108,15 @@ BOOL CPostageDlg::OnInitDialog()
 	m_comboPaper.AddString(text);
 	text.LoadString(IDS_PAPER_VINTAGE);
 	m_comboPaper.AddString(text);
-	m_comboPaper.SetCurSel(max(0, min(settings.paper_style, 3)));
+	text.LoadString(IDS_PAPER_CUSTOM);
+	m_comboPaper.AddString(text);
+	m_comboPaper.SetCurSel(max(0, min(settings.paper_style, static_cast<int>(POSTAGE_PAPER_CUSTOM))));
 	m_valueCorner.SetCorner(static_cast<int>(settings.value_corner));
 
 	m_editValue.SetWindowText(settings.value_text);
 	UpdateFontButtonLabel();
 	UpdateTextColorBrush();
+	UpdatePaperColorControls();
 
 	UpdateLabels();
 	return TRUE;
@@ -167,8 +173,26 @@ void CPostageDlg::UpdateTextColorBrush()
 	m_staticTextColor.SetPreviewColor(settings.value_color);
 }
 
+void CPostageDlg::UpdatePaperColorControls()
+{
+	PostageSettings current_settings = settings;
+	if (m_comboPaper.GetSafeHwnd())
+	{
+		current_settings.paper_style = max(0, m_comboPaper.GetCurSel());
+	}
+
+	m_staticPaperColor.SetPreviewColor(GetPostagePaperColor(current_settings));
+	m_buttonPaperColor.EnableWindow(current_settings.paper_style == POSTAGE_PAPER_CUSTOM);
+}
+
 void CPostageDlg::OnChanged()
 {
+	Invalidate(FALSE);
+}
+
+void CPostageDlg::OnPaperChanged()
+{
+	UpdatePaperColorControls();
 	Invalidate(FALSE);
 }
 
@@ -192,6 +216,19 @@ void CPostageDlg::OnChooseTextColor()
 
 	settings.value_color = color_dialog.GetColor();
 	UpdateTextColorBrush();
+	Invalidate(FALSE);
+}
+
+void CPostageDlg::OnChoosePaperColor()
+{
+	CColorDialog color_dialog(settings.paper_color, CC_ANYCOLOR | CC_FULLOPEN, this);
+	if (color_dialog.DoModal() != IDOK)
+	{
+		return;
+	}
+
+	settings.paper_color = color_dialog.GetColor();
+	UpdatePaperColorControls();
 	Invalidate(FALSE);
 }
 
@@ -251,6 +288,7 @@ void CPostageDlg::DrawPreview(CDC& dc)
 		: settings.perforation_scale_percent;
 	preview_settings.value_margin_percent = m_sliderValueMargin.GetSafeHwnd() ? m_sliderValueMargin.GetPos() : settings.value_margin_percent;
 	preview_settings.paper_style = m_comboPaper.GetSafeHwnd() ? max(0, m_comboPaper.GetCurSel()) : settings.paper_style;
+	preview_settings.paper_color = settings.paper_color;
 	preview_settings.value_corner = m_valueCorner.GetSafeHwnd() ? static_cast<ValueCorner>(m_valueCorner.GetCorner()) : settings.value_corner;
 	preview_settings.value_font = settings.value_font;
 	preview_settings.value_color = settings.value_color;
