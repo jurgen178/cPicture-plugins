@@ -9,6 +9,7 @@ enum POSTAGE_PAPER_STYLE
 	POSTAGE_PAPER_OFFWHITE,
 	POSTAGE_PAPER_CREAM,
 	POSTAGE_PAPER_VINTAGE,
+	POSTAGE_PAPER_CUSTOM,
 };
 
 // Corner the value text is anchored to; matches the 2x2 grid in CCornerPickerCtrl.
@@ -26,6 +27,7 @@ struct PostageSettings
 		: border_percent(5),
 		  perforation_scale_percent(184),	// 5
 		  paper_style(POSTAGE_PAPER_OFFWHITE),
+		  paper_color(RGB(248, 244, 232)),
 		  value_text(L"50 cent"),
 		  value_corner(ValueCorner::BottomRight),
 		  value_margin_percent(4),
@@ -43,6 +45,7 @@ struct PostageSettings
 	int border_percent;
 	int perforation_scale_percent;
 	int paper_style;
+	COLORREF paper_color;
 	CString value_text;
 	ValueCorner value_corner;
 	int value_margin_percent;
@@ -50,6 +53,7 @@ struct PostageSettings
 	COLORREF value_color;
 };
 
+COLORREF GetPostagePaperColor(const PostageSettings& settings);
 int GetMinimumPostageBorderPercent(const requested_data& source, const PostageSettings& settings);
 void DrawPostagePreview(CDC& dc, const CRect& preview_rect, const requested_data& source, const PostageSettings& settings);
 HBITMAP RenderPostageBitmap(const requested_data& source, const PostageSettings& settings, void*& dib_bits, int& output_width, int& output_height);

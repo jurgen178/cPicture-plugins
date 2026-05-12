@@ -50,6 +50,7 @@ void CFunctionPluginPostage::LoadSettings()
 	settings.border_percent = section.GetInt(L"border_percent", default_settings.border_percent);
 	settings.perforation_scale_percent = section.GetInt(L"perforation_scale_percent", default_settings.perforation_scale_percent);
 	settings.paper_style = section.GetInt(L"paper_style", default_settings.paper_style);
+	settings.paper_color = static_cast<COLORREF>(section.GetInt(L"paper_color", static_cast<int>(default_settings.paper_color)));
 	settings.value_text = section.GetString(L"value_text", default_settings.value_text);
 	settings.value_corner = static_cast<ValueCorner>(section.GetInt(L"value_corner", static_cast<int>(default_settings.value_corner)));
 	settings.value_margin_percent = section.GetInt(L"value_margin_percent", default_settings.value_margin_percent);
@@ -70,6 +71,7 @@ void CFunctionPluginPostage::SaveSettings() const
 	section.SetInt(L"border_percent", settings.border_percent, default_settings.border_percent);
 	section.SetInt(L"perforation_scale_percent", settings.perforation_scale_percent, default_settings.perforation_scale_percent);
 	section.SetInt(L"paper_style", settings.paper_style, default_settings.paper_style);
+	section.SetInt(L"paper_color", static_cast<int>(settings.paper_color), static_cast<int>(default_settings.paper_color));
 	section.SetString(L"value_text", settings.value_text, default_settings.value_text);
 	section.SetInt(L"value_corner", static_cast<int>(settings.value_corner), static_cast<int>(default_settings.value_corner));
 	section.SetInt(L"value_margin_percent", settings.value_margin_percent, default_settings.value_margin_percent);
