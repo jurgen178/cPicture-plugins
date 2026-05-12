@@ -79,6 +79,7 @@ void CAsciiArtDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CAsciiArtDlg, CDialog)
 	ON_WM_PAINT()
+	ON_MESSAGE(WM_DPICHANGED, OnDpiChanged)
 	ON_WM_HSCROLL()
 	ON_MESSAGE(WM_POST_INITDIALOG, &CAsciiArtDlg::OnPostInitDialog)
 	ON_BN_CLICKED(IDC_BUTTON_COPY, &CAsciiArtDlg::OnClickedButtonCopy)
@@ -90,8 +91,7 @@ BOOL CAsciiArtDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	preview_position.GetClientRect(&preview_position_rect);
-	preview_position.MapWindowPoints(this, &preview_position_rect);
+	UpdatePreviewRect();
 
 	fontSizeSliderCtrl.SetRange(1, 40);  // Set the range.
 	fontSizeSliderCtrl.SetPos(fontsize);       // Set initial position.
@@ -128,6 +128,15 @@ BOOL CAsciiArtDlg::OnInitDialog()
 	PostMessage(WM_POST_INITDIALOG);
 
 	return TRUE;
+}
+
+void CAsciiArtDlg::UpdatePreviewRect()
+{
+	if(!preview_position.GetSafeHwnd())
+		return;
+
+	preview_position.GetClientRect(&preview_position_rect);
+	preview_position.MapWindowPoints(this, &preview_position_rect);
 }
 
 LRESULT CAsciiArtDlg::OnPostInitDialog(WPARAM wParam, LPARAM lParam)
@@ -575,8 +584,19 @@ void CAsciiArtDlg::OnPaint()
 		// Draw the selected picture.
 		bmiHeader.biWidth = requested_data1.picture_width;
 		bmiHeader.biHeight = requested_data1.picture_height;
-		const int left(preview_position_rect.left + (preview_position_rect.Width() - static_cast<int>(requested_data1.picture_width)) / 2);
-		const int top(preview_position_rect.top + (preview_position_rect.Height() - static_cast<int>(requested_data1.picture_height)) / 2);
+		if(requested_data1.picture_width <= 0 || requested_data1.picture_height <= 0 || preview_position_rect.Width() <= 0 || preview_position_rect.Height() <= 0)
+			return;
+
+		int target_width = preview_position_rect.Width();
+		int target_height = ::MulDiv(static_cast<int>(requested_data1.picture_height), target_width, static_cast<int>(requested_data1.picture_width));
+		if(target_height > preview_position_rect.Height())
+		{
+			target_height = preview_position_rect.Height();
+			target_width = ::MulDiv(static_cast<int>(requested_data1.picture_width), target_height, static_cast<int>(requested_data1.picture_height));
+		}
+
+		const int left(preview_position_rect.left + (preview_position_rect.Width() - target_width) / 2);
+		const int top(preview_position_rect.top + (preview_position_rect.Height() - target_height) / 2);
 
 		HDRAWDIB hdd = DrawDibOpen();
 
@@ -584,8 +604,8 @@ void CAsciiArtDlg::OnPaint()
 			dc.m_hDC,
 			left,
 			top,
-			requested_data1.picture_width,
-			requested_data1.picture_height,
+			target_width,
+			target_height,
 			&bmiHeader,
 			requested_data1.data,
 			0,
@@ -597,6 +617,18 @@ void CAsciiArtDlg::OnPaint()
 
 		DrawDibClose(hdd);
 	}
+}
+
+LRESULT CAsciiArtDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(wParam);
+	UNREFERENCED_PARAMETER(lParam);
+
+	const LRESULT result = Default();
+	UpdatePreviewRect();
+	RedrawWindow();
+
+	return result;
 }
 
 void CAsciiArtDlg::TextToClipboard(const CString& text)

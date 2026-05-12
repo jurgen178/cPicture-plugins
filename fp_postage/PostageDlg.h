@@ -61,6 +61,7 @@ protected:
 	void UpdateTextColorBrush();
 	void UpdatePaperColorControls();
 	void DrawPreview(CDC& dc);
+	void UpdatePreviewRect();
 
 protected:
 	virtual BOOL OnInitDialog();
@@ -69,6 +70,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnChanged();
 	afx_msg void OnPaperChanged();
 	afx_msg void OnChooseFont();

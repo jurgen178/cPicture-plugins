@@ -44,6 +44,7 @@ void CQrCodeDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CQrCodeDlg, CDialog)
 	ON_WM_PAINT()
+	ON_MESSAGE(WM_DPICHANGED, OnDpiChanged)
 	ON_BN_CLICKED(IDC_CORNER_PICKER, OnChanged)
 	ON_EN_CHANGE(IDC_EDIT_TEXT, OnChanged)
 	ON_WM_HSCROLL()
@@ -54,9 +55,7 @@ BOOL CQrCodeDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// Measure the preview control rect in dialog coordinates.
-	m_preview.GetClientRect(&preview_rect);
-	m_preview.MapWindowPoints(this, &preview_rect);
+	UpdatePreviewRect();
 
 	m_cornerPicker.SetCorner(corner);
 
@@ -80,6 +79,15 @@ BOOL CQrCodeDlg::OnInitDialog()
 	m_staticMarginVal.SetWindowText(marginStr);
 
 	return TRUE;
+}
+
+void CQrCodeDlg::UpdatePreviewRect()
+{
+	if(!m_preview.GetSafeHwnd())
+		return;
+
+	m_preview.GetClientRect(&preview_rect);
+	m_preview.MapWindowPoints(this, &preview_rect);
 }
 
 
@@ -135,6 +143,18 @@ void CQrCodeDlg::OnPaint()
 	memDC.SelectObject(oldBmp);
 }
 
+LRESULT CQrCodeDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(wParam);
+	UNREFERENCED_PARAMETER(lParam);
+
+	const LRESULT result = Default();
+	UpdatePreviewRect();
+	RedrawWindow();
+
+	return result;
+}
+
 
 void CQrCodeDlg::OnChanged()
 {
@@ -174,16 +194,26 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 	const requested_data& rd = pd.requested_data_list[0];
 	if (rd.data == nullptr || rd.picture_width == 0 || rd.picture_height == 0)
 		return;
+	if (preview_rect.Width() <= 0 || preview_rect.Height() <= 0)
+		return;
+
+	int image_width = preview_rect.Width();
+	int image_height = ::MulDiv(rd.picture_height, image_width, rd.picture_width);
+	if (image_height > preview_rect.Height())
+	{
+		image_height = preview_rect.Height();
+		image_width = ::MulDiv(rd.picture_width, image_height, rd.picture_height);
+	}
 
 	// Center image in preview_rect.
-	const int left = preview_rect.left + (preview_rect.Width() - rd.picture_width) / 2;
-	const int top = preview_rect.top + (preview_rect.Height() - rd.picture_height) / 2;
+	const int left = preview_rect.left + (preview_rect.Width() - image_width) / 2;
+	const int top = preview_rect.top + (preview_rect.Height() - image_height) / 2;
 
 	bmiHeader.biWidth = rd.picture_width;
 	bmiHeader.biHeight = rd.picture_height;
 
 	StretchDIBits(dc.m_hDC,
-		left, top, rd.picture_width, rd.picture_height,
+		left, top, image_width, image_height,
 		0, 0, rd.picture_width, rd.picture_height,
 		rd.data,
 		reinterpret_cast<const BITMAPINFO*>(&bmiHeader),
@@ -201,7 +231,7 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 		cur_margin = m_sliderMargin.GetPos();
 
 	// Calculate QR size in preview image coordinates.
-	const int shorter_side = min(rd.picture_width, rd.picture_height);
+	const int shorter_side = min(image_width, image_height);
 	const int qr_size = shorter_side * cur_size / 100;
 	if (qr_size < 8)
 		return;
@@ -225,7 +255,7 @@ void CQrCodeDlg::DrawPreview(CDC& dc)
 
 	// Anchor position: use drawSize so the QR code always touches the margin edge.
 	int qr_x, qr_y;
-	CalcQRPosition(cur_corner, rd.picture_width, rd.picture_height, drawSize, margin, qr_x, qr_y);
+	CalcQRPosition(cur_corner, image_width, image_height, drawSize, margin, qr_x, qr_y);
 
 	// Offset to dialog coordinates.
 	qr_x += left;

@@ -70,6 +70,7 @@ void CPostageDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPostageDlg, CDialog)
 	ON_WM_PAINT()
+	ON_MESSAGE(WM_DPICHANGED, OnDpiChanged)
 	ON_EN_CHANGE(IDC_EDIT_VALUE, OnChanged)
 	ON_BN_CLICKED(IDC_VALUE_CORNER, OnChanged)
 	ON_BN_CLICKED(IDC_BUTTON_TEXT_FONT, OnChooseFont)
@@ -83,8 +84,7 @@ BOOL CPostageDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_preview.GetClientRect(&preview_rect);
-	m_preview.MapWindowPoints(this, &preview_rect);
+	UpdatePreviewRect();
 	settings.border_percent = max(0, min(settings.border_percent, 10));
 	if (settings.border_percent < 2)
 		settings.border_percent = 0;
@@ -120,6 +120,15 @@ BOOL CPostageDlg::OnInitDialog()
 
 	UpdateLabels();
 	return TRUE;
+}
+
+void CPostageDlg::UpdatePreviewRect()
+{
+	if(!m_preview.GetSafeHwnd())
+		return;
+
+	m_preview.GetClientRect(&preview_rect);
+	m_preview.MapWindowPoints(this, &preview_rect);
 }
 
 void CPostageDlg::OnOK()
@@ -267,6 +276,18 @@ void CPostageDlg::OnPaint()
 
 	dc.BitBlt(preview_rect.left, preview_rect.top, width, height, &mem_dc, 0, 0, SRCCOPY);
 	mem_dc.SelectObject(old_bitmap);
+}
+
+LRESULT CPostageDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(wParam);
+	UNREFERENCED_PARAMETER(lParam);
+
+	const LRESULT result = Default();
+	UpdatePreviewRect();
+	RedrawWindow();
+
+	return result;
 }
 
 void CPostageDlg::DrawPreview(CDC& dc)

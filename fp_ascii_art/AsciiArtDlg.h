@@ -59,6 +59,7 @@ protected:
 protected:
 	void Update(const CString& fontName);
 	void UpdateDisplayFont(const CString& fontName, const int fontsize);
+	void UpdatePreviewRect();
 	void TextToClipboard(const CString& text);
 
 protected:
@@ -68,6 +69,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	afx_msg LRESULT OnPostInitDialog(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnPaint();
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnClickedButtonCopy();
 	afx_msg void OnClickedCheckZxBlockSymbols();
