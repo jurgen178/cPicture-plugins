@@ -58,6 +58,7 @@ void CSampleDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CSampleDlg, CDialog)
 	ON_WM_PAINT()
+	ON_MESSAGE(WM_DPICHANGED, OnDpiChanged)
 	ON_BN_CLICKED(IDC_BUTTON_NEXT, OnBnClickedButtonNext)
 	ON_BN_CLICKED(IDC_BUTTON_PREV, OnBnClickedButtonPrev)
 END_MESSAGE_MAP()
@@ -68,8 +69,7 @@ BOOL CSampleDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 	update_button_state();
 
-	preview_position.GetClientRect(&preview_position_rect);
-	preview_position.MapWindowPoints(this, &preview_position_rect);
+	UpdatePreviewRect();
 
 	const size_t size(picture_data_list.size());
 	CString str;
@@ -82,6 +82,15 @@ BOOL CSampleDlg::OnInitDialog()
 	SetWindowText(str);
 
 	return TRUE;
+}
+
+void CSampleDlg::UpdatePreviewRect()
+{
+	if(!preview_position.GetSafeHwnd())
+		return;
+
+	preview_position.GetClientRect(&preview_position_rect);
+	preview_position.MapWindowPoints(this, &preview_position_rect);
 }
 
 void CSampleDlg::OnPaint()
@@ -111,8 +120,19 @@ void CSampleDlg::OnPaint()
 		// Draw the selected picture.
 		bmiHeader.biWidth = requested_data1.picture_width;
 		bmiHeader.biHeight = requested_data1.picture_height;
-		const int left(preview_position_rect.left + (preview_position_rect.Width() - static_cast<int>(requested_data1.picture_width)) / 2);
-		const int top(preview_position_rect.top + (preview_position_rect.Height() - static_cast<int>(requested_data1.picture_height)) / 2);
+		if(requested_data1.picture_width <= 0 || requested_data1.picture_height <= 0 || preview_position_rect.Width() <= 0 || preview_position_rect.Height() <= 0)
+			return;
+
+		int target_width = preview_position_rect.Width();
+		int target_height = ::MulDiv(static_cast<int>(requested_data1.picture_height), target_width, static_cast<int>(requested_data1.picture_width));
+		if(target_height > preview_position_rect.Height())
+		{
+			target_height = preview_position_rect.Height();
+			target_width = ::MulDiv(static_cast<int>(requested_data1.picture_width), target_height, static_cast<int>(requested_data1.picture_height));
+		}
+
+		const int left(preview_position_rect.left + (preview_position_rect.Width() - target_width) / 2);
+		const int top(preview_position_rect.top + (preview_position_rect.Height() - target_height) / 2);
 
 		HDRAWDIB hdd = DrawDibOpen();
 
@@ -120,8 +140,8 @@ void CSampleDlg::OnPaint()
 					dc.m_hDC,                  
 					left,                 
 					top,                 
-					requested_data1.picture_width,
-					requested_data1.picture_height,
+					target_width,
+					target_height,
 					&bmiHeader,  
 					requested_data1.data,
 					0,                 
@@ -133,6 +153,18 @@ void CSampleDlg::OnPaint()
 
 		DrawDibClose(hdd);
 	}
+}
+
+LRESULT CSampleDlg::OnDpiChanged(WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(wParam);
+	UNREFERENCED_PARAMETER(lParam);
+
+	const LRESULT result = Default();
+	UpdatePreviewRect();
+	RedrawWindow();
+
+	return result;
 }
 
 void CSampleDlg::OnBnClickedButtonNext()

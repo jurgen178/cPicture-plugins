@@ -29,6 +29,7 @@ protected:
 
 protected:
 	void update_button_state();
+	void UpdatePreviewRect();
 
 protected:
 	virtual BOOL OnInitDialog();
@@ -36,6 +37,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnPaint();
+	afx_msg LRESULT OnDpiChanged(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnBnClickedButtonNext();
 	afx_msg void OnBnClickedButtonPrev();
 };

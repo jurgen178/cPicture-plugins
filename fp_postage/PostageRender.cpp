@@ -184,21 +184,26 @@ namespace
 		const int right = paper_rect.right - 1;
 		const int bottom = paper_rect.bottom - 1;
 		const int radius = layout.radius;
+		auto draw_cut = [&](const int x, const int y)
+		{
+			// GDI Ellipse uses exclusive right/bottom bounds; +1 keeps the circle centered on the computed integer point.
+			dc.Ellipse(x - radius, y - radius, x + radius + 1, y + radius + 1);
+		};
 
 		// Top and bottom edges use the same horizontal center positions.
 		for (int index = 0; index < layout.count_x; ++index)
 		{
 			const int x = static_cast<int>(std::lround(layout.start_x + index * (radius * 2.0 + layout.gap_x)));
-			dc.Ellipse(x - radius, top - radius, x + radius, top + radius);
-			dc.Ellipse(x - radius, bottom - radius, x + radius, bottom + radius);
+			draw_cut(x, top);
+			draw_cut(x, bottom);
 		}
 
 		// Left and right edges use the same vertical center positions.
 		for (int index = 0; index < layout.count_y; ++index)
 		{
 			const int y = static_cast<int>(std::lround(layout.start_y + index * (radius * 2.0 + layout.gap_y)));
-			dc.Ellipse(left - radius, y - radius, left + radius, y + radius);
-			dc.Ellipse(right - radius, y - radius, right + radius, y + radius);
+			draw_cut(left, y);
+			draw_cut(right, y);
 		}
 
 		dc.RestoreDC(saved_dc);
