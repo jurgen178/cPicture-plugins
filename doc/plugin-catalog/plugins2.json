@@ -118,7 +118,7 @@
         "name": "Funktionszusatzmodul Beispiel 2",
         "desc": "Funktionszusatzmodul zum Anzeigen eines Bild-Vorschaudialogs.",
         "file": "cpp_fp2.dll",
-        "version": "1.0",
+        "version": "1.2",
         "info": "<h3>Funktionszusatzmodul Beispiel 2</h3><p>Dieses Beispiel zeigt, wie Bilddaten vom Plugin angefordert und in einem eigenen Dialogfenster dargestellt werden können. Die Vorschaubilder der ausgewählten Bilder werden in einem Dialog angezeigt.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png' />",
         "type": "function"
       },
@@ -166,7 +166,7 @@
         "name": "Ascii Art",
         "desc": "Funktionszusatzmodul zum Konvertieren eines Bildes in ein Buchstabenbild (Ascii Art).",
         "file": "cpp_ascii_art.dll",
-        "version": "1.1",
+        "version": "1.3",
         "info": "<h3>Ascii Art</h3><p>Dieses Funktionszusatzmodul konvertiert ein ausgewähltes Bild in ein Buchstabenbild (Ascii Art). Im Dialog können Schriftart, Blockgröße, Helligkeit und Kontrast angepasst werden. Das Ergebnis kann als Bild gespeichert werden.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png' />",
         "type": "function"
       },
@@ -182,7 +182,7 @@
         "name": "QR-Code",
         "desc": "Funktionszusatzmodul zum Einbetten eines QR-Codes in die ausgewählten Bilder.",
         "file": "cpp_qrcode.dll",
-        "version": "1.1",
+        "version": "1.3",
         "info": "<h3>QR-Code</h3><p>Dieses Funktionszusatzmodul bettet einen QR-Code in die ausgewählten Bilder ein. Im Dialog können der QR-Code-Text, die Ecke, die relative Größe und der Abstand zum Bildrand eingestellt werden.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png' />",
         "type": "function"
       },
@@ -190,7 +190,7 @@
         "name": "Postage",
         "desc": "Funktionszusatzmodul zum Umwandeln ausgewählter Bilder in Briefmarken mit perforiertem Rand und Text.",
         "file": "cpp_postage.dll",
-        "version": "1.2",
+        "version": "1.3",
         "info": "<h3>Postage</h3><p>Dieses Funktionszusatzmodul verwandelt ausgewählte Bilder in Briefmarken mit perforiertem Rand. Im Dialog lassen sich Papierstil, Randabstand, Text, Textecke, Schriftart und Textfarbe einstellen.</p><p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage1.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage2.jpg' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage_index.jpg' /></p>",
         "type": "function"
       },
@@ -352,7 +352,7 @@
         "name": "Function Plugin Sample 2",
         "desc": "Function plugin to display a picture preview dialog.",
         "file": "cpp_fp2.dll",
-        "version": "1.0",
+        "version": "1.2",
         "info": "<h3>Function Plugin Sample 2</h3><p>This sample shows how to request picture data from the plugin and display it in a custom dialog window. Preview images of the selected pictures are shown in a dialog.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp2.png' />",
         "type": "function"
       },
@@ -400,7 +400,7 @@
         "name": "Ascii Art",
         "desc": "Function plugin to convert a picture into a letter image (Ascii Art).",
         "file": "cpp_ascii_art.dll",
-        "version": "1.1",
+        "version": "1.3",
         "info": "<h3>Ascii Art</h3><p>This function plugin converts a selected picture into a letter image (Ascii Art). Font, block size, brightness and contrast can be adjusted in the dialog. The result can be saved as a picture.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_ascii_art.png' />",
         "type": "function"
       },
@@ -416,7 +416,7 @@
         "name": "QR Code",
         "desc": "Function plugin to embed a QR code into the selected pictures.",
         "file": "cpp_qrcode.dll",
-        "version": "1.1",
+        "version": "1.3",
         "info": "<h3>QR Code</h3><p>This function plugin embeds a QR code into the selected pictures. The QR code text, corner position, relative size and margin can be configured in the dialog.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_qrcode.png' />",
         "type": "function"
       },
@@ -424,7 +424,7 @@
         "name": "Postage",
         "desc": "Function plugin to turn selected pictures into postage stamps with a perforated border and text.",
         "file": "cpp_postage.dll",
-        "version": "1.2",
+        "version": "1.3",
         "info": "<h3>Postage</h3><p>This function plugin turns selected pictures into postage stamps with a perforated border. The dialog lets you configure the paper style, border spacing, text, text corner, font and text color.</p><p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage1.png' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage2.jpg' /><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_postage_index.jpg' /></p>",
         "type": "function"
       },

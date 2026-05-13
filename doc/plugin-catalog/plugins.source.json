@@ -118,7 +118,7 @@
         "name": "Funktionszusatzmodul Beispiel 2",
         "desc": "Funktionszusatzmodul zum Anzeigen eines Bild-Vorschaudialogs.",
         "file": "cpp_fp2.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/de/cpp_fp2.md",
         "type": "function"
       },
@@ -166,7 +166,7 @@
         "name": "Ascii Art",
         "desc": "Funktionszusatzmodul zum Konvertieren eines Bildes in ein Buchstabenbild (Ascii Art).",
         "file": "cpp_ascii_art.dll",
-        "version": "1.2",
+        "version": "1.3",
         "infoFileMd": "markdown/de/cpp_ascii_art.md",
         "type": "function"
       },
@@ -182,7 +182,7 @@
         "name": "QR-Code",
         "desc": "Funktionszusatzmodul zum Einbetten eines QR-Codes in die ausgewählten Bilder.",
         "file": "cpp_qrcode.dll",
-        "version": "1.2",
+        "version": "1.3",
         "infoFileMd": "markdown/de/cpp_qrcode.md",
         "type": "function"
       },
@@ -352,7 +352,7 @@
         "name": "Function Plugin Sample 2",
         "desc": "Function plugin to display a picture preview dialog.",
         "file": "cpp_fp2.dll",
-        "version": "1.1",
+        "version": "1.2",
         "infoFileMd": "markdown/en/cpp_fp2.md",
         "type": "function"
       },
@@ -400,7 +400,7 @@
         "name": "Ascii Art",
         "desc": "Function plugin to convert a picture into a letter image (Ascii Art).",
         "file": "cpp_ascii_art.dll",
-        "version": "1.2",
+        "version": "1.3",
         "infoFileMd": "markdown/en/cpp_ascii_art.md",
         "type": "function"
       },
@@ -416,7 +416,7 @@
         "name": "QR Code",
         "desc": "Function plugin to embed a QR code into the selected pictures.",
         "file": "cpp_qrcode.dll",
-        "version": "1.2",
+        "version": "1.3",
         "infoFileMd": "markdown/en/cpp_qrcode.md",
         "type": "function"
       },

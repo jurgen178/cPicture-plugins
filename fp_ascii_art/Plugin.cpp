@@ -14,7 +14,7 @@
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.2";
+	return L"1.3";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()

@@ -60,7 +60,7 @@ static void DrawQRCode(BYTE* data, int img_width, int img_height,
 
 const CString __stdcall GetPluginVersion()
 {
-	return L"1.2";
+	return L"1.3";
 }
 
 const CString __stdcall GetPluginInterfaceVersion()

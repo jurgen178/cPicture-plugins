@@ -1,8 +1,9 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$SourceJsonPath = Join-Path $PSScriptRoot 'plugins.source.json'
-$OutputJsonPath = Join-Path $PSScriptRoot 'plugins2.json'
+[string]$SourceJsonPath = Join-Path $PSScriptRoot 'plugins.source.json'
+[string]$plugins2Json = 'plugins2.json'
+[string]$OutputJsonPath = Join-Path $PSScriptRoot $plugins2Json
 
 function Resolve-RelativePath {
     param(
@@ -174,5 +175,6 @@ if (-not $json.EndsWith("`r`n")) {
 }
 $utf8Bom = New-Object System.Text.UTF8Encoding($true)
 [System.IO.File]::WriteAllText($OutputJsonPath, $json, $utf8Bom)
+Copy-Item $OutputJsonPath "$PSScriptRoot\..\..\..\cpicture\build\$plugins2Json"
 
 Write-Host "Generated: $OutputJsonPath"
