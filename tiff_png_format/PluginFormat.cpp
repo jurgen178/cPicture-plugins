@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #include "resource.h"
 #include "pluginformat.h"
 #include "libpng/png.h"
@@ -184,7 +184,11 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
+	#ifdef _DEBUG
+	return L"1.0-debug";
+	#else
 	return L"1.0";
+	#endif
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
@@ -285,12 +289,12 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 	{
 		// List of localized templates:
 		//info_template[0] = Bildname:\t%1
-		//info_template[1] = Dateigrˆﬂe:\t%1 (%2 Bytes)\nGe‰ndert am:\t%3\nDatei ge‰ndert am:\t%4
+		//info_template[1] = Dateigr√∂√üe:\t%1 (%2 Bytes)\nGe√§ndert am:\t%3\nDatei ge√§ndert am:\t%4
 		//info_template[2] = Erstellt am:\t%1
-		//info_template[3] = Bildgrˆﬂe:\t%1!d!x%2!d! Bildpunkte (%3!s! MP)
+		//info_template[3] = Bildgr√∂√üe:\t%1!d!x%2!d! Bildpunkte (%3!s! MP)
 		//info_template[4] = Model:\t\t%1!s!
 		//info_template[5] = Fehler:\t\t%1!s!
-		//info_template[6] = Enth‰lt:\t%1!s!
+		//info_template[6] = Enth√§lt:\t%1!s!
 		//info_template[7] = Bildordner:\t%1
 		//info_template[8] = Einstellungen:\t
 
@@ -314,9 +318,9 @@ CString __stdcall CPluginFormat::get_info(const CString& FileName, const enum in
 			msg += info;
 			msg += L'\n';
 
-			//Floating-point printf format specifiers ó e, E, f, and g ó are not supported. 
-			//The workaround is to use the sprintf function to format the floating-point number 
-			//into a temporary buffer, then use that buffer as the insert string. 
+			//Floating-point printf format specifiers - e, E, f, and g - are not supported.
+			//The workaround is to use the sprintf function to format the floating-point number
+			//into a temporary buffer, then use that buffer as the insert string.
 			const float f_mp(static_cast<float>(m_OriginalPictureWidth) * m_OriginalPictureHeight / 1000 / 1000);
 			CString mp;
 			mp.Format(L"%.1f", (f_mp < 0.1) ? 0.1 : f_mp);
@@ -874,7 +878,7 @@ BYTE* __stdcall CPngFormat::FileToRGB(const CString& FileName,
 		
 		if (buffer)
 		{
-			// PNG_FORMAT_RGB, Hintergrund auf weiﬂ setzen
+			// PNG_FORMAT_RGB, Hintergrund auf wei√ü setzen
 			memset(buffer, 255, size);
 
 			/* If enough memory was available, read the image in the desired

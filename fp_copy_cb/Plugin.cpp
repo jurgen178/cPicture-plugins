@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "plugin.h"
 #include "locale.h"
 #include "resource.h"
@@ -18,7 +18,11 @@ const CString __stdcall GetPluginVersion()
 
 const CString __stdcall GetPluginInterfaceVersion()
 {
+#ifdef _DEBUG
+	return L"1.7-debug";
+#else
 	return L"1.7";
+#endif
 }
 
 const PLUGIN_TYPE __stdcall GetPluginType()
