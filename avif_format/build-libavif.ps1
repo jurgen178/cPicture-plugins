@@ -66,6 +66,17 @@ if (-not (Test-Path -LiteralPath (Join-Path $sourceDir 'CMakeLists.txt'))) {
     & $git clone --branch v1.4.2 --depth 1 https://github.com/AOMediaCodec/libavif.git $sourceDir
 }
 
+# Skip cmake configure+build if avif.lib already exists (PreBuildEvent runs on every build).
+# Delete external\build\libavif to force a rebuild.
+$avifLib = Join-Path $buildDir "$Configuration\avif.lib"
+if (-not (Test-Path -LiteralPath $avifLib)) {
+    $avifLib = Join-Path $buildDir 'avif.lib'   # flat layout fallback
+}
+if (Test-Path -LiteralPath $avifLib) {
+    Write-Host "avif.lib already built - skipping cmake build."
+    exit 0
+}
+
 $cacheFile = Join-Path $buildDir 'CMakeCache.txt'
 if ((Test-Path -LiteralPath $cacheFile) -and (Select-String -LiteralPath $cacheFile -SimpleMatch '$RuntimeLibrary' -Quiet)) {
     Remove-Item -LiteralPath $buildDir -Recurse -Force
