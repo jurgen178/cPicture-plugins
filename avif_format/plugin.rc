@@ -1,0 +1,79 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Germany) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040704b0"
+        BEGIN
+            VALUE "CompanyName", "bitfabrik"
+            VALUE "FileDescription", "cPicture plugin AVIF format"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "cpf_avif"
+            VALUE "OriginalFilename", "cpf_avif.dll"
+            VALUE "ProductName", "cPicture plugin AVIF format"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x407, 1200
+    END
+END
+
+STRINGTABLE
+BEGIN
+    IDS_DATE_TIME_FORMAT_STRING "%s %s"
+    IDS_SHORT_DESC          "Avif"
+    IDS_LONG_DESC           "Avif-Bildformat"
+    IDS_PROPERTY_DLG_TEXT   "Das AVIF-Format wird mit libavif gelesen und geschrieben. Die Qualität wird beim Speichern über die cPicture-Qualitätseinstellung gesteuert."
+END
+
+#endif    // German (Germany) resources
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+STRINGTABLE
+BEGIN
+    IDS_DATE_TIME_FORMAT_STRING "%s %s"
+    IDS_SHORT_DESC          "Avif"
+    IDS_LONG_DESC           "Avif format"
+    IDS_PROPERTY_DLG_TEXT   "The AVIF format is read and written with libavif. Save quality is controlled by the cPicture quality setting."
+END
+
+#endif    // English (United States) resources
