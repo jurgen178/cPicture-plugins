@@ -233,6 +233,14 @@
         "version": "1.0",
         "infoFileMd": "markdown/de/cpf_pdf.md",
         "type": "format"
+      },
+      {
+        "name": "AVIF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen und Speichern von AVIF-Bildern.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_avif.md",
+        "type": "format"
       }
     ],
     "plugins-en": [
@@ -466,6 +474,14 @@
         "file": "cpf_pdf.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpf_pdf.md",
+        "type": "format"
+      },
+      {
+        "name": "AVIF Format",
+        "desc": "Format plugin to display and save AVIF pictures.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_avif.md",
         "type": "format"
       }
     ]

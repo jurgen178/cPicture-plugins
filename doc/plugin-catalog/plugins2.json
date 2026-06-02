@@ -233,6 +233,14 @@
         "version": "1.0",
         "info": "<h3>PDF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des PDF-Dokumentformats. PDF-Dateien können wie Bilder geöffnet und angezeigt werden.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png' />",
         "type": "format"
+      },
+      {
+        "name": "AVIF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen und Speichern von AVIF-Bildern.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "info": "<h3>AVIF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des AVIF-Bildformats. AVIF-Bilder können geöffnet und gespeichert werden.</p><p>Dieses Plugin basiert auf libavif.</p><p>GitHub: <a href='app://github.com/AOMediaCodec/libavif'>libavif</a></p><p>Hinweis: AVIF nimmt sich beim Laden spürbar mehr Zeit und beim Speichern gern eine kleine Ewigkeit.</p>",
+        "type": "format"
       }
     ],
     "plugins-en": [
@@ -466,6 +474,14 @@
         "file": "cpf_pdf.dll",
         "version": "1.0",
         "info": "<h3>PDF Format</h3><p>This format plugin extends cPicture with support for the PDF document format. PDF files can be opened and displayed like pictures.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png' />",
+        "type": "format"
+      },
+      {
+        "name": "AVIF Format",
+        "desc": "Format plugin to display and save AVIF pictures.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "info": "<h3>AVIF Format</h3><p>This format plugin extends cPicture with support for the AVIF picture format. AVIF pictures can be opened and saved.</p><p>This plugin is built on libavif.</p><p>GitHub: <a href='app://github.com/AOMediaCodec/libavif'>libavif</a></p><p>Note: AVIF takes its time when loading and can feel glacial when saving.</p>",
         "type": "format"
       }
     ]
