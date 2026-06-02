@@ -62,21 +62,6 @@ function Convert-LiteralMarkdownImagesToHtml {
     })
 }
 
-function Convert-ExternalAnchorLinksToAppScheme {
-    param(
-        [string]$Html
-    )
-
-    return [regex]::Replace($Html, "(?is)<a\b([^>]*?)\bhref='https?://([^']+)'([^>]*)>", {
-        param($match)
-        $beforeHref = $match.Groups[1].Value
-        $hrefWithoutScheme = $match.Groups[2].Value
-        $afterHref = $match.Groups[3].Value
-
-        return "<a${beforeHref}href='app://$hrefWithoutScheme'${afterHref}>"
-    })
-}
-
 function Convert-MarkdownFileToHtmlFragment {
     param(
         [string]$MarkdownPath
@@ -116,7 +101,6 @@ function Convert-MarkdownFileToHtmlFragment {
     $html = [regex]::Replace($html, '(?is)(?:<br\s*/?>\s*)+(?=<img\b)', '')
 
     $html = Normalize-HtmlAttributeQuotes -Html $html
-    $html = Convert-ExternalAnchorLinksToAppScheme -Html $html
     $html = $html.Replace('&quot;', '"')
     $html = $html.Replace("`r", '').Replace("`n", '')
 
