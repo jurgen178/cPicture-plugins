@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "pluginformat.h"
 #include "webp/decode.h"
+#include "webp/demux.h"
 #include "webp/encode.h"
 
 #include <algorithm>
@@ -196,6 +197,86 @@ vector<BYTE> ReadFileData(const CString& FileName, CString& errorMsg)
 	return fileData;
 }
 
+bool GetWebPImageInfo(const vector<BYTE>& fileData, int& width, int& height, int& frameCount)
+{
+	width = 0;
+	height = 0;
+	frameCount = 0;
+
+	WebPData webpData = { fileData.data(), fileData.size() };
+	WebPDemuxer* demux = WebPDemux(&webpData);
+	if (demux)
+	{
+		width = WebPDemuxGetI(demux, WEBP_FF_CANVAS_WIDTH);
+		height = WebPDemuxGetI(demux, WEBP_FF_CANVAS_HEIGHT);
+		frameCount = WebPDemuxGetI(demux, WEBP_FF_FRAME_COUNT);
+		WebPDemuxDelete(demux);
+
+		return width > 0 && height > 0;
+	}
+
+	return WebPGetInfo(fileData.data(), fileData.size(), &width, &height) && width > 0 && height > 0;
+}
+
+BYTE* DecodeFirstAnimatedWebPFrame(const vector<BYTE>& fileData, int& width, int& height, CString& errorMsg)
+{
+	WebPAnimDecoderOptions options;
+	if (!WebPAnimDecoderOptionsInit(&options))
+	{
+		errorMsg = L"WebP animation decoder options initialization failed";
+		return NULL;
+	}
+
+	options.color_mode = MODE_RGBA;
+
+	WebPData webpData = { fileData.data(), fileData.size() };
+	WebPAnimDecoder* decoder = WebPAnimDecoderNew(&webpData, &options);
+	if (!decoder)
+	{
+		errorMsg = L"WebP animation decoder allocation failed";
+		return NULL;
+	}
+
+	WebPAnimInfo animInfo = { 0 };
+	if (!WebPAnimDecoderGetInfo(decoder, &animInfo) || animInfo.canvas_width <= 0 || animInfo.canvas_height <= 0)
+	{
+		errorMsg = L"Invalid animated WebP image header";
+		WebPAnimDecoderDelete(decoder);
+		return NULL;
+	}
+
+	uint8_t* decodedFrame = NULL;
+	int timestamp = 0;
+	if (!WebPAnimDecoderGetNext(decoder, &decodedFrame, &timestamp) || !decodedFrame)
+	{
+		errorMsg = L"Animated WebP first frame decode failed";
+		WebPAnimDecoderDelete(decoder);
+		return NULL;
+	}
+
+	const __int64 pixelCount = static_cast<__int64>(animInfo.canvas_width) * animInfo.canvas_height;
+	const __int64 size = pixelCount * 3;
+	BYTE* buffer = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
+	if (!buffer)
+	{
+		errorMsg.Format(L"WebP memory request failed: %I64d bytes", size);
+		WebPAnimDecoderDelete(decoder);
+		return NULL;
+	}
+
+	for (__int64 pixel = 0; pixel < pixelCount; ++pixel)
+	{
+		buffer[pixel * 3] = decodedFrame[pixel * 4];
+		buffer[pixel * 3 + 1] = decodedFrame[pixel * 4 + 1];
+		buffer[pixel * 3 + 2] = decodedFrame[pixel * 4 + 2];
+	}
+
+	width = animInfo.canvas_width;
+	height = animInfo.canvas_height;
+	WebPAnimDecoderDelete(decoder);
+	return buffer;
+}
+
 CString __stdcall CWebPFormat::get_ext() const
 {
 	return L"webp";
@@ -236,10 +317,26 @@ BYTE* __stdcall CWebPFormat::FileToRGB(const CString& FileName,
 
 	int width = 0;
 	int height = 0;
-	if (!WebPGetInfo(fileData.data(), fileData.size(), &width, &height) || width <= 0 || height <= 0)
+	int frameCount = 0;
+	if (!GetWebPImageInfo(fileData, width, height, frameCount))
 	{
 		m_ErrorMsg = L"Invalid WebP image header";
 		return NULL;
+	}
+
+	if (frameCount > 1)
+	{
+		BYTE* animatedBuffer = DecodeFirstAnimatedWebPFrame(fileData, width, height, m_ErrorMsg);
+		if (!animatedBuffer)
+		{
+			return NULL;
+		}
+
+		m_OriginalPictureWidth = m_PictureWidth = width;
+		m_OriginalPictureHeight = m_PictureHeight = height;
+		m_color_space = 2;
+		m_bIsValid = true;
+		return animatedBuffer;
 	}
 
 	const __int64 rowBytes = static_cast<__int64>(width) * 3;
@@ -324,7 +421,8 @@ void CWebPFormat::get_size(const CString& FileName)
 
 	int width = 0;
 	int height = 0;
-	if (WebPGetInfo(fileData.data(), fileData.size(), &width, &height) && width > 0 && height > 0)
+	int frameCount = 0;
+	if (GetWebPImageInfo(fileData, width, height, frameCount))
 	{
 		m_OriginalPictureWidth = m_PictureWidth = width;
 		m_OriginalPictureHeight = m_PictureHeight = height;
