@@ -35,6 +35,7 @@ public:
 
 public:
 	static const CString type;
+	static CString m_property_str;
 	virtual const CString __stdcall getType() const
 	{
 		return type;
@@ -49,6 +50,8 @@ public:
 	virtual struct plugin_data __stdcall get_plugin_data() const;
 	virtual unsigned int __stdcall get_cap() const;
 	virtual bool __stdcall properties_dlg(const HWND hwnd);
+	virtual void __stdcall set_properties(const CString& property_str);
+	virtual CString __stdcall get_properties() const;
 
 	virtual bool __stdcall RGBToFile(const CString& FileName,
 		const BYTE* dataBuf,

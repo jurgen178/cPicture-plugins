@@ -165,6 +165,89 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 }
 
 const CString CWebPFormat::type = L"WebP";
+CString CWebPFormat::m_property_str;
+
+bool ReadWebPProperties(const CString& propertyStr, int& quality, int& lossless)
+{
+	quality = 80;
+	lossless = 0;
+
+	const int ret = swscanf_s(propertyStr, L"%d,%d", &quality, &lossless);
+	if (ret != 2)
+	{
+		return false;
+	}
+
+	quality = min(max(quality, 0), 100);
+	lossless = lossless != 0 ? 1 : 0;
+	return true;
+}
+
+class CWebPPropertiesDlg : public CDialog
+{
+public:
+	CWebPPropertiesDlg(CWnd* pParent = NULL)
+		: CDialog(IDD_DIALOG_WEBP_PROPERTIES, pParent)
+	{
+	}
+
+	CString m_property_str;
+
+protected:
+	virtual BOOL OnInitDialog();
+	virtual void OnOK();
+	afx_msg void OnBnClickedCheckWebPLossless();
+	DECLARE_MESSAGE_MAP()
+
+private:
+	void update();
+};
+
+BEGIN_MESSAGE_MAP(CWebPPropertiesDlg, CDialog)
+	ON_BN_CLICKED(IDC_CHECK_WEBP_LOSSLESS, &CWebPPropertiesDlg::OnBnClickedCheckWebPLossless)
+END_MESSAGE_MAP()
+
+BOOL CWebPPropertiesDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	int quality = 80;
+	int lossless = 0;
+	ReadWebPProperties(m_property_str, quality, lossless);
+
+	CString qualityText;
+	qualityText.Format(L"%d", quality);
+	SetDlgItemText(IDC_EDIT_WEBP_QUALITY, qualityText);
+	CheckDlgButton(IDC_CHECK_WEBP_LOSSLESS, lossless != 0 ? BST_CHECKED : BST_UNCHECKED);
+	update();
+
+	return TRUE;
+}
+
+void CWebPPropertiesDlg::OnOK()
+{
+	CString qualityText;
+	GetDlgItemText(IDC_EDIT_WEBP_QUALITY, qualityText);
+	const int quality = min(max(_wtoi(qualityText), 0), 100);
+	const bool lossless = IsDlgButtonChecked(IDC_CHECK_WEBP_LOSSLESS) == BST_CHECKED;
+	m_property_str.Format(L"%d,%d", quality, lossless ? 1 : 0);
+
+	CDialog::OnOK();
+}
+
+void CWebPPropertiesDlg::OnBnClickedCheckWebPLossless()
+{
+	update();
+}
+
+void CWebPPropertiesDlg::update()
+{
+	CWnd* qualityEdit = GetDlgItem(IDC_EDIT_WEBP_QUALITY);
+	if (qualityEdit)
+	{
+		qualityEdit->EnableWindow(IsDlgButtonChecked(IDC_CHECK_WEBP_LOSSLESS) != BST_CHECKED);
+	}
+}
 
 vector<BYTE> ReadFileData(const CString& FileName, CString& errorMsg)
 {
@@ -297,10 +380,46 @@ unsigned int __stdcall CWebPFormat::get_cap() const
 
 bool __stdcall CWebPFormat::properties_dlg(const HWND hwnd)
 {
-	CString msg;
-	msg.LoadString(IDS_PROPERTY_DLG_TEXT);
-	::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
-	return false;
+	CWnd parent;
+	if (hwnd)
+	{
+		parent.Attach(hwnd);
+	}
+
+	CWebPPropertiesDlg dlg(hwnd ? &parent : NULL);
+	const CString previousProperty = get_properties();
+	dlg.m_property_str = previousProperty;
+	bool propertiesUpdated = false;
+	if (dlg.DoModal() == IDOK)
+	{
+		set_properties(dlg.m_property_str);
+		propertiesUpdated = previousProperty != get_properties();
+	}
+
+	if (hwnd)
+	{
+		parent.Detach();
+	}
+
+	return propertiesUpdated;
+}
+
+void __stdcall CWebPFormat::set_properties(const CString& property_str)
+{
+	int quality = 80;
+	int lossless = 0;
+	if (!ReadWebPProperties(property_str, quality, lossless))
+	{
+		m_property_str = L"80,0";
+		return;
+	}
+
+	m_property_str.Format(L"%d,%d", quality, lossless);
+}
+
+CString __stdcall CWebPFormat::get_properties() const
+{
+	return m_property_str.GetLength() ? static_cast<LPCWSTR>(m_property_str) : L"80,0";
 }
 
 BYTE* __stdcall CWebPFormat::FileToRGB(const CString& FileName,
@@ -376,9 +495,18 @@ bool __stdcall CWebPFormat::RGBToFile(const CString& FileName,
 		return false;
 	}
 
-	const int quality = quality_L >= 0 ? min(max(quality_L, 0), 100) : 80;
+	int webpQuality = 80;
+	int losslessSetting = 0;
+	const CString propertyStr = get_properties();
+	ReadWebPProperties(propertyStr, webpQuality, losslessSetting);
+
+	const int quality = quality_L >= 0 ? quality_L : webpQuality;
+	const bool useLossless = jpeg_lossless < 0 ? losslessSetting != 0 : jpeg_lossless != 0;
+
 	uint8_t* output = NULL;
-	const size_t outputSize = WebPEncodeRGB(dataBuf, width, height, width * 3, static_cast<float>(quality), &output);
+	const size_t outputSize = useLossless
+		? WebPEncodeLosslessRGB(dataBuf, width, height, width * 3, &output)
+		: WebPEncodeRGB(dataBuf, width, height, width * 3, static_cast<float>(min(max(quality, 0), 100)), &output);
 	if (outputSize == 0 || !output)
 	{
 		m_ErrorMsg = L"WebP encode failed";
