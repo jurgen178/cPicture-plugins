@@ -1,0 +1,8 @@
+LIBRARY      "cpf_webp"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginProc
+	GetPluginInit
+	SetPluginInfoTemplates

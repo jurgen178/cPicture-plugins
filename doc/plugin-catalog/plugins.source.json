@@ -241,6 +241,14 @@
         "version": "1.0",
         "infoFileMd": "markdown/de/cpf_avif.md",
         "type": "format"
+      },
+      {
+        "name": "WebP-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen und Speichern von WebP-Bildern.",
+        "file": "cpf_webp.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_webp.md",
+        "type": "format"
       }
     ],
     "plugins-en": [
@@ -482,6 +490,14 @@
         "file": "cpf_avif.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpf_avif.md",
+        "type": "format"
+      },
+      {
+        "name": "WebP Format",
+        "desc": "Format plugin to display and save WebP pictures.",
+        "file": "cpf_webp.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_webp.md",
         "type": "format"
       }
     ]
