@@ -145,6 +145,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PluginFormat.cpp" />
+    <ClCompile Include="..\shared\FormatPluginHelpers.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -153,6 +156,8 @@
   <ItemGroup>
     <ClInclude Include="PictureFormat.h" />
     <ClInclude Include="PluginFormat.h" />
+    <ClInclude Include="..\shared\FormatPluginEnumOperators.h" />
+    <ClInclude Include="..\shared\FormatPluginHelpers.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
