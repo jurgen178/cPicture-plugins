@@ -249,6 +249,14 @@
         "version": "1.0",
         "infoFileMd": "markdown/de/cpf_webp.md",
         "type": "format"
+      },
+      {
+        "name": "ICM/ICC-Farbprofil",
+        "desc": "Formatzusatzmodul zum Anzeigen von ICC- und ICM-Farbprofilen.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_icm.md",
+        "type": "format"
       }
     ],
     "plugins-en": [
@@ -498,6 +506,14 @@
         "file": "cpf_webp.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpf_webp.md",
+        "type": "format"
+      },
+      {
+        "name": "ICM/ICC Color Profile",
+        "desc": "Format plugin to display ICC and ICM color profiles.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_icm.md",
         "type": "format"
       }
     ]

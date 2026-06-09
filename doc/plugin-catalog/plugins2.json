@@ -249,6 +249,14 @@
         "version": "1.0",
         "info": "<h3>WebP-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des WebP-Bildformats. WebP-Bilder können geöffnet und gespeichert werden.</p><p>Dieses Plugin basiert auf libwebp.</p><p>GitHub: <a href='https://github.com/webmproject/libwebp'>libwebp</a></p>",
         "type": "format"
+      },
+      {
+        "name": "ICM/ICC-Farbprofil",
+        "desc": "Formatzusatzmodul zum Anzeigen von ICC- und ICM-Farbprofilen.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "info": "<h3>ICM/ICC-Farbprofil</h3><p>Dieses Formatzusatzmodul zeigt ICC- und ICM-Farbprofile als Bildvorschau an.</p><p>Die Vorschau enthält Metadaten des Profils und ein CIE-1931-xy-Diagramm. Bei RGB-Matrixprofilen werden Primärfarben und Weißpunkt eingezeichnet; komplexe LUT-, CMYK- und Druckerprofile werden als Metadatenansicht dargestellt.</p><p>Dieses Plugin basiert auf Little CMS.</p><p>Website: <a href='https://www.littlecms.com/'>Little CMS</a></p>",
+        "type": "format"
       }
     ],
     "plugins-en": [
@@ -498,6 +506,14 @@
         "file": "cpf_webp.dll",
         "version": "1.0",
         "info": "<h3>WebP Format</h3><p>This format plugin extends cPicture with support for the WebP picture format. WebP pictures can be opened and saved.</p><p>This plugin is built on libwebp.</p><p>GitHub: <a href='https://github.com/webmproject/libwebp'>libwebp</a></p>",
+        "type": "format"
+      },
+      {
+        "name": "ICM/ICC Color Profile",
+        "desc": "Format plugin to display ICC and ICM color profiles.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "info": "<h3>ICM/ICC Color Profile</h3><p>This format plugin displays ICC and ICM color profiles as an image preview.</p><p>The preview contains profile metadata and a CIE 1931 xy diagram. RGB matrix profiles show primaries and white point; complex LUT, CMYK, and printer profiles are shown as a metadata view.</p><p>This plugin is built on Little CMS.</p><p>Website: <a href='https://www.littlecms.com/'>Little CMS</a></p>",
         "type": "format"
       }
     ]
