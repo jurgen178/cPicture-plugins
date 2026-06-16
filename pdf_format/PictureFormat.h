@@ -55,10 +55,9 @@ constexpr unsigned int PICTURE_EXPOSURE_CONTRAST = 0x00004000;	// Plugin support
 constexpr unsigned int PICTURE_ART_EFFECTS = 0x00008000;		// Plugin supports artistic DCT-domain effects
 constexpr unsigned int PICTURE_EXIF_READ = 0x00010000;			// Plugin can read EXIF
 constexpr unsigned int PICTURE_EXIF_WRITE = 0x00020000;			// Plugin can write EXIF
-constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00040000;		// Plugin supports JPEG structure display
-constexpr unsigned int PICTURE_COMMENT = 0x00080000;			// Plugin supports comments
-constexpr unsigned int PICTURE_ORIENTATION = 0x00100000;		// Plugin supports an orientation flag
-constexpr unsigned int PICTURE_GPS = 0x00200000;				// Plugin supports GPS data
+constexpr unsigned int PICTURE_COMMENT = 0x00040000;			// Plugin supports comments
+constexpr unsigned int PICTURE_ORIENTATION = 0x00080000;		// Plugin supports an orientation flag
+constexpr unsigned int PICTURE_GPS = 0x00100000;				// Plugin supports GPS data
 
 
 struct GPSdata

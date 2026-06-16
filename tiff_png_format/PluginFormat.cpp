@@ -42,9 +42,9 @@ const CString __stdcall GetPluginVersion()
 const CString __stdcall GetPluginInterfaceVersion()
 {
 	#ifdef _DEBUG
-	return L"1.0-debug";
+	return L"1.1-debug";
 	#else
-	return L"1.0";
+	return L"1.1";
 	#endif
 }
 
