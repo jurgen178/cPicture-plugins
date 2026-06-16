@@ -131,6 +131,7 @@ protected:
 		m_bCFlag(false),
 		m_bJFXX(true),
 		m_bUseColorProfile(false),
+		m_bUseExtendedDecoder(false),
 		m_fAperture(0.0f),
 		m_Shutterspeed(0),
 		m_ISO(0),
@@ -140,7 +141,7 @@ protected:
 	};
 
 public:
-	virtual ~CPictureFormat() { };
+	virtual ~CPictureFormat() {};
 
 public:
 	int m_PictureWidth;
@@ -173,6 +174,7 @@ public:
 	bool m_bCFlag;
 	bool m_bJFXX;
 	bool m_bUseColorProfile;
+	bool m_bUseExtendedDecoder;
 
 	GPSdata m_GPSdata;
 	FILETIME m_exiftime;
@@ -197,13 +199,13 @@ public:
 	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
 
-	virtual void __stdcall set_properties(const CString& property_str) { };
+	virtual void __stdcall set_properties(const CString& property_str) {};
 	virtual CString __stdcall get_properties() const { return L""; };
 	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
 	virtual bool __stdcall IsPanorama() const
 	{
-		if (!m_bPanDispMode || m_PictureWidth == 0 || m_PictureHeight == 0)
+		if (!m_bPanDispMode || m_PictureWidth <= 0 || m_PictureHeight <= 0)
 			return false;
 
 		const int s1 = m_PictureWidth / m_PictureHeight;
@@ -247,7 +249,7 @@ public:
 		const int height,
 		const int quality_L = -1,
 		const int quality_C = -1,
-		const int jpeg_lossless = -1)
+		const int jpeg_lossless = -1) // -1: Einstellung verwenden, 0: kein lossless, 1: lossless
 	{
 		return false;
 	};
@@ -270,14 +272,20 @@ public:
 		const double dctMosaicAmount,
 		const double dctMosaicSize,
 		const double dctFocusAmount,
-		const double dctFocusBias) { return false; };
+		const double dctFocusBias) {
+		return false;
+	};
 	virtual bool __stdcall AutoRotate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h, const int color = -1) { return false;	};
+		const int codec, const int x, const int y, const int b, const int h, const int color = -1) {
+		return false;
+	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h, const int color = -1) { return false; }
+		const int codec, const int x, const int y, const int b, const int h, const int color = -1) {
+		return false;
+	}
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
 
