@@ -288,6 +288,5 @@ public:
 	}
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
-};
 
 typedef CPictureFormat* (__stdcall *lpfnFormatGetInstanceProc)();
