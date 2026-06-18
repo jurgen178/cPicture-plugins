@@ -158,7 +158,9 @@ public:
 
 	int m_jpeg_streamsize;
 	int m_color_space;
+	CString m_WarningMsg;
 	CString m_ErrorMsg;
+	CString m_ExtendedInfo;
 	bool m_bExternalLibMem;
 
 	bool m_bIsValid;
