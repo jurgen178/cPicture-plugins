@@ -54,7 +54,11 @@ if ($vswhere -and (Test-Path -LiteralPath $vswhere)) {
 }
 
 $cmake = Find-Executable -Name 'cmake' -Candidates $vsCMakeCandidates
-$git = Find-Executable -Name 'git'
+$gitCandidates = @(
+    'C:\Program Files\Git\cmd\git.exe',
+    'C:\Program Files\Git\bin\git.exe'
+)
+$git = Find-Executable -Name 'git' -Candidates $gitCandidates
 
 if (-not (Test-Path -LiteralPath (Join-Path $sourceDir 'CMakeLists.txt'))) {
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $sourceDir) | Out-Null

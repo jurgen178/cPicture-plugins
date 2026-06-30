@@ -54,7 +54,11 @@ if ($vswhere -and (Test-Path -LiteralPath $vswhere)) {
 }
 
 $cmake = Find-Executable -Name 'cmake' -Candidates $vsCMakeCandidates
-$git = Find-Executable -Name 'git'
+$gitCandidates = @(
+    'C:\Program Files\Git\cmd\git.exe',
+    'C:\Program Files\Git\bin\git.exe'
+)
+$git = Find-Executable -Name 'git' -Candidates $gitCandidates
 
 $gitPerlDir = 'C:\Program Files\Git\usr\bin'
 if (Test-Path -LiteralPath (Join-Path $gitPerlDir 'perl.exe')) {
