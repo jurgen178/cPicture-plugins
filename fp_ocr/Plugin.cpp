@@ -201,7 +201,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginOcr::start(
 
 	// Request full-resolution RGB pixel data as fallback.
 	// Used when BitmapDecoder can't decode the file (e.g. PDF via cPicture plugin,
-	// exotic RAW formats). cPicture has already decoded these to RGB pixels.
+	// RAW formats). cPicture has already decoded these to RGB pixels.
 	request_data_sizes.emplace_back(-100, -100, DATA_REQUEST_TYPE::REQUEST_TYPE_RGB_DATA);
 
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
