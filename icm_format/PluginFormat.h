@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "pictureformat.h"
 
 enum PLUGIN_TYPE

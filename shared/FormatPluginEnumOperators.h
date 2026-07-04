@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 inline PLUGIN_TYPE operator|(const PLUGIN_TYPE t1, const PLUGIN_TYPE t2)
 {

@@ -1,4 +1,4 @@
-// qrcode.cpp
+﻿// qrcode.cpp
 // C++ port of github.com/AlexEidt/qr (pure-Go QR code library).
 
 #include "stdafx.h"

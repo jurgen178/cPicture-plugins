@@ -219,6 +219,14 @@
         "type": "function"
       },
       {
+        "name": "OCR - Texterkennung",
+        "desc": "Text in Bildern erkennen mit der integrierten Windows-OCR-Funktion. Kein API-Schluessel erforderlich.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_ocr.md",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -474,6 +482,14 @@
         "file": "cpp_motion_composer.dll",
         "version": "1.1",
         "infoFileMd": "markdown/en/cpp_motion_composer.md",
+        "type": "function"
+      },
+      {
+        "name": "OCR - Text Recognition",
+        "desc": "Recognize text in images using the built-in Windows OCR engine. No API key required.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_ocr.md",
         "type": "function"
       },
       {
