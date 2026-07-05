@@ -1,0 +1,7 @@
+LIBRARY      "cpp_animated_webp"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginInit
+	GetPluginProc

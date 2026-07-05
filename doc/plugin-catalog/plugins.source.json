@@ -227,6 +227,14 @@
         "type": "function"
       },
       {
+        "name": "Animiertes WebP",
+        "desc": "Erstellt eine animierte WebP-Datei aus mehreren Bildern mit konfigurierbarem Frame-Delay, Loops und Qualität.",
+        "file": "cpp_animated_webp.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_animated_webp.md",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -490,6 +498,14 @@
         "file": "cpp_ocr.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpp_ocr.md",
+        "type": "function"
+      },
+      {
+        "name": "Animated WebP",
+        "desc": "Creates an animated WebP file from multiple images with configurable frame delay, loop count and quality.",
+        "file": "cpp_animated_webp.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_animated_webp.md",
         "type": "function"
       },
       {
