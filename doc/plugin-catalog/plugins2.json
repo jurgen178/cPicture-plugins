@@ -219,6 +219,14 @@
         "type": "function"
       },
       {
+        "name": "OCR - Texterkennung",
+        "desc": "Text in Bildern erkennen mit der integrierten Windows-OCR-Funktion. Kein API-Schluessel erforderlich.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "info": "<h3>OCR – Texterkennung</h3><p>Dieses Funktionszusatzmodul erkennt Text in ausgewählten Bildern mit der integrierten Windows-OCR-Funktion. Kein API-Schlüssel, keine Internetverbindung erforderlich.</p><p>Der erkannte Text wird in einem Dialog angezeigt und kann mit einem Klick in die Zwischenablage kopiert werden. Bei mehreren ausgewählten Bildern werden die Ergebnisse mit Dateiname als Abschnittsüberschrift zusammengeführt.</p><p><strong>Voraussetzungen:</strong> Windows 10 oder höher. Die OCR-Engine nutzt die installierten Sprachpakete des Systems.</p>",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -474,6 +482,14 @@
         "file": "cpp_motion_composer.dll",
         "version": "1.1",
         "info": "<h3>Motion Composer</h3><p>This function plugin combines multiple pictures into a single composition with motion and trail effects. Output size, threshold and optional trail colorization are configured in the dialog.</p><p>It is especially useful for sequences with movement, such as people, vehicles or repeated actions.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_motion_composer.jpg' />",
+        "type": "function"
+      },
+      {
+        "name": "OCR - Text Recognition",
+        "desc": "Recognize text in images using the built-in Windows OCR engine. No API key required.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "info": "<h3>OCR – Text Recognition</h3><p>This function plugin recognizes text in selected images using the built-in Windows OCR engine. No API key or internet connection required.</p><p>The recognized text is shown in a dialog and can be copied to the clipboard with a single click. For multiple selected images, the results are combined with the file name as a section header.</p><p><strong>Requirements:</strong> Windows 10 or higher. The OCR engine uses the language packs installed on the system.</p>",
         "type": "function"
       },
       {
