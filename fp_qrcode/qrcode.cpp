@@ -298,7 +298,7 @@ static const int kLog[256] = {
 };
 
 // ====================================================================
-// QRBuffer — stores data as a string of '0'/'1' characters
+// QRBuffer, stores data as a string of '0'/'1' characters
 // ====================================================================
 class QRBuffer {
     std::string m_bits;
@@ -325,7 +325,7 @@ public:
 };
 
 // ====================================================================
-// QRBitmap — bit-packed 2D bitmap
+// QRBitmap, bit-packed 2D bitmap
 // ====================================================================
 class QRBitmap {
     int m_w, m_h;

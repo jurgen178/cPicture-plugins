@@ -1,4 +1,4 @@
-﻿// Plugin.cpp — OCR function plugin for cPicture.
+﻿// Plugin.cpp OCR function plugin for cPicture.
 //
 // Uses Windows.Media.Ocr (built into Windows 10+, no API key, no internet).
 // Recognizes text in selected images and shows the result in a dialog.
@@ -30,7 +30,7 @@
 #include <shcore.h>     // CreateRandomAccessStreamOverStream
 #include <thread>       // std::thread for MTA background execution
 
-// IMemoryBufferByteAccess — declared manually with uint8_t to avoid the
+// IMemoryBufferByteAccess, declared manually with uint8_t to avoid the
 // ambiguous-symbol conflict that robuffer.h causes with C++17 std::byte.
 struct __declspec(uuid("5b0d3235-4dba-4d44-865e-8f1d0e4fd04d"))
 IMemoryBufferByteAccess : public ::IUnknown
@@ -76,7 +76,7 @@ lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int /*k*/)
 namespace
 {
 	// Load image from file path as SoftwareBitmap.
-	// Uses StorageFile + BitmapDecoder — supports all formats Windows can decode
+	// Uses StorageFile + BitmapDecoder, supports all formats Windows can decode
 	// (JPEG, PNG, TIFF, HEIC, BMP, …).
 	winrt::Windows::Graphics::Imaging::SoftwareBitmap LoadBitmapFromFile(const CString& file_name)
 	{
@@ -209,7 +209,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginOcr::start(
 
 bool __stdcall CFunctionPluginOcr::process_picture(const picture_data& /*picture_data*/)
 {
-	// Collect all pictures before processing — return true to continue loading
+	// Collect all pictures before processing, return true to continue loading
 	return true;
 }
 
@@ -231,7 +231,7 @@ const vector<update_data>& __stdcall CFunctionPluginOcr::end(
 		{
 			try
 			{
-				winrt::init_apartment();	// MTA — allows .get() without deadlock
+				winrt::init_apartment();	// MTA, allows .get() without deadlock
 				winrt::Windows::Graphics::Imaging::SoftwareBitmap bitmap{ nullptr };
 				try
 				{
@@ -274,6 +274,6 @@ const vector<update_data>& __stdcall CFunctionPluginOcr::end(
 	COcrResultDlg dlg(handle_wnd, resultText);
 	dlg.DoModal();
 
-	// No image files were modified — return empty update list
+	// No image files were modified, return empty update list
 	return update_data_list;
 }
