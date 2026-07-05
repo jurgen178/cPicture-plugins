@@ -220,7 +220,7 @@
       },
       {
         "name": "OCR - Texterkennung",
-        "desc": "Text in Bildern erkennen mit der integrierten Windows-OCR-Funktion. Kein API-Schluessel erforderlich.",
+        "desc": "Text in Bildern erkennen mit der integrierten Windows-OCR-Funktion. Kein API-Schlüssel erforderlich.",
         "file": "cpp_ocr.dll",
         "version": "1.0",
         "infoFileMd": "markdown/de/cpp_ocr.md",
