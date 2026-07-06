@@ -197,7 +197,7 @@ bool __stdcall CAvifFormat::OpenAnimation(const CString& FileName, int& width, i
 	return true;
 }
 
-bool __stdcall CAvifFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms)
+bool __stdcall CAvifFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop)
 {
 	data = NULL;
 	width = 0;
@@ -212,6 +212,11 @@ bool __stdcall CAvifFormat::ReadAnimationFrame(BYTE*& data, int& width, int& hei
 	avifResult result = avifDecoderNextImage(m_animationDecoder);
 	if (result != AVIF_RESULT_OK)
 	{
+		if (!allowLoop)
+		{
+			return false;
+		}
+
 		if (m_animationRepetitionCount >= 0 && m_animationLoopIndex >= m_animationRepetitionCount)
 		{
 			return false;

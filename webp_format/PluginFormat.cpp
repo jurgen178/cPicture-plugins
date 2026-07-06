@@ -385,7 +385,7 @@ bool __stdcall CWebPFormat::OpenAnimation(const CString& FileName, int& width, i
 	return true;
 }
 
-bool __stdcall CWebPFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms)
+bool __stdcall CWebPFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop)
 {
 	data = NULL;
 	width = 0;
@@ -401,6 +401,11 @@ bool __stdcall CWebPFormat::ReadAnimationFrame(BYTE*& data, int& width, int& hei
 	int timestamp = 0;
 	if (!WebPAnimDecoderGetNext(m_animationDecoder, &decodedFrame, &timestamp) || !decodedFrame)
 	{
+		if (!allowLoop)
+		{
+			return false;
+		}
+
 		if (m_animationLoopCount != 0 && m_animationLoopIndex + 1 >= m_animationLoopCount)
 		{
 			return false;

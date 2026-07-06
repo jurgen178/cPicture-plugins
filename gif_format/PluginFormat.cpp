@@ -337,7 +337,7 @@ bool __stdcall CGifFormat::OpenAnimation(const CString& FileName, int& width, in
 	return true;
 }
 
-bool __stdcall CGifFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms)
+bool __stdcall CGifFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop)
 {
 	data = NULL;
 	width = 0;
@@ -351,6 +351,11 @@ bool __stdcall CGifFormat::ReadAnimationFrame(BYTE*& data, int& width, int& heig
 
 	if (m_animationFrameIndex >= m_animationFrameCount)
 	{
+		if (!allowLoop)
+		{
+			return false;
+		}
+
 		if (m_animationLoopCount != 0 && m_animationLoopIndex + 1 >= m_animationLoopCount)
 		{
 			return false;

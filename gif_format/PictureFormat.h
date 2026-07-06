@@ -214,7 +214,7 @@ public:
 	virtual unsigned int __stdcall get_cap() const = 0;
 	virtual PictureMediaType __stdcall GetMediaType(const CString& FileName) { return m_mediaType; };
 	virtual bool __stdcall OpenAnimation(const CString& FileName, int& width, int& height) { return false; };
-	virtual bool __stdcall ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms) { return false; };
+	virtual bool __stdcall ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop) { return false; };
 	virtual void __stdcall CloseAnimation() { };
 
 	virtual void __stdcall set_properties(const CString& property_str) {};
