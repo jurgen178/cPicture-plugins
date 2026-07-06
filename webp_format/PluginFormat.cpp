@@ -305,6 +305,14 @@ unsigned int __stdcall CWebPFormat::get_cap() const
 
 PictureMediaType __stdcall CWebPFormat::GetMediaType(const CString& FileName)
 {
+	// Empty filename is the host's registration-time probe for a static MediaType.
+	// WebP is content-dependent: the same extension can be a still image or an
+	// animated image, so Unknown tells cPicture not to cache a fixed type for .webp.
+	if (FileName.IsEmpty())
+	{
+		return PictureMediaType::Unknown;
+	}
+
 	CString errorMsg;
 	const vector<BYTE> fileData = ReadFileData(FileName, errorMsg);
 	if (fileData.empty())
