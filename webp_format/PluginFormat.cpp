@@ -44,6 +44,33 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 const CString CWebPFormat::type = L"WebP";
 CString CWebPFormat::m_property_str;
 
+namespace
+{
+	constexpr __int64 MAX_WEBP_ANIMATION_FRAME_BYTES = 1024LL * 1024LL * 1024LL;
+
+	bool CalculateRgbFrameSize(const int width, const int height, __int64& pixelCount, __int64& size, CString& errorMsg)
+	{
+		pixelCount = 0;
+		size = 0;
+
+		if (width <= 0 || height <= 0)
+		{
+			errorMsg.Format(L"Invalid WebP animation frame size: %d x %d", width, height);
+			return false;
+		}
+
+		pixelCount = static_cast<__int64>(width) * height;
+		if (pixelCount <= 0 || pixelCount > MAX_WEBP_ANIMATION_FRAME_BYTES / 3)
+		{
+			errorMsg.Format(L"WebP animation frame is too large: %d x %d", width, height);
+			return false;
+		}
+
+		size = pixelCount * 3;
+		return true;
+	}
+}
+
 CWebPFormat::CWebPFormat()
 	: m_animationDecoder(NULL),
 	m_animationWidth(0),
@@ -178,7 +205,7 @@ bool GetWebPImageInfo(const vector<BYTE>& fileData, int& width, int& height, int
 	height = 0;
 	frameCount = 0;
 
-	WebPData webpData = { fileData.data(), fileData.size() };
+	const WebPData webpData = { fileData.data(), fileData.size() };
 	WebPDemuxer* demux = WebPDemux(&webpData);
 	if (demux)
 	{
@@ -204,7 +231,7 @@ BYTE* DecodeFirstAnimatedWebPFrame(const vector<BYTE>& fileData, int& width, int
 
 	options.color_mode = MODE_RGBA;
 
-	WebPData webpData = { fileData.data(), fileData.size() };
+	const WebPData webpData = { fileData.data(), fileData.size() };
 	WebPAnimDecoder* decoder = WebPAnimDecoderNew(&webpData, &options);
 	if (!decoder)
 	{
@@ -229,8 +256,14 @@ BYTE* DecodeFirstAnimatedWebPFrame(const vector<BYTE>& fileData, int& width, int
 		return NULL;
 	}
 
-	const __int64 pixelCount = static_cast<__int64>(animInfo.canvas_width) * animInfo.canvas_height;
-	const __int64 size = pixelCount * 3;
+	__int64 pixelCount = 0;
+	__int64 size = 0;
+	if (!CalculateRgbFrameSize(animInfo.canvas_width, animInfo.canvas_height, pixelCount, size, errorMsg))
+	{
+		WebPAnimDecoderDelete(decoder);
+		return NULL;
+	}
+
 	BYTE* buffer = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
 	if (!buffer)
 	{
@@ -309,7 +342,7 @@ bool __stdcall CWebPFormat::OpenAnimation(const CString& FileName, int& width, i
 
 	options.color_mode = MODE_RGBA;
 
-	WebPData webpData = { m_animationFileData.data(), m_animationFileData.size() };
+	const WebPData webpData = { m_animationFileData.data(), m_animationFileData.size() };
 	m_animationDecoder = WebPAnimDecoderNew(&webpData, &options);
 	if (!m_animationDecoder)
 	{
@@ -328,6 +361,14 @@ bool __stdcall CWebPFormat::OpenAnimation(const CString& FileName, int& width, i
 
 	m_animationWidth = animInfo.canvas_width;
 	m_animationHeight = animInfo.canvas_height;
+	__int64 pixelCount = 0;
+	__int64 size = 0;
+	if (!CalculateRgbFrameSize(m_animationWidth, m_animationHeight, pixelCount, size, m_ErrorMsg))
+	{
+		CloseAnimation();
+		return false;
+	}
+
 	m_animationLoopCount = animInfo.loop_count;
 	m_animationLoopIndex = 0;
 	m_animationPreviousTimestamp = 0;
@@ -366,8 +407,13 @@ bool __stdcall CWebPFormat::ReadAnimationFrame(BYTE*& data, int& width, int& hei
 		}
 	}
 
-	const __int64 pixelCount = static_cast<__int64>(m_animationWidth) * m_animationHeight;
-	const __int64 size = pixelCount * 3;
+	__int64 pixelCount = 0;
+	__int64 size = 0;
+	if (!CalculateRgbFrameSize(m_animationWidth, m_animationHeight, pixelCount, size, m_ErrorMsg))
+	{
+		return false;
+	}
+
 	BYTE* buffer = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
 	if (!buffer)
 	{
