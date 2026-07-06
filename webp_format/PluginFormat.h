@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "pictureformat.h"
 
+struct WebPAnimDecoder;
+
 enum PLUGIN_TYPE
 {
 	PLUGIN_TYPE_NONE = 0x0000,
@@ -30,8 +32,8 @@ public:
 class CWebPFormat : public CPictureFormat
 {
 public:
-	CWebPFormat() {};
-	virtual ~CWebPFormat() {};
+	CWebPFormat();
+	virtual ~CWebPFormat();
 
 public:
 	static const CString type;
@@ -49,6 +51,10 @@ public:
 	virtual CString __stdcall get_ext() const;
 	virtual struct plugin_data __stdcall get_plugin_data() const;
 	virtual unsigned int __stdcall get_cap() const;
+	virtual PictureMediaType __stdcall GetMediaType(const CString& FileName);
+	virtual bool __stdcall OpenAnimation(const CString& FileName, int& width, int& height);
+	virtual bool __stdcall ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms);
+	virtual void __stdcall CloseAnimation();
 	virtual bool __stdcall properties_dlg(const HWND hwnd);
 	virtual void __stdcall set_properties(const CString& property_str);
 	virtual CString __stdcall get_properties() const;
@@ -71,4 +77,13 @@ public:
 
 protected:
 	void get_size(const CString& FileName);
+
+private:
+	vector<BYTE> m_animationFileData;
+	WebPAnimDecoder* m_animationDecoder;
+	int m_animationWidth;
+	int m_animationHeight;
+	int m_animationLoopCount;
+	int m_animationLoopIndex;
+	int m_animationPreviousTimestamp;
 };

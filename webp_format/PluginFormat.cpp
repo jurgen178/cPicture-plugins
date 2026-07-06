@@ -20,9 +20,9 @@ const CString __stdcall GetPluginVersion()
 const CString __stdcall GetPluginInterfaceVersion()
 {
 #ifdef _DEBUG
-	return L"1.1-debug";
+	return L"1.2-debug";
 #else
-	return L"1.1";
+	return L"1.2";
 #endif
 }
 
@@ -43,6 +43,21 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 
 const CString CWebPFormat::type = L"WebP";
 CString CWebPFormat::m_property_str;
+
+CWebPFormat::CWebPFormat()
+	: m_animationDecoder(NULL),
+	m_animationWidth(0),
+	m_animationHeight(0),
+	m_animationLoopCount(0),
+	m_animationLoopIndex(0),
+	m_animationPreviousTimestamp(0)
+{
+}
+
+CWebPFormat::~CWebPFormat()
+{
+	CloseAnimation();
+}
 
 bool ReadWebPProperties(const CString& propertyStr, int& quality, int& lossless)
 {
@@ -253,6 +268,142 @@ struct plugin_data __stdcall CWebPFormat::get_plugin_data() const
 unsigned int __stdcall CWebPFormat::get_cap() const
 {
 	return PICTURE_READ | PICTURE_WRITE | PICTURE_QUALITY;
+}
+
+PictureMediaType __stdcall CWebPFormat::GetMediaType(const CString& FileName)
+{
+	CString errorMsg;
+	const vector<BYTE> fileData = ReadFileData(FileName, errorMsg);
+	if (fileData.empty())
+	{
+		return PictureMediaType::Unknown;
+	}
+
+	int width = 0;
+	int height = 0;
+	int frameCount = 0;
+	if (!GetWebPImageInfo(fileData, width, height, frameCount))
+	{
+		return PictureMediaType::Unknown;
+	}
+
+	return frameCount > 1 ? PictureMediaType::AnimatedImage : PictureMediaType::Image;
+}
+
+bool __stdcall CWebPFormat::OpenAnimation(const CString& FileName, int& width, int& height)
+{
+	CloseAnimation();
+
+	m_animationFileData = ReadFileData(FileName, m_ErrorMsg);
+	if (m_animationFileData.empty())
+	{
+		return false;
+	}
+
+	WebPAnimDecoderOptions options;
+	if (!WebPAnimDecoderOptionsInit(&options))
+	{
+		m_ErrorMsg = L"WebP animation decoder options initialization failed";
+		return false;
+	}
+
+	options.color_mode = MODE_RGBA;
+
+	WebPData webpData = { m_animationFileData.data(), m_animationFileData.size() };
+	m_animationDecoder = WebPAnimDecoderNew(&webpData, &options);
+	if (!m_animationDecoder)
+	{
+		m_ErrorMsg = L"WebP animation decoder allocation failed";
+		m_animationFileData.clear();
+		return false;
+	}
+
+	WebPAnimInfo animInfo = { 0 };
+	if (!WebPAnimDecoderGetInfo(m_animationDecoder, &animInfo) || animInfo.canvas_width <= 0 || animInfo.canvas_height <= 0)
+	{
+		m_ErrorMsg = L"Invalid animated WebP image header";
+		CloseAnimation();
+		return false;
+	}
+
+	m_animationWidth = animInfo.canvas_width;
+	m_animationHeight = animInfo.canvas_height;
+	m_animationLoopCount = animInfo.loop_count;
+	m_animationLoopIndex = 0;
+	m_animationPreviousTimestamp = 0;
+	width = m_animationWidth;
+	height = m_animationHeight;
+	return true;
+}
+
+bool __stdcall CWebPFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms)
+{
+	data = NULL;
+	width = 0;
+	height = 0;
+	delay_ms = 100;
+
+	if (!m_animationDecoder)
+	{
+		return false;
+	}
+
+	uint8_t* decodedFrame = NULL;
+	int timestamp = 0;
+	if (!WebPAnimDecoderGetNext(m_animationDecoder, &decodedFrame, &timestamp) || !decodedFrame)
+	{
+		if (m_animationLoopCount != 0 && m_animationLoopIndex + 1 >= m_animationLoopCount)
+		{
+			return false;
+		}
+
+		++m_animationLoopIndex;
+		WebPAnimDecoderReset(m_animationDecoder);
+		m_animationPreviousTimestamp = 0;
+		if (!WebPAnimDecoderGetNext(m_animationDecoder, &decodedFrame, &timestamp) || !decodedFrame)
+		{
+			return false;
+		}
+	}
+
+	const __int64 pixelCount = static_cast<__int64>(m_animationWidth) * m_animationHeight;
+	const __int64 size = pixelCount * 3;
+	BYTE* buffer = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
+	if (!buffer)
+	{
+		m_ErrorMsg.Format(L"WebP memory request failed: %I64d bytes", size);
+		return false;
+	}
+
+	for (__int64 pixel = 0; pixel < pixelCount; ++pixel)
+	{
+		buffer[pixel * 3] = decodedFrame[pixel * 4];
+		buffer[pixel * 3 + 1] = decodedFrame[pixel * 4 + 1];
+		buffer[pixel * 3 + 2] = decodedFrame[pixel * 4 + 2];
+	}
+
+	width = m_animationWidth;
+	height = m_animationHeight;
+	delay_ms = max(10, timestamp - m_animationPreviousTimestamp);
+	m_animationPreviousTimestamp = timestamp;
+	data = buffer;
+	return true;
+}
+
+void __stdcall CWebPFormat::CloseAnimation()
+{
+	if (m_animationDecoder)
+	{
+		WebPAnimDecoderDelete(m_animationDecoder);
+		m_animationDecoder = NULL;
+	}
+
+	m_animationFileData.clear();
+	m_animationWidth = 0;
+	m_animationHeight = 0;
+	m_animationLoopCount = 0;
+	m_animationLoopIndex = 0;
+	m_animationPreviousTimestamp = 0;
 }
 
 bool __stdcall CWebPFormat::properties_dlg(const HWND hwnd)
