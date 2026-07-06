@@ -12,26 +12,30 @@ struct AnimSettings
 };
 
 
-class CFunctionPluginAnimatedWebP : public CFunctionPlugin
+class CFunctionPluginFilmReel : public CFunctionPlugin
 {
 protected:
-	CFunctionPluginAnimatedWebP();
+	CFunctionPluginFilmReel();
 
 protected:
 	HWND        handle_wnd;
 	AnimSettings m_settings;
 
 public:
-	virtual ~CFunctionPluginAnimatedWebP() { }
+	virtual ~CFunctionPluginFilmReel() { }
 
 	static CFunctionPlugin* __stdcall GetInstance()
 	{
-		return new CFunctionPluginAnimatedWebP;
+		return new CFunctionPluginFilmReel;
 	}
 
 public:
 	virtual struct plugin_data __stdcall get_plugin_data() const;
 	virtual struct arg_count   __stdcall get_arg_count()   const;
+
+private:
+	void LoadSettings();
+	void SaveSettings() const;
 
 public:
 	virtual enum REQUEST_TYPE          __stdcall start(const HWND hwnd, const vector<const WCHAR*>& file_list, vector<request_data_size>& request_data_sizes);

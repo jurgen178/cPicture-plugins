@@ -1,6 +1,6 @@
-### Animiertes WebP
+### FilmReel
 
-Dieses Funktionszusatzmodul erstellt eine animierte WebP-Datei aus den ausgewählten Bildern.
+Dieses Funktionszusatzmodul erstellt eine FilmReel-Animation (.webp) aus den ausgewählten Bildern.
 
 **Einstellungen:**
 - **Frame-Delay (ms):** Anzeigedauer jedes Einzelbildes in Millisekunden
@@ -8,4 +8,4 @@ Dieses Funktionszusatzmodul erstellt eine animierte WebP-Datei aus den ausgewäh
 - **Qualität (0–100):** Kompressionsstärke bei verlustbehafteter Kodierung
 - **Verlustfrei:** Lossless-Modus für maximale Qualität (größere Datei)
 
-Die Ausgabedatei wird neben dem ersten ausgewählten Bild gespeichert (`<Name>_animated.webp`).
+Die Ausgabedatei wird neben dem ersten ausgewählten Bild gespeichert (`<Name>_filmreel.webp`).

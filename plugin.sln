@@ -62,7 +62,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unit_test_ascii_art", "unit
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_ocr", "fp_ocr\fp_ocr.vcxproj", "{C6849593-04A4-4C57-B38B-BF86E757EDF8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_animated_webp", "fp_animated_webp\fp_animated_webp.vcxproj", "{AE54D9C7-8AFF-4241-BBE1-F8BB3D766116}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_filmreel", "fp_filmreel\fp_filmreel.vcxproj", "{AE54D9C7-8AFF-4241-BBE1-F8BB3D766116}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C43D208D-6B67-4A68-A24F-B3B1CE16C8B4} = {C43D208D-6B67-4A68-A24F-B3B1CE16C8B4}
 	EndProjectSection

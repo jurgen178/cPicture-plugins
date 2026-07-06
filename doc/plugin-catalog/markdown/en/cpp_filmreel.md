@@ -1,6 +1,6 @@
-### Animated WebP
+### FilmReel
 
-This function plugin creates an animated WebP file from the selected images.
+This function plugin creates a FilmReel animation (.webp) from the selected images.
 
 **Settings:**
 - **Frame delay (ms):** Display duration of each frame in milliseconds
@@ -8,4 +8,4 @@ This function plugin creates an animated WebP file from the selected images.
 - **Quality (0–100):** Compression level for lossy encoding
 - **Lossless:** Lossless mode for maximum quality (larger file size)
 
-The output file is saved next to the first selected image (`<name>_animated.webp`).
+The output file is saved next to the first selected image (`<name>_filmreel.webp`).

@@ -148,10 +148,6 @@ void CEncodeDlg::WorkerProc()
 		if (!rd.data || rd.picture_width <= 0 || rd.picture_height <= 0)
 			continue;
 
-		// Update filename + progress bar BEFORE encoding so the user
-		// can see which file is currently being processed.
-		PostMessage(WM_ENCODE_PROGRESS, framesDone + 1, totalFrames);
-
 		WebPPicture pic;
 		WebPPictureInit(&pic);
 		pic.width    = rd.picture_width;

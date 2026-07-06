@@ -227,11 +227,11 @@
         "type": "function"
       },
       {
-        "name": "Animiertes WebP",
-        "desc": "Erstellt eine animierte WebP-Datei aus mehreren Bildern mit konfigurierbarem Frame-Delay, Loops und Qualität.",
-        "file": "cpp_animated_webp.dll",
+        "name": "FilmReel",
+        "desc": "Erstellt eine FilmReel-Animation (.webp) aus mehreren Bildern mit konfigurierbarem Frame-Delay, Loops und Qualität.",
+        "file": "cpp_filmreel.dll",
         "version": "1.0",
-        "infoFileMd": "markdown/de/cpp_animated_webp.md",
+        "infoFileMd": "markdown/de/cpp_filmreel.md",
         "type": "function"
       },
       {
@@ -501,11 +501,11 @@
         "type": "function"
       },
       {
-        "name": "Animated WebP",
-        "desc": "Creates an animated WebP file from multiple images with configurable frame delay, loop count and quality.",
-        "file": "cpp_animated_webp.dll",
+        "name": "FilmReel",
+        "desc": "Creates a FilmReel animation (.webp) from multiple images with configurable frame delay, loop count and quality.",
+        "file": "cpp_filmreel.dll",
         "version": "1.0",
-        "infoFileMd": "markdown/en/cpp_animated_webp.md",
+        "infoFileMd": "markdown/en/cpp_filmreel.md",
         "type": "function"
       },
       {

@@ -1,6 +1,6 @@
-// Plugin.cpp — Animated WebP function plugin for cPicture.
+// Plugin.cpp — FilmReel function plugin for cPicture.
 //
-// Creates an animated WebP file from the selected images.
+// Creates a FilmReel animation (.webp) from the selected images.
 // Uses libwebp (shared from webp_format/external/) via WebPAnimEncoder API.
 // No extra library download needed — libwebp is already part of the plugin suite.
 
@@ -9,6 +9,7 @@
 #include "SettingsDlg.h"
 #include "EncodeDlg.h"
 #include "resource.h"
+#include "../shared/PluginSettings.h"
 
 #include <vector>
 using namespace std;
@@ -42,18 +43,40 @@ const int __stdcall GetPluginInit()
 
 lpfnFunctionGetInstanceProc __stdcall GetPluginProc(const int /*k*/)
 {
-	return CFunctionPluginAnimatedWebP::GetInstance;
+	return CFunctionPluginFilmReel::GetInstance;
 }
 
 
-// ── CFunctionPluginAnimatedWebP ──────────────────────────────────────────────
+// ── CFunctionPluginFilmReel ──────────────────────────────────────────────
 
-CFunctionPluginAnimatedWebP::CFunctionPluginAnimatedWebP()
+CFunctionPluginFilmReel::CFunctionPluginFilmReel()
 	: handle_wnd(NULL)
 {
+	LoadSettings();
 }
 
-struct plugin_data __stdcall CFunctionPluginAnimatedWebP::get_plugin_data() const
+void CFunctionPluginFilmReel::LoadSettings()
+{
+	PluginShared::PluginSettingsSection s(L"filmreel");
+	m_settings.delay_ms     = s.GetInt(L"delay_ms",     200);
+	m_settings.loop_count   = s.GetInt(L"loop_count",   0);
+	m_settings.quality      = s.GetInt(L"quality",      80);
+	m_settings.lossless     = s.GetBool(L"lossless",    false);
+	m_settings.output_width = s.GetInt(L"output_width", 1920);
+}
+
+void CFunctionPluginFilmReel::SaveSettings() const
+{
+	PluginShared::PluginSettingsSection s(L"filmreel");
+	s.SetInt(L"delay_ms",     m_settings.delay_ms,     200);
+	s.SetInt(L"loop_count",   m_settings.loop_count,   0);
+	s.SetInt(L"quality",      m_settings.quality,      80);
+	s.SetBool(L"lossless",    m_settings.lossless,     false);
+	s.SetInt(L"output_width", m_settings.output_width, 1920);
+	s.Save();
+}
+
+struct plugin_data __stdcall CFunctionPluginFilmReel::get_plugin_data() const
 {
 	struct plugin_data d;
 	d.name.LoadString(IDS_PLUGIN_SHORT_DESC);
@@ -62,13 +85,13 @@ struct plugin_data __stdcall CFunctionPluginAnimatedWebP::get_plugin_data() cons
 	return d;
 }
 
-struct arg_count __stdcall CFunctionPluginAnimatedWebP::get_arg_count() const
+struct arg_count __stdcall CFunctionPluginFilmReel::get_arg_count() const
 {
 	// At least 2 images, no upper limit
 	return arg_count(2, -1);
 }
 
-enum REQUEST_TYPE __stdcall CFunctionPluginAnimatedWebP::start(
+enum REQUEST_TYPE __stdcall CFunctionPluginFilmReel::start(
 	const HWND hwnd,
 	const vector<const WCHAR*>& file_list,
 	vector<request_data_size>& request_data_sizes)
@@ -89,6 +112,7 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAnimatedWebP::start(
 		return REQUEST_TYPE::REQUEST_TYPE_CANCEL;
 
 	m_settings = dlg.GetSettings();
+	SaveSettings();
 
 	// Request pixel data scaled to the user-configured output width.
 	// Passing absolute dimensions keeps memory proportional to the output size,
@@ -102,22 +126,22 @@ enum REQUEST_TYPE __stdcall CFunctionPluginAnimatedWebP::start(
 	return REQUEST_TYPE::REQUEST_TYPE_DATA;
 }
 
-bool __stdcall CFunctionPluginAnimatedWebP::process_picture(const picture_data& /*pd*/)
+bool __stdcall CFunctionPluginFilmReel::process_picture(const picture_data& /*pd*/)
 {
 	// Collect all frames before encoding
 	return true;
 }
 
-const vector<update_data>& __stdcall CFunctionPluginAnimatedWebP::end(
+const vector<update_data>& __stdcall CFunctionPluginFilmReel::end(
 	const vector<picture_data>& picture_data_list)
 {
 	if (picture_data_list.empty())
 		return update_data_list;
 
-	// Build output path: first image base name + "_animated.webp"
+	// Build output path: first image base name + "_filmreel.webp"
 	const CString& first = picture_data_list.front().file_name;
 	const int dot = first.ReverseFind(L'.');
-	const CString outPath = (dot >= 0 ? first.Left(dot) : first) + L"_animated.webp";
+	const CString outPath = (dot >= 0 ? first.Left(dot) : first) + L"_filmreel.webp";
 
 	// Run encoding in a background thread with a progress + cancel dialog
 	CEncodeDlg dlg(handle_wnd, picture_data_list, m_settings, outPath);

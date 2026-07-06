@@ -22,7 +22,7 @@
     <ProjectGuid>{AE54D9C7-8AFF-4241-BBE1-F8BB3D766116}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>cpp_animated_webp</ProjectName>
+    <ProjectName>cpp_filmreel</ProjectName>
     <!-- Shared libwebp from webp_format/external — no duplication needed -->
     <WebPSourceDir>$(ProjectDir)..\webp_format\external\libwebp</WebPSourceDir>
     <WebPBuildDir>$(ProjectDir)..\webp_format\external\build\libwebp\$(Configuration)</WebPBuildDir>
@@ -109,7 +109,7 @@
     <Link>
       <AdditionalDependencies>libwebp.lib;libwebpmux.lib;libsharpyuv.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WebPLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)cpp_animated_webp.dll</OutputFile>
+      <OutputFile>$(OutDir)cpp_filmreel.dll</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -157,7 +157,7 @@
       <AdditionalOptions>/nod:kernel32.lib /nod:advapi32.lib /nod:user32.lib /nod:gdi32.lib /nod:shell32.lib /nod:comdlg32.lib /nod:version.lib /nod:mpr.lib /nod:rasapi32.lib /nod:winmm.lib /nod:winspool.lib /nod:vfw32.lib /nod:secur32.lib /nod:oleacc.lib /nod:oledlg.lib /nod:sensapi.lib %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>unicows.lib;kernel32.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comdlg32.lib;version.lib;mpr.lib;rasapi32.lib;winmm.lib;winspool.lib;vfw32.lib;secur32.lib;oleacc.lib;oledlg.lib;sensapi.lib;libwebp.lib;libwebpmux.lib;libsharpyuv.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(WebPLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)cpp_animated_webp.dll</OutputFile>
+      <OutputFile>$(OutDir)cpp_filmreel.dll</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -198,6 +198,7 @@
     <ClCompile Include="Plugin.cpp" />
     <ClCompile Include="SettingsDlg.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="..\shared\PluginSettings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="plugin.def" />
@@ -209,6 +210,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SettingsDlg.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\shared\PluginSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="plugin.rc" />
