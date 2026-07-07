@@ -10,6 +10,8 @@
 #define IDS_ERR_WRITE_FAILED            104
 #define IDS_ERR_ENCODE_FAILED           105
 #define IDS_SUCCESS                     106
+#define IDS_ENCODING_FRAME              107
+#define IDS_DLG_WIDTH_ORIGINAL          111
 #define IDD_SETTINGS                    200
 #define IDC_EDIT_DELAY                  201
 #define IDC_EDIT_LOOP                   202
@@ -21,14 +23,12 @@
 #define IDC_STATIC_DELAY                208
 #define IDC_STATIC_LOOP                 209
 #define IDC_STATIC_QUALITY              210
-
-// Output width combo
-#define IDS_DLG_WIDTH_ORIGINAL          111
 #define IDC_COMBO_WIDTH                 211
 #define IDC_STATIC_WIDTH                212
-
-// Progress dialog
-#define IDS_ENCODING_FRAME              107   // "Frame %d von %d" / "Frame %d of %d"
+#define IDC_BUTTON_BACKGROUND_COLOR     213
+#define IDC_STATIC_BACKGROUND_COLOR     214
+#define IDC_STATIC_BACKGROUND_INFO      215
+#define IDC_STATIC_BACKGROUND_COLOR_PREVIEW 216
 #define IDD_ENCODE_PROGRESS             300
 #define IDC_ENCODE_PROGRESS_BAR         301
 #define IDC_ENCODE_TEXT                 302

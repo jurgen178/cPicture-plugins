@@ -272,12 +272,7 @@ BYTE* DecodeFirstAnimatedWebPFrame(const vector<BYTE>& fileData, int& width, int
 		return NULL;
 	}
 
-	for (__int64 pixel = 0; pixel < pixelCount; ++pixel)
-	{
-		buffer[pixel * 3] = decodedFrame[pixel * 4];
-		buffer[pixel * 3 + 1] = decodedFrame[pixel * 4 + 1];
-		buffer[pixel * 3 + 2] = decodedFrame[pixel * 4 + 2];
-	}
+	CopyRgbaToRgb(decodedFrame, buffer, pixelCount);
 
 	width = animInfo.canvas_width;
 	height = animInfo.canvas_height;
@@ -434,12 +429,7 @@ bool __stdcall CWebPFormat::ReadAnimationFrame(BYTE*& data, int& width, int& hei
 		return false;
 	}
 
-	for (__int64 pixel = 0; pixel < pixelCount; ++pixel)
-	{
-		buffer[pixel * 3] = decodedFrame[pixel * 4];
-		buffer[pixel * 3 + 1] = decodedFrame[pixel * 4 + 1];
-		buffer[pixel * 3 + 2] = decodedFrame[pixel * 4 + 2];
-	}
+	CopyRgbaToRgb(decodedFrame, buffer, pixelCount);
 
 	width = m_animationWidth;
 	height = m_animationHeight;

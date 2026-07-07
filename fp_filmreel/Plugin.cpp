@@ -58,21 +58,23 @@ CFunctionPluginFilmReel::CFunctionPluginFilmReel()
 void CFunctionPluginFilmReel::LoadSettings()
 {
 	PluginShared::PluginSettingsSection s(L"filmreel");
-	m_settings.delay_ms     = s.GetInt(L"delay_ms",     200);
-	m_settings.loop_count   = s.GetInt(L"loop_count",   0);
-	m_settings.quality      = s.GetInt(L"quality",      80);
-	m_settings.lossless     = s.GetBool(L"lossless",    false);
-	m_settings.output_width = s.GetInt(L"output_width", 1920);
+	m_settings.delay_ms         = s.GetInt(L"delay_ms",         200);
+	m_settings.loop_count       = s.GetInt(L"loop_count",       0);
+	m_settings.quality          = s.GetInt(L"quality",          80);
+	m_settings.lossless         = s.GetBool(L"lossless",        false);
+	m_settings.output_width     = s.GetInt(L"output_width",     1920);
+	m_settings.background_color = static_cast<COLORREF>(s.GetInt(L"background_color", RGB(0, 0, 0)));
 }
 
 void CFunctionPluginFilmReel::SaveSettings() const
 {
 	PluginShared::PluginSettingsSection s(L"filmreel");
-	s.SetInt(L"delay_ms",     m_settings.delay_ms,     200);
-	s.SetInt(L"loop_count",   m_settings.loop_count,   0);
-	s.SetInt(L"quality",      m_settings.quality,      80);
-	s.SetBool(L"lossless",    m_settings.lossless,     false);
-	s.SetInt(L"output_width", m_settings.output_width, 1920);
+	s.SetInt(L"delay_ms",         m_settings.delay_ms,         200);
+	s.SetInt(L"loop_count",       m_settings.loop_count,       0);
+	s.SetInt(L"quality",          m_settings.quality,          80);
+	s.SetBool(L"lossless",        m_settings.lossless,        false);
+	s.SetInt(L"output_width",     m_settings.output_width,     1920);
+	s.SetInt(L"background_color", m_settings.background_color, RGB(0, 0, 0));
 	s.Save();
 }
 

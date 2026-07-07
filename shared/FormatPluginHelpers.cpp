@@ -95,3 +95,46 @@ CString GetLongFileDateTime(const WCHAR* pFile, filetime_type type)
 	FILETIME filetime = { 0 };
 	return GetLongFileDateTime(pFile, filetime, type);
 }
+
+void CopyBgrToRgbRow(const BYTE* src, BYTE* dst, const int width)
+{
+	const BYTE* dstEnd = dst + static_cast<size_t>(width) * 3;
+	while (dst < dstEnd)
+	{
+		const BYTE blue = *src++;
+		const BYTE green = *src++;
+		const BYTE red = *src++;
+
+		*dst++ = red;
+		*dst++ = green;
+		*dst++ = blue;
+	}
+}
+
+void CopyBgraToRgb(const BYTE* src, BYTE* dst, const __int64 pixelCount)
+{
+	const BYTE* dstEnd = dst + pixelCount * 3;
+	while (dst < dstEnd)
+	{
+		const BYTE blue = *src++;
+		const BYTE green = *src++;
+		const BYTE red = *src++;
+		++src;
+
+		*dst++ = red;
+		*dst++ = green;
+		*dst++ = blue;
+	}
+}
+
+void CopyRgbaToRgb(const BYTE* src, BYTE* dst, const __int64 pixelCount)
+{
+	const BYTE* dstEnd = dst + pixelCount * 3;
+	while (dst < dstEnd)
+	{
+		*dst++ = *src++;
+		*dst++ = *src++;
+		*dst++ = *src++;
+		++src;
+	}
+}

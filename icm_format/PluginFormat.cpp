@@ -803,13 +803,7 @@ BYTE* RenderProfilePreview(const CString& FileName, const ProfilePreviewData& da
 		return NULL;
 	}
 
-	const BYTE* bgra = static_cast<const BYTE*>(dibBits);
-	for (__int64 pixel = 0; pixel < static_cast<__int64>(width) * height; ++pixel)
-	{
-		rgb[pixel * 3] = bgra[pixel * 4 + 2];
-		rgb[pixel * 3 + 1] = bgra[pixel * 4 + 1];
-		rgb[pixel * 3 + 2] = bgra[pixel * 4];
-	}
+	CopyBgraToRgb(static_cast<const BYTE*>(dibBits), rgb, static_cast<__int64>(width) * height);
 
 	dc.SelectObject(oldBitmap);
 	::DeleteObject(dib);

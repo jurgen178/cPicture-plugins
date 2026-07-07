@@ -185,13 +185,7 @@ namespace
 		{
 			const BYTE* src = stride >= 0 ? scan0 + static_cast<__int64>(y) * stride : scan0 + static_cast<__int64>(height - 1 - y) * -stride;
 			BYTE* dst = buffer + static_cast<__int64>(y) * width * 3;
-
-			for (int x = 0; x < width; ++x)
-			{
-				dst[x * 3] = src[x * 3 + 2];
-				dst[x * 3 + 1] = src[x * 3 + 1];
-				dst[x * 3 + 2] = src[x * 3];
-			}
+			CopyBgrToRgbRow(src, dst, width);
 		}
 
 		bitmap.UnlockBits(&bitmapData);

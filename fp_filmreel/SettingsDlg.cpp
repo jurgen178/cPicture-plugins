@@ -1,9 +1,26 @@
 #include "stdafx.h"
 #include "SettingsDlg.h"
 
+#include <afxdlgs.h>
+
+
+BEGIN_MESSAGE_MAP(CColorPreviewCtrl, CStatic)
+	ON_WM_PAINT()
+END_MESSAGE_MAP()
+
+void CColorPreviewCtrl::OnPaint()
+{
+	CPaintDC dc(this);
+	CRect rect;
+	GetClientRect(&rect);
+	dc.FrameRect(&rect, &CBrush(::GetSysColor(COLOR_WINDOWFRAME)));
+	rect.DeflateRect(1, 1);
+	dc.FillSolidRect(rect, m_previewColor);
+}
 
 BEGIN_MESSAGE_MAP(CSettingsDlg, CDialog)
 	ON_BN_CLICKED(IDC_CHECK_LOSSLESS, OnLosslessChanged)
+	ON_BN_CLICKED(IDC_BUTTON_BACKGROUND_COLOR, OnChooseBackgroundColor)
 END_MESSAGE_MAP()
 
 
@@ -16,6 +33,7 @@ CSettingsDlg::CSettingsDlg(const AnimSettings& defaults, CWnd* pParent)
 void CSettingsDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_STATIC_BACKGROUND_COLOR_PREVIEW, m_backgroundColorPreview);
 }
 
 BOOL CSettingsDlg::OnInitDialog()
@@ -31,6 +49,7 @@ BOOL CSettingsDlg::OnInitDialog()
 	SetDlgItemInt(IDC_EDIT_LOOP,    m_settings.loop_count);
 	SetDlgItemInt(IDC_EDIT_QUALITY, m_settings.quality);
 	CheckDlgButton(IDC_CHECK_LOSSLESS, m_settings.lossless ? BST_CHECKED : BST_UNCHECKED);
+	UpdateBackgroundColorPreview();
 
 	// Output width combo
 	CComboBox* pCombo = static_cast<CComboBox*>(GetDlgItem(IDC_COMBO_WIDTH));
@@ -89,10 +108,25 @@ void CSettingsDlg::OnLosslessChanged()
 	UpdateQualityState();
 }
 
+void CSettingsDlg::OnChooseBackgroundColor()
+{
+	CColorDialog dlg(m_settings.background_color, CC_ANYCOLOR | CC_FULLOPEN, this);
+	if (dlg.DoModal() == IDOK)
+	{
+		m_settings.background_color = dlg.GetColor();
+		UpdateBackgroundColorPreview();
+	}
+}
+
 void CSettingsDlg::UpdateQualityState()
 {
 	const bool lossless = (IsDlgButtonChecked(IDC_CHECK_LOSSLESS) == BST_CHECKED);
 	GetDlgItem(IDC_EDIT_QUALITY)->EnableWindow(!lossless);
 	GetDlgItem(IDC_SPIN_QUALITY)->EnableWindow(!lossless);
 	GetDlgItem(IDC_STATIC_QUALITY)->EnableWindow(!lossless);
+}
+
+void CSettingsDlg::UpdateBackgroundColorPreview()
+{
+	m_backgroundColorPreview.SetPreviewColor(m_settings.background_color);
 }

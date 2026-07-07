@@ -9,6 +9,7 @@ struct AnimSettings
 	int  quality      = 80;    // 0-100, ignored when lossless = true
 	bool lossless     = false;
 	int  output_width = 1920;  // max output width in pixels; 0 = original full resolution
+	COLORREF background_color = RGB(0, 0, 0); // used for canvas areas around differently sized frames
 };
 
 
