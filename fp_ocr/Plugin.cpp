@@ -101,7 +101,7 @@ namespace
 
 	// Fallback: create SoftwareBitmap from raw RGB pixel data already decoded
 	// by cPicture. Covers formats cPicture supports but Windows BitmapDecoder
-	// doesn't (e.g. PDF pages decoded via the cPicture PDF plugin, exotic RAW).
+	// doesn't (e.g. PDF pages decoded via the cPicture PDF plugin, RAW).
 	winrt::Windows::Graphics::Imaging::SoftwareBitmap LoadBitmapFromPixels(const picture_data& pd)
 	{
 		namespace WGI = winrt::Windows::Graphics::Imaging;
@@ -117,12 +117,19 @@ namespace
 
 		// Convert RGB (24 bpp) → BGRA (32 bpp) for SoftwareBitmap
 		std::vector<uint8_t> bgra(static_cast<size_t>(w) * h * 4);
-		for (int i = 0; i < w * h; ++i)
+		const uint8_t* src = rd.data;
+		uint8_t* dst = bgra.data();
+		const uint8_t* dstEnd = dst + bgra.size();
+		while (dst < dstEnd)
 		{
-			bgra[static_cast<size_t>(i) * 4 + 0] = rd.data[static_cast<size_t>(i) * 3 + 2]; // B
-			bgra[static_cast<size_t>(i) * 4 + 1] = rd.data[static_cast<size_t>(i) * 3 + 1]; // G
-			bgra[static_cast<size_t>(i) * 4 + 2] = rd.data[static_cast<size_t>(i) * 3 + 0]; // R
-			bgra[static_cast<size_t>(i) * 4 + 3] = 255;                                      // A
+			const uint8_t red = *src++;
+			const uint8_t green = *src++;
+			const uint8_t blue = *src++;
+
+			*dst++ = blue;
+			*dst++ = green;
+			*dst++ = red;
+			*dst++ = 255;
 		}
 
 		WGI::SoftwareBitmap bitmap(WGI::BitmapPixelFormat::Bgra8, w, h,
