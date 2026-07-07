@@ -133,10 +133,10 @@
       <AdditionalDependencies>delayimp.lib;vfw32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>msvfw32.dll;oledlg.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>msvfw32.dll;oledlg.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <BaseAddress>0x21A000000</BaseAddress>
+      <BaseAddress>0x21E000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -206,12 +206,12 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>msvfw32.dll;oledlg.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>msvfw32.dll;oledlg.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <BaseAddress>0x21A000000</BaseAddress>
+      <BaseAddress>0x21E000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>

@@ -131,8 +131,9 @@
       <AdditionalDependencies>runtimeobject.lib;shcore.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)..\cPicture\x64\Debug\$(TargetName)$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>runtimeobject.dll;api-ms-win-core-winrt-error-l1-1-1.dll;api-ms-win-core-winrt-l1-1-0.dll;api-ms-win-shcore-stream-winrt-l1-1-0.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>      <BaseAddress>0x206000000</BaseAddress>
+      <SubSystem>Windows</SubSystem>      <BaseAddress>0x20A000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -175,11 +176,12 @@
       <AdditionalDependencies>kernel32.lib;advapi32.lib;user32.lib;gdi32.lib;shell32.lib;comdlg32.lib;version.lib;mpr.lib;rasapi32.lib;winmm.lib;winspool.lib;vfw32.lib;secur32.lib;oleacc.lib;oledlg.lib;sensapi.lib;runtimeobject.lib;shcore.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>plugin.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>runtimeobject.dll;api-ms-win-core-winrt-error-l1-1-1.dll;api-ms-win-core-winrt-l1-1-0.dll;api-ms-win-shcore-stream-winrt-l1-1-0.dll;gdiplus.dll;oleacc.dll;winspool.drv;oleaut32.dll;gdi32.dll;advapi32.dll;winmm.dll;imm32.dll;ole32.dll;uxtheme.dll;shlwapi.dll;msimg32.dll;shell32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <BaseAddress>0x206000000</BaseAddress>
+      <BaseAddress>0x20A000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
     </Link>
   </ItemDefinitionGroup>

@@ -164,25 +164,38 @@ cPicture can supply each picture with additional picture data. This is controlle
 
 ### Linker base addresses
 
-Currently used base addresses:  
+Current linker base address state:  
 
-cpf_tiff_png:	0x180000000  
-cpf_pdf:    	0x181000000  
-cpf_avif:      0x182000000  
-cpp_fp1:		0x201000000  
-cpp_fp2:		0x202000000  
-cpp_fp3:		0x203000000  
-cpp_fp4:		0x204000000  
-cpp_fp5:		0x205000000  
-cpp_script:     0x210000000  
-cpp_fp_hdr:		0x212000000  
-cpp_fp_ev:		0x213000000  
-cpp_ascii_art:  0x214000000  
-cpp_copy_cb:    0x215000000  
-cpp_qrcode:     0x216000000  
-cpp_timecapsule: 0x217000000  
-cpp_xray:        0x218000000  
-cpp_motion_composer: 0x219000000  
-cpp_postage:     0x21A000000  
+- Plug-ins use fixed linker base addresses with ASLR disabled.
+- The address ranges that matter at runtime are PE image ranges: `[ImageBase, ImageBase + SizeOfImage)`.
+- The upload script `cPicture\build\build-upload-plugins.ps1` verifies the Release DLL image ranges before creating ZIP files or uploading anything.
+- Format plug-ins are spaced 64 MB apart.
+- Function plug-ins are spaced 32 MB apart.
+
+Currently assigned base addresses:  
+
+cpf_tiff_png:        0x180000000  
+cpf_pdf:             0x184000000  
+cpf_avif:            0x188000000  
+cpf_icm:             0x18C000000  
+cpf_webp:            0x190000000  
+cpf_gif:             0x194000000  
+cpp_fp1:             0x200000000  
+cpp_fp2:             0x202000000  
+cpp_fp3:             0x204000000  
+cpp_fp4:             0x206000000  
+cpp_fp5:             0x208000000  
+cpp_ocr:             0x20A000000  
+cpp_script:          0x20C000000  
+cpp_fp_hdr:          0x20E000000  
+cpp_fp_ev:           0x210000000  
+cpp_ascii_art:       0x212000000  
+cpp_copy_cb:         0x214000000  
+cpp_qrcode:          0x216000000  
+cpp_timecapsule:     0x218000000  
+cpp_xray:            0x21A000000  
+cpp_motion_composer: 0x21C000000  
+cpp_postage:         0x21E000000  
+cpp_filmreel:        0x220000000  
 
 
