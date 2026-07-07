@@ -48,6 +48,7 @@ public:
 	virtual CString __stdcall get_ext() const;
 	virtual struct plugin_data __stdcall get_plugin_data() const;
 	virtual unsigned int __stdcall get_cap() const;
+	virtual bool __stdcall properties_dlg(const HWND hwnd);
 
 	virtual BYTE* __stdcall FileToRGB(const CString& FileName,
 		const int abs_size_x = 0, const int abs_size_y = 0,

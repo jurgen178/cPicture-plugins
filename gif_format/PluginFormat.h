@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "pictureformat.h"
 
-struct WebPAnimDecoder;
+#include <gdiplus.h>
+#include <vector>
 
 enum PLUGIN_TYPE
 {
@@ -29,15 +30,14 @@ public:
 	}
 };
 
-class CWebPFormat : public CPictureFormat
+class CGifFormat : public CPictureFormat
 {
 public:
-	CWebPFormat();
-	virtual ~CWebPFormat();
+	CGifFormat();
+	virtual ~CGifFormat();
 
 public:
 	static const CString type;
-	static CString m_property_str;
 	virtual const CString __stdcall getType() const
 	{
 		return type;
@@ -45,7 +45,7 @@ public:
 
 	static CPictureFormat* __stdcall GetInstance()
 	{
-		return new CWebPFormat;
+		return new CGifFormat;
 	};
 
 	virtual CString __stdcall get_ext() const;
@@ -56,16 +56,6 @@ public:
 	virtual bool __stdcall ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop);
 	virtual void __stdcall CloseAnimation();
 	virtual bool __stdcall properties_dlg(const HWND hwnd);
-	virtual void __stdcall set_properties(const CString& property_str);
-	virtual CString __stdcall get_properties() const;
-
-	virtual bool __stdcall RGBToFile(const CString& FileName,
-		const BYTE* dataBuf,
-		const int width,
-		const int height,
-		const int quality_L = -1,
-		const int quality_C = -1,
-		const int jpeg_lossless = -1);
 
 	virtual BYTE* __stdcall FileToRGB(const CString& FileName,
 		const int abs_size_x = 0, const int abs_size_y = 0,
@@ -79,11 +69,23 @@ protected:
 	void get_size(const CString& FileName);
 
 private:
-	vector<BYTE> m_animationFileData;
-	WebPAnimDecoder* m_animationDecoder;
-	int m_animationWidth;
-	int m_animationHeight;
-	int m_animationLoopCount;
-	int m_animationLoopIndex;
-	int m_animationPreviousTimestamp;
+	struct GdiplusSession
+	{
+		GdiplusSession();
+		~GdiplusSession();
+
+		bool IsValid() const noexcept;
+
+		ULONG_PTR Token;
+		bool Started;
+	};
+
+	GdiplusSession m_gdiplus;
+	Gdiplus::Image* m_animationImage;
+	GUID m_animationFrameDimension;
+	UINT m_animationFrameCount;
+	UINT m_animationFrameIndex;
+	UINT m_animationLoopCount;
+	UINT m_animationLoopIndex;
+	std::vector<UINT> m_animationFrameDelays;
 };

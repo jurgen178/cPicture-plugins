@@ -36,6 +36,17 @@ enum scaling_type operator|(const enum scaling_type t1, const enum scaling_type 
 enum scaling_type operator&(const enum scaling_type t1, const enum scaling_type t2);
 
 
+enum class PictureMediaType
+{
+	Unknown = 0,
+	Image,
+	AnimatedImage,
+	Video,
+	Audio,
+	Document,
+};
+
+
 constexpr unsigned int PICTURE_READ = 0x00000001;
 constexpr unsigned int PICTURE_WRITE = 0x00000002;
 constexpr unsigned int PICTURE_QUALITY = 0x00000004;
@@ -132,6 +143,7 @@ protected:
 		m_bJFXX(true),
 		m_bUseColorProfile(false),
 		m_bUseExtendedDecoder(false),
+		m_mediaType(PictureMediaType::Image),
 		m_fAperture(0.0f),
 		m_Shutterspeed(0),
 		m_ISO(0),
@@ -177,6 +189,7 @@ public:
 	bool m_bJFXX;
 	bool m_bUseColorProfile;
 	bool m_bUseExtendedDecoder;
+	PictureMediaType m_mediaType;
 
 	GPSdata m_GPSdata;
 	FILETIME m_exiftime;
@@ -200,6 +213,10 @@ public:
 	virtual CString __stdcall get_ext() const = 0;
 	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
+	virtual PictureMediaType __stdcall GetMediaType(const CString& FileName) { return m_mediaType; };
+	virtual bool __stdcall OpenAnimation(const CString& FileName, int& width, int& height) { return false; };
+	virtual bool __stdcall ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop) { return false; };
+	virtual void __stdcall CloseAnimation() { };
 
 	virtual void __stdcall set_properties(const CString& property_str) {};
 	virtual CString __stdcall get_properties() const { return L""; };

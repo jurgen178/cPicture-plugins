@@ -67,6 +67,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_filmreel", "fp_filmreel
 		{C43D208D-6B67-4A68-A24F-B3B1CE16C8B4} = {C43D208D-6B67-4A68-A24F-B3B1CE16C8B4}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpf_gif_format", "gif_format\cpf_gif_format.vcxproj", "{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -299,6 +301,14 @@ Global
 		{AE54D9C7-8AFF-4241-BBE1-F8BB3D766116}.Release|x64.Build.0 = Release|x64
 		{AE54D9C7-8AFF-4241-BBE1-F8BB3D766116}.Release|x86.ActiveCfg = Release|Win32
 		{AE54D9C7-8AFF-4241-BBE1-F8BB3D766116}.Release|x86.Build.0 = Release|Win32
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Debug|x64.ActiveCfg = Debug|x64
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Debug|x64.Build.0 = Debug|x64
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Debug|x86.ActiveCfg = Debug|x64
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Debug|x86.Build.0 = Debug|x64
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Release|x64.ActiveCfg = Release|x64
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Release|x64.Build.0 = Release|x64
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Release|x86.ActiveCfg = Release|x64
+		{D90B2F9A-5DC7-43C3-A69F-EF4A5665FADA}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

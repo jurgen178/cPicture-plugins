@@ -17,9 +17,9 @@ const CString __stdcall GetPluginVersion()
 const CString __stdcall GetPluginInterfaceVersion()
 {
 #ifdef _DEBUG
-	return L"1.1-debug";
+	return L"1.2-debug";
 #else
-	return L"1.1";
+	return L"1.2";
 #endif
 }
 
@@ -39,6 +39,51 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 }
 
 const CString CAvifFormat::type = L"AVIF";
+
+namespace
+{
+	constexpr __int64 MAX_AVIF_ANIMATION_FRAME_BYTES = 1024LL * 1024LL * 1024LL;
+
+	bool CalculateRgbFrameSize(const int width, const int height, __int64& size, CString& errorMsg)
+	{
+		size = 0;
+
+		if (width <= 0 || height <= 0)
+		{
+			errorMsg.Format(L"Invalid AVIF animation frame size: %d x %d", width, height);
+			return false;
+		}
+
+		const __int64 pixelCount = static_cast<__int64>(width) * height;
+		if (pixelCount <= 0 || pixelCount > MAX_AVIF_ANIMATION_FRAME_BYTES / 3)
+		{
+			errorMsg.Format(L"AVIF animation frame is too large: %d x %d", width, height);
+			return false;
+		}
+
+		size = pixelCount * 3;
+		return true;
+	}
+
+	bool IsAnimatedAvifSequence(const avifDecoder* decoder)
+	{
+		return decoder != NULL && decoder->imageCount > 1 && decoder->progressiveState == AVIF_PROGRESSIVE_STATE_UNAVAILABLE;
+	}
+}
+
+CAvifFormat::CAvifFormat()
+	: m_animationDecoder(NULL),
+	m_animationWidth(0),
+	m_animationHeight(0),
+	m_animationRepetitionCount(AVIF_REPETITION_COUNT_UNKNOWN),
+	m_animationLoopIndex(0)
+{
+}
+
+CAvifFormat::~CAvifFormat()
+{
+	CloseAnimation();
+}
 
 CStringA CAvifFormat::get_utf8_file_name(const CString& FileName) const
 {
@@ -73,6 +118,175 @@ struct plugin_data __stdcall CAvifFormat::get_plugin_data() const
 unsigned int __stdcall CAvifFormat::get_cap() const
 {
 	return PICTURE_READ | PICTURE_WRITE | PICTURE_QUALITY;
+}
+
+PictureMediaType __stdcall CAvifFormat::GetMediaType(const CString& FileName)
+{
+	// Empty filename is the host's registration-time probe for a static MediaType.
+	// AVIF can be either a still image or an image sequence, so Unknown keeps .avif
+	// and .avifs out of the static MediaType cache and preserves content detection.
+	if (FileName.IsEmpty())
+	{
+		return PictureMediaType::Unknown;
+	}
+
+	avifDecoder* decoder = avifDecoderCreate();
+	if (!decoder)
+	{
+		return PictureMediaType::Unknown;
+	}
+
+	decoder->ignoreExif = AVIF_TRUE;
+	decoder->ignoreXMP = AVIF_TRUE;
+	avifResult result = avifDecoderSetIOFile(decoder, get_utf8_file_name(FileName));
+	if (result == AVIF_RESULT_OK)
+	{
+		result = avifDecoderParse(decoder);
+	}
+
+	PictureMediaType mediaType = PictureMediaType::Unknown;
+	if (result == AVIF_RESULT_OK)
+	{
+		mediaType = IsAnimatedAvifSequence(decoder) ? PictureMediaType::AnimatedImage : PictureMediaType::Image;
+	}
+
+	avifDecoderDestroy(decoder);
+	return mediaType;
+}
+
+bool __stdcall CAvifFormat::OpenAnimation(const CString& FileName, int& width, int& height)
+{
+	CloseAnimation();
+
+	m_animationDecoder = avifDecoderCreate();
+	if (!m_animationDecoder)
+	{
+		m_ErrorMsg = L"AVIF animation decoder allocation failed";
+		return false;
+	}
+
+	m_animationDecoder->maxThreads = 0;
+	m_animationDecoder->ignoreExif = AVIF_TRUE;
+	m_animationDecoder->ignoreXMP = AVIF_TRUE;
+	avifResult result = avifDecoderSetIOFile(m_animationDecoder, get_utf8_file_name(FileName));
+	if (result == AVIF_RESULT_OK)
+	{
+		result = avifDecoderParse(m_animationDecoder);
+	}
+
+	if (result != AVIF_RESULT_OK || !m_animationDecoder->image || !IsAnimatedAvifSequence(m_animationDecoder))
+	{
+		m_ErrorMsg.Format(L"AVIF animation parse failed: %S", avifResultToString(result));
+		CloseAnimation();
+		return false;
+	}
+
+	m_animationWidth = static_cast<int>(m_animationDecoder->image->width);
+	m_animationHeight = static_cast<int>(m_animationDecoder->image->height);
+	__int64 size = 0;
+	if (!CalculateRgbFrameSize(m_animationWidth, m_animationHeight, size, m_ErrorMsg))
+	{
+		CloseAnimation();
+		return false;
+	}
+
+	m_animationRepetitionCount = m_animationDecoder->repetitionCount;
+	m_animationLoopIndex = 0;
+	width = m_animationWidth;
+	height = m_animationHeight;
+	return true;
+}
+
+bool __stdcall CAvifFormat::ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop)
+{
+	data = NULL;
+	width = 0;
+	height = 0;
+	delay_ms = 100;
+
+	if (!m_animationDecoder)
+	{
+		return false;
+	}
+
+	avifResult result = avifDecoderNextImage(m_animationDecoder);
+	if (result != AVIF_RESULT_OK)
+	{
+		if (!allowLoop)
+		{
+			return false;
+		}
+
+		if (m_animationRepetitionCount >= 0 && m_animationLoopIndex >= m_animationRepetitionCount)
+		{
+			return false;
+		}
+
+		++m_animationLoopIndex;
+		avifDecoderReset(m_animationDecoder);
+		result = avifDecoderNextImage(m_animationDecoder);
+		if (result != AVIF_RESULT_OK)
+		{
+			m_ErrorMsg.Format(L"AVIF animation frame decode failed: %S", avifResultToString(result));
+			return false;
+		}
+	}
+
+	avifImage* image = m_animationDecoder->image;
+	if (!image)
+	{
+		m_ErrorMsg = L"AVIF animation decoder returned no image";
+		return false;
+	}
+
+	__int64 size = 0;
+	if (!CalculateRgbFrameSize(static_cast<int>(image->width), static_cast<int>(image->height), size, m_ErrorMsg))
+	{
+		return false;
+	}
+
+	BYTE* buffer = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
+	if (!buffer)
+	{
+		m_ErrorMsg.Format(L"AVIF memory request failed: %I64d bytes", size);
+		return false;
+	}
+
+	avifRGBImage rgb;
+	avifRGBImageSetDefaults(&rgb, image);
+	rgb.format = AVIF_RGB_FORMAT_RGB;
+	rgb.depth = 8;
+	rgb.rowBytes = image->width * 3;
+	rgb.pixels = buffer;
+
+	result = avifImageYUVToRGB(image, &rgb);
+	if (result != AVIF_RESULT_OK)
+	{
+		m_ErrorMsg.Format(L"AVIF RGB conversion failed: %S", avifResultToString(result));
+		VirtualFree(buffer, 0, MEM_RELEASE);
+		return false;
+	}
+
+	width = static_cast<int>(image->width);
+	height = static_cast<int>(image->height);
+	if (m_animationDecoder->imageTiming.duration > 0.0)
+		delay_ms = max(10, static_cast<int>(m_animationDecoder->imageTiming.duration * 1000.0 + 0.5));
+	data = buffer;
+	return true;
+}
+
+void __stdcall CAvifFormat::CloseAnimation()
+{
+	if (m_animationDecoder)
+	{
+		avifDecoderDestroy(m_animationDecoder);
+		m_animationDecoder = NULL;
+	}
+
+	m_animationWidth = 0;
+	m_animationHeight = 0;
+	m_animationRepetitionCount = AVIF_REPETITION_COUNT_UNKNOWN;
+	m_animationLoopIndex = 0;
 }
 
 bool __stdcall CAvifFormat::properties_dlg(const HWND hwnd)

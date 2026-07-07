@@ -20,9 +20,9 @@ const CString __stdcall GetPluginVersion()
 const CString __stdcall GetPluginInterfaceVersion()
 {
 #ifdef _DEBUG
-	return L"1.1-debug";
+	return L"1.2-debug";
 #else
-	return L"1.1";
+	return L"1.2";
 #endif
 }
 
@@ -832,6 +832,14 @@ struct plugin_data __stdcall CICMFormat::get_plugin_data() const
 unsigned int __stdcall CICMFormat::get_cap() const
 {
 	return PICTURE_READ;
+}
+
+bool __stdcall CICMFormat::properties_dlg(const HWND hwnd)
+{
+	CString msg;
+	msg.LoadString(IDS_PROPERTY_DLG_TEXT);
+	::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
+	return false;
 }
 
 BYTE* __stdcall CICMFormat::FileToRGB(const CString& FileName,

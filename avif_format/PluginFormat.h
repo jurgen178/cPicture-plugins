@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "pictureformat.h"
 
+struct avifDecoder;
+
 enum PLUGIN_TYPE
 {
 	PLUGIN_TYPE_NONE = 0x0000,
@@ -30,8 +32,8 @@ public:
 class CAvifFormat : public CPictureFormat
 {
 public:
-	CAvifFormat() {};
-	virtual ~CAvifFormat() {};
+	CAvifFormat();
+	virtual ~CAvifFormat();
 
 public:
 	static const CString type;
@@ -48,6 +50,10 @@ public:
 	virtual CString __stdcall get_ext() const;
 	virtual struct plugin_data __stdcall get_plugin_data() const;
 	virtual unsigned int __stdcall get_cap() const;
+	virtual PictureMediaType __stdcall GetMediaType(const CString& FileName);
+	virtual bool __stdcall OpenAnimation(const CString& FileName, int& width, int& height);
+	virtual bool __stdcall ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop);
+	virtual void __stdcall CloseAnimation();
 	virtual bool __stdcall properties_dlg(const HWND hwnd);
 
 	virtual bool __stdcall RGBToFile(const CString& FileName,
@@ -69,4 +75,11 @@ public:
 protected:
 	void get_size(const CString& FileName);
 	CStringA get_utf8_file_name(const CString& FileName) const;
+
+private:
+	avifDecoder* m_animationDecoder;
+	int m_animationWidth;
+	int m_animationHeight;
+	int m_animationRepetitionCount;
+	int m_animationLoopIndex;
 };
