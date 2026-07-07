@@ -17,6 +17,7 @@
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
 LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -90,8 +91,8 @@ END
 STRINGTABLE
 BEGIN
     IDS_SHORT_DESC          "GIF"
-    IDS_LONG_DESC           "GIF-Bild"
-    IDS_PROPERTY_DLG_TEXT   "Das GIF-Format wird nur zum Lesen unterstÃ¼tzt. FÃ¼r neue animierte Bilder sollten WebP oder AVIF verwendet werden."
+    IDS_LONG_DESC           "GIF-Bildformat"
+    IDS_PROPERTY_DLG_TEXT   "Das GIF-Format wird nur zum Lesen unterstützt. Für neue animierte Bilder sollten WebP oder AVIF verwendet werden."
 END
 
 #endif    // German (Germany) resources
@@ -103,6 +104,7 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -150,9 +152,22 @@ END
 STRINGTABLE
 BEGIN
     IDS_SHORT_DESC          "GIF"
-    IDS_LONG_DESC           "GIF image"
+    IDS_LONG_DESC           "GIF format"
     IDS_PROPERTY_DLG_TEXT   "The GIF format is read-only. Use WebP or AVIF for new animated images."
 END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
