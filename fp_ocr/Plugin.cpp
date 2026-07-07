@@ -101,7 +101,7 @@ namespace
 
 	// Fallback: create SoftwareBitmap from raw RGB pixel data already decoded
 	// by cPicture. Covers formats cPicture supports but Windows BitmapDecoder
-	// doesn’t (e.g. PDF pages decoded via the cPicture PDF plugin, exotic RAW).
+	// doesn't (e.g. PDF pages decoded via the cPicture PDF plugin, exotic RAW).
 	winrt::Windows::Graphics::Imaging::SoftwareBitmap LoadBitmapFromPixels(const picture_data& pd)
 	{
 		namespace WGI = winrt::Windows::Graphics::Imaging;
