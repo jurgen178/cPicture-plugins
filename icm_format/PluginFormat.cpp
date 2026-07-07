@@ -834,6 +834,14 @@ unsigned int __stdcall CICMFormat::get_cap() const
 	return PICTURE_READ;
 }
 
+bool __stdcall CICMFormat::properties_dlg(const HWND hwnd)
+{
+	CString msg;
+	msg.LoadString(IDS_PROPERTY_DLG_TEXT);
+	::MessageBox(hwnd, msg, get_plugin_data().desc, MB_ICONINFORMATION);
+	return false;
+}
+
 BYTE* __stdcall CICMFormat::FileToRGB(const CString& FileName,
 	const int abs_size_x, const int abs_size_y,
 	const int rel_size_z, const int rel_size_n,
