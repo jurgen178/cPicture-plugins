@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 
 // Plugin is a library with explicit exports and cannot be used as a dependent .lib for the test framework.
 #include "..\fp_script\global.cpp"

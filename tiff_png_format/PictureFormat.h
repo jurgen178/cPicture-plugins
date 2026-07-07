@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "vector"
 using namespace std;
@@ -35,6 +35,16 @@ enum scaling_type
 enum scaling_type operator|(const enum scaling_type t1, const enum scaling_type t2);
 enum scaling_type operator&(const enum scaling_type t1, const enum scaling_type t2);
 
+enum class PictureMediaType
+{
+	Unknown = 0,
+	Image,
+	AnimatedImage,
+	Video,
+	Audio,
+	Document,
+};
+
 
 constexpr unsigned int PICTURE_READ = 0x00000001;			// Plugin can read the picture format
 constexpr unsigned int PICTURE_WRITE = 0x00000002;			// Plugin can write the picture format
@@ -55,10 +65,9 @@ constexpr unsigned int PICTURE_EXPOSURE_CONTRAST = 0x00004000;	// Plugin support
 constexpr unsigned int PICTURE_ART_EFFECTS = 0x00008000;		// Plugin supports artistic DCT-domain effects
 constexpr unsigned int PICTURE_EXIF_READ = 0x00010000;			// Plugin can read EXIF
 constexpr unsigned int PICTURE_EXIF_WRITE = 0x00020000;			// Plugin can write EXIF
-constexpr unsigned int PICTURE_JPEG_STRUCTURE = 0x00040000;		// Plugin supports JPEG structure display
-constexpr unsigned int PICTURE_COMMENT = 0x00080000;			// Plugin supports comments
-constexpr unsigned int PICTURE_ORIENTATION = 0x00100000;		// Plugin supports an orientation flag
-constexpr unsigned int PICTURE_GPS = 0x00200000;				// Plugin supports GPS data
+constexpr unsigned int PICTURE_COMMENT = 0x00040000;			// Plugin supports comments
+constexpr unsigned int PICTURE_ORIENTATION = 0x00080000;		// Plugin supports an orientation flag
+constexpr unsigned int PICTURE_GPS = 0x00100000;				// Plugin supports GPS data
 
 
 struct GPSdata
@@ -132,6 +141,8 @@ protected:
 		m_bCFlag(false),
 		m_bJFXX(true),
 		m_bUseColorProfile(false),
+		m_bUseExtendedDecoder(false),
+		m_mediaType(PictureMediaType::Image),
 		m_fAperture(0.0f),
 		m_Shutterspeed(0),
 		m_ISO(0),
@@ -141,7 +152,7 @@ protected:
 	};
 
 public:
-	virtual ~CPictureFormat() { };
+	virtual ~CPictureFormat() {};
 
 public:
 	int m_PictureWidth;
@@ -158,7 +169,9 @@ public:
 
 	int m_jpeg_streamsize;
 	int m_color_space;
+	CString m_WarningMsg;
 	CString m_ErrorMsg;
+	CString m_ExtendedInfo;
 	bool m_bExternalLibMem;
 
 	bool m_bIsValid;
@@ -174,6 +187,8 @@ public:
 	bool m_bCFlag;
 	bool m_bJFXX;
 	bool m_bUseColorProfile;
+	bool m_bUseExtendedDecoder;
+	PictureMediaType m_mediaType;
 
 	GPSdata m_GPSdata;
 	FILETIME m_exiftime;
@@ -197,14 +212,18 @@ public:
 	virtual CString __stdcall get_ext() const = 0;
 	virtual struct plugin_data __stdcall get_plugin_data() const = 0;
 	virtual unsigned int __stdcall get_cap() const = 0;
+	virtual PictureMediaType __stdcall GetMediaType(const CString& FileName) { return m_mediaType; };
+	virtual bool __stdcall OpenAnimation(const CString& FileName, int& width, int& height) { return false; };
+	virtual bool __stdcall ReadAnimationFrame(BYTE*& data, int& width, int& height, int& delay_ms, bool allowLoop) { return false; };
+	virtual void __stdcall CloseAnimation() { };
 
-	virtual void __stdcall set_properties(const CString& property_str) { };
+	virtual void __stdcall set_properties(const CString& property_str) {};
 	virtual CString __stdcall get_properties() const { return L""; };
 	virtual bool __stdcall properties_dlg(const HWND hwnd) { return false; };
 
 	virtual bool __stdcall IsPanorama() const
 	{
-		if (!m_bPanDispMode || m_PictureWidth == 0 || m_PictureHeight == 0)
+		if (!m_bPanDispMode || m_PictureWidth <= 0 || m_PictureHeight <= 0)
 			return false;
 
 		const int s1 = m_PictureWidth / m_PictureHeight;
@@ -271,14 +290,20 @@ public:
 		const double dctMosaicAmount,
 		const double dctMosaicSize,
 		const double dctFocusAmount,
-		const double dctFocusBias) { return false; };
+		const double dctFocusBias) {
+		return false;
+	};
 	virtual bool __stdcall AutoRotate(const CString& inFileName, const bool bModifyPreview) { return false; };
 	virtual int __stdcall SetOrientationFlag(const CString& inFileName, const int orientation = 1) { return -1; };
 	virtual int __stdcall GetOrientationFlag(const CString& inFileName) { return -1; };
 	virtual bool __stdcall Crop(const CString& inFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h, const int color = -1) { return false;	};
+		const int codec, const int x, const int y, const int b, const int h, const int color = -1) {
+		return false;
+	};
 	virtual bool __stdcall Crop(const CString& inFileName, const CString& outFileName, const int cropmode, const bool bModifyPreview,
-		const int codec, const int x, const int y, const int b, const int h, const int color = -1) { return false; }
+		const int codec, const int x, const int y, const int b, const int h, const int color = -1) {
+		return false;
+	}
 	virtual vector<pair<CString, CString> >& __stdcall GetExifList(const CString& FileName) { return m_exiflist; };
 };
 

@@ -219,6 +219,22 @@
         "type": "function"
       },
       {
+        "name": "OCR - Texterkennung",
+        "desc": "Text in Bildern erkennen mit der integrierten Windows-OCR-Funktion. Kein API-Schlüssel erforderlich.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_ocr.md",
+        "type": "function"
+      },
+      {
+        "name": "FilmReel",
+        "desc": "Erstellt eine FilmReel-Animation (.webp) aus mehreren Bildern mit konfigurierbarem Frame-Delay, Loops und Qualität.",
+        "file": "cpp_filmreel.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpp_filmreel.md",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -232,6 +248,30 @@
         "file": "cpf_pdf.dll",
         "version": "1.0",
         "infoFileMd": "markdown/de/cpf_pdf.md",
+        "type": "format"
+      },
+      {
+        "name": "AVIF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen und Speichern von AVIF-Bildern.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_avif.md",
+        "type": "format"
+      },
+      {
+        "name": "WebP-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen und Speichern von WebP-Bildern.",
+        "file": "cpf_webp.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_webp.md",
+        "type": "format"
+      },
+      {
+        "name": "ICM/ICC-Farbprofil",
+        "desc": "Formatzusatzmodul zum Anzeigen von ICC- und ICM-Farbprofilen.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_icm.md",
         "type": "format"
       }
     ],
@@ -453,6 +493,22 @@
         "type": "function"
       },
       {
+        "name": "OCR - Text Recognition",
+        "desc": "Recognize text in images using the built-in Windows OCR engine. No API key required.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_ocr.md",
+        "type": "function"
+      },
+      {
+        "name": "FilmReel",
+        "desc": "Creates a FilmReel animation (.webp) from multiple images with configurable frame delay, loop count and quality.",
+        "file": "cpp_filmreel.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpp_filmreel.md",
+        "type": "function"
+      },
+      {
         "name": "TIFF and PNG Pictures",
         "desc": "Format plugin to display TIFF and PNG pictures.",
         "file": "cpf_tiff_png.dll",
@@ -466,6 +522,30 @@
         "file": "cpf_pdf.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpf_pdf.md",
+        "type": "format"
+      },
+      {
+        "name": "AVIF Format",
+        "desc": "Format plugin to display and save AVIF pictures.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_avif.md",
+        "type": "format"
+      },
+      {
+        "name": "WebP Format",
+        "desc": "Format plugin to display and save WebP pictures.",
+        "file": "cpf_webp.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_webp.md",
+        "type": "format"
+      },
+      {
+        "name": "ICM/ICC Color Profile",
+        "desc": "Format plugin to display ICC and ICM color profiles.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_icm.md",
         "type": "format"
       }
     ]

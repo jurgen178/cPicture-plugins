@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "FunctionPlugin.h"
 #include <Vfw.h>

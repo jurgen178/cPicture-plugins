@@ -168,6 +168,7 @@ Currently used base addresses:
 
 cpf_tiff_png:	0x180000000  
 cpf_pdf:    	0x181000000  
+cpf_avif:      0x182000000  
 cpp_fp1:		0x201000000  
 cpp_fp2:		0x202000000  
 cpp_fp3:		0x203000000  

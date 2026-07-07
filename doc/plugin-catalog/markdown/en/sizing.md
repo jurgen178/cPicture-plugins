@@ -4,4 +4,4 @@ A PowerShell script to create different sizes and aspect ratios from the selecte
 
 **Note:** Adjust the output folder and desired sizes in the script.
 
-Uses: [ImageMagick](app://imagemagick.org/script/download.php#windows).
+Uses: [ImageMagick](https://imagemagick.org/script/download.php#windows).

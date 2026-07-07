@@ -47,7 +47,7 @@
         "desc": "PowerShell-Skript zum Ändern des Exif-Bilddatums.",
         "file": "exiftool-date.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Exif-Bilddatum</h3><p>Ein PowerShell-Skript zum Ändern des Exif-Datums der ausgewählten Bilder. Das Beispielskript verschiebt alle Datumsfelder um 8 Stunden.</p><p><strong>Hinweis:</strong> Passen Sie den Zeitversatz im Skript an Ihre Anforderungen an.</p><p>Verwendet: <a href='app://exiftool.org'>ExifTool</a>.</p>",
+        "info": "<h3>Exif-Bilddatum</h3><p>Ein PowerShell-Skript zum Ändern des Exif-Datums der ausgewählten Bilder. Das Beispielskript verschiebt alle Datumsfelder um 8 Stunden.</p><p><strong>Hinweis:</strong> Passen Sie den Zeitversatz im Skript an Ihre Anforderungen an.</p><p>Verwendet: <a href='https://exiftool.org'>ExifTool</a>.</p>",
         "type": "function"
       },
       {
@@ -55,7 +55,7 @@
         "desc": "PowerShell-Skript zum Konvertieren von Raw-Bildern zu DNG.",
         "file": "dng.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Raw zu DNG-Konverter</h3><p>Ein PowerShell-Skript zum Konvertieren der ausgewählten Raw-Bilder in das DNG-Format. Die DNG-Dateien werden im selben Ordner wie die Originaldateien gespeichert.</p><p>Verwendet: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a>.</p>",
+        "info": "<h3>Raw zu DNG-Konverter</h3><p>Ein PowerShell-Skript zum Konvertieren der ausgewählten Raw-Bilder in das DNG-Format. Die DNG-Dateien werden im selben Ordner wie die Originaldateien gespeichert.</p><p>Verwendet: <a href='https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a>.</p>",
         "type": "function"
       },
       {
@@ -63,7 +63,7 @@
         "desc": "PowerShell-Skript zum Konvertieren von Raw-Bildern zu TIFF.",
         "file": "Raw-nach-TIFF.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Raw zu TIFF-Konverter</h3><p>Ein PowerShell-Skript zum Konvertieren der ausgewählten Raw-Bilder in das TIFF-Format. Die Konvertierung erfolgt über einen Zwischenschritt im DNG-Format.</p><p>Verwendet: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> und <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "info": "<h3>Raw zu TIFF-Konverter</h3><p>Ein PowerShell-Skript zum Konvertieren der ausgewählten Raw-Bilder in das TIFF-Format. Die Konvertierung erfolgt über einen Zwischenschritt im DNG-Format.</p><p>Verwendet: <a href='https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> und <a href='https://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
         "type": "function"
       },
       {
@@ -71,7 +71,7 @@
         "desc": "PowerShell-Skript zum Konvertieren von Raw zu TIFF und anschließendem Öffnen in NX Studio.",
         "file": "Raw-nach-TIFF-NX.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Raw zu TIFF-NX</h3><p>Ein PowerShell-Skript zum Konvertieren eines ausgewählten Raw-Bildes in das TIFF-Format. Das konvertierte Bild wird anschließend automatisch in <em>NX Studio</em> geöffnet.</p><p>Verwendet: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> und <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "info": "<h3>Raw zu TIFF-NX</h3><p>Ein PowerShell-Skript zum Konvertieren eines ausgewählten Raw-Bildes in das TIFF-Format. Das konvertierte Bild wird anschließend automatisch in <em>NX Studio</em> geöffnet.</p><p>Verwendet: <a href='https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> und <a href='https://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
         "type": "function"
       },
       {
@@ -79,7 +79,7 @@
         "desc": "PowerShell-Skript zum Erstellen verschiedener Größen desselben Bildes.",
         "file": "sizing.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Mehrfache Größenänderungen</h3><p>Ein PowerShell-Skript zum Erstellen verschiedener Größen und Seitenverhältnisse der ausgewählten Bilder. Die Bilder werden in einen konfigurierbaren Ausgabeordner kopiert und zugeschnitten.</p><p><strong>Hinweis:</strong> Passen Sie den Ausgabeordner und die gewünschten Größen im Skript an.</p><p>Verwendet: <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "info": "<h3>Mehrfache Größenänderungen</h3><p>Ein PowerShell-Skript zum Erstellen verschiedener Größen und Seitenverhältnisse der ausgewählten Bilder. Die Bilder werden in einen konfigurierbaren Ausgabeordner kopiert und zugeschnitten.</p><p><strong>Hinweis:</strong> Passen Sie den Ausgabeordner und die gewünschten Größen im Skript an.</p><p>Verwendet: <a href='https://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
         "type": "function"
       },
       {
@@ -151,7 +151,7 @@
         "desc": "Funktionszusatzmodul zum Zusammenführen von Belichtungsreihen.",
         "file": "cpp_fp_hdr.dll",
         "version": "1.1",
-        "info": "<h3>HDR enfuse</h3><p>Dieses Funktionszusatzmodul erstellt aus mindestens zwei Bildern einer Belichtungsreihe ein HDR-Bild durch Belichtungsfusion. Ausgabepfad und JPEG-Qualität sind im Dialog konfigurierbar.</p><p>Verwendet: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png' />",
+        "info": "<h3>HDR enfuse</h3><p>Dieses Funktionszusatzmodul erstellt aus mindestens zwei Bildern einer Belichtungsreihe ein HDR-Bild durch Belichtungsfusion. Ausgabepfad und JPEG-Qualität sind im Dialog konfigurierbar.</p><p>Verwendet: <a href='https://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png' />",
         "type": "function"
       },
       {
@@ -219,6 +219,14 @@
         "type": "function"
       },
       {
+        "name": "OCR - Texterkennung",
+        "desc": "Text in Bildern erkennen mit der integrierten Windows-OCR-Funktion. Kein API-Schlüssel erforderlich.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "info": "<h3>OCR – Texterkennung</h3><p>Dieses Funktionszusatzmodul erkennt Text in ausgewählten Bildern mit der integrierten Windows-OCR-Funktion. Kein API-Schlüssel, keine Internetverbindung erforderlich.</p><p>Der erkannte Text wird in einem Dialog angezeigt und kann mit einem Klick in die Zwischenablage kopiert werden. Bei mehreren ausgewählten Bildern werden die Ergebnisse mit Dateiname als Abschnittsüberschrift zusammengeführt.</p><p><strong>Voraussetzungen:</strong> Windows 10 oder höher. Die OCR-Engine nutzt die installierten Sprachpakete des Systems.</p>",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -232,6 +240,30 @@
         "file": "cpf_pdf.dll",
         "version": "1.0",
         "info": "<h3>PDF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des PDF-Dokumentformats. PDF-Dateien können wie Bilder geöffnet und angezeigt werden.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png' />",
+        "type": "format"
+      },
+      {
+        "name": "AVIF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen und Speichern von AVIF-Bildern.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "info": "<h3>AVIF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des AVIF-Bildformats. AVIF-Bilder können geöffnet und gespeichert werden.</p><p>Dieses Plugin basiert auf libavif.</p><p>GitHub: <a href='https://github.com/AOMediaCodec/libavif'>libavif</a></p><p>Hinweis: AVIF nimmt sich beim Laden spürbar mehr Zeit und beim Speichern gern eine kleine Ewigkeit.</p>",
+        "type": "format"
+      },
+      {
+        "name": "WebP-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen und Speichern von WebP-Bildern.",
+        "file": "cpf_webp.dll",
+        "version": "1.0",
+        "info": "<h3>WebP-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des WebP-Bildformats. WebP-Bilder können geöffnet und gespeichert werden.</p><p>Dieses Plugin basiert auf libwebp.</p><p>GitHub: <a href='https://github.com/webmproject/libwebp'>libwebp</a></p>",
+        "type": "format"
+      },
+      {
+        "name": "ICM/ICC-Farbprofil",
+        "desc": "Formatzusatzmodul zum Anzeigen von ICC- und ICM-Farbprofilen.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "info": "<h3>ICM/ICC-Farbprofil</h3><p>Dieses Formatzusatzmodul zeigt ICC- und ICM-Farbprofile als Bildvorschau an.</p><p>Die Vorschau enthält Metadaten des Profils und ein CIE-1931-xy-Diagramm. Bei RGB-Matrixprofilen werden Primärfarben und Weißpunkt eingezeichnet; komplexe LUT-, CMYK- und Druckerprofile werden als Metadatenansicht dargestellt.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/icm.PNG' /><p>Dieses Plugin basiert auf Little CMS.</p><p>Website: <a href='https://www.littlecms.com/'>Little CMS</a></p>",
         "type": "format"
       }
     ],
@@ -281,7 +313,7 @@
         "desc": "PowerShell script to modify the Exif date of your pictures.",
         "file": "exiftool-date.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Exif Picture Date</h3><p>A PowerShell script to modify the Exif date of the selected pictures. The example script shifts all date fields by 8 hours.</p><p><strong>Note:</strong> Adjust the time offset in the script to fit your needs.</p><p>Uses: <a href='app://exiftool.org'>ExifTool</a>.</p>",
+        "info": "<h3>Exif Picture Date</h3><p>A PowerShell script to modify the Exif date of the selected pictures. The example script shifts all date fields by 8 hours.</p><p><strong>Note:</strong> Adjust the time offset in the script to fit your needs.</p><p>Uses: <a href='https://exiftool.org'>ExifTool</a>.</p>",
         "type": "function"
       },
       {
@@ -289,7 +321,7 @@
         "desc": "PowerShell script to convert Raw pictures to DNG.",
         "file": "dng.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Raw to DNG Converter</h3><p>A PowerShell script to convert the selected Raw pictures to the DNG format. The DNG files are saved in the same folder as the originals.</p><p>Uses: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a>.</p>",
+        "info": "<h3>Raw to DNG Converter</h3><p>A PowerShell script to convert the selected Raw pictures to the DNG format. The DNG files are saved in the same folder as the originals.</p><p>Uses: <a href='https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a>.</p>",
         "type": "function"
       },
       {
@@ -297,7 +329,7 @@
         "desc": "PowerShell script to convert Raw pictures to TIFF.",
         "file": "Raw-nach-TIFF.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Raw to TIFF Converter</h3><p>A PowerShell script to convert the selected Raw pictures to the TIFF format. The conversion is done via an intermediate DNG step.</p><p>Uses: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> and <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "info": "<h3>Raw to TIFF Converter</h3><p>A PowerShell script to convert the selected Raw pictures to the TIFF format. The conversion is done via an intermediate DNG step.</p><p>Uses: <a href='https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> and <a href='https://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
         "type": "function"
       },
       {
@@ -305,7 +337,7 @@
         "desc": "PowerShell script to convert Raw to TIFF and open in NX Studio.",
         "file": "Raw-nach-TIFF-NX.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Raw to TIFF-NX</h3><p>A PowerShell script to convert a selected Raw picture to TIFF format. The converted picture is automatically opened in <em>NX Studio</em> afterwards.</p><p>Uses: <a href='app://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> and <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "info": "<h3>Raw to TIFF-NX</h3><p>A PowerShell script to convert a selected Raw picture to TIFF format. The converted picture is automatically opened in <em>NX Studio</em> afterwards.</p><p>Uses: <a href='https://helpx.adobe.com/camera-raw/using/adobe-dng-converter.html'>Adobe DNG Converter</a> and <a href='https://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
         "type": "function"
       },
       {
@@ -313,7 +345,7 @@
         "desc": "PowerShell script to create different sizes from the same picture.",
         "file": "sizing.ps1",
         "file2": "cpp_script.dll",
-        "info": "<h3>Multiple Sizes</h3><p>A PowerShell script to create different sizes and aspect ratios from the selected pictures. The pictures are copied into a configurable output folder and cropped accordingly.</p><p><strong>Note:</strong> Adjust the output folder and desired sizes in the script.</p><p>Uses: <a href='app://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
+        "info": "<h3>Multiple Sizes</h3><p>A PowerShell script to create different sizes and aspect ratios from the selected pictures. The pictures are copied into a configurable output folder and cropped accordingly.</p><p><strong>Note:</strong> Adjust the output folder and desired sizes in the script.</p><p>Uses: <a href='https://imagemagick.org/script/download.php#windows'>ImageMagick</a>.</p>",
         "type": "function"
       },
       {
@@ -385,7 +417,7 @@
         "desc": "Function plugin to merge exposure series into an HDR picture.",
         "file": "cpp_fp_hdr.dll",
         "version": "1.1",
-        "info": "<h3>HDR enfuse</h3><p>This function plugin creates an HDR picture from at least two pictures of an exposure series using exposure fusion. The output path and JPEG quality can be configured in the dialog.</p><p>Uses: <a href='app://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png' />",
+        "info": "<h3>HDR enfuse</h3><p>This function plugin creates an HDR picture from at least two pictures of an exposure series using exposure fusion. The output path and JPEG quality can be configured in the dialog.</p><p>Uses: <a href='https://wiki.panotools.org/Enfuse'>Enfuse</a>.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/fp_hdr.png' />",
         "type": "function"
       },
       {
@@ -453,6 +485,14 @@
         "type": "function"
       },
       {
+        "name": "OCR - Text Recognition",
+        "desc": "Recognize text in images using the built-in Windows OCR engine. No API key required.",
+        "file": "cpp_ocr.dll",
+        "version": "1.0",
+        "info": "<h3>OCR – Text Recognition</h3><p>This function plugin recognizes text in selected images using the built-in Windows OCR engine. No API key or internet connection required.</p><p>The recognized text is shown in a dialog and can be copied to the clipboard with a single click. For multiple selected images, the results are combined with the file name as a section header.</p><p><strong>Requirements:</strong> Windows 10 or higher. The OCR engine uses the language packs installed on the system.</p>",
+        "type": "function"
+      },
+      {
         "name": "TIFF and PNG Pictures",
         "desc": "Format plugin to display TIFF and PNG pictures.",
         "file": "cpf_tiff_png.dll",
@@ -466,6 +506,30 @@
         "file": "cpf_pdf.dll",
         "version": "1.0",
         "info": "<h3>PDF Format</h3><p>This format plugin extends cPicture with support for the PDF document format. PDF files can be opened and displayed like pictures.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/pdf.png' />",
+        "type": "format"
+      },
+      {
+        "name": "AVIF Format",
+        "desc": "Format plugin to display and save AVIF pictures.",
+        "file": "cpf_avif.dll",
+        "version": "1.0",
+        "info": "<h3>AVIF Format</h3><p>This format plugin extends cPicture with support for the AVIF picture format. AVIF pictures can be opened and saved.</p><p>This plugin is built on libavif.</p><p>GitHub: <a href='https://github.com/AOMediaCodec/libavif'>libavif</a></p><p>Note: AVIF takes its time when loading and can feel glacial when saving.</p>",
+        "type": "format"
+      },
+      {
+        "name": "WebP Format",
+        "desc": "Format plugin to display and save WebP pictures.",
+        "file": "cpf_webp.dll",
+        "version": "1.0",
+        "info": "<h3>WebP Format</h3><p>This format plugin extends cPicture with support for the WebP picture format. WebP pictures can be opened and saved.</p><p>This plugin is built on libwebp.</p><p>GitHub: <a href='https://github.com/webmproject/libwebp'>libwebp</a></p>",
+        "type": "format"
+      },
+      {
+        "name": "ICM/ICC Color Profile",
+        "desc": "Format plugin to display ICC and ICM color profiles.",
+        "file": "cpf_icm.dll",
+        "version": "1.0",
+        "info": "<h3>ICM/ICC Color Profile</h3><p>This format plugin displays ICC and ICM color profiles as an image preview.</p><p>The preview contains profile metadata and a CIE 1931 xy diagram. RGB matrix profiles show primaries and white point; complex LUT, CMYK, and printer profiles are shown as a metadata view.</p><img src='https://raw.githubusercontent.com/jurgen178/cPicture-plugins/main/doc/icm.PNG' /><p>This plugin is built on Little CMS.</p><p>Website: <a href='https://www.littlecms.com/'>Little CMS</a></p>",
         "type": "format"
       }
     ]

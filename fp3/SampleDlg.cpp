@@ -1,4 +1,4 @@
-// SampleDlg.cpp : implementation file
+﻿// SampleDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
