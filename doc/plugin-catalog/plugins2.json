@@ -227,6 +227,14 @@
         "type": "function"
       },
       {
+        "name": "FilmReel",
+        "desc": "Erstellt eine FilmReel-Animation (.webp) aus mehreren Bildern mit konfigurierbarem Frame-Delay, Loops und Qualität.",
+        "file": "cpp_filmreel.dll",
+        "version": "1.0",
+        "info": "<h3>FilmReel</h3><p>Dieses Funktionszusatzmodul erstellt eine FilmReel-Animation (.webp) aus den ausgewählten Bildern.</p><p><strong>Einstellungen:</strong></p><ul><li><strong>Frame-Delay (ms):</strong> Anzeigedauer jedes Einzelbildes in Millisekunden</li><li><strong>Loops (0 = endlos):</strong> Wie oft die Animation wiederholt wird</li><li><strong>Qualität (0–100):</strong> Kompressionsstärke bei verlustbehafteter Kodierung</li><li><strong>Verlustfrei:</strong> Lossless-Modus für maximale Qualität (größere Datei)</li></ul><p>Die Ausgabedatei wird neben dem ersten ausgewählten Bild gespeichert (<code>&lt;Name&gt;_filmreel.webp</code>).</p>",
+        "type": "function"
+      },
+      {
         "name": "TIFF- und PNG-Bilder",
         "desc": "Formatzusatzmodul zum Anzeigen von TIFF- und PNG-Bildern.",
         "file": "cpf_tiff_png.dll",
@@ -256,6 +264,14 @@
         "file": "cpf_webp.dll",
         "version": "1.0",
         "info": "<h3>WebP-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung des WebP-Bildformats. WebP-Bilder können geöffnet und gespeichert werden.</p><p>Dieses Plugin basiert auf libwebp.</p><p>GitHub: <a href='https://github.com/webmproject/libwebp'>libwebp</a></p>",
+        "type": "format"
+      },
+      {
+        "name": "GIF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen von GIF-Bildern, einschließlich animierter GIF-Dateien.",
+        "file": "cpf_gif.dll",
+        "version": "1.0",
+        "info": "<h3>GIF-Format</h3><p>Dieses Formatzusatzmodul erweitert cPicture um die Unterstützung von GIF-Bildern, einschließlich animierter GIF-Wiedergabe.</p><p>GIF-Dateien werden nur lesend geöffnet.</p>",
         "type": "format"
       },
       {
@@ -493,6 +509,14 @@
         "type": "function"
       },
       {
+        "name": "FilmReel",
+        "desc": "Creates a FilmReel animation (.webp) from multiple images with configurable frame delay, loop count and quality.",
+        "file": "cpp_filmreel.dll",
+        "version": "1.0",
+        "info": "<h3>FilmReel</h3><p>This function plugin creates a FilmReel animation (.webp) from the selected images.</p><p><strong>Settings:</strong></p><ul><li><strong>Frame delay (ms):</strong> Display duration of each frame in milliseconds</li><li><strong>Loop count (0 = infinite):</strong> How many times the animation repeats</li><li><strong>Quality (0–100):</strong> Compression level for lossy encoding</li><li><strong>Lossless:</strong> Lossless mode for maximum quality (larger file size)</li></ul><p>The output file is saved next to the first selected image (<code>&lt;name&gt;_filmreel.webp</code>).</p>",
+        "type": "function"
+      },
+      {
         "name": "TIFF and PNG Pictures",
         "desc": "Format plugin to display TIFF and PNG pictures.",
         "file": "cpf_tiff_png.dll",
@@ -522,6 +546,14 @@
         "file": "cpf_webp.dll",
         "version": "1.0",
         "info": "<h3>WebP Format</h3><p>This format plugin extends cPicture with support for the WebP picture format. WebP pictures can be opened and saved.</p><p>This plugin is built on libwebp.</p><p>GitHub: <a href='https://github.com/webmproject/libwebp'>libwebp</a></p>",
+        "type": "format"
+      },
+      {
+        "name": "GIF Format",
+        "desc": "Format plugin to display GIF pictures, including animated GIF files.",
+        "file": "cpf_gif.dll",
+        "version": "1.0",
+        "info": "<h3>GIF Format</h3><p>This format plugin extends cPicture with support for GIF pictures, including animated GIF playback.</p><p>GIF files are opened read-only.</p>",
         "type": "format"
       },
       {

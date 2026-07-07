@@ -267,6 +267,14 @@
         "type": "format"
       },
       {
+        "name": "GIF-Format",
+        "desc": "Formatzusatzmodul zum Anzeigen von GIF-Bildern, einschließlich animierter GIF-Dateien.",
+        "file": "cpf_gif.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/de/cpf_gif.md",
+        "type": "format"
+      },
+      {
         "name": "ICM/ICC-Farbprofil",
         "desc": "Formatzusatzmodul zum Anzeigen von ICC- und ICM-Farbprofilen.",
         "file": "cpf_icm.dll",
@@ -538,6 +546,14 @@
         "file": "cpf_webp.dll",
         "version": "1.0",
         "infoFileMd": "markdown/en/cpf_webp.md",
+        "type": "format"
+      },
+      {
+        "name": "GIF Format",
+        "desc": "Format plugin to display GIF pictures, including animated GIF files.",
+        "file": "cpf_gif.dll",
+        "version": "1.0",
+        "infoFileMd": "markdown/en/cpf_gif.md",
         "type": "format"
       },
       {
