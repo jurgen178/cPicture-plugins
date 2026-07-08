@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "resource.h"
 #include "pluginformat.h"
 #include "../shared/FormatPluginEnumOperators.h"

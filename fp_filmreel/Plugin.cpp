@@ -1,4 +1,4 @@
-// Plugin.cpp — FilmReel function plugin for cPicture.
+﻿// Plugin.cpp — FilmReel function plugin for cPicture.
 //
 // Creates a FilmReel animation (.webp) from the selected images.
 // Uses libwebp (shared from webp_format/external/) via WebPAnimEncoder API.

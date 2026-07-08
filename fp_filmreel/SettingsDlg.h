@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "stdafx.h"
 #include "resource.h"
 #include "Plugin.h"
