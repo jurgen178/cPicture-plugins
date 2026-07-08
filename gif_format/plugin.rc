@@ -92,7 +92,20 @@ STRINGTABLE
 BEGIN
     IDS_SHORT_DESC          "GIF"
     IDS_LONG_DESC           "GIF-Bildformat"
-    IDS_PROPERTY_DLG_TEXT   "Das GIF-Format wird nur zum Lesen unterstützt. Für neue animierte Bilder sollten WebP oder AVIF verwendet werden."
+    IDS_PROPERTY_DLG_TEXT   "Das GIF-Format wird nur zum Lesen unterstï¿½tzt. Fï¿½r neue animierte Bilder sollten WebP oder AVIF verwendet werden."
+    IDS_ANIMATED_FRAME_COUNT_INFO "Einzelbilder:\t%1!d!"
+    IDS_ANIMATED_DURATION_INFO "Dauer:\t\t%1!s!"
+    IDS_ANIMATED_LOOP_COUNT_INFO "Wiederholungen:\t%1!s!"
+    IDS_ANIMATED_LOOP_INFINITE "endlos"
+    IDS_ANIMATED_FRAME_RATE_INFO "Bildrate:\t\t%1!s!"
+    IDS_ANIMATED_FRAME_DURATION_INFO "Bilddauer:\t%1!s!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ANIMATED_TRANSPARENCY_INFO "Transparenz:\t%1!s!"
+    IDS_ANIMATED_TRANSPARENCY_YES "ja"
+    IDS_ANIMATED_TRANSPARENCY_NO "nein"
 END
 
 #endif    // German (Germany) resources
@@ -154,6 +167,19 @@ BEGIN
     IDS_SHORT_DESC          "GIF"
     IDS_LONG_DESC           "GIF format"
     IDS_PROPERTY_DLG_TEXT   "The GIF format is read-only. Use WebP or AVIF for new animated images."
+    IDS_ANIMATED_FRAME_COUNT_INFO "Image frames:\t%1!d!"
+    IDS_ANIMATED_DURATION_INFO "Duration:\t%1!s!"
+    IDS_ANIMATED_LOOP_COUNT_INFO "Loops:\t\t%1!s!"
+    IDS_ANIMATED_LOOP_INFINITE "forever"
+    IDS_ANIMATED_FRAME_RATE_INFO "Frame rate:\t%1!s!"
+    IDS_ANIMATED_FRAME_DURATION_INFO "Frame duration:\t%1!s!"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ANIMATED_TRANSPARENCY_INFO "Transparency:\t%1!s!"
+    IDS_ANIMATED_TRANSPARENCY_YES "yes"
+    IDS_ANIMATED_TRANSPARENCY_NO "no"
 END
 
 #endif    // English (United States) resources

@@ -220,6 +220,61 @@ bool GetWebPImageInfo(const vector<BYTE>& fileData, int& width, int& height, int
 	return WebPGetInfo(fileData.data(), fileData.size(), &width, &height) && width > 0 && height > 0;
 }
 
+bool ReadWebPAnimationInfo(const vector<BYTE>& fileData, int& durationMs, int& loopCount, int& minFrameDurationMs, int& maxFrameDurationMs, bool& hasTransparency)
+{
+	durationMs = 0;
+	loopCount = -1;
+	minFrameDurationMs = 0;
+	maxFrameDurationMs = 0;
+	hasTransparency = false;
+
+	const WebPData webpData = { fileData.data(), fileData.size() };
+	WebPDemuxer* demux = WebPDemux(&webpData);
+	if (!demux)
+	{
+		return false;
+	}
+
+	const int frameCount = WebPDemuxGetI(demux, WEBP_FF_FRAME_COUNT);
+	if (frameCount <= 1)
+	{
+		WebPDemuxDelete(demux);
+		return false;
+	}
+
+	loopCount = WebPDemuxGetI(demux, WEBP_FF_LOOP_COUNT);
+	hasTransparency = (WebPDemuxGetI(demux, WEBP_FF_FORMAT_FLAGS) & ALPHA_FLAG) != 0;
+	WebPIterator iterator = { 0 };
+	if (WebPDemuxGetFrame(demux, 1, &iterator))
+	{
+		minFrameDurationMs = INT_MAX;
+		do
+		{
+			minFrameDurationMs = min(minFrameDurationMs, iterator.duration);
+			maxFrameDurationMs = max(maxFrameDurationMs, iterator.duration);
+			hasTransparency = hasTransparency || iterator.has_alpha != 0;
+			if (durationMs <= INT_MAX - iterator.duration)
+			{
+				durationMs += iterator.duration;
+			}
+			else
+			{
+				durationMs = INT_MAX;
+				break;
+			}
+		} while (WebPDemuxNextFrame(&iterator));
+
+		WebPDemuxReleaseIterator(&iterator);
+	}
+	if (minFrameDurationMs == INT_MAX)
+	{
+		minFrameDurationMs = 0;
+	}
+
+	WebPDemuxDelete(demux);
+	return true;
+}
+
 BYTE* DecodeFirstAnimatedWebPFrame(const vector<BYTE>& fileData, int& width, int& height, CString& errorMsg)
 {
 	WebPAnimDecoderOptions options;
@@ -616,6 +671,8 @@ void CWebPFormat::get_size(const CString& FileName)
 	m_bIsValid = false;
 	m_OriginalPictureWidth = m_OriginalPictureHeight = 0;
 	m_PictureWidth = m_PictureHeight = 0;
+	m_Shutterspeed = 0;
+	m_FrameCount = 0;
 
 	CString errorMsg;
 	const vector<BYTE> fileData = ReadFileData(FileName, errorMsg);
@@ -633,6 +690,10 @@ void CWebPFormat::get_size(const CString& FileName)
 		m_OriginalPictureHeight = m_PictureHeight = height;
 		m_color_space = 2;
 		m_bIsValid = m_OriginalPictureWidth > 0 && m_OriginalPictureHeight > 0;
+		if (m_bIsValid && frameCount > 1)
+		{
+			m_FrameCount = frameCount;
+		}
 	}
 }
 
@@ -676,6 +737,50 @@ CString __stdcall CWebPFormat::get_info(const CString& FileName, const enum info
 
 			info.FormatMessage(info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight, mp);
 			msg += info;
+
+			CString frameCountInfoTemplate;
+			frameCountInfoTemplate.LoadString(IDS_ANIMATED_FRAME_COUNT_INFO);
+			AppendAnimatedFrameCountInfo(msg, frameCountInfoTemplate, m_FrameCount);
+
+			CString errorMsg;
+			const vector<BYTE> fileData = ReadFileData(FileName, errorMsg);
+			int animationDurationMs = 0;
+			int animationLoopCount = -1;
+			int minFrameDurationMs = 0;
+			int maxFrameDurationMs = 0;
+			bool hasTransparency = false;
+			if (!fileData.empty() && ReadWebPAnimationInfo(fileData, animationDurationMs, animationLoopCount, minFrameDurationMs, maxFrameDurationMs, hasTransparency))
+			{
+				CString durationInfoTemplate;
+				durationInfoTemplate.LoadString(IDS_ANIMATED_DURATION_INFO);
+				AppendAnimatedDurationInfo(msg, durationInfoTemplate, animationDurationMs);
+
+				CString frameRateInfoTemplate;
+				frameRateInfoTemplate.LoadString(IDS_ANIMATED_FRAME_RATE_INFO);
+				AppendAnimatedFrameRateInfo(msg, frameRateInfoTemplate, m_FrameCount, animationDurationMs);
+
+				CString frameDurationInfoTemplate;
+				frameDurationInfoTemplate.LoadString(IDS_ANIMATED_FRAME_DURATION_INFO);
+				AppendAnimatedFrameDurationInfo(msg, frameDurationInfoTemplate, minFrameDurationMs, maxFrameDurationMs);
+
+				CString loopCountInfoTemplate;
+				CString infiniteLoopText;
+				loopCountInfoTemplate.LoadString(IDS_ANIMATED_LOOP_COUNT_INFO);
+				infiniteLoopText.LoadString(IDS_ANIMATED_LOOP_INFINITE);
+				AppendAnimatedLoopCountInfo(msg, loopCountInfoTemplate, infiniteLoopText, animationLoopCount);
+
+				CString transparencyInfoTemplate;
+				CString transparencyText;
+				transparencyInfoTemplate.LoadString(IDS_ANIMATED_TRANSPARENCY_INFO);
+				transparencyText.LoadString(hasTransparency ? IDS_ANIMATED_TRANSPARENCY_YES : IDS_ANIMATED_TRANSPARENCY_NO);
+				if (!transparencyInfoTemplate.IsEmpty())
+				{
+					CString transparencyInfo;
+					transparencyInfo.FormatMessage(transparencyInfoTemplate, transparencyText);
+					msg += L'\n';
+					msg += transparencyInfo;
+				}
+			}
 
 			const __int64 file_size(::GetFileSize64(FileName));
 			CString size_str;

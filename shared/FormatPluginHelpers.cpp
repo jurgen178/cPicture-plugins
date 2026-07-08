@@ -138,3 +138,101 @@ void CopyRgbaToRgb(const BYTE* src, BYTE* dst, const __int64 pixelCount)
 		++src;
 	}
 }
+
+void AppendAnimatedFrameCountInfo(CString& msg, const CString& frameCountTemplate, const int frameCount)
+{
+	if (frameCount <= 1 || frameCountTemplate.IsEmpty())
+	{
+		return;
+	}
+
+	CString info;
+	info.FormatMessage(frameCountTemplate, frameCount);
+	msg += L'\n';
+	msg += info;
+}
+
+void AppendAnimatedDurationInfo(CString& msg, const CString& durationTemplate, const int durationMs)
+{
+	if (durationMs <= 0 || durationTemplate.IsEmpty())
+	{
+		return;
+	}
+
+	CString duration;
+	if (durationMs < 1000)
+	{
+		duration.Format(L"%d ms", durationMs);
+	}
+	else
+	{
+		duration.Format(L"%.1fs", static_cast<double>(durationMs) / 1000.0);
+	}
+
+	CString info;
+	info.FormatMessage(durationTemplate, duration);
+	msg += L'\n';
+	msg += info;
+}
+
+void AppendAnimatedLoopCountInfo(CString& msg, const CString& loopCountTemplate, const CString& infiniteLoopText, const int loopCount)
+{
+	if (loopCount < 0 || loopCountTemplate.IsEmpty())
+	{
+		return;
+	}
+
+	CString loopText;
+	if (loopCount == 0)
+	{
+		loopText = infiniteLoopText;
+	}
+	else
+	{
+		loopText.Format(L"%d", loopCount);
+	}
+
+	CString info;
+	info.FormatMessage(loopCountTemplate, loopText);
+	msg += L'\n';
+	msg += info;
+}
+
+void AppendAnimatedFrameRateInfo(CString& msg, const CString& frameRateTemplate, const int frameCount, const int durationMs)
+{
+	if (frameCount <= 1 || durationMs <= 0 || frameRateTemplate.IsEmpty())
+	{
+		return;
+	}
+
+	CString frameRate;
+	frameRate.Format(L"%.1f fps", static_cast<double>(frameCount) * 1000.0 / static_cast<double>(durationMs));
+
+	CString info;
+	info.FormatMessage(frameRateTemplate, frameRate);
+	msg += L'\n';
+	msg += info;
+}
+
+void AppendAnimatedFrameDurationInfo(CString& msg, const CString& frameDurationTemplate, const int minFrameDurationMs, const int maxFrameDurationMs)
+{
+	if (minFrameDurationMs <= 0 || maxFrameDurationMs <= 0 || frameDurationTemplate.IsEmpty())
+	{
+		return;
+	}
+
+	CString frameDuration;
+	if (minFrameDurationMs == maxFrameDurationMs)
+	{
+		frameDuration.Format(L"%d ms", minFrameDurationMs);
+	}
+	else
+	{
+		frameDuration.Format(L"%d-%d ms", minFrameDurationMs, maxFrameDurationMs);
+	}
+
+	CString info;
+	info.FormatMessage(frameDurationTemplate, frameDuration);
+	msg += L'\n';
+	msg += info;
+}

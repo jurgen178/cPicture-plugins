@@ -139,6 +139,60 @@ namespace
 		return *loopCount;
 	}
 
+	bool HasTransparentGifColor(Gdiplus::Image& image)
+	{
+		constexpr UINT imageFlagsHasAlpha = 0x00000002;
+		return (image.GetFlags() & imageFlagsHasAlpha) != 0;
+	}
+
+	bool ReadGifAnimationInfo(const CString& fileName, int& durationMs, int& loopCount, int& minFrameDurationMs, int& maxFrameDurationMs, bool& hasTransparency)
+	{
+		durationMs = 0;
+		loopCount = -1;
+		minFrameDurationMs = 0;
+		maxFrameDurationMs = 0;
+		hasTransparency = false;
+
+		Gdiplus::Image image(fileName);
+		if (image.GetLastStatus() != Gdiplus::Ok)
+		{
+			return false;
+		}
+
+		GUID dimension = Gdiplus::FrameDimensionTime;
+		UINT frameCount = 1;
+		if (!GetTimeFrameDimension(image, dimension, frameCount) || frameCount <= 1)
+		{
+			return false;
+		}
+
+		const vector<UINT> delays = ReadFrameDelays(image, frameCount);
+		minFrameDurationMs = INT_MAX;
+		for (const UINT delay : delays)
+		{
+			const int delayMs = static_cast<int>(delay);
+			minFrameDurationMs = min(minFrameDurationMs, delayMs);
+			maxFrameDurationMs = max(maxFrameDurationMs, delayMs);
+			if (durationMs <= INT_MAX - static_cast<int>(delay))
+			{
+				durationMs += delayMs;
+			}
+			else
+			{
+				durationMs = INT_MAX;
+				break;
+			}
+		}
+		if (minFrameDurationMs == INT_MAX)
+		{
+			minFrameDurationMs = 0;
+		}
+
+		loopCount = static_cast<int>(ReadLoopCount(image));
+		hasTransparency = HasTransparentGifColor(image);
+		return true;
+	}
+
 	BYTE* RenderImageToRgb(Gdiplus::Image& image, const int width, const int height, CString& errorMsg)
 	{
 		__int64 pixelCount = 0;
@@ -484,6 +538,48 @@ CString __stdcall CGifFormat::get_info(const CString& FileName, const enum info_
 			info.FormatMessage(info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight, mp);
 			msg += info;
 
+			CString frameCountInfoTemplate;
+			frameCountInfoTemplate.LoadString(IDS_ANIMATED_FRAME_COUNT_INFO);
+			AppendAnimatedFrameCountInfo(msg, frameCountInfoTemplate, m_FrameCount);
+
+			int animationDurationMs = 0;
+			int animationLoopCount = -1;
+			int minFrameDurationMs = 0;
+			int maxFrameDurationMs = 0;
+			bool hasTransparency = false;
+			if (ReadGifAnimationInfo(FileName, animationDurationMs, animationLoopCount, minFrameDurationMs, maxFrameDurationMs, hasTransparency))
+			{
+				CString durationInfoTemplate;
+				durationInfoTemplate.LoadString(IDS_ANIMATED_DURATION_INFO);
+				AppendAnimatedDurationInfo(msg, durationInfoTemplate, animationDurationMs);
+
+				CString frameRateInfoTemplate;
+				frameRateInfoTemplate.LoadString(IDS_ANIMATED_FRAME_RATE_INFO);
+				AppendAnimatedFrameRateInfo(msg, frameRateInfoTemplate, m_FrameCount, animationDurationMs);
+
+				CString frameDurationInfoTemplate;
+				frameDurationInfoTemplate.LoadString(IDS_ANIMATED_FRAME_DURATION_INFO);
+				AppendAnimatedFrameDurationInfo(msg, frameDurationInfoTemplate, minFrameDurationMs, maxFrameDurationMs);
+
+				CString loopCountInfoTemplate;
+				CString infiniteLoopText;
+				loopCountInfoTemplate.LoadString(IDS_ANIMATED_LOOP_COUNT_INFO);
+				infiniteLoopText.LoadString(IDS_ANIMATED_LOOP_INFINITE);
+				AppendAnimatedLoopCountInfo(msg, loopCountInfoTemplate, infiniteLoopText, animationLoopCount);
+
+				CString transparencyInfoTemplate;
+				CString transparencyText;
+				transparencyInfoTemplate.LoadString(IDS_ANIMATED_TRANSPARENCY_INFO);
+				transparencyText.LoadString(hasTransparency ? IDS_ANIMATED_TRANSPARENCY_YES : IDS_ANIMATED_TRANSPARENCY_NO);
+				if (!transparencyInfoTemplate.IsEmpty())
+				{
+					CString transparencyInfo;
+					transparencyInfo.FormatMessage(transparencyInfoTemplate, transparencyText);
+					msg += L'\n';
+					msg += transparencyInfo;
+				}
+			}
+
 			const __int64 file_size(::GetFileSize64(FileName));
 			CString size_str;
 			size_str.Format(L"%I64d", file_size);
@@ -507,6 +603,9 @@ void CGifFormat::get_size(const CString& FileName)
 {
 	m_OriginalPictureWidth = m_PictureWidth = 0;
 	m_OriginalPictureHeight = m_PictureHeight = 0;
+	m_Shutterspeed = 0;
+	m_FrameCount = 0;
+	m_bIsValid = false;
 
 	if (!m_gdiplus.IsValid())
 	{
@@ -521,4 +620,12 @@ void CGifFormat::get_size(const CString& FileName)
 
 	m_OriginalPictureWidth = m_PictureWidth = static_cast<int>(image.GetWidth());
 	m_OriginalPictureHeight = m_PictureHeight = static_cast<int>(image.GetHeight());
+	m_bIsValid = m_OriginalPictureWidth > 0 && m_OriginalPictureHeight > 0;
+
+	GUID dimension = Gdiplus::FrameDimensionTime;
+	UINT frameCount = 1;
+	if (m_bIsValid && GetTimeFrameDimension(image, dimension, frameCount) && frameCount > 1)
+	{
+		m_FrameCount = static_cast<int>(frameCount);
+	}
 }

@@ -145,6 +145,7 @@ protected:
 		m_mediaType(PictureMediaType::Image),
 		m_fAperture(0.0f),
 		m_Shutterspeed(0),
+		m_FrameCount(0),
 		m_ISO(0),
 		m_bLossless(false)
 	{
@@ -194,6 +195,7 @@ public:
 	FILETIME m_exiftime;
 	float m_fAperture;
 	int m_Shutterspeed;
+	int m_FrameCount;
 	int m_ISO;
 	CString m_ExifDateTime_display;
 	CString m_LongExifDateTime;

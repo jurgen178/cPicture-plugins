@@ -69,6 +69,88 @@ namespace
 	{
 		return decoder != NULL && decoder->imageCount > 1 && decoder->progressiveState == AVIF_PROGRESSIVE_STATE_UNAVAILABLE;
 	}
+
+	void GetAvifAnimationInfo(const avifDecoder* decoder, int& durationMs, int& loopCount, int& minFrameDurationMs, int& maxFrameDurationMs, bool& hasTransparency)
+	{
+		durationMs = 0;
+		loopCount = -1;
+		minFrameDurationMs = 0;
+		maxFrameDurationMs = 0;
+		hasTransparency = false;
+
+		if (decoder == NULL || !IsAnimatedAvifSequence(decoder))
+		{
+			return;
+		}
+
+		if (decoder->durationInTimescales > 0 && decoder->timescale > 0)
+		{
+			const double durationMsDouble = static_cast<double>(decoder->durationInTimescales) * 1000.0 / static_cast<double>(decoder->timescale);
+			durationMs = durationMsDouble >= static_cast<double>(INT_MAX) ? INT_MAX : static_cast<int>(durationMsDouble + 0.5);
+		}
+
+		if (decoder->repetitionCount == AVIF_REPETITION_COUNT_INFINITE)
+		{
+			loopCount = 0;
+		}
+		else
+		if (decoder->repetitionCount >= 0)
+		{
+			loopCount = decoder->repetitionCount == INT_MAX ? INT_MAX : decoder->repetitionCount + 1;
+		}
+
+		hasTransparency = decoder->alphaPresent != AVIF_FALSE;
+		minFrameDurationMs = INT_MAX;
+		for (uint32_t frameIndex = 0; frameIndex < static_cast<uint32_t>(decoder->imageCount); ++frameIndex)
+		{
+			avifImageTiming timing = { 0 };
+			if (avifDecoderNthImageTiming(decoder, frameIndex, &timing) != AVIF_RESULT_OK || timing.duration <= 0.0)
+			{
+				continue;
+			}
+
+			const double frameDurationMsDouble = timing.duration * 1000.0;
+			const int frameDurationMs = frameDurationMsDouble >= static_cast<double>(INT_MAX) ? INT_MAX : static_cast<int>(frameDurationMsDouble + 0.5);
+			minFrameDurationMs = min(minFrameDurationMs, frameDurationMs);
+			maxFrameDurationMs = max(maxFrameDurationMs, frameDurationMs);
+		}
+		if (minFrameDurationMs == INT_MAX)
+		{
+			minFrameDurationMs = 0;
+		}
+	}
+
+	bool ReadAvifAnimationInfo(const CStringA& fileNameUtf8, int& durationMs, int& loopCount, int& minFrameDurationMs, int& maxFrameDurationMs, bool& hasTransparency)
+	{
+		durationMs = 0;
+		loopCount = -1;
+		minFrameDurationMs = 0;
+		maxFrameDurationMs = 0;
+		hasTransparency = false;
+
+		avifDecoder* decoder = avifDecoderCreate();
+		if (!decoder)
+		{
+			return false;
+		}
+
+		decoder->ignoreExif = AVIF_TRUE;
+		decoder->ignoreXMP = AVIF_TRUE;
+		avifResult result = avifDecoderSetIOFile(decoder, fileNameUtf8);
+		if (result == AVIF_RESULT_OK)
+		{
+			result = avifDecoderParse(decoder);
+		}
+
+		const bool ok = result == AVIF_RESULT_OK && IsAnimatedAvifSequence(decoder);
+		if (ok)
+		{
+			GetAvifAnimationInfo(decoder, durationMs, loopCount, minFrameDurationMs, maxFrameDurationMs, hasTransparency);
+		}
+
+		avifDecoderDestroy(decoder);
+		return ok;
+	}
 }
 
 CAvifFormat::CAvifFormat()
@@ -463,6 +545,8 @@ void CAvifFormat::get_size(const CString& FileName)
 	m_bIsValid = false;
 	m_OriginalPictureWidth = m_OriginalPictureHeight = 0;
 	m_PictureWidth = m_PictureHeight = 0;
+	m_Shutterspeed = 0;
+	m_FrameCount = 0;
 
 	avifDecoder* decoder = avifDecoderCreate();
 	if (!decoder)
@@ -484,6 +568,10 @@ void CAvifFormat::get_size(const CString& FileName)
 		m_OriginalPictureHeight = m_PictureHeight = static_cast<int>(decoder->image->height);
 		m_color_space = decoder->image->yuvFormat == AVIF_PIXEL_FORMAT_YUV400 ? 1 : 2;
 		m_bIsValid = m_OriginalPictureWidth > 0 && m_OriginalPictureHeight > 0;
+		if (m_bIsValid && IsAnimatedAvifSequence(decoder))
+		{
+			m_FrameCount = static_cast<int>(decoder->imageCount);
+		}
 	}
 
 	avifDecoderDestroy(decoder);
@@ -529,6 +617,48 @@ CString __stdcall CAvifFormat::get_info(const CString& FileName, const enum info
 
 			info.FormatMessage(info_template[3], m_OriginalPictureWidth, m_OriginalPictureHeight, mp);
 			msg += info;
+
+			CString frameCountInfoTemplate;
+			frameCountInfoTemplate.LoadString(IDS_ANIMATED_FRAME_COUNT_INFO);
+			AppendAnimatedFrameCountInfo(msg, frameCountInfoTemplate, m_FrameCount);
+
+			int animationDurationMs = 0;
+			int animationLoopCount = -1;
+			int minFrameDurationMs = 0;
+			int maxFrameDurationMs = 0;
+			bool hasTransparency = false;
+			if (ReadAvifAnimationInfo(get_utf8_file_name(FileName), animationDurationMs, animationLoopCount, minFrameDurationMs, maxFrameDurationMs, hasTransparency))
+			{
+				CString durationInfoTemplate;
+				durationInfoTemplate.LoadString(IDS_ANIMATED_DURATION_INFO);
+				AppendAnimatedDurationInfo(msg, durationInfoTemplate, animationDurationMs);
+
+				CString frameRateInfoTemplate;
+				frameRateInfoTemplate.LoadString(IDS_ANIMATED_FRAME_RATE_INFO);
+				AppendAnimatedFrameRateInfo(msg, frameRateInfoTemplate, m_FrameCount, animationDurationMs);
+
+				CString frameDurationInfoTemplate;
+				frameDurationInfoTemplate.LoadString(IDS_ANIMATED_FRAME_DURATION_INFO);
+				AppendAnimatedFrameDurationInfo(msg, frameDurationInfoTemplate, minFrameDurationMs, maxFrameDurationMs);
+
+				CString loopCountInfoTemplate;
+				CString infiniteLoopText;
+				loopCountInfoTemplate.LoadString(IDS_ANIMATED_LOOP_COUNT_INFO);
+				infiniteLoopText.LoadString(IDS_ANIMATED_LOOP_INFINITE);
+				AppendAnimatedLoopCountInfo(msg, loopCountInfoTemplate, infiniteLoopText, animationLoopCount);
+
+				CString transparencyInfoTemplate;
+				CString transparencyText;
+				transparencyInfoTemplate.LoadString(IDS_ANIMATED_TRANSPARENCY_INFO);
+				transparencyText.LoadString(hasTransparency ? IDS_ANIMATED_TRANSPARENCY_YES : IDS_ANIMATED_TRANSPARENCY_NO);
+				if (!transparencyInfoTemplate.IsEmpty())
+				{
+					CString transparencyInfo;
+					transparencyInfo.FormatMessage(transparencyInfoTemplate, transparencyText);
+					msg += L'\n';
+					msg += transparencyInfo;
+				}
+			}
 
 			const __int64 file_size(::GetFileSize64(FileName));
 			CString size_str;
