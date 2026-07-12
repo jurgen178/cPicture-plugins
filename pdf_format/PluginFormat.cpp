@@ -11,6 +11,8 @@
 #include <mutex>
 using namespace std;
 
+bool CheckPdfiumAvailability();
+
 
 // Uses pdfium
 // https://github.com/bblanchon/pdfium-binaries  pdfium-win-x64.tgz
@@ -83,8 +85,7 @@ const PLUGIN_TYPE __stdcall GetPluginType()
 
 const int __stdcall GetPluginInit()
 {
-	// Implement one format plugin.
-	return 1;
+	return CheckPdfiumAvailability() ? 1 : 0;
 }
 
 lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
@@ -127,6 +128,19 @@ lpfnFormatGetInstanceProc __stdcall GetPluginProc(const int k)
 // PDFium lib is not thread safe.
 static std::mutex pdf_lib_mutex;
 
+bool TryInitializePdfium(FPDF_LIBRARY_CONFIG& config) noexcept
+{
+	__try
+	{
+		FPDF_InitLibraryWithConfig(&config);
+		return true;
+	}
+	__except (EXCEPTION_EXECUTE_HANDLER)
+	{
+		return false;
+	}
+}
+
 
 class PDFiumInit
 {
@@ -138,16 +152,45 @@ public:
 		FPDF_LIBRARY_CONFIG config = { 0 };
 		config.version = 2;
 
-		FPDF_InitLibraryWithConfig(&config);
+		if (TryInitializePdfium(config))
+		{
+			initialized = true;
+		}
+		else
+		{
+			CString message;
+			message.LoadString(IDS_PDFIUM_ERROR);
+			CString title;
+			title.LoadString(IDS_PDFIUM_ERROR_TITLE);
+			::MessageBox(nullptr, message, title, MB_OK | MB_ICONERROR);
+
+			pdf_lib_mutex.unlock();
+		}
 	};
 
 	~PDFiumInit()
 	{
-		FPDF_DestroyLibrary();
-
-		pdf_lib_mutex.unlock();
+		if (initialized)
+		{
+			FPDF_DestroyLibrary();
+			pdf_lib_mutex.unlock();
+		}
 	}
+
+	bool IsInitialized() const noexcept
+	{
+		return initialized;
+	}
+
+private:
+	bool initialized = false;
 };
+
+bool CheckPdfiumAvailability()
+{
+	PDFiumInit pdfiumInit;
+	return pdfiumInit.IsInitialized();
+}
 
 
 const CString CPdfFormat::type = "PDF";
@@ -652,6 +695,8 @@ BYTE* __stdcall CPdfFormat::ReadFile(const CString& FileName,
 	const int rel_size_z, const int rel_size_n)
 {
 	PDFiumInit pdfiumInit;
+	if (!pdfiumInit.IsInitialized())
+		return NULL;
 
 	BYTE* pvmem = NULL;
 
@@ -742,6 +787,8 @@ auto mirror_transform = [](FPDF_PAGE page, const bool mirror_horizontal) -> void
 bool CPdfFormat::Transform(const CString& inFileName, const function<void(FPDF_PAGE)>& transform_function)
 {
 	PDFiumInit pdfiumInit;
+	if (!pdfiumInit.IsInitialized())
+		return false;
 
 	FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(inFileName), nullptr);
 	if (document)
@@ -890,6 +937,9 @@ CString __stdcall CPdfFormat::get_info(const CString& FileName, const enum info_
 	if (_info_type & (info_type_std | info_type_short))
 	{
 		PDFiumInit pdfiumInit;
+		if (!pdfiumInit.IsInitialized())
+			return CString();
+
 		FPDF_DOCUMENT document = FPDF_LoadDocument(get_utf8_file_name(FileName), nullptr);
 		if (document)
 		{

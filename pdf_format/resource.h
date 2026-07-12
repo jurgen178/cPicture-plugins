@@ -13,6 +13,8 @@
 #define IDS_STATIC_COLOR_TOOLTIP        109
 #define IDS_PAGE_COUNT                  110
 #define IDS_STATIC_BORDER_COLOR_TEXT_TOOLTIP 111
+#define IDS_PDFIUM_ERROR                112
+#define IDS_PDFIUM_ERROR_TITLE          113
 #define IDC_EDIT_PDF_MAX_X              1005
 #define IDC_EDIT_PDF_MAX_Y              1006
 #define IDC_EDIT_PAGE_RANGE             1007
