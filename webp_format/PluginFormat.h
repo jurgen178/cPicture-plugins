@@ -86,4 +86,5 @@ private:
 	int m_animationLoopCount;
 	int m_animationLoopIndex;
 	int m_animationPreviousTimestamp;
+	bool m_animationHasTransparency;
 };

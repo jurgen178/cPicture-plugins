@@ -48,6 +48,23 @@ namespace
 {
 	constexpr __int64 MAX_WEBP_ANIMATION_FRAME_BYTES = 1024LL * 1024LL * 1024LL;
 
+	void CopyRgbaToWhiteRgb(const BYTE* src, BYTE* dst, const __int64 pixelCount)
+	{
+		const BYTE* dstEnd = dst + pixelCount * 3;
+		while (dst < dstEnd)
+		{
+			const BYTE red = *src++;
+			const BYTE green = *src++;
+			const BYTE blue = *src++;
+			const BYTE alpha = *src++;
+
+			// cPicture has no alpha channel, so composite transparent pixels over white.
+			*dst++ = static_cast<BYTE>((red * alpha + 255 * (255 - alpha)) / 255);
+			*dst++ = static_cast<BYTE>((green * alpha + 255 * (255 - alpha)) / 255);
+			*dst++ = static_cast<BYTE>((blue * alpha + 255 * (255 - alpha)) / 255);
+		}
+	}
+
 	bool CalculateRgbFrameSize(const int width, const int height, __int64& pixelCount, __int64& size, CString& errorMsg)
 	{
 		pixelCount = 0;
@@ -77,7 +94,8 @@ CWebPFormat::CWebPFormat()
 	m_animationHeight(0),
 	m_animationLoopCount(0),
 	m_animationLoopIndex(0),
-	m_animationPreviousTimestamp(0)
+	m_animationPreviousTimestamp(0),
+	m_animationHasTransparency(false)
 {
 }
 
@@ -220,6 +238,20 @@ bool GetWebPImageInfo(const vector<BYTE>& fileData, int& width, int& height, int
 	return WebPGetInfo(fileData.data(), fileData.size(), &width, &height) && width > 0 && height > 0;
 }
 
+bool HasWebPTransparency(const vector<BYTE>& fileData)
+{
+	const WebPData webpData = { fileData.data(), fileData.size() };
+	WebPDemuxer* demux = WebPDemux(&webpData);
+	if (!demux)
+	{
+		return false;
+	}
+
+	const bool hasTransparency = (WebPDemuxGetI(demux, WEBP_FF_FORMAT_FLAGS) & ALPHA_FLAG) != 0;
+	WebPDemuxDelete(demux);
+	return hasTransparency;
+}
+
 bool ReadWebPAnimationInfo(const vector<BYTE>& fileData, int& durationMs, int& loopCount, int& minFrameDurationMs, int& maxFrameDurationMs, bool& hasTransparency)
 {
 	durationMs = 0;
@@ -285,6 +317,7 @@ BYTE* DecodeFirstAnimatedWebPFrame(const vector<BYTE>& fileData, int& width, int
 	}
 
 	options.color_mode = MODE_RGBA;
+	const bool hasTransparency = HasWebPTransparency(fileData);
 
 	const WebPData webpData = { fileData.data(), fileData.size() };
 	WebPAnimDecoder* decoder = WebPAnimDecoderNew(&webpData, &options);
@@ -327,7 +360,14 @@ BYTE* DecodeFirstAnimatedWebPFrame(const vector<BYTE>& fileData, int& width, int
 		return NULL;
 	}
 
-	CopyRgbaToRgb(decodedFrame, buffer, pixelCount);
+	if (hasTransparency)
+	{
+		CopyRgbaToWhiteRgb(decodedFrame, buffer, pixelCount);
+	}
+	else
+	{
+		CopyRgbaToRgb(decodedFrame, buffer, pixelCount);
+	}
 
 	width = animInfo.canvas_width;
 	height = animInfo.canvas_height;
@@ -428,6 +468,7 @@ bool __stdcall CWebPFormat::OpenAnimation(const CString& FileName, int& width, i
 	}
 
 	m_animationLoopCount = animInfo.loop_count;
+	m_animationHasTransparency = HasWebPTransparency(m_animationFileData);
 	m_animationLoopIndex = 0;
 	m_animationPreviousTimestamp = 0;
 	width = m_animationWidth;
@@ -484,7 +525,14 @@ bool __stdcall CWebPFormat::ReadAnimationFrame(BYTE*& data, int& width, int& hei
 		return false;
 	}
 
-	CopyRgbaToRgb(decodedFrame, buffer, pixelCount);
+	if (m_animationHasTransparency)
+	{
+		CopyRgbaToWhiteRgb(decodedFrame, buffer, pixelCount);
+	}
+	else
+	{
+		CopyRgbaToRgb(decodedFrame, buffer, pixelCount);
+	}
 
 	width = m_animationWidth;
 	height = m_animationHeight;
@@ -508,6 +556,7 @@ void __stdcall CWebPFormat::CloseAnimation()
 	m_animationLoopCount = 0;
 	m_animationLoopIndex = 0;
 	m_animationPreviousTimestamp = 0;
+	m_animationHasTransparency = false;
 }
 
 bool __stdcall CWebPFormat::properties_dlg(const HWND hwnd)
@@ -590,8 +639,43 @@ BYTE* __stdcall CWebPFormat::FileToRGB(const CString& FileName,
 		return animatedBuffer;
 	}
 
+	WebPBitstreamFeatures features = { 0 };
+	if (WebPGetFeatures(fileData.data(), fileData.size(), &features) != VP8_STATUS_OK)
+	{
+		m_ErrorMsg = L"WebP feature detection failed";
+		return NULL;
+	}
+
+	if (!features.has_alpha)
+	{
+		const __int64 rowBytes = static_cast<__int64>(width) * 3;
+		const __int64 size = rowBytes * height;
+		BYTE* buffer = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
+		if (!buffer)
+		{
+			m_ErrorMsg.Format(L"WebP memory request failed: %I64d bytes", size);
+			return NULL;
+		}
+
+		if (!WebPDecodeRGBInto(fileData.data(), fileData.size(), buffer, static_cast<size_t>(size), static_cast<int>(rowBytes)))
+		{
+			m_ErrorMsg = L"WebP decode failed";
+			VirtualFree(buffer, 0, MEM_RELEASE);
+			return NULL;
+		}
+
+		m_OriginalPictureWidth = m_PictureWidth = width;
+		m_OriginalPictureHeight = m_PictureHeight = height;
+		m_color_space = 2;
+		m_bIsValid = true;
+		return buffer;
+	}
+
+	const __int64 pixelCount = static_cast<__int64>(width) * height;
 	const __int64 rowBytes = static_cast<__int64>(width) * 3;
 	const __int64 size = rowBytes * height;
+	const __int64 rgbaRowBytes = static_cast<__int64>(width) * 4;
+	const __int64 rgbaSize = rgbaRowBytes * height;
 	BYTE* buffer = static_cast<BYTE*>(VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
 	if (!buffer)
 	{
@@ -599,12 +683,15 @@ BYTE* __stdcall CWebPFormat::FileToRGB(const CString& FileName,
 		return NULL;
 	}
 
-	if (!WebPDecodeRGBInto(fileData.data(), fileData.size(), buffer, static_cast<size_t>(size), static_cast<int>(rowBytes)))
+	vector<BYTE> rgbaBuffer(static_cast<size_t>(rgbaSize));
+	if (!WebPDecodeRGBAInto(fileData.data(), fileData.size(), rgbaBuffer.data(), rgbaBuffer.size(), static_cast<int>(rgbaRowBytes)))
 	{
 		m_ErrorMsg = L"WebP decode failed";
 		VirtualFree(buffer, 0, MEM_RELEASE);
 		return NULL;
 	}
+
+	CopyRgbaToWhiteRgb(rgbaBuffer.data(), buffer, pixelCount);
 
 	m_OriginalPictureWidth = m_PictureWidth = width;
 	m_OriginalPictureHeight = m_PictureHeight = height;
