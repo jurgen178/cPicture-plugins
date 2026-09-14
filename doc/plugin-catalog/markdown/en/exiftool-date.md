@@ -4,4 +4,4 @@ A PowerShell script to modify the Exif date of the selected pictures. The exampl
 
 **Note:** Adjust the time offset in the script to fit your needs.
 
-Uses: [ExifTool](app://exiftool.org).
+Uses: [ExifTool](https://exiftool.org).

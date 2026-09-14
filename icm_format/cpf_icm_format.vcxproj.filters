@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8407024C-7159-4360-BCB0-746A83C619AD}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{D4C3D5BB-D1E3-4B25-8E6B-6FBCF32B6738}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{E265B204-7B5F-43B5-A1F1-EF7C64B94223}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Little CMS">
+      <UniqueIdentifier>{E0441B1F-8317-464E-B23A-187B4736B4E1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="plugin.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PluginFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared\FormatPluginHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\lcms\src\cmsalpha.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmscam02.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmscgats.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmscnvrt.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmserr.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsgamma.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsgmt.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmshalf.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsintrp.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsio0.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsio1.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmslut.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsmd5.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsmtrx.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsnamed.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsopt.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmspack.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmspcs.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsplugin.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsps2.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmssamp.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmssm.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmstypes.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsvirt.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmswtpnt.c"><Filter>Little CMS</Filter></ClCompile>
+    <ClCompile Include="external\lcms\src\cmsxform.c"><Filter>Little CMS</Filter></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PictureFormat.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="PluginFormat.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="..\shared\FormatPluginEnumOperators.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="..\shared\FormatPluginHelpers.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="resource.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="stdafx.h"><Filter>Header Files</Filter></ClInclude>
+    <ClInclude Include="external\lcms\include\lcms2.h"><Filter>Little CMS</Filter></ClInclude>
+    <ClInclude Include="external\lcms\include\lcms2_plugin.h"><Filter>Little CMS</Filter></ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="plugin.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

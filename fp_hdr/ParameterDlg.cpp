@@ -1,4 +1,4 @@
-// ParameterDlg.cpp : implementation file
+﻿// ParameterDlg.cpp : implementation file
 //
 
 #include "stdafx.h"

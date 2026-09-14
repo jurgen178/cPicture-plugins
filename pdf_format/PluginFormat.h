@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "pictureformat.h"
 #include "include/fpdfview.h"
 //#include "include/fpdf_thumbnail.h"

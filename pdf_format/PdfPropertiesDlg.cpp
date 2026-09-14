@@ -1,4 +1,4 @@
-// PluginPropertiesDlg.cpp : implementation file
+﻿// PluginPropertiesDlg.cpp : implementation file
 //
 
 #include "stdafx.h"

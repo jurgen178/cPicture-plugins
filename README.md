@@ -7,125 +7,142 @@ Click the function plug-ins button in the menu ribbon to display all installed p
 
 ![](doc/fp-menu.png)   
 
-<br>Sample 1
---------
+<br>Function plugins
+---------------------
 
-![](doc/fp1-1.png)   
+### Sample 1
 
-![](doc/fp1-2a.png)   
+Demonstrates the basic function plugin flow with `begin()`, `process_picture()` and `end()`.
 
-![](doc/fp1-2b.png)   
+![](doc/fp1a.png)   
+![](doc/fp1b.png)   
+![](doc/fp1c.png)   
 
-![](doc/fp1-2c.png)   
+### Sample 2
 
-![](doc/fp1-3.png)   
-
-<br>Sample 2
---------
+Displays a picture preview dialog for the selected pictures.
 
 ![](doc/fp2.png)   
 
-<br>Sample 3
---------
+### Sample 3
+
+Shows a simple picture order form.
 
 ![](doc/fp3.png)   
 
+### Sample 4
 
-<br>.bat Script
------------
+Creates modified copies of the selected pictures by scaling them down and inverting colors.
 
-The script files need to be in the same folder. You can use max 255 scripts.  
+![](doc/fp4.png)   
 
-example.bat file:
+### Sample 5
 
+Creates an index print from exactly two selected pictures.
 
-    @echo OFF
+![](doc/fp5a.png)   
+![](doc/fp5b.png)   
 
-    echo file  =%1
-    echo name  =%2
-    echo path  =%3
-    echo width =%4
-    echo height=%5
-    echo sequence number=%6 
-    echo number of files=%7
+### Script Plugin
 
+Runs PowerShell, Batch and Python scripts from cPicture. Script files are packaged separately and executed through `cpp_script.dll`.
 
-    REM "Press any key to continue ..."
-    pause
+![](doc/fp_script.png)   
+![](doc/fp_script_powershell.png)   
+![](doc/fp_script_bat.png)   
+![](doc/fp_script_python.png)   
 
-![](doc/fp-bat.png)   
+### HDR enfuse
 
+Uses the [enfuse tool](https://wiki.panotools.org/Enfuse) to create an HDR picture from an exposure series.
 
-<br>Powershell script
------------------
-  
+![](doc/fp_hdr.png)   
 
-[example.ps1](fp_script/scripts/example.ps1)  
+### Exposure Difference
 
-```
-$picture_data_set = ConvertFrom-Json -InputObject $picture_data_json
+Calculates exposure differences (EV) for the selected pictures relative to the first selected picture.
 
-# Print the number of pictures.
-[int]$size = $picture_data_set.length
-Write-Host "$size picture(s):" -ForegroundColor White
-Write-Host ("-" * 15)
-Write-Host
+![](doc/fp_ev.png)   
 
-# Print the picture data.
-[int]$i = 1
-foreach ($picture_data in $picture_data_set) {
+### ASCII Art
 
-    [int]$MP = $picture_data.width * $picture_data.height / 1000000
-    "Image '{0}' ({4} of {5}) with {1}x{2} pixel ({3}MP)" -f $picture_data.file, $picture_data.width, $picture_data.height, $MP, $i, $size
-    "  name='$($picture_data.name)', dir='$($picture_data.dir)'`n"
+Converts a picture into ASCII art.
 
-    "-" * 70
+![](doc/fp_ascii_art.png)   
 
-    $i++
-}
-```
+### Clipboard
 
-![](doc/fp-ps1.png)   
+Copies the selected picture to the Windows clipboard.
 
+### QR Code
 
-<br>HDR enfuse
----------------------
+Embeds a configurable QR code into the selected pictures.
 
-This plugin uses the [enfuse tool](https://wiki.panotools.org/Enfuse) to create a HDR picture from at least 2 pictures.  
+![](doc/fp_qrcode.png)   
 
-![](doc/fp-hdr.png)   
+### OCR - Text Recognition
 
+Recognizes text in selected images using the built-in Windows OCR engine. No API key is required.
 
-<br>ASCII Art
----------------------
+### Time Capsule
 
-Function plugin to convert a picture into ASCII art.
+Builds a shareable story poster from the current selection with route, places and thumbnails.
 
-![](doc/ascii-art.png)   
+![](doc/fp_timecapsule.jpg)   
 
+### X-Ray
 
-<br>Time Capsule
----------------------
+Creates an analysis board for each selected picture with edge, block-boundary and heatmap views.
 
-Builds a shareable poster from the current selection with thumbnails, timeline-style ordering and metadata summary.
+![](doc/fp_xray.jpg)   
 
-
-<br>X-Ray
----------------------
-
-Creates an analysis board for each selected picture with edge, block-boundary and combined heat maps without any AI dependency.
-
-
-<br>Motion Composer
----------------------
+### Motion Composer
 
 Merges a sequence into a single motion-heavy composite image with colored trails.
 
+![](doc/fp_motion_composer.jpg)   
 
-<br>Postage
+### Postage
+
+Creates a picture that looks like a simple postage stamp with a perforated border, value text and optional stamp overlay.
+
+![](doc/fp_postage1.png)   
+![](doc/fp_postage2.jpg)   
+
+### FilmReel
+
+Creates an animated WebP film reel from multiple selected images with configurable frame delay, loop count and quality.
+
+<br>Format plugins
 ---------------------
 
-Creates a new picture that looks like a simple postage stamp with a perforated border, value text and optional stamp overlay.
+### TIFF and PNG Pictures
+
+Adds support for opening TIFF and PNG pictures.
+
+### PDF Format
+
+Adds support for opening PDF documents. The plugin uses PDFium as a delay-loaded dependency.
+
+![](doc/pdf.png)   
+
+### AVIF Format
+
+Adds support for opening and saving AVIF pictures.
+
+### ICM/ICC Color Profile
+
+Adds support for opening ICC and ICM color profile files.
+
+![](doc/icm.PNG)   
+
+### WebP Format
+
+Adds support for opening and saving WebP pictures, including animated WebP playback.
+
+### GIF Format
+
+Adds support for opening GIF pictures, including animated GIF playback.
 
 
 <br>Structure and details
@@ -164,24 +181,38 @@ cPicture can supply each picture with additional picture data. This is controlle
 
 ### Linker base addresses
 
-Currently used base addresses:  
+Current linker base address state:  
 
-cpf_tiff_png:	0x180000000  
-cpf_pdf:    	0x181000000  
-cpp_fp1:		0x201000000  
-cpp_fp2:		0x202000000  
-cpp_fp3:		0x203000000  
-cpp_fp4:		0x204000000  
-cpp_fp5:		0x205000000  
-cpp_script:     0x210000000  
-cpp_fp_hdr:		0x212000000  
-cpp_fp_ev:		0x213000000  
-cpp_ascii_art:  0x214000000  
-cpp_copy_cb:    0x215000000  
-cpp_qrcode:     0x216000000  
-cpp_timecapsule: 0x217000000  
-cpp_xray:        0x218000000  
-cpp_motion_composer: 0x219000000  
-cpp_postage:     0x21A000000  
+- Plug-ins use fixed linker base addresses with ASLR disabled.
+- The address ranges that matter at runtime are PE image ranges: `[ImageBase, ImageBase + SizeOfImage)`.
+- The upload script `cPicture\build\build-upload-plugins.ps1` verifies the Release DLL image ranges before creating ZIP files or uploading anything.
+- Format plug-ins are spaced 64 MB apart.
+- Function plug-ins are spaced 32 MB apart.
+
+Currently assigned base addresses:  
+
+cpf_tiff_png:        0x180000000  
+cpf_pdf:             0x184000000  
+cpf_avif:            0x188000000  
+cpf_icm:             0x18C000000  
+cpf_webp:            0x190000000  
+cpf_gif:             0x194000000  
+cpp_fp1:             0x200000000  
+cpp_fp2:             0x202000000  
+cpp_fp3:             0x204000000  
+cpp_fp4:             0x206000000  
+cpp_fp5:             0x208000000  
+cpp_ocr:             0x20A000000  
+cpp_script:          0x20C000000  
+cpp_fp_hdr:          0x20E000000  
+cpp_fp_ev:           0x210000000  
+cpp_ascii_art:       0x212000000  
+cpp_copy_cb:         0x214000000  
+cpp_qrcode:          0x216000000  
+cpp_timecapsule:     0x218000000  
+cpp_xray:            0x21A000000  
+cpp_motion_composer: 0x21C000000  
+cpp_postage:         0x21E000000  
+cpp_filmreel:        0x220000000  
 
 

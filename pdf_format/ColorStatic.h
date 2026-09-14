@@ -1,4 +1,4 @@
-// ColorStatic.h
+﻿// ColorStatic.h
 #pragma once
 #include "afxwin.h"
 

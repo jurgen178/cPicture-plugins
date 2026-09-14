@@ -1,0 +1,8 @@
+LIBRARY      "cpf_icm"
+EXPORTS
+	GetPluginType
+	GetPluginVersion
+	GetPluginInterfaceVersion
+	GetPluginProc
+	GetPluginInit
+	SetPluginInfoTemplates

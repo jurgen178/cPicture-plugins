@@ -49,16 +49,14 @@ namespace
 	void CopyPanel(const BYTE* src, const int src_width, const int src_height,
 		BYTE* dst, const int dst_width, const int offset_x, const int offset_y)
 	{
+		const size_t row_size = static_cast<size_t>(src_width) * 3;
 		for (int y = 0; y < src_height; ++y)
 		{
-			for (int x = 0; x < src_width; ++x)
-			{
-				const int src_index = PixelIndex(x, y, src_width);
-				const int dst_index = PixelIndex(offset_x + x, offset_y + y, dst_width);
-				dst[dst_index] = src[src_index];
-				dst[dst_index + 1] = src[src_index + 1];
-				dst[dst_index + 2] = src[src_index + 2];
-			}
+			const BYTE* src_row = src + static_cast<size_t>(y) * row_size;
+			BYTE* dst_row = dst + static_cast<size_t>(PixelIndex(offset_x, offset_y + y, dst_width));
+			// Plain RGB panel copy: rows are contiguous in the source, so avoid
+			// per-pixel PixelIndex() work and copy the whole row at once.
+			memcpy(dst_row, src_row, row_size);
 		}
 	}
 

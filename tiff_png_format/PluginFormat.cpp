@@ -1,157 +1,14 @@
 ﻿#include "stdafx.h"
 #include "resource.h"
 #include "pluginformat.h"
+#include "../shared/FormatPluginEnumOperators.h"
+#include "../shared/FormatPluginHelpers.h"
 #include "libpng/png.h"
 #include "libtiff/tiffio.h"
 #include <sys/stat.h>
 
 #include <vector>
 using namespace std;
-
-enum filetime_type
-{
-	date_modified,	//FILETIME ftLastWriteTime;
-	date_created,	//FILETIME ftCreationTime;
-};
-
-
-CString GetSizeStr(const __int64 size)
-{
-	CString s;
-	__int64 d(1024);
-	__int64 z(1024);
-
-	if (size < d)
-	{
-		s.Format(L"%d Byte", static_cast<int>(size));
-		return s;
-	}
-
-	d <<= 10;
-	if (size < d)
-	{
-		s.Format(L"%d KB", static_cast<int>(size / z));
-		return s;
-	}
-
-	d <<= 10;
-	z <<= 10;
-	if (size < d)
-	{
-		s.Format(L"%.1lf MB", static_cast<double>(size) / z);
-		return s;
-	}
-
-	d <<= 10;
-	z <<= 10;
-	if (size < d)
-	{
-		s.Format(L"%.2lf GB", static_cast<double>(size) / z);
-		return s;
-	}
-
-	z <<= 10;
-	s.Format(L"%.2lf TB", static_cast<double>(size) / z);
-	return s;
-}
-
-__int64 GetFileSize64(const WCHAR* pFile)
-{
-	WIN32_FIND_DATA c_file;
-	HANDLE hFile;
-
-	if ((hFile = FindFirstFile(pFile, &c_file)) != INVALID_HANDLE_VALUE)
-	{
-		const __int64 size((static_cast<__int64>(c_file.nFileSizeHigh) << 32) + c_file.nFileSizeLow);
-		FindClose(hFile);
-
-		return size;
-	}
-
-	return 0;
-}
-
-CString GetLongFileDateTime(const WCHAR* pFile, FILETIME& filetime, filetime_type type)
-{
-	CString DateTimeFormat;
-
-	WIN32_FIND_DATA findFileData;
-	const HANDLE hFind = FindFirstFile(pFile, &findFileData);
-
-	if(hFind != INVALID_HANDLE_VALUE) 
-	{
-		FindClose(hFind);
-		if (type == filetime_type::date_created)
-			filetime = findFileData.ftCreationTime;
-		else
-			filetime = findFileData.ftLastWriteTime;
-
-		SYSTEMTIME stUTC = { 0 };
-		SYSTEMTIME sysTime = { 0 };
-		FileTimeToSystemTime(&filetime, &stUTC);
-		SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &sysTime);
-
-		WCHAR DateStr[100] = { 0 };
-		WCHAR TimeStr[100] = { 0 };
-
-		GetDateFormat(
-			LOCALE_USER_DEFAULT,	// locale
-			DATE_LONGDATE,			// options
-			&sysTime,				// date
-			NULL,                   // date format
-			DateStr,				// formatted string buffer
-			sizeof(DateStr) / sizeof(WCHAR) // size of buffer
-		);
-
-		GetTimeFormat(
-			LOCALE_USER_DEFAULT,    // locale
-			0,						// options
-			&sysTime,				// date
-			NULL,                   // date format
-			TimeStr,				// formatted string buffer
-			sizeof(TimeStr) / sizeof(WCHAR)      // size of buffer
-		);
-
-		DateTimeFormat.Format(IDS_DATE_TIME_FORMAT_STRING, DateStr, TimeStr);
-	}
-
-	return DateTimeFormat;
-}
-
-CString GetLongFileDateTime(const WCHAR* pFile, filetime_type type)
-{
-	FILETIME filetime = { 0 };
-
-	return GetLongFileDateTime(pFile, filetime, type);
-}
-
-
-enum PLUGIN_TYPE operator|(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return static_cast<enum PLUGIN_TYPE>(static_cast<const unsigned int>(t1) | static_cast<const unsigned int>(t2));
-}
-
-enum PLUGIN_TYPE operator&(const enum PLUGIN_TYPE t1, const enum PLUGIN_TYPE t2)
-{
-	return static_cast<enum PLUGIN_TYPE>(static_cast<const unsigned int>(t1) & static_cast<const unsigned int>(t2));
-}
-
-
-enum info_type operator|(const enum info_type t1, const enum info_type t2)
-{
-	return static_cast<enum info_type>(static_cast<const unsigned int>(t1) | static_cast<const unsigned int>(t2));
-}
-
-enum info_type operator&(const enum info_type t1, const enum info_type t2)
-{
-	return static_cast<enum info_type>(static_cast<const unsigned int>(t1) & static_cast<const unsigned int>(t2));
-}
-
-enum info_type operator|=(enum info_type& t1, const enum info_type t2)
-{
-	return t1 = static_cast<enum info_type>(static_cast<const unsigned int>(t1) | static_cast<const unsigned int>(t2));
-}
-
 
 // Note: Review all sections with "// ***" when implementing a new format
 //		 Copy always PictureFormat.h from the plugin package to your project.
@@ -185,9 +42,9 @@ const CString __stdcall GetPluginVersion()
 const CString __stdcall GetPluginInterfaceVersion()
 {
 	#ifdef _DEBUG
-	return L"1.0-debug";
+	return L"1.2-debug";
 	#else
-	return L"1.0";
+	return L"1.2";
 	#endif
 }
 

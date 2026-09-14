@@ -1,4 +1,4 @@
-// CornerPickerCtrl.cpp : implementation
+﻿// CornerPickerCtrl.cpp : implementation
 
 #include "stdafx.h"
 #include "CornerPickerCtrl.h"

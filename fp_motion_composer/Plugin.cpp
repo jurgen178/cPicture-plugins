@@ -5,6 +5,7 @@
 
 #include <array>
 #include <algorithm>
+#include <cstring>
 
 
 namespace
@@ -246,25 +247,17 @@ const vector<update_data>& __stdcall CFunctionPluginMotionComposer::end(const ve
 
 	// The first frame defines the visual baseline; later frames only add motion deltas on top of it.
 	const BYTE* base_frame = frames.front()->data;
-	for (int y = 0; y < frames.front()->picture_height; ++y)
+	const int base_copy_width = min(frames.front()->picture_width, canvas_width - base_offset_x);
+	const int base_copy_height = min(frames.front()->picture_height, canvas_height - base_offset_y);
+	const size_t base_row_size = static_cast<size_t>(base_copy_width) * 3;
+	for (int y = 0; y < base_copy_height; ++y)
 	{
-		for (int x = 0; x < frames.front()->picture_width; ++x)
-		{
-			const int src_index = PixelIndex(x, y, frames.front()->picture_width);
-			const int canvas_x = base_offset_x + x;
-			const int canvas_y = base_offset_y + y;
-			if (canvas_x < 0 || canvas_x >= canvas_width || canvas_y < 0 || canvas_y >= canvas_height)
-				continue;
-
-			const int dst_index = PixelIndex(canvas_x, canvas_y, canvas_width);
-			base_canvas[dst_index] = base_frame[src_index];
-			base_canvas[dst_index + 1] = base_frame[src_index + 1];
-			base_canvas[dst_index + 2] = base_frame[src_index + 2];
-		}
+		const BYTE* src_row = base_frame + PixelIndex(0, y, frames.front()->picture_width);
+		BYTE* dst_row = base_canvas.data() + PixelIndex(base_offset_x, base_offset_y + y, canvas_width);
+		memcpy(dst_row, src_row, base_row_size);
 	}
 
-	for (__int64 index = 0; index < canvas_len; ++index)
-		composite_data[index] = base_canvas[static_cast<size_t>(index)];
+	memcpy(composite_data, base_canvas.data(), static_cast<size_t>(canvas_len));
 
 	for (size_t frame_index = 1; frame_index < frames.size(); ++frame_index)
 	{

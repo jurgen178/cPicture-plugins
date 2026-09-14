@@ -1,4 +1,4 @@
-// QrCodeDlg.cpp : implementation file
+﻿// QrCodeDlg.cpp : implementation file
 //
 
 #include "stdafx.h"

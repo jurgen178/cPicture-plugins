@@ -1,4 +1,4 @@
-// SettingsDlg.cpp : implementation file
+﻿// SettingsDlg.cpp : implementation file
 //
 
 #include "stdafx.h"
