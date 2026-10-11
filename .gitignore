@@ -84,3 +84,16 @@ ipch/
 !*.[Cc]ache/
 
 !pdf_format/bin
+!pdf_format/x64/
+!pdf_format/x64/bin/
+!pdf_format/x64/bin/**
+!pdf_format/x64/include/
+!pdf_format/x64/include/**
+!pdf_format/x64/lib/
+!pdf_format/x64/lib/**
+!pdf_format/arm64/bin/
+!pdf_format/arm64/bin/**
+!pdf_format/arm64/include/
+!pdf_format/arm64/include/**
+!pdf_format/arm64/lib/
+!pdf_format/arm64/lib/**

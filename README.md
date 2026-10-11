@@ -186,6 +186,9 @@ Current linker base address state:
 - Plug-ins use fixed linker base addresses with ASLR disabled.
 - The address ranges that matter at runtime are PE image ranges: `[ImageBase, ImageBase + SizeOfImage)`.
 - The upload script `cPicture\build\build-upload-plugins.ps1` verifies the Release DLL image ranges before creating ZIP files or uploading anything.
+- The Release solution supports x64 and ARM64. `build-upload-plugins.ps1` builds both architectures by default; use `-arch x64` or `-arch ARM64` to build and package just one.
+- PDFium binaries, headers, and import libraries are stored separately in `pdf_format\x64\` and `pdf_format\arm64\`, each with `bin`, `include`, and `lib` subdirectories.
+- ARM64 plug-ins keep dynamic base relocation enabled, as required by the ARM64 linker; the assigned image base is a preferred address.
 - Format plug-ins are spaced 64 MB apart.
 - Function plug-ins are spaced 32 MB apart.
 
@@ -214,5 +217,3 @@ cpp_xray:            0x21A000000
 cpp_motion_composer: 0x21C000000  
 cpp_postage:         0x21E000000  
 cpp_filmreel:        0x220000000  
-
-

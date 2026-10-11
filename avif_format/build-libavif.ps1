@@ -6,6 +6,10 @@ param(
     [string]$Configuration,
 
     [Parameter(Mandatory = $true)]
+    [ValidateSet('x64', 'ARM64')]
+    [string]$Platform,
+
+    [Parameter(Mandatory = $true)]
     [string]$RuntimeLibrary
 )
 
@@ -34,7 +38,7 @@ function Find-Executable {
 
 $projectDirFull = [System.IO.Path]::GetFullPath($ProjectDir)
 $sourceDir = Join-Path $projectDirFull 'external\libavif'
-$buildDir = Join-Path $projectDirFull ("external\build\libavif\{0}" -f $Configuration)
+$buildDir = Join-Path $projectDirFull ("external\build\libavif\{0}\{1}" -f $Platform, $Configuration)
 
 $programFilesX86 = ${env:ProgramFiles(x86)}
 $vswhere = if ($programFilesX86) { Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe' } else { $null }
@@ -86,7 +90,7 @@ if ((Test-Path -LiteralPath $cacheFile) -and (Select-String -LiteralPath $cacheF
     Remove-Item -LiteralPath $buildDir -Recurse -Force
 }
 
-& $cmake -S $sourceDir -B $buildDir `
+& $cmake -S $sourceDir -B $buildDir -A $Platform `
     -DBUILD_SHARED_LIBS=OFF `
     -DAVIF_CODEC_AOM=LOCAL `
     -DAVIF_LIBYUV=LOCAL `

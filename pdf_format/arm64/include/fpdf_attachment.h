@@ -132,6 +132,37 @@ FPDFAttachment_GetStringValue(FPDF_ATTACHMENT attachment,
                               unsigned long buflen);
 
 // Experimental API.
+// Sets the string value corresponding to "/Desc" in the file specification
+// dictionary (ISO 32000-1:2008 section 7.11.3) of the embedded file
+// |attachment| to the string value.
+//
+//   attachment - handle to an attachment.
+//   value      - the string value to be set as /Desc, encoded in UTF-16LE.
+//
+// Returns true if successful.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFAttachment_SetDescription(FPDF_ATTACHMENT attachment,
+                              FPDF_WIDESTRING value);
+
+// Experimental API.
+// Gets the string value corresponding to "/Desc" in the file specification
+// dictionary (ISO 32000-1:2008 section 7.11.3) of the embedded file
+// |attachment|. Similarly to the above APIs, |buffer| is only modified if
+// |buflen| is longer than the length of the string's value. If the key doesn't
+// exist, or is not a string then 2 is returned by the API, alongside an empty
+// string. Other errors return 0 instead.
+//
+//   attachment - handle to an attachment.
+//   buffer     - buffer for holding the string value encoded in UTF-16LE.
+//   buflen     - length of the buffer in bytes.
+//
+// Returns the length of the description string in bytes.
+FPDF_EXPORT unsigned long FPDF_CALLCONV
+FPDFAttachment_GetDescription(FPDF_ATTACHMENT attachment,
+                              FPDF_WCHAR* buffer,
+                              unsigned long buflen);
+
+// Experimental API.
 // Set the file data of |attachment|, overwriting the existing file data if any.
 // The creation date and checksum will be updated, while all other dictionary
 // entries will be deleted. Note that only contents with |len| smaller than
@@ -171,6 +202,43 @@ FPDFAttachment_GetFile(FPDF_ATTACHMENT attachment,
                        void* buffer,
                        unsigned long buflen,
                        unsigned long* out_buflen);
+
+// Experimental API.
+// Get the MIME type (Subtype) of the embedded file |attachment|. |buffer| is
+// only modified if |buflen| is longer than the length of the MIME type string.
+// If the Subtype is not found or if there is no file stream, an empty string
+// would be copied to |buffer| and the return value would be 2. On other errors,
+// nothing would be added to |buffer| and the return value would be 0.
+//
+//   attachment - handle to an attachment.
+//   buffer     - buffer for holding the MIME type string encoded in UTF-16LE.
+//   buflen     - length of the buffer in bytes.
+//
+// Returns the length of the MIME type string in bytes.
+FPDF_EXPORT unsigned long FPDF_CALLCONV
+FPDFAttachment_GetSubtype(FPDF_ATTACHMENT attachment,
+                          FPDF_WCHAR* buffer,
+                          unsigned long buflen);
+
+// Experimental API.
+// Get the associated file relationship string (the /AFRelationship entry in
+// the file specification dictionary of the embedded file |attachment|; PDF
+// 2.0, ISO 32000-2:2020, Table 43), e.g. "Source", "Data", "Alternative",
+// "Supplement" or "Unspecified". |buffer| is only modified if |buflen| is
+// longer than the length of the relationship name. If the /AFRelationship
+// entry is absent or is not a name, an empty string is copied to |buffer| and
+// the return value is 2. On other errors, |buffer| is not modified and the
+// return value is 0.
+//
+//   attachment - handle to an attachment.
+//   buffer     - buffer for holding the relationship name encoded in UTF-16LE.
+//   buflen     - length of the buffer in bytes.
+//
+// Returns the length of the relationship name in bytes.
+FPDF_EXPORT unsigned long FPDF_CALLCONV
+FPDFAttachment_GetAFRelationship(FPDF_ATTACHMENT attachment,
+                                 FPDF_WCHAR* buffer,
+                                 unsigned long buflen);
 
 #ifdef __cplusplus
 }  // extern "C"

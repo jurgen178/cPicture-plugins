@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 
-// NOLINTNEXTLINE(build/include)
+// NOLINTNEXTLINE(build/include_directory)
 #include "fpdfview.h"
 
 #define FPDF_ARGB(a, r, g, b)                                      \
@@ -167,6 +167,8 @@ FPDF_MovePages(FPDF_DOCUMENT document,
 //   1 - Rotated 90 degrees clockwise.
 //   2 - Rotated 180 degrees clockwise.
 //   3 - Rotated 270 degrees clockwise.
+//
+// Or returns -1 on error.
 FPDF_EXPORT int FPDF_CALLCONV FPDFPage_GetRotation(FPDF_PAGE page);
 
 // Set rotation for |page|.
@@ -181,11 +183,33 @@ FPDF_EXPORT void FPDF_CALLCONV FPDFPage_SetRotation(FPDF_PAGE page, int rotate);
 
 // Insert |page_object| into |page|.
 //
-//   page        - handle to a page
-//   page_object - handle to a page object. The |page_object| will be
-//                 automatically freed.
-FPDF_EXPORT void FPDF_CALLCONV
+//   page        - Handle to a page.
+//   page_object - Handle to a page object. FPDFPage_InsertObject() takes
+//                 ownership. Ownership of |page_object| transfers to |page| on
+//                 success. |page_object| is freed on failure. Null
+//                 |page_object| causes a failure.
+//
+// Returns true if successful.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
 FPDFPage_InsertObject(FPDF_PAGE page, FPDF_PAGEOBJECT page_object);
+
+// Insert |page_object| into |page| at the specified |index|.
+//
+//   page        - handle to a page
+//   page_object - handle to a page object as previously obtained by
+//                 FPDFPageObj_CreateNew{Path|Rect}() or
+//                 FPDFPageObj_New{Text|Image}Obj(). Ownership of the object
+//                 is transferred back to PDFium.
+//   index       - the index position to insert the object at. If index equals
+//                 the current object count, the object will be appended to the
+//                 end. If index is greater than the object count, the function
+//                 will fail and return false.
+//
+// Returns true if successful.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFPage_InsertObjectAtIndex(FPDF_PAGE page,
+                             FPDF_PAGEOBJECT page_object,
+                             size_t index);
 
 // Experimental API.
 // Remove |page_object| from |page|.
@@ -441,6 +465,22 @@ FPDF_EXPORT FPDF_PAGEOBJECTMARK FPDF_CALLCONV
 FPDFPageObj_AddMark(FPDF_PAGEOBJECT page_object, FPDF_BYTESTRING name);
 
 // Experimental API.
+// Add an existing content mark to a |page_object|. If consecutive page objects
+// have the same |mark|, the generated PDF will contain a single mark that spans
+// all of them. If the page objects are not consecutive, multiple copies of the
+// |mark| are inserted in the PDF.
+//
+//   page_object - handle to a page object.
+//   mark        - handle to a mark object.
+//
+// Returns true on success, or false on failure. The handles are all owned by
+// the library. The |page_object| and |mark| params must be associated with the
+// same document.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFPageObj_AddExistingMark(FPDF_PAGEOBJECT page_object,
+                            FPDF_PAGEOBJECTMARK mark);
+
+// Experimental API.
 // Removes a content |mark| from a |page_object|.
 // The mark handle will be invalid after the removal.
 //
@@ -531,6 +571,22 @@ FPDFPageObjMark_GetParamIntValue(FPDF_PAGEOBJECTMARK mark,
                                  int* out_value);
 
 // Experimental API.
+// Get the value of a number property in a content mark by key as float.
+// FPDFPageObjMark_GetParamValueType() should have returned FPDF_OBJECT_NUMBER
+// for this property.
+//
+//   mark      - handle to a content mark.
+//   key       - string key of the property.
+//   out_value - pointer to variable that will receive the value. Not filled if
+//               false is returned.
+//
+// Returns TRUE if the key maps to a number value, FALSE otherwise.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFPageObjMark_GetParamFloatValue(FPDF_PAGEOBJECTMARK mark,
+                                   FPDF_BYTESTRING key,
+                                   float* out_value);
+
+// Experimental API.
 // Get the value of a string property in a content mark by key.
 //
 //   mark       - handle to a content mark.
@@ -592,6 +648,25 @@ FPDFPageObjMark_SetIntParam(FPDF_DOCUMENT document,
                             FPDF_PAGEOBJECTMARK mark,
                             FPDF_BYTESTRING key,
                             int value);
+
+// Experimental API.
+// Set the value of a float property in a content mark by key. If a parameter
+// with key |key| exists, its value is set to |value|. Otherwise, it is added as
+// a new parameter.
+//
+//   document    - handle to the document.
+//   page_object - handle to the page object with the mark.
+//   mark        - handle to a content mark.
+//   key         - string key of the property.
+//   value       - float value to set.
+//
+// Returns TRUE if the operation succeeded, FALSE otherwise.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFPageObjMark_SetFloatParam(FPDF_DOCUMENT document,
+                              FPDF_PAGEOBJECT page_object,
+                              FPDF_PAGEOBJECTMARK mark,
+                              FPDF_BYTESTRING key,
+                              float value);
 
 // Experimental API.
 // Set the value of a string property in a content mark by key. If a parameter
@@ -1115,6 +1190,38 @@ FPDFPageObj_SetDashArray(FPDF_PAGEOBJECT page_object,
                          size_t dash_count,
                          float phase);
 
+// Experimental API.
+// Get a bitmap rasterization of the stroke pattern of |page_object|.
+// To render correctly, the caller must provide the |document| associated with
+// |page_object|. The returned bitmap will be owned by the caller, and
+// FPDFBitmap_Destroy() must be called on the returned bitmap when it is no
+// longer needed.
+//
+//   document    - handle to the document containing |page_object|.
+//   page_object - handle to a page object.
+//
+// Returns the bitmap, or NULL if the stroke is not a tiling pattern or on
+// failure.
+FPDF_EXPORT FPDF_BITMAP FPDF_CALLCONV
+FPDFPageObj_GetRenderedStrokePattern(FPDF_DOCUMENT document,
+                                     FPDF_PAGEOBJECT page_object);
+
+// Experimental API.
+// Get a bitmap rasterization of the fill pattern of |page_object|.
+// To render correctly, the caller must provide the |document| associated with
+// |page_object|. The returned bitmap will be owned by the caller, and
+// FPDFBitmap_Destroy() must be called on the returned bitmap when it is no
+// longer needed.
+//
+//   document    - handle to the document containing |page_object|.
+//   page_object - handle to a page object.
+//
+// Returns the bitmap, or NULL if the fill is not a tiling pattern or on
+// failure.
+FPDF_EXPORT FPDF_BITMAP FPDF_CALLCONV
+FPDFPageObj_GetRenderedFillPattern(FPDF_DOCUMENT document,
+                                   FPDF_PAGEOBJECT page_object);
+
 // Get number of segments inside |path|.
 //
 //   path - handle to a path.
@@ -1206,6 +1313,24 @@ FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV FPDFPath_BezierTo(FPDF_PAGEOBJECT path,
                                                       float x3,
                                                       float y3);
 
+// Experimental API.
+// Get the two control points of a cubic Bezier segment in |path| at |index|.
+//
+//   path                 - handle to a path.
+//   index                - the index of the endpoint of a cubic Bezier segment.
+//   first_control_point  - the first control point.
+//   second_control_point - the second control point.
+//
+// Returns TRUE on success. Returns FALSE when |path| is not a valid path,
+// |index| is out of bounds, the indexed segment is not the endpoint of a cubic
+// Bezier segment, or either output pointer is NULL. On failure, the output
+// parameters are not modified.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFPath_GetBezierControlPoints(FPDF_PAGEOBJECT path,
+                                size_t index,
+                                FS_POINTF* first_control_point,
+                                FS_POINTF* second_control_point);
+
 // Close the current subpath of a given path.
 //
 // path   - the handle to the path object.
@@ -1255,7 +1380,8 @@ FPDFPageObj_NewTextObj(FPDF_DOCUMENT document,
 // text_object  - handle to the text object.
 // text         - the UTF-16LE encoded string containing the text to be added.
 //
-// Returns TRUE on success
+// Returns TRUE on success. Fails if |text_object| is null or if |text| is
+// empty.
 FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
 FPDFText_SetText(FPDF_PAGEOBJECT text_object, FPDF_WIDESTRING text);
 
@@ -1267,10 +1393,33 @@ FPDFText_SetText(FPDF_PAGEOBJECT text_object, FPDF_WIDESTRING text);
 // charcodes    - pointer to an array of charcodes to be added.
 // count        - number of elements in |charcodes|.
 //
-// Returns TRUE on success
+// Returns TRUE on success. Fails if |text_object| or |charcodes| is null, or
+// |count| is 0.
 FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
 FPDFText_SetCharcodes(FPDF_PAGEOBJECT text_object,
                       const uint32_t* charcodes,
+                      size_t count);
+
+// Experimental API.
+// Set the character positions for a text object.
+//
+// text_object  - handle to the text object.
+// positions    - pointer to an array of character positions to be set.
+// count        - number of elements in |positions|.
+//
+// The |positions| array specifies the position in points for each character
+// except the first one. The first character has an implied position value of 0.
+// All positions are relative to the origin of the text object. The direction is
+// either horizontal or vertical, depending on the direction of text in
+// |text_object|.
+//
+// For a text object with N characters, |count| must be N - 1. Therefore this
+// API fails when N <= 1.
+//
+// Returns TRUE on success.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFText_SetPositions(FPDF_PAGEOBJECT text_object,
+                      const float* positions,
                       size_t count);
 
 // Returns a font object loaded from a stream of data. The font is loaded
@@ -1339,6 +1488,19 @@ FPDFText_LoadCidType2Font(FPDF_DOCUMENT document,
 // Returns TRUE on success.
 FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
 FPDFTextObj_GetFontSize(FPDF_PAGEOBJECT text, float* size);
+
+// Experimental API.
+// Set the font size of a text object.
+//
+//   text - handle to a text page object.
+//   size - the new font size, measured in points (1/72 inch). Must be
+//          non-negative; zero is permitted to mirror
+//          FPDFPageObj_NewTextObj() with size 0.
+//
+// Returns TRUE on success. Returns FALSE when |text| is not a text
+// page object, or when |size| is negative.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFTextObj_SetFontSize(FPDF_PAGEOBJECT text, float size);
 
 // Close a loaded PDF font.
 //
@@ -1616,6 +1778,21 @@ FPDFFormObj_CountObjects(FPDF_PAGEOBJECT form_object);
 // Returns the handle to the page object, or NULL on error.
 FPDF_EXPORT FPDF_PAGEOBJECT FPDF_CALLCONV
 FPDFFormObj_GetObject(FPDF_PAGEOBJECT form_object, unsigned long index);
+
+// Experimental API.
+//
+// Remove |page_object| from |form_object|.
+//
+//   form_object - handle to a form object.
+//   page_object - handle to a page object to be removed from the form.
+//
+// Returns TRUE on success.
+//
+// Ownership of the removed |page_object| is transferred to the caller.
+// Call FPDFPageObj_Destroy() on the removed page_object to free it.
+FPDF_EXPORT FPDF_BOOL FPDF_CALLCONV
+FPDFFormObj_RemoveObject(FPDF_PAGEOBJECT form_object,
+                         FPDF_PAGEOBJECT page_object);
 
 #ifdef __cplusplus
 }  // extern "C"

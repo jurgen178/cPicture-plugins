@@ -1,7 +1,7 @@
 ï»¿#pragma once
 #include "pictureformat.h"
-#include "include/fpdfview.h"
-//#include "include/fpdf_thumbnail.h"
+#include "fpdfview.h"
+//#include "fpdf_thumbnail.h"
 
 #include <functional>
 using namespace std;
@@ -27,7 +27,7 @@ public:
 	CString version;
 	enum PLUGIN_TYPE type;
 
-	// Zum Sortieren der Einträge.
+	// Zum Sortieren der Eintrï¿½ge.
 	bool operator < (const plugin_data& rhs) noexcept
 	{
 		return file_name2 < rhs.file_name2;
