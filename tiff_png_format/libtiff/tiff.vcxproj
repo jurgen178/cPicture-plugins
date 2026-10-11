@@ -68,8 +68,8 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tiff</TargetName>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">Release\</OutDir>
-    <IntDir Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">tiff.dir\Release\</IntDir>
+    <OutDir Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">$(Platform)\$(Configuration)\tiff.dir\</IntDir>
     <TargetName Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">tiff</TargetName>
     <TargetExt Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">.lib</TargetExt>
     <LinkIncremental Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">false</LinkIncremental>
@@ -182,7 +182,7 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>Release/tiff.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)tiff.lib</ImportLibrary>
       <ModuleDefinitionFile>libtiff.def</ModuleDefinitionFile>
       <ProgramDataBaseFile>Release/tiff.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>

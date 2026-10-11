@@ -254,7 +254,7 @@
       </ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y "$(PdfiumDir)\bin\pdfium.dll" "$(TargetDir)"</Command>
+      <Command>copy /Y "$(PdfiumDir)\bin\pdfium.dll" "$(SolutionDir)$(Platform)\$(Configuration)\pdfium.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

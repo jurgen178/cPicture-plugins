@@ -100,7 +100,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="('$(Configuration)|$(Platform)'=='Release|x64') Or ('$(Configuration)|$(Platform)'=='Release|ARM64')">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>Release\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -55,7 +55,8 @@
     <LinkIncremental>false</LinkIncremental>
     <CustomBuildBeforeTargets />
     <TargetName>$(ProjectName)</TargetName>
-    <OutDir>Release\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -126,7 +127,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>libpng\projects\vstudio\zlib\Release\zlib.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)libpng\projects\vstudio\zlib\$(Platform)\$(Configuration)\zlib.lib</AdditionalDependencies>
       <Version>16</Version>
       <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
     </Link>
